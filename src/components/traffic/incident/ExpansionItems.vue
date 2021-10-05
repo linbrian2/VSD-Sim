@@ -1,0 +1,127 @@
+<template>
+  <v-card v-show="show" v-if="currentInfo">
+    <div v-if="infoList.length > 1">
+      <v-card-title class="d-flex justify-space-between">
+        <div v-if="name">
+          <v-chip label outlined class="font-weight-bold overline">{{ name }} </v-chip>
+        </div>
+        <div class="d-flex">
+          <v-select
+            style="width:210px;"
+            dense
+            item-text="text"
+            item-value="value"
+            v-model="currentIdx"
+            :items="timeItems"
+            @click.native.stop=""
+            hide-details
+            prepend-icon="mdi-clock-outline"
+            single-line
+          />
+          <div class="ml-6">
+            <v-btn icon @click.native.stop="prevClicked"><v-icon>mdi-chevron-left</v-icon></v-btn>
+            <v-chip outlined> {{ currentIdx + 1 }} / {{ infoList.length }} </v-chip>
+            <v-btn icon @click.native.stop="nextClicked"><v-icon>mdi-chevron-right</v-icon></v-btn>
+          </div>
+        </div>
+
+        <v-btn icon @click="closeClicked"><v-icon>mdi-close</v-icon></v-btn>
+      </v-card-title>
+    </div>
+
+    <div v-else>
+      <v-card-title class="d-flex justify-space-between">
+        <div v-if="name">
+          <v-chip label outlined class="font-weight-bold overline">{{ name }} </v-chip>
+        </div>
+        <div>
+          <v-icon class="mt-n1 mr-2">mdi-clock-outline</v-icon>
+          <span class="text-sm-body-1">{{ currentInfo.time | dateAndTime }}</span>
+        </div>
+
+        <v-btn icon @click="closeClicked"><v-icon>mdi-close</v-icon></v-btn>
+      </v-card-title>
+    </div>
+
+    <v-container fluid class="mt-n2">
+      <v-row class="mr-1">
+        <v-col cols="6" lg="6" md="6" sm="6" xs="12" v-for="(item, j) in currentInfo.data" :key="j">
+          <ListInfoCard :info="item" />
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card>
+</template>
+
+<script>
+import Utils from '@/utils/Utils';
+import ListInfoCard from '@/components/traffic/common/ListInfoCard';
+export default {
+  props: {
+    infoList: Array,
+    name: {
+      type: String,
+      default: ''
+    },
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  components: {
+    ListInfoCard
+  },
+
+  data: () => ({
+    currentIdx: 0
+  }),
+
+  watch: {
+    infoList() {
+      this.currentIdx = 0;
+    }
+  },
+
+  computed: {
+    currentInfo() {
+      return this.infoList && this.infoList.length > 0 ? this.infoList[this.currentIdx] : null;
+    },
+
+    timeItems() {
+      return this.infoList.map((item, index) => ({ text: this.formatDateTime(item.time), value: index }));
+    }
+  },
+
+  filters: {
+    dateAndTime(t) {
+      return Utils.formatDateTime(new Date(t));
+    }
+  },
+
+  methods: {
+    nextClicked() {
+      if (this.currentIdx < this.infoList.length - 1) {
+        this.currentIdx++;
+      }
+    },
+
+    prevClicked() {
+      if (this.currentIdx > 0) {
+        this.currentIdx--;
+      }
+    },
+
+    closeClicked() {
+      this.$emit('close');
+    },
+
+    formatDateTime(t) {
+      const d = new Date(t);
+      const dd = Utils.formatDate(d);
+      const tt = Utils.formatTimeAsMinute(d);
+      return dd + ' ' + tt;
+    }
+  }
+};
+</script>
