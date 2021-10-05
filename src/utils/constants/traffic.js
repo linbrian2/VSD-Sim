@@ -1,0 +1,50 @@
+export default Object.freeze({
+  PAGE_DASHBOARD: 'dashboard',
+  PAGE_FLOW: 'flow',
+  PAGE_LCM: 'lcm',
+  PAGE_FLOW_PER_LANE: 'flowPerLane',
+  PAGE_FLOW_PER_MINUTE: 'flowPerMinute',
+  PAGE_PREDICT: 'predict',
+  PAGE_ANOMALY: 'anomaly',
+  PAGE_WEATHER: 'weather',
+  PAGE_TRAVEL_TIME_DATA: 'travelTimeData',
+  PAGE_TRAVEL_TIME_MAP: 'travelTimeMap',
+  PAGE_INCIDENTS: 'incidents',
+  PAGE_COMBINED_ANOMALY: 'combinedAnomaly',
+  PAGE_INCIDENT_VIEW: 'IncidentView',
+  CHART_HEIGHT: 560,
+
+  DEVICE_TRAFFIC: 'Traffic Detectors',
+  DEVICE_BLUETOOTH: 'Bluetooth Sensors',
+  DEVICE_WEATHER: 'Weather Stations',
+  DEVICE_RESTRICTIONS: 'Travel Restrictions',
+  DEVICE_SEGMENTS: 'Anomaly Segments',
+
+  DEVICE_TRAFFIC_ICON: 'mdi-car-multiple',
+  DEVICE_BLUETOOTH_ICON: 'mdi-bluetooth-connect',
+  DEVICE_WEATHER_ICON: 'mdi-weather-cloudy',
+  DEVICE_RESTRICTIONS_ICON: 'mdi-traffic-cone',
+  DEVICE_WAZE_ICON: 'mdi-waze',
+  DEVICE_ALERT_ICON: 'mdi-alert-circle-outline',
+  DEVICE_SEGMENTS_ICON: 'mdi-vector-line',
+
+  INFO_BAR_DEFAULT_COLOR: 'white',
+
+  ADD_MAP_LAYER: 0,
+  REMOVE_MAP_LAYER: 1,
+
+  LAYER_DEVICE_TRAFFIC: 0,
+  LAYER_DEVICE_BLUETOOTH: 1,
+  LAYER_DEVICE_WEATHER: 2,
+  LAYER_DEVICE_RESTRICTIONS: 3,
+  LAYER_DEVICE_SEGMENTS: 4,
+  LAYER_TOTAL_COUNT: 5,
+
+  DATA_TRAFFIC_FLOW: 1,
+  DATA_TRAVEL_TIME: 2,
+  DATA_WAZE_ALERTS: 3,
+  DATA_RESTRICTION: 4,
+  DATA_WEATHER: 5,
+  DATA_TRAFFIC_ALERT: 6,
+  DATA_TRAFFIC_VIDEO: 7
+});
