@@ -49,7 +49,7 @@
     >
       <div v-if="signal.timeRemaining < 20">
         <v-chip color="purple"
-          ><span class="text-h1 font-weight-bold white--text">{{ signal.timeRemaining }}</span></v-chip
+          ><span class="font-weight-bold white--text">{{ signal.timeRemaining }}</span></v-chip
         >
       </div>
     </gmap-custom-marker>

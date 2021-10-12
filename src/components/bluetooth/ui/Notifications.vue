@@ -6,13 +6,7 @@
   >
     {{ $store.state.bluetooth.notification.text }}
     <template v-slot:action="{ attrs }">
-      <v-btn
-        small
-        fab
-        text
-        v-bind="attrs"
-        @click="$store.state.bluetooth.notification.show = false"
-      >
+      <v-btn small fab text v-bind="attrs" @click="$store.state.bluetooth.notification.show = false">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </template>
@@ -23,5 +17,4 @@
 export default {};
 </script>
 
-<style>
-</style>
+<style></style>

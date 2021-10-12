@@ -1,23 +1,17 @@
-import axiosDefault from 'axios';
+import client from '@/utils/AxiosClient';
 
-const axios = axiosDefault.create({
-  baseURL: process.env.VUE_APP_STATUS_API_URL,
-});
+const AxiosClient = client(process.env.VUE_APP_STATUS_API_URL);
 
 export default {
-  fetchLoggedInInfo() {
-    return axios.get('api/loggedInInfo');
-  },
-
   fetchStatus() {
-    return axios.get('api/status');
+    return AxiosClient.get('api/status');
   },
 
   fetchErrors(start) {
-    return axios.post('api/errors', { start });
+    return AxiosClient.post('api/errors', { start });
   },
 
   fetchSensorErrors(id, start) {
-    return axios.post('api/sensorErrors', { id, start });
+    return AxiosClient.post('api/sensorErrors', { id, start });
   }
 };

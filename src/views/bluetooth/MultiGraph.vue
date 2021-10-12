@@ -76,8 +76,7 @@
               </v-row>
             </div>
           </v-card>
-          <v-card :height="$store.state.bluetooth.prefs.multiGraph.graphHeight + 40" loading v-else>
-          </v-card>
+          <v-card :height="$store.state.bluetooth.prefs.multiGraph.graphHeight + 40" loading v-else> </v-card>
         </v-col>
       </v-row>
     </v-col>
@@ -85,164 +84,170 @@
 </template>
 
 <script>
-import Api from "@/utils/api/bluetooth.js";
-import AreaRangeChart from "@/components/bluetooth/graphs/AreaRangeChart";
+import Api from '@/utils/api/bluetooth.js';
+import AreaRangeChart from '@/components/bluetooth/graphs/AreaRangeChart';
 import MenuPopover from '@/components/bluetooth/ui/MenuPopover.vue';
 import OptionsMenu from '@/components/bluetooth/ui/OptionsMenu.vue';
 
 export default {
-  props: ["segmentInfo"],
+  props: ['segmentInfo'],
   components: {
     AreaRangeChart,
     MenuPopover,
-    OptionsMenu,
+    OptionsMenu
   },
   data: () => ({
     reload: false,
     isLoading: false,
     search: null,
     colCount: [
-      [12, 6, 4],   /* Auto */
-      [12, 12, 12], /* 1 */
-      [6, 6, 6],    /* 2 */
-      [4, 4, 4],    /* 3 */
-      [3, 3, 3],    /* 4 */
+      [12, 6, 4] /* Auto */,
+      [12, 12, 12] /* 1 */,
+      [6, 6, 6] /* 2 */,
+      [4, 4, 4] /* 3 */,
+      [3, 3, 3] /* 4 */
     ]
   }),
   mounted() {
     this.$bus.$on('SUBMIT_MULTIGRAPH_FILTERS', filters => {
-      this.processFilters(filters)
-    })
+      this.processFilters(filters);
+    });
     this.$bus.$on('SUBMIT_MULTIGRAPH_OPTIONS', ops => {
-      this.processOptions(ops)
-    })
+      this.processOptions(ops);
+    });
     this.$bus.$on('SUBMIT_SEGMENTS', segsList => {
-      this.processSegments(segsList)
-    })
+      this.processSegments(segsList);
+    });
     this.$bus.$on('SEGMENTS_UPDATE', () => {
-      let segGraphCopy = JSON.parse(JSON.stringify(this.$store.state.bluetooth.segGraph))
-      this.clearAll()
-      this.$store.state.bluetooth.segGraph = segGraphCopy
-    })
+      let segGraphCopy = JSON.parse(JSON.stringify(this.$store.state.bluetooth.segGraph));
+      this.clearAll();
+      this.$store.state.bluetooth.segGraph = segGraphCopy;
+    });
   },
   methods: {
     goToMapLocation(segment) {
-      this.$bus.$emit('GO_TO_SEGMENT_LOCATION', segment)
-      this.$store.state.bluetooth.map.setZoom(14)
-      this.$store.commit('bluetooth/SET_SELECTED_PAGE', 0)
+      this.$bus.$emit('GO_TO_SEGMENT_LOCATION', segment);
+      this.$store.state.bluetooth.map.setZoom(14);
+      this.$store.commit('bluetooth/SET_SELECTED_PAGE', 0);
     },
     viewAdditionalInfo(segment) {
-      console.log("viewAdditionalInfo:\n%o", segment)
-      this.$store.state.bluetooth.selectedSeg.data = segment
-      this.$store.state.bluetooth.dialog.tt = true
+      console.log('viewAdditionalInfo:\n%o', segment);
+      this.$store.state.bluetooth.selectedSeg.data = segment;
+      this.$store.state.bluetooth.dialog.tt = true;
     },
     processSegments(segsList) {
       setTimeout(() => {
-        this.$store.state.bluetooth.segGraph = segsList
-        this.$store.state.bluetooth.modes.addFromMap = false
+        this.$store.state.bluetooth.segGraph = segsList;
+        this.$store.state.bluetooth.modes.addFromMap = false;
       }, 1);
     },
     processOptions(ops) {
-      this.$store.state.bluetooth.prefs.multiGraph.colCountIdx = ops.colCount
-      this.$store.state.bluetooth.prefs.multiGraph.showButtons = ops.showButtons
-      this.$store.state.bluetooth.prefs.multiGraph.graphHeight = ops.graphHeight
-      this.reload = true
+      this.$store.state.bluetooth.prefs.multiGraph.colCountIdx = ops.colCount;
+      this.$store.state.bluetooth.prefs.multiGraph.showButtons = ops.showButtons;
+      this.$store.state.bluetooth.prefs.multiGraph.graphHeight = ops.graphHeight;
+      this.reload = true;
       setTimeout(() => {
-        this.reload = false
-      }, 1)
+        this.reload = false;
+      }, 1);
     },
     processFilters(filters) {
-      console.log("processFilters: %o", filters)
+      console.log('processFilters: %o', filters);
       let segmentsFilt = this.segments.filter(s => {
-        let isValid = false
+        let isValid = false;
         filters.levels.forEach(level => {
           if (s.travelTime.level == level) {
-            isValid = true
-            return
+            isValid = true;
+            return;
           }
-        })
-        return isValid
-      })
-      let segments = []
+        });
+        return isValid;
+      });
+      let segments = [];
       segmentsFilt.forEach(s => {
-        segments.push(s)
-      })
-      this.$store.state.bluetooth.segGraph = segments
+        segments.push(s);
+      });
+      this.$store.state.bluetooth.segGraph = segments;
     },
     clearAll() {
-      this.$store.state.bluetooth.segGraph = []
+      this.$store.state.bluetooth.segGraph = [];
     },
     addFromMap() {
-      this.$store.state.bluetooth.modes.addFromMap = true
-      this.$store.commit('bluetooth/SET_SELECTED_PAGE', 0)
+      this.$store.state.bluetooth.modes.addFromMap = true;
+      this.$store.commit('bluetooth/SET_SELECTED_PAGE', 0);
     },
     fetchTTData(segsToAdd) {
-      let seg = segsToAdd.shift()
-      let linkId = seg.info.linkId
-      let printInfo = false
-      let dt = this.$store.state.bluetooth.selectedDatetime
-      Api.fetchCurrTTByLinkId(linkId, dt.valueOf(), printInfo).then(currData => {
-        Api.fetchHistoricalTTWIncidentsByLinkID(linkId, printInfo).then(histData => {
-          if (seg) {
-            this.$set(seg, 'data', {
-              currTT: currData,
-              histTT: histData,
-            })
-          }
-          if (segsToAdd.length > 0 && this.$store.state.bluetooth.segGraph.length > 0) {
-            this.fetchTTData(segsToAdd)
-          }
-        }, error => {
-          console.log(error)
-        })
-      }, error => {
-        console.log(error)
-      })
+      let seg = segsToAdd.shift();
+      let linkId = seg.info.linkId;
+      let printInfo = false;
+      let dt = this.$store.state.bluetooth.selectedDatetime;
+      Api.fetchCurrTTByLinkId(linkId, dt.valueOf(), printInfo).then(
+        currData => {
+          Api.fetchHistoricalTTWIncidentsByLinkID(linkId, printInfo).then(
+            histData => {
+              if (seg) {
+                this.$set(seg, 'data', {
+                  currTT: currData,
+                  histTT: histData
+                });
+              }
+              if (segsToAdd.length > 0 && this.$store.state.bluetooth.segGraph.length > 0) {
+                this.fetchTTData(segsToAdd);
+              }
+            },
+            error => {
+              console.log(error);
+            }
+          );
+        },
+        error => {
+          console.log(error);
+        }
+      );
     }
   },
   computed: {
     col() {
-      return this.colCount[this.$store.state.bluetooth.prefs.multiGraph.colCountIdx]
+      return this.colCount[this.$store.state.bluetooth.prefs.multiGraph.colCountIdx];
     },
     segments() {
-      return this.$store.state.bluetooth.apiData.segments
-    },
+      return this.$store.state.bluetooth.apiData.segments;
+    }
   },
   watch: {
     '$store.state.bluetooth.segGraph': {
       deep: true,
-      handler: function (newVal, oldVal) {
+      handler: function(newVal, oldVal) {
         if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
-          let newSegs = newVal.map(x => x.info.description)
-          let oldSegs = oldVal.map(x => x.info.description)
-          console.log("segGraph - oldSegs: %o, newSegs: %o", oldSegs, newSegs)
-          let segsToAdd = []
+          let newSegs = newVal.map(x => x.info.description);
+          let oldSegs = oldVal.map(x => x.info.description);
+          console.log('segGraph - oldSegs: %o, newSegs: %o', oldSegs, newSegs);
+          let segsToAdd = [];
           newSegs.forEach((segName, i) => {
             if (!oldSegs.includes(segName)) {
-              segsToAdd.push(newVal[i])
+              segsToAdd.push(newVal[i]);
             }
-          })
+          });
           if (segsToAdd.length > 0) {
-            this.fetchTTData(segsToAdd)
+            this.fetchTTData(segsToAdd);
           }
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style scoped>
-  .button-group {
-    position: absolute;
-    right: 10px;
-  }
-  .middle-header {
-    text-align: center;
-    margin: 0 auto;
-    padding: 10px;
-  }
-  .v-input.theme--dark.v-text-field.v-text-field--is-booted.v-select.v-select--chips.v-select--chips--small.v-select--is-multi.v-autocomplete {
-      padding-top: 4px;
-  }
+.button-group {
+  position: absolute;
+  right: 10px;
+}
+.middle-header {
+  text-align: center;
+  margin: 0 auto;
+  padding: 10px;
+}
+.v-input.theme--dark.v-text-field.v-text-field--is-booted.v-select.v-select--chips.v-select--chips--small.v-select--is-multi.v-autocomplete {
+  padding-top: 4px;
+}
 </style>

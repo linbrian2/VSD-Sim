@@ -2,7 +2,7 @@
   <div class="title-name">
     <v-row wrap no-gutters>
       <v-col lg="4" sm="6" xs="12">
-        <div class="d-flex mt-1">
+        <div class="d-flex mt-2">
           <span v-if="showMap">
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
@@ -84,7 +84,7 @@ export default {
 .title-name {
   background-color: hsl(200, 18%, 46%);
   padding: 5px 10px;
-  margin-top: -10px;
+  margin-top: 0px;
   color: white;
   font-size: large;
   font-weight: bold;

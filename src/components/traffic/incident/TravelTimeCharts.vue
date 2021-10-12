@@ -77,7 +77,7 @@ export default {
           this.availability.travelSpeed = false;
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -92,7 +92,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'warning' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'warning' });
       }
       return result;
     },

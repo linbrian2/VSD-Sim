@@ -286,7 +286,7 @@ export default {
           x: -10,
           reversed: true,
           valueDecimals: 0,
-          backgroundColor: 'rgba(255,255,255,0.9)',
+          backgroundColor: 'rgba(55,55,55,0.9)',
           borderColor: '#C98657',
           borderWidth: 1,
           itemMarginBottom: 5,
@@ -323,7 +323,7 @@ export default {
             borderColor: '#196f3d',
             nullColor: '#708090',
             name: 'Heatmap',
-            borderWidth: 1,
+            borderWidth: 0.1,
             turboThreshold: 10000, //larger threshold or set to 0 to disable
             data: series,
             dataLabels: {
@@ -336,11 +336,11 @@ export default {
   },
   watch: {
     '$store.state.darkMode'() {
-      this.reload = true
+      this.reload = true;
       setTimeout(() => {
-        this.reload = false
+        this.reload = false;
       }, 1);
     }
-  },
+  }
 };
 </script>

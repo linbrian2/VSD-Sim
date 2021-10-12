@@ -4,7 +4,7 @@
       <div class="ml-2">
         <v-tabs color="deep-purple accent-4" v-model="activeTab" show-arrows>
           <v-tab v-for="(phase, i) in phases" :key="i">
-            <v-chip color="orange" small>P{{ phase }}</v-chip>
+            <v-chip color="teal" small>P{{ phase }}</v-chip>
           </v-tab>
           <v-tab-item v-for="(plan, i) in plans" :key="i">
             <v-container fluid>

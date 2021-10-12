@@ -449,12 +449,12 @@ export default {
               this.aors.push(item);
             });
           } else {
-            this.$store.dispatch('hr/setSystemStatus', { text: response.data.message, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }
           this.loadingAoR = false;
         });
       } catch (error) {
-        this.$store.dispatch('hr/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -477,12 +477,12 @@ export default {
               this.volumes.push(item);
             });
           } else {
-            this.$store.dispatch('hr/setSystemStatus', { text: response.data.message, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }
           this.loadingVolume = false;
         });
       } catch (error) {
-        this.$store.dispatch('hr/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -504,12 +504,12 @@ export default {
               this.intervals.push(item);
             });
           } else {
-            this.$store.dispatch('hr/setSystemStatus', { text: response.data.message, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }
           this.loadingInterval = false;
         });
       } catch (error) {
-        this.$store.dispatch('hr/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -532,12 +532,12 @@ export default {
               this.delays.push(item);
             });
           } else {
-            this.$store.dispatch('hr/setSystemStatus', { text: response.data.message, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }
           this.loadingDelay = false;
         });
       } catch (error) {
-        this.$store.dispatch('hr/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -563,7 +563,7 @@ export default {
               this.occupancies.push(item);
             });
           } else {
-            this.$store.dispatch('hr/setSystemStatus', { text: response.data.message, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }
           this.loadingOccupancy = false;
 
@@ -575,7 +575,7 @@ export default {
           }
         });
       } catch (error) {
-        this.$store.dispatch('hr/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 

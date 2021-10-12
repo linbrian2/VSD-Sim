@@ -2,13 +2,13 @@
   <v-row>
     <v-dialog scrollable v-model="show" persistent max-width="800px">
       <v-card>
-        <v-app-bar dark color="#009688" dense>
+        <v-app-bar dark dense>
           <v-icon small class="mr-2">mdi-format-list-bulleted</v-icon>
           <v-toolbar-title>Trip List</v-toolbar-title>
 
           <v-spacer></v-spacer>
 
-          <div class="mr-15">
+          <div class="mr-12">
             <DatePicker @date="dateSelected" />
           </div>
 

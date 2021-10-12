@@ -228,10 +228,10 @@ export default {
             this.changeLiveVideoSource(this.info.uri);
           }
         } else {
-          this.$store.dispatch('vision/setSystemStatus', { text: response.data.message, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
         }
       } catch (error) {
-        this.$store.dispatch('vision/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -248,10 +248,10 @@ export default {
             this.selectVideoByTime(this.currentTime);
           }
         } else {
-          this.$store.dispatch('vision/setSystemStatus', { text: response.data.message, color: 'info' });
+          this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'info' });
         }
       } catch (error) {
-        this.$store.dispatch('vision/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },

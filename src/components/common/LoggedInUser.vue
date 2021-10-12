@@ -7,7 +7,7 @@
         </v-avatar>
         <template v-else>
           <span class="title">
-            {{ user.name.split('')[0].toUpperCase() }}
+            {{ firstLetter }}
           </span>
         </template>
       </v-btn>
@@ -22,13 +22,13 @@
             </v-avatar>
             <template v-else>
               <v-avatar color="blue">
-                <span class="white--text headline "> {{ user.name.split('')[0].toUpperCase() }}</span>
+                <span class="white--text headline "> {{ firstLetter }}</span>
               </v-avatar>
             </template>
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title class="text-capitalize">{{ user.name }}</v-list-item-title>
+            <v-list-item-title class="text-capitalize">{{ name }}</v-list-item-title>
             <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -37,13 +37,19 @@
       <v-divider></v-divider>
 
       <v-list>
-        <v-list-item>
+        <v-list-item @click="changePassword">
           <v-list-item-icon>
             <v-icon>mdi-account-box</v-icon>
           </v-list-item-icon>
+          <v-list-item-title>Change Password</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="preferences">
+          <v-list-item-icon>
+            <v-icon>mdi-cog-outline</v-icon>
+          </v-list-item-icon>
           <v-list-item-title>Preferences</v-list-item-title>
         </v-list-item>
-        <v-list-item href="/logout">
+        <v-list-item @click="logout">
           <v-list-item-icon>
             <v-icon>mdi-login-variant</v-icon>
           </v-list-item-icon>
@@ -56,7 +62,33 @@
 
 <script>
 export default {
-  props: ['user']
+  props: {
+    user: Object
+  },
+
+  computed: {
+    name() {
+      return `${this.user.firstName} ${this.user.lastName}`;
+    },
+
+    firstLetter() {
+      return this.user && this.user.lastName && this.user.lastName[0].toUpperCase();
+    }
+  },
+
+  methods: {
+    changePassword() {
+      this.$router.push({ path: '/change-password' }).catch(() => {});
+    },
+
+    preferences() {
+      this.$router.push({ path: '/pref' }).catch(() => {});
+    },
+
+    logout() {
+      this.$store.dispatch('auth/logout');
+    }
+  }
 };
 </script>
 

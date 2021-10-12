@@ -61,7 +61,7 @@ export default {
         const data = this.getResponseData(response, false);
         this.flowData = data ? data : {};
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -77,7 +77,11 @@ export default {
         }
       } else {
         if (showWarning) {
-          this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'warning', timeout: 1000 });
+          this.$store.dispatch('setSystemStatus', {
+            text: response.data.message,
+            color: 'warning',
+            timeout: 1000
+          });
         }
       }
       return result;

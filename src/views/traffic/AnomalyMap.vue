@@ -206,7 +206,7 @@ export default {
         this.clearDataSet(this.anomaly6);
         this.anomaly6 = this.parseResponse(set6, start, 'DE-1', 'SB', 5);
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -236,7 +236,7 @@ export default {
           result.startTime = Utils.getStartOfDay(start);
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'info' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'info' });
       }
       return result;
     },
@@ -261,10 +261,10 @@ export default {
             return result;
           }
         } else {
-          this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
 

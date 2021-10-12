@@ -65,7 +65,7 @@ export default {
     this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
       this.loadPage(darkMode);
     });
-    
+
     this.$refs.mapRef.$mapPromise.then(map => {
       this.map = map;
       this.$emit('map-ready', map);
@@ -77,16 +77,16 @@ export default {
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
-        return
+        return;
       }
       if (darkMode && this.$refs.mapRef) {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: DarkMapStyle})
-        })
+          map.setOptions({ styles: DarkMapStyle });
+        });
       } else {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: null})
-        })
+          map.setOptions({ styles: null });
+        });
       }
     },
 

@@ -40,7 +40,7 @@
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar :title="title" :showId="true" :loading="loading" :refresh="refreshData">
+    <TitleBar :title="title" showId showUid :loading="loading" :refresh="refreshData">
       <div class="d-flex align-items justify-space-between align-center">
         <div class="d-flex justify-space-between">
           <div class="mt-1 mr-15" style="width:140px;">
@@ -72,10 +72,6 @@
               single-line
             />
           </div>
-
-          <!-- <div class="mt-n2 ml-12">
-            <v-checkbox dark v-model="showBaseline" label="Show Baseline" value="indigo" hide-details></v-checkbox>
-          </div> -->
         </div>
       </div>
     </TitleBar>
@@ -90,21 +86,15 @@
       <div>
         <v-tabs-items v-model="tab">
           <v-tab-item value="bound" v-if="isTabVisible('bound')">
-            <div class="mx-4 mt-4">
-              <TrafficFlowCombinedCharts :data="boundData" :name="name" :direction="direction" />
-            </div>
+            <TrafficFlowCombinedCharts :data="boundData" :name="name" :direction="direction" />
           </v-tab-item>
 
           <v-tab-item value="lane" v-if="isTabVisible('lane')">
-            <div class="mx-4 mt-4">
-              <TrafficFlowCombinedCharts :data="laneData" :name="name" :direction="direction" />
-            </div>
+            <TrafficFlowCombinedCharts :data="laneData" :name="name" :direction="direction" />
           </v-tab-item>
 
           <v-tab-item value="minute" v-if="isTabVisible('minute')">
-            <div class="mx-4 mt-4">
-              <TrafficFlowCombinedCharts :data="minuteData" :name="name" :direction="direction" />
-            </div>
+            <TrafficFlowCombinedCharts :data="minuteData" :name="name" :direction="direction" />
           </v-tab-item>
         </v-tabs-items>
       </div>
@@ -244,7 +234,9 @@ export default {
   },
 
   methods: {
-    sideBarWidthChanged() {},
+    sideBarWidthChanged() {
+      this.$bus.$emit('CHART_RELOAD');
+    },
 
     showDataIfEmpty() {
       this.$bus.$emit('CENTER_MAP');
@@ -296,7 +288,7 @@ export default {
         const response = await Api.fetchDevices();
         this.devices = response.data;
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -358,7 +350,7 @@ export default {
           this.showWarningMessage('No data available');
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -381,7 +373,7 @@ export default {
     },
 
     showWarningMessage(message) {
-      this.$store.dispatch('traffic/setSystemStatus', { text: message, color: 'warning', timeout: 1000 });
+      this.$store.dispatch('setSystemStatus', { text: message, color: 'info', timeout: 1000 });
     },
 
     rangeTabItems(dataList) {

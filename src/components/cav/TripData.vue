@@ -105,10 +105,6 @@ export default {
       if (value != null) {
         this.info = this.formatTripInfo(value.info);
         this.updateChartData(value.chart);
-        //  if (value.path && value.path.length > 0) {
-        //   this.segment = [...this.segment, ...value.path];
-        //   console.log('segment=' + this.segment.length);
-        // }
       }
     }
   },

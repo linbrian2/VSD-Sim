@@ -222,7 +222,7 @@ export default {
         // Verify the flow data is avaialble
         let flowList = this.getResponseData(flow);
         if (!flowList) {
-          this.$store.dispatch('traffic/setSystemStatus', { text: 'No traffic flow data available', color: 'info' });
+          this.$store.dispatch('setSystemStatus', { text: 'No traffic flow data available', color: 'info' });
           this.loading = false;
           return;
         }
@@ -239,7 +239,7 @@ export default {
         }
       } catch (error) {
         console.log(error);
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -260,7 +260,7 @@ export default {
           }));
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -406,7 +406,7 @@ export default {
         data.push({ name: this.formatText('Pred-15', error15), color: this.colors[3], data: predictList.pred15.speed });
       }
 
-      return { data, xAxis, yAxis, title, min: 0, max: 100 };
+      return { data, xAxis, yAxis, title, ymin: 0, ymax: 100 };
     },
 
     formVolumeData(predictList, flowList, excludedList) {

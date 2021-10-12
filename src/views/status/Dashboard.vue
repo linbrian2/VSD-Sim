@@ -1,19 +1,18 @@
 <template>
   <div>
-    <TitleBar title="Health Status of all Services" :loading="loading" :refresh="refreshData">
+    <TitleBar title="Service Health Check" :loading="loading" :refresh="refreshData">
       <div class="update" v-if="updatedTime">{{ updatedTime | date }}</div>
     </TitleBar>
-    <v-container style="max-width:1200px">
-      <v-card class="rounded-0 elevation-5 mb-10">
+    <v-container fluid style="max-width: 85%">
+      <v-card class="rounded-0 elevation-5 mt-4 mb-10">
         <v-card-title :class="['py-1 font-weight-regular', dataCollectionLabelColor]"
           >Data Collection Services</v-card-title
         >
         <v-card-text>
-          <v-container>
+          <v-container fluid>
             <SummaryTable :loading="loading" :summary="dataCollectionServices" />
           </v-container>
         </v-card-text>
-
       </v-card>
 
       <v-card class="rounded-0 elevation-5">
@@ -21,8 +20,19 @@
           >Data Processing Services</v-card-title
         >
         <v-card-text class="mb-10">
-          <v-container>
+          <v-container fluid>
             <SummaryTable :loading="loading" :summary="dataProcessingServices" />
+          </v-container>
+        </v-card-text>
+      </v-card>
+
+      <v-card class="rounded-0 elevation-5">
+        <v-card-title :class="['py-1 font-weight-regular', infrastructureLabelColor]"
+          >Infrastructure Services</v-card-title
+        >
+        <v-card-text class="mb-10">
+          <v-container fluid>
+            <ViewTable :loading="loading" :summary="infrastructureServices" />
           </v-container>
         </v-card-text>
       </v-card>
@@ -35,10 +45,12 @@ import Api from '@/utils/api/status';
 import Utils from '@/utils/Utils';
 import TitleBar from '@/components/status/TitleBar';
 import SummaryTable from '@/components/status/SummaryTable';
+import ViewTable from '@/components/status/ViewTable';
 export default {
   components: {
     TitleBar,
-    SummaryTable
+    SummaryTable,
+    ViewTable
   },
   data: () => ({
     loading: false,
@@ -56,12 +68,21 @@ export default {
       return this.summary.filter(service => service.group === 1);
     },
 
+    infrastructureServices() {
+      return this.summary.filter(service => service.group === 2);
+    },
+
     dataCollectionLabelColor() {
       const notAllLive = this.dataCollectionServices.some(service => !service.isLive);
       return notAllLive ? 'red lighten-1' : 'green lighten-1';
     },
 
     dataProcessingLabelColor() {
+      const notAllLive = this.dataProcessingServices.some(service => !service.isLive);
+      return notAllLive ? 'red lighten-1' : 'green lighten-1';
+    },
+
+    infrastructureLabelColor() {
       const notAllLive = this.dataProcessingServices.some(service => !service.isLive);
       return notAllLive ? 'red lighten-1' : 'green lighten-1';
     }

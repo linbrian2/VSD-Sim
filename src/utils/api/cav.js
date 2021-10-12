@@ -1,51 +1,49 @@
-import axiosDefault from 'axios';
+import client from '@/utils/AxiosClient';
 
-const axios = axiosDefault.create({
-  baseURL: process.env.VUE_APP_CAV_API_URL,
-});
+const AxiosClient = client(process.env.VUE_APP_CAV_API_URL);
 
 export default {
   fetchTrips(time, limit) {
-    return axios.get('api/trips', { params: { time, limit } });
+    return AxiosClient.get('api/trips', { params: { time, limit } });
   },
 
   fetchLatestTrips(limit) {
-    return axios.get('api/latestTrips', { params: { limit } });
+    return AxiosClient.get('api/latestTrips', { params: { limit } });
   },
 
   fetchOngoingTrips(limit) {
-    return axios.get('api/ongoingTrips', { params: { limit } });
+    return AxiosClient.get('api/ongoingTrips', { params: { limit } });
   },
 
   deleteTrip(tripId) {
-    return axios.get('api/deleteTrip', { params: { id: tripId } });
+    return AxiosClient.get('api/deleteTrip', { params: { id: tripId } });
   },
 
   fetchTripLocations(tripId) {
-    return axios.get('api/locations', { params: { id: tripId } });
+    return AxiosClient.get('api/locations', { params: { id: tripId } });
   },
 
   fetchTripInfo(tripId) {
-    return axios.get('api/tripInfo', { params: { id: tripId } });
+    return AxiosClient.get('api/tripInfo', { params: { id: tripId } });
   },
 
   fetchTripData(tripId) {
-    return axios.get('api/tripData', { params: { id: tripId } });
+    return AxiosClient.get('api/tripData', { params: { id: tripId } });
   },
 
   fetchTripGrid(tripId) {
-    return axios.get('api/tripGrid', { params: { id: tripId } });
+    return AxiosClient.get('api/tripGrid', { params: { id: tripId } });
   },
 
   fetchTripPath(tripId) {
-    return axios.get('api/tripPath', { params: { id: tripId } });
+    return AxiosClient.get('api/tripPath', { params: { id: tripId } });
   },
 
   fetchTripSegment(tripId) {
-    return axios.get('api/tripSegment', { params: { id: tripId } });
+    return AxiosClient.get('api/tripSegment', { params: { id: tripId } });
   },
 
   fetchTripStat(tripId) {
-    return axios.get('api/tripStat', { params: { id: tripId } });
+    return AxiosClient.get('api/tripStat', { params: { id: tripId } });
   }
 };

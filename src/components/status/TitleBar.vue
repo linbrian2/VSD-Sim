@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import Keycloak from 'keycloak-js';
 import { mapState } from 'vuex';
 export default {
   props: ['title', 'loading', 'refresh'],

@@ -1,7 +1,14 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="12" map-type-id="roadmap" class="my-map"
-      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="12"
+      map-type-id="roadmap"
+      class="my-map"
+      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
+    >
       <!-- trajectory -->
       <GmapPolyline :path.sync="segment" :options="segmentOptions" />
       <GmapMarker :position="startPoint" :clickable="false" :draggable="false" :icon="startIcon" />
@@ -64,7 +71,7 @@ export default {
     statelist: [],
 
     segmentOptions: {
-      strokeColor: '#0082ff',
+      strokeColor: '#00ff00',
       strokeOpacity: 0.6,
       strokeWeight: 6
     },
@@ -142,16 +149,16 @@ export default {
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
-        return
+        return;
       }
       if (darkMode && this.$refs.mapRef) {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: DarkMapStyle})
-        })
+          map.setOptions({ styles: DarkMapStyle });
+        });
       } else {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: null})
-        })
+          map.setOptions({ styles: null });
+        });
       }
     },
 
@@ -419,11 +426,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/* .my-map {
+.my-map {
   width: 101.5%;
   height: calc(100vh - 48px);
-  margin-top: -36px;
+  margin-top: -12px;
   margin-left: -12px;
   margin-right: 0px;
-} */
+} 
 </style>

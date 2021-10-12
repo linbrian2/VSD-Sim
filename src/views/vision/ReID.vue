@@ -24,13 +24,15 @@
           </v-card>
           <v-card outlined height="80vh" class="grid-center" v-else-if="initialFetch">
             <v-col class="grid-center">
-              <h2>Re-ID Detections</h2><br/>
+              <h2>Re-ID Detections</h2>
+              <br />
               <h3>(Loading API...)</h3>
             </v-col>
           </v-card>
           <v-card outlined height="80vh" class="grid-center" v-else-if="!initialFetch">
             <v-col class="grid-center">
-              <h2>Re-ID Detections</h2><br/>
+              <h2>Re-ID Detections</h2>
+              <br />
               <h3 style="color: #FF6666;">(API Inactive)</h3>
             </v-col>
           </v-card>
@@ -56,12 +58,12 @@ export default {
     loading: false,
     initialFetch: true,
     fetchSuccess: false,
-    apiConnectInterval: null,
+    apiConnectInterval: null
   }),
 
   mounted() {
-    this.initialFetch = true
-    this.apiConnectInterval = null
+    this.initialFetch = true;
+    this.apiConnectInterval = null;
     this.fetchSnippetInfo();
     this.apiConnectInterval = setInterval(() => {
       if (this.fetchSuccess) {
@@ -72,12 +74,12 @@ export default {
   },
 
   destroyed() {
-    clearInterval(this.apiConnectInterval)
+    clearInterval(this.apiConnectInterval);
   },
 
   methods: {
     refreshData() {
-      this.initialFetch = true
+      this.initialFetch = true;
       this.fetchSnippetInfo(true);
     },
     fetchSnippetInfo() {
@@ -98,7 +100,7 @@ export default {
             }
           }
           if (this.initialFetch) {
-            this.$store.dispatch('vision/setSystemStatus', {
+            this.$store.dispatch('setSystemStatus', {
               text: 'Successfully connected to Vehicle Re-ID API',
               timeout: 3000,
               color: 'info'
@@ -111,7 +113,7 @@ export default {
           /* this.fetchSuccess = false */
           if (this.initialFetch) {
             console.log(2);
-            this.$store.dispatch('vision/setSystemStatus', {
+            this.$store.dispatch('setSystemStatus', {
               text: 'Failed to connect to Vehicle Re-ID API',
               timeout: 5000,
               color: 'error'

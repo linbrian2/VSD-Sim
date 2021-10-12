@@ -18,7 +18,6 @@
 <script>
 /* global google */
 import { mapActions } from 'vuex';
-import EventBus from '@/utils/EventBus';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 
@@ -71,18 +70,18 @@ export default {
     }
   },
   async mounted() {
-    EventBus.$on('NAME_SELECTED', name => {
+    this.$bus.$on('NAME_SELECTED', name => {
       let marker = this.markers.find(m => m.name === name);
       if (marker != null) {
         this.markerClicked(marker);
       }
     });
 
-    EventBus.$on('CENTER_MAP', () => {
+    this.$bus.$on('CENTER_MAP', () => {
       this.centerMap(this.map, this.markers);
     });
 
-    EventBus.$on('UPDATE_DARK_MODE', darkMode => {
+    this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
       this.loadPage(darkMode);
     });
 

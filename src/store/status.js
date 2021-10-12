@@ -1,36 +1,35 @@
+import Utils from '@/utils/Utils';
 
 const state = {
-  currentUser: {},
   currentDate: new Date(),
-  currentAction: 'dashboard',
-}
+  currentAction: 'dashboard'
+};
 
-const mutations ={
-  SET_CURRENT_USER(state, user) {
-    state.currentUser = user;
-  },
+const mutations = {
   SET_CURRENT_DATE(state, date) {
     state.currentDate = date;
   },
   SET_CURRENT_ACTION(state, action) {
     state.currentAction = action;
-  },
-}
+  }
+};
 
 const actions = {
-  async fetchLoggedInInfo({ commit }) {
-    try {
-      const response = await Api.fetchLoggedInInfo();
-      commit('SET_CURRENT_USER', response.data);
-    } catch (error) {
-      console.log(error);
+  incCurrentDate({ state, commit }, days) {
+    const currentDate = state.currentDate;
+    if (Utils.isTodayAndBeyond(currentDate) && days > 0) {
+      return;
     }
-  },
-}
+
+    const result = new Date(currentDate);
+    result.setDate(result.getDate() + days);
+    commit('SET_CURRENT_DATE', result);
+  }
+};
 
 export default {
   namespaced: true,
   state: state,
   mutations: mutations,
-  actions: actions,
-}
+  actions: actions
+};

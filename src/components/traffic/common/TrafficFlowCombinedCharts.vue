@@ -80,8 +80,9 @@ export default {
       const xAxis = 'Time of day';
       const yAxis = 'Speed (mph)';
       const data = this.filterByDirection(flowList.speed, direction);
-      const result = { data, xAxis, yAxis, title, min: 0, max: 100 };
+      const result = { data, xAxis, yAxis, title, ymin: 0, ymax: 100 };
       this.addTimeSlots(result);
+      this.addXAxisStart(result, flowList, direction);
       return result;
     },
 
@@ -92,6 +93,7 @@ export default {
       const data = this.filterByDirection(flowList.volume, direction);
       const result = { data, xAxis, yAxis, title };
       this.addTimeSlots(result);
+      this.addXAxisStart(result, flowList, direction);
       return result;
     },
 
@@ -102,12 +104,38 @@ export default {
       const data = this.filterByDirection(flowList.occupancy, direction);
       const result = { data, xAxis, yAxis, title };
       this.addTimeSlots(result);
+      this.addXAxisStart(result, flowList, direction);
       return result;
     },
 
     addTimeSlots(data) {
       if (this.timeSlots && this.timeSlots.length > 0) {
         data.timeSlots = this.timeSlots;
+      }
+    },
+
+    addXAxisStart(data, flowList, direction) {
+      data.xmin = null;
+
+      if (flowList.speed) {
+        const list = this.filterByDirection(flowList.speed, direction);
+        list.forEach(item => {
+          data.xmin = data.xmin ? Math.min(data.xmin, item.data[0][0]) : item.data[0][0];
+        });
+      }
+
+      if (flowList.volume) {
+        const list = this.filterByDirection(flowList.volume, direction);
+        list.forEach(item => {
+          data.xmin = data.xmin ? Math.min(data.xmin, item.data[0][0]) : item.data[0][0];
+        });
+      }
+
+      if (flowList.occupancy) {
+        const list = this.filterByDirection(flowList.occupancy, direction);
+        list.forEach(item => {
+          data.xmin = data.xmin ? Math.min(data.xmin, item.data[0][0]) : item.data[0][0];
+        });
       }
     },
 

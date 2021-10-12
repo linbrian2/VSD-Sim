@@ -30,7 +30,7 @@ export default {
 
   data: () => ({
     selectedTime: null,
-    reload: false,
+    reload: false
   }),
 
   methods: {
@@ -217,13 +217,12 @@ export default {
   },
   watch: {
     '$store.state.darkMode'() {
-      this.reload = true
+      this.reload = true;
       setTimeout(() => {
-        this.reload = false
+        this.reload = false;
       }, 1);
     }
-  },
-
+  }
 };
 </script>
 

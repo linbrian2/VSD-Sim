@@ -8,7 +8,7 @@
     <v-card>
       <v-card-title>
         Congestion
-          <div class="middle-header">
+        <div class="middle-header">
           <v-text-field
             dense
             outlined
@@ -37,11 +37,7 @@
             </template>
           </v-text-field>
         </div>
-        <v-btn
-          icon
-          class="close-button mr-4"
-          @click="$store.state.bluetooth.dialog.congestion = false"
-        >
+        <v-btn icon class="close-button mr-4" @click="$store.state.bluetooth.dialog.congestion = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -63,12 +59,7 @@
           <template v-slot:[`item.actions`]="{ item }">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  small
-                  class="mr-2"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="viewItem(item)"
+                <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="viewItem(item)"
                   >mdi-arrow-right-bold</v-icon
                 >
               </template>
@@ -76,12 +67,7 @@
             </v-tooltip>
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  small
-                  class="mr-2"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="viewGraph(item)"
+                <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="viewGraph(item)"
                   >mdi-chart-areaspline</v-icon
                 >
               </template>
@@ -95,92 +81,89 @@
 </template>
 
 <script>
-import Utils from "@/utils/Utils";
-import { DateTime } from "luxon";
+import Utils from '@/utils/Utils';
+import { DateTime } from 'luxon';
 
 import RouteMenuPopover from '@/components/bluetooth/ui/RouteMenuPopover.vue';
 
 export default {
   components: {
-    RouteMenuPopover,
+    RouteMenuPopover
   },
   data() {
     return {
-      segmentsSearch: "",
+      segmentsSearch: '',
       selectedRoutes: [],
-      menuItems: [
-        { title: 'Print JSON' },
-        { title: 'Download JSON' },
-      ],
-    }
+      menuItems: [{ title: 'Print JSON' }, { title: 'Download JSON' }]
+    };
   },
   methods: {
     viewGraph(item) {
       /* console.log(item.data); */
-      this.$store.state.bluetooth.selectedSeg.data = item.data
-      this.$store.state.bluetooth.dialog.tt = true
+      this.$store.state.bluetooth.selectedSeg.data = item.data;
+      this.$store.state.bluetooth.dialog.tt = true;
     },
     menuItemClicked(idx) {
       if (idx == 0) {
-        console.log("this.segments\n%o", this.segments);
-        let notifText = 'Check console for info.'
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' } )
-      }
-      else if (idx == 1) {
-        let dt = DateTime.now().setZone("America/New_York")
-        let dtStr = dt.toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS).replaceAll('/', '-').replaceAll(',', '')
-        let fileName = `Segments (${dtStr})`
+        console.log('this.segments\n%o', this.segments);
+        let notifText = 'Check console for info.';
+        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
+      } else if (idx == 1) {
+        let dt = DateTime.now().setZone('America/New_York');
+        let dtStr = dt
+          .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
+          .replaceAll('/', '-')
+          .replaceAll(',', '');
+        let fileName = `Segments (${dtStr})`;
         console.log(fileName);
-        Utils.downloadJSON(fileName, this.segments)
+        Utils.downloadJSON(fileName, this.segments);
       }
     },
     viewItem(item) {
-      this.$bus.$emit('GO_TO_SEGMENT_LOCATION', item.data)
-      this.$store.state.bluetooth.dialog.congestion = false
+      this.$bus.$emit('GO_TO_SEGMENT_LOCATION', item.data);
+      this.$store.state.bluetooth.dialog.congestion = false;
     },
     filterByRoute(segments) {
-      let selectedRoutes = this.$store.state.bluetooth.selectedRoutes
+      let selectedRoutes = this.$store.state.bluetooth.selectedRoutes;
       segments = segments.filter(s => {
-        let validSegment = false
+        let validSegment = false;
         selectedRoutes.forEach(x => {
           if (x == s.info.route) {
-            validSegment = true
+            validSegment = true;
           }
         });
-        return validSegment
+        return validSegment;
       });
-      return segments
+      return segments;
     }
   },
   computed: {
     segments() {
-      let segments = this.$store.state.bluetooth.apiData.segments
-      if (segments)
-        return segments
-      else 
-        return []
+      let segments = this.$store.state.bluetooth.apiData.segments;
+      if (segments) return segments;
+      else return [];
     },
     segmentsHeaders() {
       if (this.segments) {
         let headers = [
-          { text: "Id", value: "id", align: "start" },
-          { text: 'Last Updated', value: "date"},
-          { text: "Name", value: "name"},
-          { text: "Description", value: "desc" },
-          { text: "Severity Level", value: "level"},
-          { text: "Actions", value: "actions", sortable: false },
-        ]
-        return headers
+          { text: 'Id', value: 'id', align: 'start' },
+          { text: 'Last Updated', value: 'date' },
+          { text: 'Name', value: 'name' },
+          { text: 'Description', value: 'desc' },
+          { text: 'Severity Level', value: 'level' },
+          { text: 'Actions', value: 'actions', sortable: false }
+        ];
+        return headers;
       } else {
-        return null
+        return null;
       }
     },
     segmentsItems() {
       if (this.segments) {
-        let segments = this.segments.slice()
-        let items = []
+        let segments = this.segments.slice();
+        let items = [];
         if (this.$store.state.bluetooth.selectedRoutes.length > 0) {
-          segments = this.filterByRoute(segments)
+          segments = this.filterByRoute(segments);
         }
         segments.forEach(s => {
           items.push({
@@ -189,21 +172,21 @@ export default {
             name: s.info.name,
             desc: s.info.description,
             level: s.travelTime.level,
-            data: s,
-          })
+            data: s
+          });
         });
-        return items
+        return items;
       } else {
-        return null
+        return null;
       }
     }
-  },
+  }
 };
 </script>
 
 <style>
-  .middle-header {
-    text-align: center;
-    margin: 0 auto;
-  }
+.middle-header {
+  text-align: center;
+  margin: 0 auto;
+}
 </style>

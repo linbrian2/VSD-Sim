@@ -33,17 +33,13 @@
 
     <TitleBar showId showUid title="Traffic Flow LCM" :loading="loading" :refresh="refreshData" />
 
-    <v-container>
+    <v-container fluid>
       <v-card tile class="mb-8" elevation="24" v-if="isVisible('NB')">
-        <v-container>
-          <LCMCurveChart :data="chartDataNB" direction="NB" :height="height" :exporting="false" @click="pointClicked" />
-        </v-container>
+        <LCMCurveChart :data="chartDataNB" direction="NB" :height="height" :exporting="false" @click="pointClicked" />
       </v-card>
 
-      <v-card tile class="mb-8" elevation="24" v-if="isVisible('SB')">
-        <v-container>
-          <LCMCurveChart :data="chartDataSB" direction="SB" :height="height" :exporting="false" @click="pointClicked" />
-        </v-container>
+      <v-card tile elevation="24" v-if="isVisible('SB')">
+        <LCMCurveChart :data="chartDataSB" direction="SB" :height="height" :exporting="false" @click="pointClicked" />
       </v-card>
     </v-container>
 
@@ -231,7 +227,7 @@ export default {
           this.availabilitySB = false;
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -254,7 +250,7 @@ export default {
     },
 
     showWarningMessage(message) {
-      this.$store.dispatch('traffic/setSystemStatus', { text: message, color: 'warning', timeout: 1500 });
+      this.$store.dispatch('setSystemStatus', { text: message, color: 'warning', timeout: 1500 });
     },
 
     composeData(flowData, anomalyData, lcmData, direction) {
@@ -266,7 +262,7 @@ export default {
       };
 
       const lcm = this.createLCMCurve(lcmData.curve);
-      const flow = this.createTrafficFlowPoints('Flow Data', flowData, 'rgba(0, 0, 255, .8)', tooltip);
+      const flow = this.createTrafficFlowPoints('Flow Data', flowData, 'rgba(0, 200, 0, 0.5)', tooltip);
       const criticalPoint = this.createCriticalPoint([lcmData.Vc, lcmData.vc]);
       const anchorPoint = this.createAnchorPoint([lcmData.Va, lcmData.va]);
 
@@ -282,12 +278,12 @@ export default {
         series.push(anomaly);
       }
 
-      const xplotlines = this.createXPlotLines(lcmData.Vc, `Critical Volume (${lcmData.Vc})`);
+      const xplotlines = this.createXPlotLines(lcmData.Vc, `Critical Volume (${lcmData.Vc})`, 'grey');
       const titles = [
         `Free Flow Speed (${Math.floor(lcmData.vf * 10) / 10} mph)`,
         `Critical Speed (${lcmData.vc} mph)`
       ];
-      const yplotlines = this.createYPlotLines([lcmData.vf, lcmData.vc], titles);
+      const yplotlines = this.createYPlotLines([lcmData.vf, lcmData.vc], titles, 'grey');
 
       const title = `LCM ( ${direction} )`;
       const xAxis = 'Volume (vehicle count/5 min)';
@@ -307,7 +303,7 @@ export default {
         },
         lineWidth: 3,
         shadow: false,
-        color: 'rgba(0, 200, 0, 0.5)',
+        color: 'rgba(0, 200, 255, 0.5)',
         enableMouseTracking: false
       };
     },
@@ -332,7 +328,7 @@ export default {
         zoomType: 'xy',
         name: 'Anchor Point',
         data: [point],
-        color: 'cyan',
+        color: 'orange',
         marker: {
           symbol: 'circle',
           radius: 8
@@ -349,7 +345,7 @@ export default {
         color,
         marker: {
           symbol: 'circle',
-          radius: 6
+          radius: 4
         },
         states: {
           hover: {
@@ -370,10 +366,10 @@ export default {
       };
     },
 
-    createXPlotLines(value, title) {
+    createXPlotLines(value, title, color) {
       return [
         {
-          color: 'purple',
+          color: 'blue',
           width: 2,
           value,
           dashStyle: 'Dot',
@@ -384,7 +380,7 @@ export default {
             x: 10,
             y: 150,
             style: {
-              color: 'black',
+              color,
               fontWeight: 'normal'
             }
           }
@@ -392,11 +388,11 @@ export default {
       ];
     },
 
-    createYPlotLines(values, titles) {
+    createYPlotLines(values, titles, color) {
       const result = [];
       for (let i = 0; i < values.length; i++) {
         const item = {
-          color: 'purple',
+          color: 'blue',
           width: 2,
           value: values[i],
           dashStyle: 'Dot',
@@ -406,7 +402,7 @@ export default {
             x: -20,
             y: -10,
             style: {
-              color: 'black',
+              color,
               fontWeight: 'normal'
             }
           }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TitleBar title="Signal Timing" :loading="loading">
+    <TitleBar title="Signal Timing" :loading="loading" :refresh="refreshData">
       <div style="height:30px" class="d-flex justify-space-between align-center mt-2">
         <v-slider
           style="width:250px"
@@ -144,13 +144,16 @@ export default {
     this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
       this.loadPage(darkMode);
     });
+
     this.loadPage(this.$vuetify.theme.dark);
   },
+
   beforeDestroy() {
     if (this.timeId != null) {
       clearInterval(this.timeId);
     }
   },
+
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
@@ -166,6 +169,14 @@ export default {
         this.$refs.mapRef.$mapPromise.then(map => {
           map.setOptions({ styles: MapStyle });
         });
+      }
+    },
+
+    refreshData() {
+      let marker = this.activeMarker;
+      if (marker != null) {
+        let start = this.getStartTime();
+        this.loadAndUpdate(marker, start);
       }
     },
 
@@ -261,7 +272,9 @@ export default {
 
     updateTimePicker(currentTime) {
       const time = Utils.formatTimeToMinutes(currentTime);
-      this.$refs.timePicker.setTime(time);
+      if (this.$refs.timePicker) {
+        this.$refs.timePicker.setTime(time);
+      }
     },
 
     updateTimeControl(currentTime) {
@@ -319,6 +332,7 @@ export default {
         this.updateTime(time);
       }, interval);
     },
+
     ...mapActions('hr', ['fetchTiming'])
   }
 };

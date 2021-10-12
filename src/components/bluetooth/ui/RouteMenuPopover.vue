@@ -1,11 +1,6 @@
 <template>
   <div>
-    <v-menu
-      v-model="menu"
-      :close-on-content-click="false"
-      :nudge-width="200"
-      offset-x
-    >
+    <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-x>
       <template v-slot:activator="{ on, attrs }">
         <v-badge
           color="grey"
@@ -59,15 +54,14 @@
 export default {
   data: () => ({
     search: null,
-    menu: false,
+    menu: false
   }),
   methods: {
     clearAll() {
-      this.$store.state.bluetooth.selectedRoutes = []
-    },
-  },
+      this.$store.state.bluetooth.selectedRoutes = [];
+    }
+  }
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

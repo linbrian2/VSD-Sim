@@ -132,13 +132,13 @@ export default {
             this.baseIndex += 10;
           } else {
             //console.log(response.data.message);
-            this.$store.dispatch('hr/setSystemStatus', { text: response.data.message, timeout: 0, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, timeout: 0, color: 'error' });
           }
           this.loading = false;
         });
       } catch (error) {
         //console.log(error);
-        this.$store.dispatch('hr/setSystemStatus', { text: error, timeout: 0, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
       }
     }
   }

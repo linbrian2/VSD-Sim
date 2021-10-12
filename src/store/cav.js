@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 const state = {
   socket: {
     isConnected: false,
@@ -5,8 +7,6 @@ const state = {
     reconnectError: false
   },
   currentGPS: null,
-  //
-  snackbar: {},
   position: {
     lat: 39.084,
     lng: -77.1528
@@ -27,8 +27,8 @@ const state = {
   playbackSpeed: 10,
 
   currentUpdates: [],
-  liveCars: [],
-}
+  liveCars: []
+};
 
 const mutations = {
   SOCKET_ONOPEN(state, event) {
@@ -62,7 +62,7 @@ const mutations = {
         }
       }
       // eslint-disable-next-line no-empty
-    } catch (e) { }
+    } catch (e) {}
   },
   SOCKET_RECONNECT(state, count) {
     console.info(state, count);
@@ -72,10 +72,6 @@ const mutations = {
   },
   SET_GPS_POSITION(state, pos) {
     state.currentGPS = pos;
-  },
-  //
-  SET_SNACK_BAR(state, snackbar) {
-    state.snackbar = snackbar;
   },
   SET_POSITION(state, pos) {
     state.position = pos;
@@ -127,8 +123,8 @@ const mutations = {
   },
   UPDATE_LIVE_CAR(state, { vm, index, car }) {
     vm.$set(state.liveCars, index, car);
-  },
-}
+  }
+};
 
 const actions = {
   WSSendMessage({ state }, message) {
@@ -141,19 +137,12 @@ const actions = {
   },
   WSDisconnect(context, { vm }) {
     vm.$disconnect();
-  },
-  //
-  setSystemStatus({ commit }, status) {
-    let snackbar = { showing: true, color: 'info', timeout: 5000, text: '' };
-    Object.assign(snackbar, status);
-    commit('SET_SNACK_BAR', snackbar);
-  },
-}
-
+  }
+};
 
 export default {
   namespaced: true,
   state: state,
   mutations: mutations,
-  actions: actions,
-}
+  actions: actions
+};

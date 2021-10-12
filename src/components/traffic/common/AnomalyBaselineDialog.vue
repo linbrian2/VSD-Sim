@@ -132,10 +132,10 @@ export default {
             this.treeParams = this.composeDecisionTreeChartParams(deviceId, direction, data.matrix, data.xcategories);
           }
         } else {
-          this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
 
@@ -164,7 +164,7 @@ export default {
 
 <style lang="scss" scoped>
 .mytable table tr {
-  background-color: lightgoldenrodyellow;
+  // background-color: lightgoldenrodyellow;
   border-bottom: none !important;
 }
 </style>

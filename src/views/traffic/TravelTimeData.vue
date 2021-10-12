@@ -40,9 +40,9 @@
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar :title="title" :showId="false" :loading="loading" :refresh="refreshData">
+    <TitleBar :title="title" :showId="false" showUid :loading="loading" :refresh="refreshData">
       <div class="d-flex justify-center align-center">
-        <div style="width:140px;">
+        <div style="width:140px; margin-top: 5px">
           <v-select
             dark
             dense
@@ -251,7 +251,7 @@ export default {
           this.availability.travelSpeed = false;
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -266,7 +266,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'warning' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'warning' });
       }
       return result;
     },

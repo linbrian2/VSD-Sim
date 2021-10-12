@@ -198,7 +198,7 @@ export default {
           this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -213,7 +213,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
       return result;
     },
@@ -224,7 +224,7 @@ export default {
       let yAxis = 'Speed (mph)';
       let data = flowList.speed;
 
-      return { data, xAxis, yAxis, title, min: 0, max: 100 };
+      return { data, xAxis, yAxis, title, ymin: 0, ymax: 100 };
     },
 
     formVolumeData(flowList) {

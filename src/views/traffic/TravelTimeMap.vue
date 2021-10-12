@@ -266,7 +266,7 @@ export default {
           this.$refs.mapSegments.setCenterMap();
         }, 1000);
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -281,7 +281,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
       return result;
     },

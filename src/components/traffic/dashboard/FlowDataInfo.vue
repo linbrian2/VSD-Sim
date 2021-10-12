@@ -112,13 +112,7 @@
         </v-col>
         <v-col cols="12">
           <div class="mx-4">
-            <v-btn
-              outlined
-              v-for="id in cameraIds"
-              :key="id"
-              @click.stop="playVideo(id)"
-              class="mr-5"
-            >
+            <v-btn outlined v-for="id in cameraIds" :key="id" @click.stop="playVideo(id)" class="mr-5">
               <v-icon left color="warning">
                 mdi-camera
               </v-icon>
@@ -240,7 +234,7 @@ export default {
         }
       } catch (error) {
         console.log(error);
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -257,7 +251,7 @@ export default {
       } else {
         console.log(response);
         console.log(response.data.message);
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
       return result;
     },

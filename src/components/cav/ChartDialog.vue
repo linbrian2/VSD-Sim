@@ -1,8 +1,8 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" persistent max-width="1000px">
+    <v-dialog v-model="show" persistent max-width="1100px">
       <v-card>
-        <v-app-bar color="#009688" dark dense>
+        <v-app-bar dark dense>
           <v-icon class="mt-n1 mr-2">mdi-chart-line</v-icon>
           <v-toolbar-title>{{ title }} </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -10,9 +10,9 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-app-bar>
-        <v-container style="width: 960px; height:600px">
+        <div style="width: 1100px; height:600px">
           <BasicChart :data="data" :height="height" />
-        </v-container>
+        </div>
       </v-card>
     </v-dialog>
   </v-row>
@@ -32,7 +32,7 @@ export default {
   data: () => ({
     title: '',
     data: {},
-    height: 550
+    height: 600
   }),
 
   computed: {

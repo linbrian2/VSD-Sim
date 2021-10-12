@@ -388,7 +388,7 @@ export default {
     return result;
   },
   toTitleCase(str) {
-    return str.replace(/\w\S*/g, function (txt) {
+    return str.replace(/\w\S*/g, function(txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   },
@@ -429,11 +429,11 @@ export default {
   // leading edge, instead of the trailing.
   debounce(func, wait, immediate) {
     var timeout;
-    return function () {
+    return function() {
       var context = this,
         args = arguments;
       clearTimeout(timeout);
-      timeout = setTimeout(function () {
+      timeout = setTimeout(function() {
         timeout = null;
         if (!immediate) func.apply(context, args);
       }, wait);
@@ -480,79 +480,101 @@ export default {
   },
   getNow() {
     const date = new Date();
-    return date.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      hour12: true,
+    return date.toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true
     });
   },
   getStrokeColor(level) {
-    var color = "#808080";
+    var color = '#808080';
     switch (level) {
       case 0:
-        color = "#0000FF";
+        color = '#0000FF';
         break;
       case 1:
-        color = "#339900";
+        color = '#339900';
         break;
       case 2:
-        color = "#00FF33";
+        color = '#00FF33';
         break;
       case 3:
-        color = "#D7DF01";
+        color = '#D7DF01';
         break;
       case 4:
-        color = "#FFCC55";
+        color = '#FFCC55';
         break;
       case 5:
-        color = "#FF6600";
+        color = '#FF6600';
         break;
       case 6:
-        color = "#FF0000";
+        color = '#FF0000';
         break;
     }
     return color;
   },
   deepCopy(data) {
-    return JSON.parse(JSON.stringify(data))
+    return JSON.parse(JSON.stringify(data));
   },
   downloadJSON(fileName, data) {
-    const stringify = require("json-stringify-pretty-compact");
+    const stringify = require('json-stringify-pretty-compact');
     let dataJSON = stringify(data, null, 2);
-    var a = document.createElement("a");
-    var file = new Blob([dataJSON], { type: "application/json" });
+    var a = document.createElement('a');
+    var file = new Blob([dataJSON], { type: 'application/json' });
     a.href = URL.createObjectURL(file);
     a.download = `${fileName}.json`;
     a.click();
   },
   parseArrStr(data) {
-    if (data == "[]")
-      return []
-    var dataSet = []
+    if (data == '[]') return [];
+    var dataSet = [];
     var tempArr = data
-      .replace("[", "")
-      .replace("]", "")
-      .replace(" ", "")
-      .split(",");
+      .replace('[', '')
+      .replace(']', '')
+      .replace(' ', '')
+      .split(',');
     for (var i = 0; i < tempArr.length; i++) {
       dataSet[i] = parseFloat(tempArr[i]);
     }
-    return dataSet
+    return dataSet;
   },
 
   getUniqueKeyValues(data, key) {
-    return data.map(item => item[key])
-      .filter((value, index, self) => self.indexOf(value) === index)
+    return data.map(item => item[key]).filter((value, index, self) => self.indexOf(value) === index);
   },
 
   formatXX(val) {
     if (val == 0) {
-      return "00";
+      return '00';
     } else if (val < 10) {
-      return "0" + val;
+      return '0' + val;
     } else {
       return val;
     }
   },
+
+  toggleFullScreen() {
+    let doc = window.document;
+    let docEl = doc.documentElement;
+
+    let requestFullScreen =
+      docEl.requestFullscreen ||
+      docEl.mozRequestFullScreen ||
+      docEl.webkitRequestFullScreen ||
+      docEl.msRequestFullscreen;
+    let cancelFullScreen =
+      doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+    if (
+      !doc.fullscreenElement &&
+      !doc.mozFullScreenElement &&
+      !doc.webkitFullscreenElement &&
+      !doc.msFullscreenElement
+    ) {
+      requestFullScreen.call(docEl);
+    } else {
+      cancelFullScreen.call(doc);
+    }
+  }
 };

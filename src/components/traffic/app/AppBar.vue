@@ -1,7 +1,10 @@
 <template>
   <div>
     <v-app-bar app dark flat dense :clipped-left="!isDashboard" :clipped-right="isDashboard" color="black">
-      <NavigationDropdown />
+
+      <v-btn icon @click.stop="showDrawer">
+        <v-icon>mdi-view-grid-outline</v-icon>
+      </v-btn>
 
       <div class="d-flex align-center">
         <router-link to="/">
@@ -19,7 +22,7 @@
 
       <v-spacer></v-spacer>
       <div v-if="!isDashboard">
-        <MenuDatePicker :date="currentDate" @setdate="dateSelected" />
+        <MenuDatePicker :date="currentDate" @prev="prevDate" @next="nextDate" @setdate="dateSelected" />
       </div>
 
       <v-spacer></v-spacer>
@@ -85,8 +88,6 @@
         </v-tooltip>
       </div>
 
-      <LoggedInUser v-if="user.name" :user="user" />
-
       <!-- notification -->
       <v-divider vertical class="ml-2" />
       <v-menu offset-y origin="center center" class="elelvation-1" transition="scale-transition">
@@ -106,9 +107,10 @@
         <IncidentNotificationList v-show="getNotification.length > 0" :items="getNotification" />
       </v-menu>
 
-      <v-divider vertical />
+      <LoggedInUser v-if="user" :user="user" />
 
-      <!-- <div v-show="$vuetify.breakpoint.smAndDown"> -->
+      <v-divider vertical class="ml-2" />
+
       <div>
         <v-menu bottom right offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -118,21 +120,31 @@
           </template>
 
           <v-list>
-            <v-list-item v-for="(item, i) in menu_items" :key="i" @click="menuItemClicked(i)">
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
+            <template v-for="(item, index) in menu_items">
+              <v-divider v-if="item.divider" :key="index"></v-divider>
+              <v-list-item v-else :key="index" @click="menuItemClicked(item.action)">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
+            </template>
           </v-list>
         </v-menu>
       </div>
     </v-app-bar>
+
+    <NavDrawer />
+    <SnackBar />
+    <FlowChartDialog v-model="showFlowChart" />
   </div>
 </template>
 
 <script>
-import NavigationDropdown from '@/components/NavigationDropdown'
+import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
-import MenuDatePicker from '@/components/traffic/app/MenuDatePicker';
-import LoggedInUser from '@/components/traffic/app/LoggedInUser';
+import MenuDatePicker from '@/components/common/MenuDatePicker';
+import NavDrawer from '@/components/nav/NavDrawer';
+import LoggedInUser from '@/components/common/LoggedInUser';
+import SnackBar from '@/components/common/SnackBar';
+import FlowChartDialog from '@/components/traffic/app/FlowChartDialog';
 import IncidentNotificationList from '@/components/traffic/dashboard/IncidentNotificationList';
 import { mapState, mapGetters } from 'vuex';
 import Highcharts from 'highcharts';
@@ -142,32 +154,21 @@ export default {
   props: ['drawer'],
 
   components: {
-    NavigationDropdown,
     LoggedInUser,
     MenuDatePicker,
+    NavDrawer,
+    SnackBar,
+    FlowChartDialog,
     IncidentNotificationList
   },
 
   data: () => ({
     title: 'Traffic Flow Data',
     menu_items: [
-      { title: 'Dashboard' },
-      { title: 'Traffic Flow' },
-      { title: 'Traffic Prediction' },
-      { title: 'Anomaly Map' },
-      { title: 'Weather Data' },
-      { title: 'Travel Time Data' },
-      { title: 'Combined Anomaly Map' },
-      { title: 'Historical Incidents' },
-      { title: 'Toggle Dark Mode' }
-    ],
-    app_menu_items: [
-      { title: 'Traffic Flow Data', url: '/flow' },
-      { title: 'High Resolution Data', url: '/hr' },
-      { title: 'Machine Vision on Traffic Cameras', url: '/vision' },
-      { title: 'Bluetooth and Waze Data', url: '/bluetooth' },
-      { title: 'CAV Data', url: '/cav' },
-      { title: 'Health Monitoring', url: '/status' }
+      { title: 'Combined Anomaly Map', action: 6 },
+      { divider: true },
+      { title: 'Toggle Dark Mode', action: 8 },
+      { title: 'Toggle Fullscreen', action: 9 }
     ],
 
     chart_menu_items: [
@@ -178,6 +179,7 @@ export default {
       { divider: true },
       { title: 'Traffic LCM', action: Constants.PAGE_LCM }
     ],
+
     anomaly_menu_items: [
       { title: 'Traffic Flow Map', action: Constants.PAGE_ANOMALY },
       { title: 'Travel Time Map', action: Constants.PAGE_TRAVEL_TIME_MAP },
@@ -191,33 +193,32 @@ export default {
     },
 
     isDashboard() {
-      return this.currentAction == Constants.PAGE_DASHBOARD;
+      return this.$route.name === 'TrafficDashboard';
     },
 
     user() {
-      const name = this.currentUser['X-Auth-Name'];
-      const email = this.currentUser['X-Auth-Email'];
-      return { name, email };
+      return this.$store.state.auth.user;
     },
 
-    ...mapState('traffic', ['currentUser', 'activeMarker', 'currentAction', 'currentDate']),
+    ...mapState('traffic', ['currentAction', 'currentDate', 'showFlowChart']),
     ...mapGetters('traffic', ['getNotification'])
   },
 
   mounted() {
-    this.$vuetify.theme.dark = this.$store.state.darkMode
-    this.setHCTheme(this.$store.state.darkMode)
+    this.$vuetify.theme.dark = this.$store.state.darkMode;
+    this.setHCTheme(this.$store.state.darkMode);
   },
 
   methods: {
     setHCTheme(darkMode) {
       if (darkMode == true) {
-        Highcharts.theme = ChartStyles.getDarkTheme()
+        Highcharts.theme = ChartStyles.getDarkTheme();
       } else {
-        Highcharts.theme = ChartStyles.getLightTheme()
+        Highcharts.theme = ChartStyles.getLightTheme();
       }
-      Highcharts.setOptions(Highcharts.theme)
+      Highcharts.setOptions(Highcharts.theme);
     },
+
     color(name) {
       if (name === this.currentAction) {
         return 'orange';
@@ -232,8 +233,20 @@ export default {
       }
     },
 
+    showDrawer() {
+      this.$store.commit('SHOW_DRAWER', true);
+    },
+
     dateSelected(date) {
       this.$store.commit('traffic/SET_CURRENT_DATE', date);
+    },
+
+    prevDate() {
+      this.$store.dispatch('traffic/incCurrentDate', -1);
+    },
+
+    nextDate() {
+      this.$store.dispatch('traffic/incCurrentDate', 1);
     },
 
     setCurrentAction(action) {
@@ -319,6 +332,9 @@ export default {
         case 8:
           this.toggleDarkMode();
           break;
+        case 9:
+          Utils.toggleFullScreen();
+          break;
       }
     },
 
@@ -362,13 +378,13 @@ export default {
       setTimeout(() => {
         this.performTask(action);
       }, 100);
-    },
+    }
   },
-  
+
   watch: {
     '$store.state.darkMode'(darkMode) {
       this.$vuetify.theme.dark = darkMode;
-      this.setHCTheme(darkMode)
+      this.setHCTheme(darkMode);
       this.$bus.$emit('UPDATE_DARK_MODE', darkMode);
     }
   }

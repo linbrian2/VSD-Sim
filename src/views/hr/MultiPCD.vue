@@ -2,7 +2,7 @@
   <div>
     <LoadingProgress :loading="loading" color="green accent-4" />
     <v-card>
-      <v-toolbar dark color="success" dense flat fixed overflow extension-height="0">
+      <v-toolbar dark color="#607C8A" dense flat fixed overflow extension-height="0">
         <v-toolbar-title>
           <v-btn icon @click="goBack">
             <v-icon dark>mdi-format-columns</v-icon>
@@ -11,7 +11,7 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn small outlined class="mt-1" color="white" @click.stop="selectSignals">
-          <v-icon left color="red accent-3">mdi-source-branch </v-icon>
+          <v-icon left color="green accent-3">mdi-source-branch </v-icon>
           <span> Select Intersections </span>
         </v-btn>
         <v-spacer></v-spacer>
@@ -75,9 +75,14 @@ export default {
   },
 
   mounted() {
-    this.initPanelState = this.$store.state.hr.showPanel;
-    this.$store.commit('hr/SHOW_PANEL', false);
-    //this.$store.commit('hr/SET_CURRENT_ACTION', 'multi');
+    setTimeout(() => {
+      this.initPanelState = this.$store.state.hr.showPanel;
+      this.$store.commit('hr/SHOW_PANEL', false);
+    }, 100);
+
+    setTimeout(() => {
+      this.selectSignals();
+    }, 1500);
   },
 
   beforeDestroy() {
@@ -118,13 +123,13 @@ export default {
           if (response.data.status === 'OK') {
             this.preparePCDData(response.data.data);
           } else {
-            this.$store.dispatch('hr/setSystemStatus', { text: response.data.message, timeout: 0, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, timeout: 0, color: 'error' });
           }
           this.loading = false;
         },
         error => {
           //console.log(error);
-          this.$store.dispatch('hr/setSystemStatus', { text: error, timeout: 0, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
         }
       );
     },

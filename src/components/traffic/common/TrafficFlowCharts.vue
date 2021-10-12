@@ -160,7 +160,7 @@ export default {
         this.availability.volume = volumeAvailability;
         this.availability.occupancy = occupancyAvailability;
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
 
       if (!this.availability.speed) {
@@ -188,7 +188,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'warning' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'warning' });
       }
       return result;
     },
@@ -202,7 +202,7 @@ export default {
       data.push({ name: 'Actual', color: '#ED561B', data: flowList.speed });
       data.push({ name: 'Baseline', color: '#50B432', data: flowList.baselineSpeed });
 
-      return { data, xAxis, yAxis, title, min: 0, max: 100 };
+      return { data, xAxis, yAxis, title, ymin: 0, ymax: 100 };
     },
 
     formVolumeData(flowList) {

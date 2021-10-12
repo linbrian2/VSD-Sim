@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-app-bar app dark flat dense clipped-left color="black">
-      <NavigationDropdown />
+      <v-btn icon @click.stop="showDrawer">
+        <v-icon>mdi-view-grid-outline</v-icon>
+      </v-btn>
 
       <div class="d-flex align-center">
         <router-link to="/">
@@ -18,35 +20,9 @@
       <v-toolbar-title v-show="$vuetify.breakpoint.mdAndUp">{{ title }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
+
       <div v-if="!isDashboard">
-        <v-menu
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          :return-value.sync="date"
-          transition="scale-transition"
-          offset-y
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              hide-details
-              v-model="dateFormatted"
-              label=""
-              readonly
-              v-on="on"
-              style="width: 280px; color:grey;"
-            >
-              <template v-slot:prepend>
-                <v-icon class="mt-1" color="grey">mdi-calendar-month</v-icon>
-              </template>
-            </v-text-field>
-          </template>
-          <v-date-picker v-model="date" :allowed-dates="allowedDates" no-title scrollable color="green lighten-1">
-            <v-spacer></v-spacer>
-            <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-            <v-btn text color="primary" @click="dateSelected">OK</v-btn>
-          </v-date-picker>
-        </v-menu>
+        <MenuDatePicker :date="currentDate" @prev="prevDate" @next="nextDate" @setdate="dateSelected" />
       </div>
 
       <v-spacer></v-spacer>
@@ -88,7 +64,11 @@
           <span>Performance Measures</span>
         </v-tooltip>
       </div>
-      <v-divider vertical />
+
+      <LoggedInUser v-if="user" :user="user" />
+
+      <v-divider vertical class="ml-2" />
+
       <div>
         <v-menu bottom right offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -105,20 +85,30 @@
         </v-menu>
       </div>
     </v-app-bar>
+
+    <NavDrawer />
+    <SnackBar />
   </div>
 </template>
 
 <script>
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/hr';
-import NavigationDropdown from '@/components/NavigationDropdown'
+import MenuDatePicker from '@/components/common/MenuDatePicker';
+import NavDrawer from '@/components/nav/NavDrawer';
+import SnackBar from '@/components/common/SnackBar';
+import LoggedInUser from '@/components/common/LoggedInUser';
 import { mapState } from 'vuex';
 
 export default {
   props: ['drawer'],
   components: {
-    NavigationDropdown,
+    LoggedInUser,
+    MenuDatePicker,
+    NavDrawer,
+    SnackBar
   },
+
   data: () => ({
     date: Utils.formatDate(Utils.yesterday()),
     title: 'High Resolution Data',
@@ -152,7 +142,11 @@ export default {
     },
 
     isDashboard() {
-      return this.currentAction == Constants.PAGE_DASHBOARD;
+      return this.$route.name === 'HRDashboard';
+    },
+
+    user() {
+      return this.$store.state.auth.user;
     },
 
     showSelectionDlg: {
@@ -173,6 +167,10 @@ export default {
   },
 
   methods: {
+    showDrawer() {
+      this.$store.commit('SHOW_DRAWER', true);
+    },
+
     isMobile() {
       return this.$vuetify.breakpoint.xsOnly;
     },
@@ -184,10 +182,19 @@ export default {
       let date1 = Utils.getTodayNumber();
       return date0 <= date1;
     },
-    dateSelected() {
-      this.$refs.menu.save(this.date);
-      this.$store.commit('hr/SET_CURRENT_DATE', Utils.dateFromString(this.date));
+
+    dateSelected(date) {
+      this.$store.commit('hr/SET_CURRENT_DATE', date);
     },
+
+    prevDate() {
+      this.$store.dispatch('hr/incCurrentDate', -1);
+    },
+
+    nextDate() {
+      this.$store.dispatch('hr/incCurrentDate', 1);
+    },
+
     setCurrentAction(action) {
       this.$store.commit('hr/SET_CURRENT_ACTION', action);
     },
@@ -208,7 +215,7 @@ export default {
     },
     showPerformanceMeasures() {
       this.setCurrentAction(Constants.PAGE_PREF);
-      this.$router.push({ path: '/hr/pref' }).catch(() => {});
+      this.$router.push({ path: '/hr/measures' }).catch(() => {});
     },
     showCooridorPCDCharts() {
       this.setCurrentAction(Constants.PAGE_MULTI_PCD);
@@ -237,6 +244,6 @@ export default {
     toggleDarkMode() {
       this.$store.dispatch('saveDarkMode', !this.$vuetify.theme.dark);
     }
-  },
+  }
 };
 </script>

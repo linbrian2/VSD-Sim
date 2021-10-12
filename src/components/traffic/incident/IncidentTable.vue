@@ -29,7 +29,9 @@
       <v-chip color="success" outlined style="width:150px;">{{ item.shortName }}</v-chip>
     </template>
     <template v-slot:[`item.severity`]="{ item }">
-      <v-chip small :color="item.severityColor">{{ item.severity }}</v-chip>
+      <v-chip small :color="item.severityColor"
+        ><strong class="black--text">{{ item.severity }}</strong></v-chip
+      >
     </template>
 
     <template v-slot:[`item.route`]="{ item }">
@@ -149,6 +151,6 @@ export default {
 }
 
 .table_tr_selected {
-    background-color: #a9a9a9;
+  background-color: #a9a9a9;
 }
 </style>

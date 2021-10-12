@@ -82,7 +82,7 @@ export default {
         this.clearDataSet(this.heatMapData1);
         this.heatMapData1 = this.parseResponse(set2, startTime, '19951', 'SB');
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -112,7 +112,7 @@ export default {
           result.interval = 300;
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
       return result;
     },

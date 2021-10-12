@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-card-title>
-         Waze Alerts
+        Waze Alerts
         <div class="middle-header">
           <v-text-field
             dense
@@ -36,11 +36,7 @@
             </template>
           </v-text-field>
         </div>
-        <v-btn
-          icon
-          class="close-button mr-4"
-          @click="$store.state.bluetooth.dialog.wazeAlerts = false"
-        >
+        <v-btn icon class="close-button mr-4" @click="$store.state.bluetooth.dialog.wazeAlerts = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -62,12 +58,7 @@
           <template v-slot:[`item.actions`]="{ item }">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  small
-                  class="mr-2"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="viewItem(item)"
+                <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="viewItem(item)"
                   >mdi-arrow-right-bold</v-icon
                 >
               </template>
@@ -81,111 +72,104 @@
 </template>
 
 <script>
-import Utils from "@/utils/Utils";
-import { DateTime } from "luxon";
+import Utils from '@/utils/Utils';
+import { DateTime } from 'luxon';
 
 export default {
   data() {
     return {
-      wazeSearch: "",
+      wazeSearch: '',
       fullDayToggle: false,
-      menuItems: [
-        { title: 'Print JSON' },
-        { title: 'Download JSON' },
-        { title: 'Toggle Full Day Data' },
-      ],
-    }
+      menuItems: [{ title: 'Print JSON' }, { title: 'Download JSON' }, { title: 'Toggle Full Day Data' }]
+    };
   },
   methods: {
     menuItemClicked(idx) {
       if (idx == 0) {
-        console.log("this.wazeAlerts\n%o", this.wazeAlerts);
-        let notifText = 'Check console for info.'
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' } )
-      }
-      else if (idx == 1) {
-        let dt = DateTime.now().setZone("America/New_York")
-        let dtStr = dt.toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS).replaceAll('/', '-').replaceAll(',', '')
-        let fileName = `Waze Alerts (${dtStr})`
+        console.log('this.wazeAlerts\n%o', this.wazeAlerts);
+        let notifText = 'Check console for info.';
+        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
+      } else if (idx == 1) {
+        let dt = DateTime.now().setZone('America/New_York');
+        let dtStr = dt
+          .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
+          .replaceAll('/', '-')
+          .replaceAll(',', '');
+        let fileName = `Waze Alerts (${dtStr})`;
         console.log(fileName);
-        Utils.downloadJSON(fileName, this.wazeAlerts)
-      }
-      else if (idx == 2) {
-        this.fullDayToggle = !this.fullDayToggle
+        Utils.downloadJSON(fileName, this.wazeAlerts);
+      } else if (idx == 2) {
+        this.fullDayToggle = !this.fullDayToggle;
       }
     },
     viewItem(item) {
-      this.$bus.$emit('GO_TO_MARKER_LOCATION', item.data, "waze")
-      this.$store.state.bluetooth.dialog.wazeAlerts = false
+      this.$bus.$emit('GO_TO_MARKER_LOCATION', item.data, 'waze');
+      this.$store.state.bluetooth.dialog.wazeAlerts = false;
     }
   },
   computed: {
     wazeAlerts() {
-      let wazeAlerts = this.$store.state.bluetooth.apiData.waze
-      if (wazeAlerts)
-        return wazeAlerts
-      else 
-        return []
+      let wazeAlerts = this.$store.state.bluetooth.apiData.waze;
+      if (wazeAlerts) return wazeAlerts;
+      else return [];
     },
     wazeAlertsFull() {
-      let wazeAlerts = this.$store.state.bluetooth.apiData.wazeFull
-      if (wazeAlerts)
-        return wazeAlerts
-      else 
-        return []
+      let wazeAlerts = this.$store.state.bluetooth.apiData.wazeFull;
+      if (wazeAlerts) return wazeAlerts;
+      else return [];
     },
     wazeHeaders() {
       if (this.wazeAlerts) {
         let headers = [
-          { text: "Id", value: "id", align: "start" },
-          { text: 'Alert Time', value: "time"},
-          { text: "Description", value: "desc"},
-          { text: "County", value: "county"},
-          { text: "City", value: "city"},
-          { text: "Street", value: "street"},
-          { text: "Road Type", value: "roadType"},
-          { text: "Actions", value: "actions", sortable: false },
-        ]
-        return headers
+          { text: 'Id', value: 'id', align: 'start' },
+          { text: 'Alert Time', value: 'time' },
+          { text: 'Description', value: 'desc' },
+          { text: 'County', value: 'county' },
+          { text: 'City', value: 'city' },
+          { text: 'Street', value: 'street' },
+          { text: 'Road Type', value: 'roadType' },
+          { text: 'Actions', value: 'actions', sortable: false }
+        ];
+        return headers;
       } else {
-        return null
+        return null;
       }
     },
     wazeItems() {
-      let wazeData = null
+      let wazeData = null;
       if (this.fullDayToggle) {
-        wazeData = this.wazeAlertsFull
+        wazeData = this.wazeAlertsFull;
       } else {
-        wazeData = this.wazeAlerts
+        wazeData = this.wazeAlerts;
       }
       if (wazeData) {
-        let items = []
+        let items = [];
         wazeData.forEach((w, i) => {
           /* console.log(w.address); */
           items.push({
             id: i + 1,
             time: w.alertTime.slice(0, w.alertTime.length - 2),
-            county: w.address.county ? w.address.county : "-",
-            city: w.address.city ? w.address.city : "-",
-            street: w.address.street ? w.address.street : "-",
-            desc: w.description ? w.description : "No description",
+            county: w.address.county ? w.address.county : '-',
+            city: w.address.city ? w.address.city : '-',
+            street: w.address.street ? w.address.street : '-',
+            desc: w.description ? w.description : 'No description',
             roadType: w.roadType.name,
-            data: w,
-          })
+            data: w
+          });
         });
-        return items
+        return items;
       } else {
-        return null
+        return null;
       }
     }
-  },
+  }
 };
 </script>
 
 <style>
-  .middle-header {
-    text-align: center;
-    margin: 0 auto;
-    padding-right: 60px;
-  }
+.middle-header {
+  text-align: center;
+  margin: 0 auto;
+  padding-right: 60px;
+}
 </style>

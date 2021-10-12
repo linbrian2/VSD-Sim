@@ -3,21 +3,33 @@
     <!-- Toggle Button -->
     <v-tooltip bottom>
       <template v-slot:activator="{ on, attrs }">
-        <v-btn small v-bind="attrs" v-on="on" @click="playbackOpen = !playbackOpen" 
-               style="position: absolute; top: 10px; right:10px; height:40px;">
+        <v-btn
+          small
+          v-bind="attrs"
+          v-on="on"
+          @click="playbackOpen = !playbackOpen"
+          style="position: absolute; top: 10px; right:10px; height:40px;"
+        >
           <v-icon>mdi-map-clock-outline</v-icon>
         </v-btn>
       </template>
-      <span>{{playbackOpen ? "Close Timeline Playback" : "Open Timeline Playback"}}</span>
+      <span>{{ playbackOpen ? 'Close Timeline Playback' : 'Open Timeline Playback' }}</span>
     </v-tooltip>
     <v-scroll-x-reverse-transition>
       <v-toolbar dense floating height="40" style="position: absolute; top: 60px; right:10px; " v-show="playbackOpen">
         <v-chip small outlined class="ma-2 overline" :disabled="playState == 'stop'">
-          {{timeStr}}
+          {{ timeStr }}
         </v-chip>
 
-        <v-slider v-model="progress" class="mt-6" style="width: 160px" min="0" :max="max" 
-                  :loading="!fullDayDataDone" :disabled="!fullDayDataDone"></v-slider>
+        <v-slider
+          v-model="progress"
+          class="mt-6"
+          style="width: 160px"
+          min="0"
+          :max="max"
+          :loading="!fullDayDataDone"
+          :disabled="!fullDayDataDone"
+        ></v-slider>
 
         <v-menu bottom right offset-y>
           <template v-slot:activator="{ on: menu, attrs }">
@@ -52,12 +64,21 @@
       </v-toolbar>
     </v-scroll-x-reverse-transition>
     <v-scroll-x-reverse-transition>
-      <v-toolbar dense floating height="40" style="position: absolute; top: 10px; right:70px; " v-show="playbackOpen" loading>
+      <v-toolbar
+        dense
+        floating
+        height="40"
+        style="position: absolute; top: 10px; right:70px; "
+        v-show="playbackOpen"
+        loading
+      >
         <div>
           Timeline Data availability:
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon color="green" class="pr-1" v-bind="attrs" v-on="on" :disabled="!segmentsFull">mdi-vector-line</v-icon>
+              <v-icon color="green" class="pr-1" v-bind="attrs" v-on="on" :disabled="!segmentsFull"
+                >mdi-vector-line</v-icon
+              >
             </template>
             <span>Segment Data - Full Day</span>
           </v-tooltip>
@@ -81,8 +102,8 @@
 
 <script>
 import { mapState } from 'vuex';
-import { DateTime } from "luxon"
-import Utils from "@/utils/Utils";
+import { DateTime } from 'luxon';
+import Utils from '@/utils/Utils';
 export default {
   props: ['entities'],
   data: () => ({
@@ -110,44 +131,46 @@ export default {
       { title: '1x', value: 1 }
     ]
   }),
-  beforeDestroy () {
-    clearInterval(this.playbackInterval)
-    clearInterval(this.timeInterval)
-    if (this.$store.state.bluetooth.playState == "play" || this.$store.state.bluetooth.playState == "resume") {
-        this.playButtonIcon = 'mdi-play';
-        this.$store.commit('bluetooth/SET_PLAY_STATE', 'pause');
+  beforeDestroy() {
+    clearInterval(this.playbackInterval);
+    clearInterval(this.timeInterval);
+    if (this.$store.state.bluetooth.playState == 'play' || this.$store.state.bluetooth.playState == 'resume') {
+      this.playButtonIcon = 'mdi-play';
+      this.$store.commit('bluetooth/SET_PLAY_STATE', 'pause');
     }
   },
   mounted() {
     this.playbackInterval = setInterval(() => {
-      if (this.$store.state.bluetooth.playState == "play" || this.$store.state.bluetooth.playState == "resume") {
-        if (this.progress >= this.max - this.$store.state.bluetooth.playbackSpeed) { /* If End reached */
-          this.progress = this.max
-          this.$bus.$emit('UPDATE_TIMELINE', this.time)
-          this.setPlayStart()
-        } else { /* If in progress */
-          this.progress += this.$store.state.bluetooth.playbackSpeed
-          this.$bus.$emit('UPDATE_TIMELINE', this.time)
+      if (this.$store.state.bluetooth.playState == 'play' || this.$store.state.bluetooth.playState == 'resume') {
+        if (this.progress >= this.max - this.$store.state.bluetooth.playbackSpeed) {
+          /* If End reached */
+          this.progress = this.max;
+          this.$bus.$emit('UPDATE_TIMELINE', this.time);
+          this.setPlayStart();
+        } else {
+          /* If in progress */
+          this.progress += this.$store.state.bluetooth.playbackSpeed;
+          this.$bus.$emit('UPDATE_TIMELINE', this.time);
         }
       }
     }, 1000);
     this.timeInterval = setInterval(() => {
       if (!this.$store.state.bluetooth.modes.historical) {
-        this.endDT = DateTime.local().setZone("America/New_York")
+        this.endDT = DateTime.local().setZone('America/New_York');
       } else {
-        this.endDT = null
+        this.endDT = null;
       }
-    }, 100)
+    }, 100);
 
     this.$bus.$on('PLAY_STOP_BUTTON_PRESSED', () => {
       this.setPlayStop();
-    })
+    });
 
     this.$bus.$on('FETCH_HISTORICAL', dt => {
       setTimeout(() => {
-        this.progress = (dt.hour * 60) + dt.minute
+        this.progress = dt.hour * 60 + dt.minute;
       }, 1000);
-    })
+    });
   },
   methods: {
     speedMenuItemClicked(value) {
@@ -172,66 +195,71 @@ export default {
     setPlayStop() {
       this.playButtonIcon = 'mdi-play';
       this.$store.commit('bluetooth/SET_PLAY_STATE', 'stop');
-      this.$bus.$emit('RESET_TO_SELECTED_TIME', this.$store.state.bluetooth.selectedDatetime)
-    },
+      this.$bus.$emit('RESET_TO_SELECTED_TIME', this.$store.state.bluetooth.selectedDatetime);
+    }
   },
   computed: {
     wazeFull() {
-      let apiData = this.$store.state.bluetooth.apiData
+      let apiData = this.$store.state.bluetooth.apiData;
       if (apiData && apiData.wazeFull && apiData.wazeFull.length > 0) {
-        return apiData.wazeFull
+        return apiData.wazeFull;
       } else {
-        return null
+        return null;
       }
     },
     segmentsFull() {
-      let apiData = this.$store.state.bluetooth.apiData
+      let apiData = this.$store.state.bluetooth.apiData;
       if (apiData && apiData.segmentsFull && apiData.segmentsFull.length > 0) {
-        return apiData.segmentsFull
+        return apiData.segmentsFull;
       } else {
-        return null
+        return null;
       }
     },
     devicesFull() {
-      let apiData = this.$store.state.bluetooth.apiData
+      let apiData = this.$store.state.bluetooth.apiData;
       if (apiData && apiData.devicesFull && apiData.devicesFull.length > 0) {
-        return apiData.devicesFull
+        return apiData.devicesFull;
       } else {
-        return null
+        return null;
       }
     },
     fullDayDataDone() {
-      return (this.wazeFull)
+      return this.wazeFull;
     },
 
     max() {
       if (this.endDT) {
-        let mins = (this.endDT.hour * 60) + this.endDT.minute
-        return mins
+        let mins = this.endDT.hour * 60 + this.endDT.minute;
+        return mins;
       } else {
-        return 1439
+        return 1439;
       }
     },
 
     time() {
-      let selectedDT = this.$store.state.bluetooth.selectedDatetime
+      let selectedDT = this.$store.state.bluetooth.selectedDatetime;
       if (this.progress >= 0 && selectedDT) {
-        let hours = Math.floor(this.progress/60)
-        let mins = this.progress % 60
-        let dt = DateTime.fromObject(
-          {year: selectedDT.getFullYear(), month: selectedDT.getMonth() + 1, day: selectedDT.getDate(), hour: hours, minute: mins, zone: 'America/New_York'}
-        )
-        return dt
+        let hours = Math.floor(this.progress / 60);
+        let mins = this.progress % 60;
+        let dt = DateTime.fromObject({
+          year: selectedDT.getFullYear(),
+          month: selectedDT.getMonth() + 1,
+          day: selectedDT.getDate(),
+          hour: hours,
+          minute: mins,
+          zone: 'America/New_York'
+        });
+        return dt;
       } else {
-        return null
+        return null;
       }
     },
 
     timeStr() {
       if (this.time) {
-        return `${Utils.formatXX(this.time.hour)}:${Utils.formatXX(this.time.minute)}` 
+        return `${Utils.formatXX(this.time.hour)}:${Utils.formatXX(this.time.minute)}`;
       } else {
-        return "-"
+        return '-';
       }
     },
 
@@ -250,7 +278,7 @@ export default {
     },
 
     ...mapState('bluetooth', ['playState', 'currentState', 'currentProgress', 'playbackSpeed'])
-  },
+  }
 };
 </script>
 

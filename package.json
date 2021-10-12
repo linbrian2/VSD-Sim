@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.22.0",
     "core-js": "^2.6.5",
     "date-fns": "^2.24.0",
     "highcharts": "^8.1.2",
@@ -20,9 +20,10 @@
     "node-sass": "^6.0.1",
     "scriptjs": "^2.5.9",
     "spherical-geometry-js": "^3.0.0",
-    "video.js": "^7.8.4",
+    "video.js": "^7.16.0",
     "vue": "^2.6.10",
     "vue-native-websocket": "^2.0.15",
+    "vue-perfect-scrollbar": "^0.2.1",
     "vue-router": "^3.0.3",
     "vue2-gmap-custom-marker": "^5.6.0",
     "vue2-google-maps": "^0.10.7",

@@ -2,8 +2,8 @@
   <div :id="this.containerName" v-if="!reload"></div>
 </template>
 <script>
-import Highcharts from "highcharts";
-import * as HighchartsMore from "highcharts/highcharts-more";
+import Highcharts from 'highcharts';
+import * as HighchartsMore from 'highcharts/highcharts-more';
 import ChartStyles from '@/utils/ChartStyles.js';
 
 //magic
@@ -11,19 +11,19 @@ HighchartsMore(Highcharts);
 
 export default {
   props: [
-    "historicData",
-    "currData",
-    "interval",
-    "minWidth",
-    "height",
-    "title",
-    "subtitle",
-    "containerName",
-    "legendX",
-    "legendY",
-    "multiGraph",
-    "visibility",
-    "legendWidth",
+    'historicData',
+    'currData',
+    'interval',
+    'minWidth',
+    'height',
+    'title',
+    'subtitle',
+    'containerName',
+    'legendX',
+    'legendY',
+    'multiGraph',
+    'visibility',
+    'legendWidth'
   ],
   data: () => ({
     reload: false,
@@ -33,7 +33,7 @@ export default {
     currMinMax: [],
     currQuart: [],
     currMean: [],
-    currMeanAbove75Pctl: [],
+    currMeanAbove75Pctl: []
   }),
   mounted() {
     this.init();
@@ -42,9 +42,9 @@ export default {
     historicData() {
       this.init();
     },
-    "$vuetify.theme.dark"() {
+    '$vuetify.theme.dark'() {
       this.addChart();
-    },
+    }
   },
   methods: {
     init() {
@@ -61,36 +61,28 @@ export default {
       twoHoursBefore.setHours(twoHoursBefore.getHours() - 6);
       var oneHourAfter = new Date(selectedDT.toISOString());
       oneHourAfter.setHours(oneHourAfter.getHours() - 3);
-      console.log("selectedDT: %o", selectedDT);
-      console.log("twoHoursBefore: %o", twoHoursBefore);
-      console.log("oneHourAfter: %o", oneHourAfter);
+      console.log('selectedDT: %o', selectedDT);
+      console.log('twoHoursBefore: %o', twoHoursBefore);
+      console.log('oneHourAfter: %o', oneHourAfter);
 
       var time = new Date(selectedDT.toISOString());
       var index = 0;
       if (this.historicData) {
         for (var i = 0; i < this.historicData.length; i++) {
           var tod = this.historicData[i].timeOfDay;
-          var minutes =
-            parseInt(tod.slice(0, 2)) * 60 + parseInt(tod.slice(3, 5));
+          var minutes = parseInt(tod.slice(0, 2)) * 60 + parseInt(tod.slice(3, 5));
           time.setUTCHours(0, minutes, 0, 0);
-          if (
-            minutes % this.interval == 0 &&
-            time.getTime() >= twoHoursBefore &&
-            time.getTime() <= oneHourAfter
-          ) {
-            this.baseMean[index] = [
-              time.getTime(),
-              this.historicData[i].meanTravelTime,
-            ];
+          if (minutes % this.interval == 0 && time.getTime() >= twoHoursBefore && time.getTime() <= oneHourAfter) {
+            this.baseMean[index] = [time.getTime(), this.historicData[i].meanTravelTime];
             this.baseMinMax[index] = [
               time.getTime(),
               this.historicData[i].minTravelTime,
-              this.historicData[i].maxTravelTime,
+              this.historicData[i].maxTravelTime
             ];
             this.baseQuart[index] = [
               time.getTime(),
               this.historicData[i].pc25TravelTime,
-              this.historicData[i].pc75TravelTime,
+              this.historicData[i].pc75TravelTime
             ];
             index++;
           }
@@ -102,22 +94,10 @@ export default {
           tod = this.currData[j].timeOfDay;
           minutes = parseInt(tod.slice(0, 2)) * 60 + parseInt(tod.slice(3, 5));
           time.setUTCHours(0, minutes, 0, 0);
-          if (
-            minutes % this.interval == 0 &&
-            time >= twoHoursBefore &&
-            time <= oneHourAfter
-          ) {
+          if (minutes % this.interval == 0 && time >= twoHoursBefore && time <= oneHourAfter) {
             this.currMean[index] = [time.getTime(), this.currData[j].meanTT];
-            this.currMinMax[index] = [
-              time.getTime(),
-              this.currData[j].minTT,
-              this.currData[j].maxTT,
-            ];
-            this.currQuart[index] = [
-              time.getTime(),
-              this.currData[j].pctl25TT,
-              this.currData[j].pctl75TT,
-            ];
+            this.currMinMax[index] = [time.getTime(), this.currData[j].minTT, this.currData[j].maxTT];
+            this.currQuart[index] = [time.getTime(), this.currData[j].pctl25TT, this.currData[j].pctl75TT];
             index++;
           }
         }
@@ -132,23 +112,19 @@ export default {
       if (this.historicData) {
         for (var i = 0; i < this.historicData.length; i++) {
           var tod = this.historicData[i].timeOfDay;
-          var minutes =
-            parseInt(tod.slice(0, 2)) * 60 + parseInt(tod.slice(3, 5));
+          var minutes = parseInt(tod.slice(0, 2)) * 60 + parseInt(tod.slice(3, 5));
           if (minutes % this.interval == 0) {
             time.setUTCHours(0, minutes, 0, 0);
-            this.baseMean[index] = [
-              time.getTime(),
-              this.historicData[i].meanTravelTime,
-            ];
+            this.baseMean[index] = [time.getTime(), this.historicData[i].meanTravelTime];
             this.baseMinMax[index] = [
               time.getTime(),
               this.historicData[i].minTravelTime,
-              this.historicData[i].maxTravelTime,
+              this.historicData[i].maxTravelTime
             ];
             this.baseQuart[index] = [
               time.getTime(),
               this.historicData[i].pc25TravelTime,
-              this.historicData[i].pc75TravelTime,
+              this.historicData[i].pc75TravelTime
             ];
             index++;
           }
@@ -163,18 +139,12 @@ export default {
           if (minutes % this.interval == 0) {
             time.setUTCHours(0, minutes, 0, 0);
             this.currMean[index] = [time.getTime(), this.currData[j].meanTT];
-            this.currMeanAbove75Pctl[index] = [
-              time.getTime(),
-              this.currData[j].meanTT,
-            ];
+            this.currMeanAbove75Pctl[index] = [time.getTime(), this.currData[j].meanTT];
             for (; baseIndex < this.baseQuart.length; baseIndex++) {
               if (this.baseQuart[baseIndex][0] == time.getTime()) {
                 var pctl75 = this.baseQuart[baseIndex][2];
                 if (this.currData[j].meanTT > pctl75) {
-                  this.currMeanAbove75Pctl[index] = [
-                    time.getTime(),
-                    this.currData[j].meanTT,
-                  ];
+                  this.currMeanAbove75Pctl[index] = [time.getTime(), this.currData[j].meanTT];
                   baseIndex++;
                   break;
                 } else {
@@ -187,16 +157,8 @@ export default {
                 break;
               }
             }
-            this.currMinMax[index] = [
-              time.getTime(),
-              this.currData[j].minTT,
-              this.currData[j].maxTT,
-            ];
-            this.currQuart[index] = [
-              time.getTime(),
-              this.currData[j].pctl25TT,
-              this.currData[j].pctl75TT,
-            ];
+            this.currMinMax[index] = [time.getTime(), this.currData[j].minTT, this.currData[j].maxTT];
+            this.currQuart[index] = [time.getTime(), this.currData[j].pctl25TT, this.currData[j].pctl75TT];
             index++;
           }
         }
@@ -207,15 +169,15 @@ export default {
       Highcharts.chart(this.containerName, {
         chart: {
           height: this.height ? this.height : 475,
-          zoomType: this.multiGraph ? null : "x",
+          zoomType: this.multiGraph ? null : 'x',
           scrollablePlotArea: {
             minWidth: this.minWidth ? this.minWidth : 600,
-            scrollPositionX: 1,
-          },
+            scrollPositionX: 1
+          }
         },
 
         exporting: {
-          enabled: true,
+          enabled: true
         },
 
         time: {
@@ -223,142 +185,142 @@ export default {
         },
 
         title: {
-          text: this.title,
+          text: this.title
         },
 
         subtitle: {
-          text: this.subtitle,
+          text: this.subtitle
         },
 
         xAxis: {
-          type: "datetime",
+          type: 'datetime',
           crosshair: true,
           accessibility: {
-            rangeDescription: "Range: 12:00AM to 11:59PM",
-          },
+            rangeDescription: 'Range: 12:00AM to 11:59PM'
+          }
         },
 
         yAxis: {
           title: {
-            text: "Travel Time (s)",
-          },
+            text: 'Travel Time (s)'
+          }
         },
 
         tooltip: {
           crosshairs: true,
           shared: true,
-          valueSuffix: "s",
+          valueSuffix: 's'
         },
 
         series: [
           {
-            name: "Baseline Mean",
+            name: 'Baseline Mean',
             data: this.baseMean,
             zIndex: 1,
             color: Highcharts.getOptions().colors[1],
             marker: {
-              enabled: false,
+              enabled: false
             },
             showInLegend: true,
-            visible: this.visibility ? this.visibility[0] : true,
+            visible: this.visibility ? this.visibility[0] : true
           },
           {
-            name: "Baseline 25%/75%",
+            name: 'Baseline 25%/75%',
             data: this.baseQuart,
-            type: "arearange",
+            type: 'arearange',
             lineWidth: 0,
             color: Highcharts.getOptions().colors[4],
             fillOpacity: 0.3,
             zIndex: 3,
             marker: {
-              enabled: false,
+              enabled: false
             },
             showInLegend: true,
-            visible: this.visibility ? this.visibility[2] : true,
+            visible: this.visibility ? this.visibility[2] : true
           },
           {
-            name: "Baseline Min/Max",
+            name: 'Baseline Min/Max',
             data: this.baseMinMax,
-            type: "arearange",
+            type: 'arearange',
             lineWidth: 0,
             color: Highcharts.getOptions().colors[7],
             fillOpacity: 0.3,
             zIndex: 2,
             marker: {
-              enabled: false,
+              enabled: false
             },
             showInLegend: true,
-            visible: this.visibility ? this.visibility[1] : true,
+            visible: this.visibility ? this.visibility[1] : true
           },
           {
-            name: "Current Mean",
+            name: 'Current Mean',
             data: this.currMean,
             zIndex: 1,
             color: Highcharts.getOptions().colors[2],
             marker: {
-              enabled: false,
+              enabled: false
             },
             showInLegend: true,
-            visible: this.visibility ? this.visibility[3] : true,
+            visible: this.visibility ? this.visibility[3] : true
           },
           {
-            name: "Current Mean (>75%)",
+            name: 'Current Mean (>75%)',
             data: this.currMeanAbove75Pctl,
             zIndex: 1,
             lineWidth: 6,
-            linkedTo: ":previous",
+            linkedTo: ':previous',
             color: Highcharts.getOptions().colors[5],
             fillOpacity: 0.3,
             marker: {
-              enabled: false,
+              enabled: false
             },
             visible: this.visibility ? this.visibility[7] : true,
-            enableMouseTracking: false,
+            enableMouseTracking: false
           },
           {
-            name: "Current 25%/75%",
+            name: 'Current 25%/75%',
             data: this.currQuart,
-            type: "arearange",
+            type: 'arearange',
             lineWidth: 0,
             color: Highcharts.getOptions().colors[6],
             fillOpacity: 0.3,
             zIndex: 0,
             marker: {
-              enabled: false,
+              enabled: false
             },
             showInLegend: true,
-            visible: this.visibility ? this.visibility[5] : false,
+            visible: this.visibility ? this.visibility[5] : false
           },
           {
-            name: "Current Min/Max",
+            name: 'Current Min/Max',
             data: this.currMinMax,
-            type: "arearange",
+            type: 'arearange',
             lineWidth: 0,
             color: Highcharts.getOptions().colors[5],
             fillOpacity: 0.3,
             zIndex: 0,
             marker: {
-              enabled: false,
+              enabled: false
             },
             showInLegend: true,
-            visible: this.visibility ? this.visibility[4] : false,
-          },
+            visible: this.visibility ? this.visibility[4] : false
+          }
         ],
 
         credits: {
-          enabled: false,
-        },
+          enabled: false
+        }
       });
     },
     addTheme() {
       if (this.$vuetify.theme.dark) {
-        Highcharts.theme = ChartStyles.getDarkTheme()
+        Highcharts.theme = ChartStyles.getDarkTheme();
       } else {
-        Highcharts.theme = ChartStyles.getLightTheme()
+        Highcharts.theme = ChartStyles.getLightTheme();
       }
-      Highcharts.setOptions(Highcharts.theme)
-    },
-  },
+      Highcharts.setOptions(Highcharts.theme);
+    }
+  }
 };
 </script>
 

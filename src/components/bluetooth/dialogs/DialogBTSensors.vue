@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="$store.state.bluetooth.dialog.btSensors"
-    width="unset"
-    transition="scroll-x-transition"
-    scrollable
-  >
+  <v-dialog v-model="$store.state.bluetooth.dialog.btSensors" width="unset" transition="scroll-x-transition" scrollable>
     <v-card>
       <v-card-title>
         Bluetooth Sensors
@@ -37,11 +32,7 @@
             </template>
           </v-text-field>
         </div>
-        <v-btn
-          icon
-          class="close-button mr-4"
-          @click="$store.state.bluetooth.dialog.btSensors = false"
-        >
+        <v-btn icon class="close-button mr-4" @click="$store.state.bluetooth.dialog.btSensors = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -63,12 +54,7 @@
           <template v-slot:[`item.actions`]="{ item }">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  small
-                  class="mr-2"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="viewItem(item)"
+                <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="viewItem(item)"
                   >mdi-arrow-right-bold</v-icon
                 >
               </template>
@@ -82,86 +68,83 @@
 </template>
 
 <script>
-import Utils from "@/utils/Utils";
-import { DateTime } from "luxon";
+import Utils from '@/utils/Utils';
+import { DateTime } from 'luxon';
 
 export default {
   data() {
     return {
-      btSearch: "",
-      menuItems: [
-        { title: 'Print JSON' },
-        { title: 'Download JSON' },
-      ],
-    }
+      btSearch: '',
+      menuItems: [{ title: 'Print JSON' }, { title: 'Download JSON' }]
+    };
   },
   methods: {
     menuItemClicked(idx) {
       if (idx == 0) {
-        console.log("this.sensors\n%o", this.sensors);
-        let notifText = 'Check console for info.'
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' } )
-      }
-      else if (idx == 1) {
-        let dt = DateTime.now().setZone("America/New_York")
-        let dtStr = dt.toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS).replaceAll('/', '-').replaceAll(',', '')
-        let fileName = `Sensors (${dtStr})`
+        console.log('this.sensors\n%o', this.sensors);
+        let notifText = 'Check console for info.';
+        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
+      } else if (idx == 1) {
+        let dt = DateTime.now().setZone('America/New_York');
+        let dtStr = dt
+          .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
+          .replaceAll('/', '-')
+          .replaceAll(',', '');
+        let fileName = `Sensors (${dtStr})`;
         console.log(fileName);
-        Utils.downloadJSON(fileName, this.sensors)
+        Utils.downloadJSON(fileName, this.sensors);
       }
     },
     viewItem(item) {
-      this.$bus.$emit('GO_TO_MARKER_LOCATION', item.data, "sensors")
-      this.$store.state.bluetooth.dialog.btSensors = false
+      this.$bus.$emit('GO_TO_MARKER_LOCATION', item.data, 'sensors');
+      this.$store.state.bluetooth.dialog.btSensors = false;
     }
   },
   computed: {
     sensors() {
-      let sensors = this.$store.state.bluetooth.apiData.sensors
-      if (sensors)
-        return sensors
-      else 
-        return []
+      let sensors = this.$store.state.bluetooth.apiData.sensors;
+      if (sensors) return sensors;
+      else return [];
     },
     btHeaders() {
       if (this.sensors) {
         let headers = [
-          { text: "Id", value: "id", align: "start" },
-          { text: 'Name', value: "name"},
-          { text: 'Latitude', value: "lat"},
-          { text: "Longitude", value: "lng"},
-          { text: "Actions", value: "actions", sortable: false },
-        ]
-        return headers
+          { text: 'Id', value: 'id', align: 'start' },
+          { text: 'Name', value: 'name' },
+          { text: 'Latitude', value: 'lat' },
+          { text: 'Longitude', value: 'lng' },
+          { text: 'Actions', value: 'actions', sortable: false }
+        ];
+        return headers;
       } else {
-        return null
+        return null;
       }
     },
     btItems() {
       if (this.sensors) {
-        let items = []
+        let items = [];
         this.sensors.forEach((s, i) => {
           items.push({
             id: i + 1,
             name: s.node,
             lat: s.lat,
             lng: s.lng,
-            data: s,
-          })
+            data: s
+          });
         });
-        return items
+        return items;
       } else {
-        return null
+        return null;
       }
     }
-  },
+  }
 };
 </script>
 
 <style>
-  .middle-header {
-    text-align: center;
-    margin: 0 auto;
-    padding-right: 120px;
-  }
+.middle-header {
+  text-align: center;
+  margin: 0 auto;
+  padding-right: 120px;
+}
 </style>

@@ -1,7 +1,14 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="12" map-type-id="roadmap" class="my-map"
-      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="12"
+      map-type-id="roadmap"
+      class="my-map"
+      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
+    >
       <CarMarker
         v-for="item in liveCars"
         :key="item.id"
@@ -30,11 +37,15 @@ export default {
 
   data: () => ({
     homeIcon: require('@/assets/home-24.png'),
+    infoIcon: require('@/assets/info-24.png'),
     map: null,
     options: {
       mapTypeControl: true,
       streetViewControl: false,
       fullscreenControl: true,
+      fullscreenControlOptions: {
+        position: google.maps.ControlPosition.TOP_LEFT
+      },
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'hybrid'],
         position: 6
@@ -74,6 +85,7 @@ export default {
     this.$refs.mapRef.$mapPromise.then(map => {
       this.map = map;
       this.addHomeControlToMap(map);
+      this.addInfoControl(map);
     });
 
     this.$bus.$on('SENSOR_SELECTED', deviceId => {
@@ -98,16 +110,16 @@ export default {
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
-        return
+        return;
       }
       if (darkMode && this.$refs.mapRef) {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: DarkMapStyle})
-        })
+          map.setOptions({ styles: DarkMapStyle });
+        });
       } else {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: null})
-        })
+          map.setOptions({ styles: null });
+        });
       }
     },
 
@@ -130,6 +142,28 @@ export default {
         events: {
           click: () => {
             this.centerMapByLiveCars();
+          }
+        }
+      };
+      MapUtils.addControl(map, options);
+    },
+
+    addInfoControl(map) {
+      let options = {
+        position: 'right',
+        content: `<div class="non-selection" style="margin:-5px 4px;"><img src="${this.infoIcon}"/></div>`,
+        title: 'Show vehicle list',
+        style: {
+          width: '40px',
+          height: '40px',
+          margin: '10px',
+          padding: '12px 3px',
+          border: 'solid 1px #717B87',
+          background: '#fff'
+        },
+        events: {
+          click: () => {
+            this.$store.commit('cav/TOGGLE_SHOW_PANEL');
           }
         }
       };
@@ -259,11 +293,13 @@ export default {
     },
 
     cleanupLiveCars() {
-      const updatedLiveCars = this.liveCars.filter(
-        car => Utils.getSecondsTillNow(car.lastUpdated) < this.inactiveSeconds
-      );
-      if (updatedLiveCars.length < this.liveCars.length) {
-        this.$store.commit('cav/SET_LIVE_CARS', updatedLiveCars);
+      if (this.liveCars.length) {
+        const updatedLiveCars = this.liveCars.filter(
+          car => Utils.getSecondsTillNow(car.lastUpdated) < this.inactiveSeconds
+        );
+        if (updatedLiveCars.length < this.liveCars.length) {
+          this.$store.commit('cav/SET_LIVE_CARS', updatedLiveCars);
+        }
       }
     },
 
@@ -305,11 +341,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/* .my-map {
+.my-map {
   width: 101.5%;
   height: calc(100vh - 48px);
-  margin-top: -36px;
+  margin-top: -12px;
   margin-left: -12px;
   margin-right: 0px;
-} */
+} 
 </style>

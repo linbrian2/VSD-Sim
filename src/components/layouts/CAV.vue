@@ -1,5 +1,5 @@
 <template>
-  <div class="status">
+  <div class="cav">
     <AppBar />
     <v-main>
       <router-view />
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import AppBar from '@/components/status/AppBar';
+import AppBar from '@/components/cav/AppBar';
 
 export default {
   name: 'App',
@@ -17,6 +17,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

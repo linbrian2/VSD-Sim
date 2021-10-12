@@ -65,7 +65,6 @@
 <script>
 import Api from '@/utils/api/vision';
 import { mapState } from 'vuex';
-import EventBus from '@/utils/EventBus';
 import TitleBar from '@/components/vision/TitleBar';
 import BasicChart from '@/components/vision/BasicChart';
 import StackBarChart from '@/components/vision/StackBarChart';
@@ -112,7 +111,7 @@ export default {
   },
 
   mounted() {
-    EventBus.$on('GET_FLOW', ({ marker }) => {
+    this.$bus.$on('GET_FLOW', ({ marker }) => {
       this.fetchAllData(marker);
     });
     this.fetchData();
@@ -168,7 +167,7 @@ export default {
           this.availability.occupancy = false;
         }
       } catch (error) {
-        this.$store.dispatch('vision/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -185,10 +184,10 @@ export default {
             }
           }
         } else {
-          this.$store.dispatch('vision/setSystemStatus', { text: response.data.message, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
         }
       } catch (error) {
-        this.$store.dispatch('vision/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },
@@ -203,7 +202,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('vision/setSystemStatus', { text: response.data.message, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
       return result;
     },

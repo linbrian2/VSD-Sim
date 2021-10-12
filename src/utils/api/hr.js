@@ -1,36 +1,34 @@
-import axiosDefault from 'axios';
+import client from '@/utils/AxiosClient';
 
-const axios = axiosDefault.create({
-  baseURL: process.env.VUE_APP_HR_API_URL,
-});
+const AxiosClient = client(process.env.VUE_APP_HR_API_URL);
 
 export default {
   fetchDevices() {
-    return axios.get('api/devices');
+    return AxiosClient.get('api/devices');
   },
 
   fetchStatusOfDevices() {
-    return axios.get('api/status');
+    return AxiosClient.get('api/status');
   },
 
   fetchPlans(id, start) {
-    return axios.post('api/signal', { id: id, start: start });
+    return AxiosClient.post('api/signal', { id: id, start: start });
   },
 
   fetchPCD(id, phase, start) {
-    return axios.post('api/pcd', { id: id, phases: [phase], start: start });
+    return AxiosClient.post('api/pcd', { id: id, phases: [phase], start: start });
   },
 
   fetchPCDs(id, phases, start) {
-    return axios.post('api/pcd', { id, phases, start });
+    return AxiosClient.post('api/pcd', { id, phases, start });
   },
 
   fetchPCDSet(series, start) {
-    return axios.post('api/pcd', { series, start });
+    return AxiosClient.post('api/pcd', { series, start });
   },
 
   fetchTiming(id, start, duration) {
-    return axios.post('api/timing', {
+    return AxiosClient.post('api/timing', {
       id: id,
       start: start,
       duration: duration
@@ -38,7 +36,7 @@ export default {
   },
 
   fetchPhaseTiming(id, start, duration) {
-    return axios.post('api/phaseTiming', {
+    return AxiosClient.post('api/phaseTiming', {
       id: id,
       start: start,
       duration: duration
@@ -46,26 +44,26 @@ export default {
   },
 
   fetchVolumeSet(series, start) {
-    return axios.post('api/volume', { series, start });
+    return AxiosClient.post('api/volume', { series, start });
   },
 
   fetchIntervals(id, phases, start) {
-    return axios.post('api/phaseIntervals', { id, phases, start });
+    return AxiosClient.post('api/phaseIntervals', { id, phases, start });
   },
 
   fetchDelays(id, phases, start) {
-    return axios.post('api/phaseDelays', { id, phases, start });
+    return AxiosClient.post('api/phaseDelays', { id, phases, start });
   },
 
   fetchAORSet(series, start) {
-    return axios.post('api/aor', { series, start });
+    return AxiosClient.post('api/aor', { series, start });
   },
 
   fetchDetectorOccupancy(id, start, interval, type) {
-    return axios.post('api/detectorOccupancy', { id, start, interval, type });
+    return AxiosClient.post('api/detectorOccupancy', { id, start, interval, type });
   },
 
   fetchDetectorOccupancySet(series, start, interval, type) {
-    return axios.post('api/detectorOccupancy', { series, start, interval, type });
-  },
+    return AxiosClient.post('api/detectorOccupancy', { series, start, interval, type });
+  }
 };

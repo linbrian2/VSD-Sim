@@ -58,14 +58,14 @@
 </template>
 
 <script>
-import { format, parse } from 'date-fns'
-const DEFAULT_DATE = ''
-const DEFAULT_TIME = '00:00:00'
-const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
-const DEFAULT_TIME_FORMAT = 'HH:mm:ss'
-const DEFAULT_DIALOG_WIDTH = 340
-const DEFAULT_CLEAR_TEXT = 'CANCEL'
-const DEFAULT_OK_TEXT = 'OK'
+import { format, parse } from 'date-fns';
+const DEFAULT_DATE = '';
+const DEFAULT_TIME = '00:00:00';
+const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd';
+const DEFAULT_TIME_FORMAT = 'HH:mm:ss';
+const DEFAULT_DIALOG_WIDTH = 340;
+const DEFAULT_CLEAR_TEXT = 'CANCEL';
+const DEFAULT_OK_TEXT = 'OK';
 export default {
   name: 'v-datetime-picker',
   model: {
@@ -124,106 +124,106 @@ export default {
       date: DEFAULT_DATE,
       time: DEFAULT_TIME,
       oldDate: null,
-      oldTime: null,
-    }
+      oldTime: null
+    };
   },
   mounted() {
-    this.init()
+    this.init();
   },
   computed: {
     dateTimeFormat() {
-      return this.dateFormat + ' ' + this.timeFormat
+      return this.dateFormat + ' ' + this.timeFormat;
     },
     defaultDateTimeFormat() {
-      return DEFAULT_DATE_FORMAT + ' ' + DEFAULT_TIME_FORMAT
+      return DEFAULT_DATE_FORMAT + ' ' + DEFAULT_TIME_FORMAT;
     },
     formattedDatetime() {
-      return this.selectedDatetime ? format(this.selectedDatetime, this.dateTimeFormat) : ''
+      return this.selectedDatetime ? format(this.selectedDatetime, this.dateTimeFormat) : '';
     },
     selectedDatetime() {
       if (this.date && this.time) {
-        let datetimeString = this.date + ' ' + this.time
+        let datetimeString = this.date + ' ' + this.time;
         if (this.time.length === 5) {
-          datetimeString += ':00'
+          datetimeString += ':00';
         }
-        return parse(datetimeString, this.defaultDateTimeFormat, new Date())
+        return parse(datetimeString, this.defaultDateTimeFormat, new Date());
       } else {
-        return null
+        return null;
       }
     },
     dateSelected() {
-      return !this.date
+      return !this.date;
     }
   },
   methods: {
     init() {
       if (!this.datetime) {
-        return
+        return;
       }
-      let initDateTime
+      let initDateTime;
       if (this.datetime instanceof Date) {
-        initDateTime = this.datetime
+        initDateTime = this.datetime;
       } else if (typeof this.datetime === 'string' || this.datetime instanceof String) {
         // see https://stackoverflow.com/a/9436948
-        initDateTime = parse(this.datetime, this.dateTimeFormat, new Date())
+        initDateTime = parse(this.datetime, this.dateTimeFormat, new Date());
       }
-      this.date = format(initDateTime, DEFAULT_DATE_FORMAT)
-      this.time = format(initDateTime, DEFAULT_TIME_FORMAT)
+      this.date = format(initDateTime, DEFAULT_DATE_FORMAT);
+      this.time = format(initDateTime, DEFAULT_TIME_FORMAT);
     },
     okHandler() {
-      this.resetPicker()
-      this.$emit('input', this.selectedDatetime)
-      this.$emit("update")
+      this.resetPicker();
+      this.$emit('input', this.selectedDatetime);
+      this.$emit('update');
     },
     useCurrentTime() {
-      this.resetPicker()
-      let dt = new Date()
-      dt.setSeconds(0)
-      this.$emit('input', dt)
-      this.$emit("updateCurr")
+      this.resetPicker();
+      let dt = new Date();
+      dt.setSeconds(0);
+      this.$emit('input', dt);
+      this.$emit('updateCurr');
     },
     clearHandler() {
-      this.date = this.oldDate
-      this.time = this.oldTime
-      let datetimeString = this.date + ' ' + this.time
-        if (this.time.length === 5) {
-          datetimeString += ':00'
-        }
-      let oldSelectedDatetime = parse(datetimeString, this.defaultDateTimeFormat, new Date())
-      this.resetPicker()
-      this.$emit('input', oldSelectedDatetime)
-      this.$emit("clear")
+      this.date = this.oldDate;
+      this.time = this.oldTime;
+      let datetimeString = this.date + ' ' + this.time;
+      if (this.time.length === 5) {
+        datetimeString += ':00';
+      }
+      let oldSelectedDatetime = parse(datetimeString, this.defaultDateTimeFormat, new Date());
+      this.resetPicker();
+      this.$emit('input', oldSelectedDatetime);
+      this.$emit('clear');
     },
     resetPicker() {
-      this.display = false
-      this.activeTab = 0
+      this.display = false;
+      this.activeTab = 0;
       if (this.$refs.timer) {
-        this.$refs.timer.selectingHour = true
+        this.$refs.timer.selectingHour = true;
       }
     },
     showTimePicker() {
-      this.activeTab = 1
+      this.activeTab = 1;
     }
   },
   watch: {
     display(data) {
       if (data) {
-        console.log("Opened")
-        this.oldDate = JSON.parse(JSON.stringify(this.date))
-        this.oldTime = JSON.parse(JSON.stringify(this.time))
+        console.log('Opened');
+        this.oldDate = JSON.parse(JSON.stringify(this.date));
+        this.oldTime = JSON.parse(JSON.stringify(this.time));
       } else {
-        console.log("Closed")
+        console.log('Closed');
       }
     },
     datetime: function() {
-      this.init()
+      this.init();
     },
     date() {
-      this.$emit('input', this.selectedDatetime)
+      this.$emit('input', this.selectedDatetime);
     },
     time() {
-      this.$emit('input', this.selectedDatetime)
+      this.$emit('input', this.selectedDatetime);
     }
   }
-}
+};
 </script>

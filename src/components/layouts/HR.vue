@@ -14,17 +14,12 @@
 
       <MapSelect @click="onMapClick" />
     </v-navigation-drawer>
-    <AppBar />
-    <v-content>
-      <v-container fluid>
-        <router-view></router-view>
-      </v-container>
-    </v-content>
 
-    <v-snackbar v-model="snackbar.showing" :color="snackbar.color" :timeout="snackbar.timeout">
-      {{ snackbar.text }}
-      <v-btn text @click="snackbar.showing = false">Close</v-btn>
-    </v-snackbar>
+    <AppBar />
+
+    <v-main>
+      <router-view></router-view>
+    </v-main>
   </div>
 </template>
 
@@ -49,6 +44,7 @@ export default {
         this.$store.commit('hr/SHOW_PANEL', show);
       }
     },
+
     items() {
       let names = [];
       this.$store.state.hr.locations.forEach(location => {
@@ -56,14 +52,17 @@ export default {
       });
       return names;
     },
+
     selectedItem() {
       let selected = this.$store.state.hr.activeMarker;
       return selected != null ? selected.name : '';
     },
+
     icon() {
       return this.$store.state.hr.showPanel ? 'mdi-close' : 'mdi-menu';
     },
-    ...mapState('hr', ['snackbar', 'locations', 'currentSignal', 'currentDate', 'currentAction'])
+
+    ...mapState('hr', ['locations', 'currentSignal', 'currentDate', 'currentAction'])
   },
   methods: {
     hidePanel() {
@@ -73,6 +72,7 @@ export default {
     signalSelected(value) {
       this.$bus.$emit('NAME_SELECTED', value);
     },
+
     onMapClick(marker) {
       let time = this.currentDate.getTime();
       switch (this.currentAction) {

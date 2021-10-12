@@ -6,8 +6,15 @@
     </RightPanel>
 
     <!-- Maps -->
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="12" map-type-id="roadmap" class="my-map"
-      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="12"
+      map-type-id="roadmap"
+      class="my-map"
+      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
+    >
       <!-- Traffic FLow Detectors -->
       <div v-if="isMapLayerVisible(0)">
         <GmapMarker
@@ -130,7 +137,7 @@
       <!-- <InfoWindow :position="infoPosition" ref="infoWindow" /> -->
 
       <!-- Heatmap layer -->
-      <GmapHeatMap :data="heatMapData" :options="{ maxIntensity: 15, dissipating: true, radius: 10 }" />
+      <!-- <GmapHeatMap :data="heatMapData" :options="{ maxIntensity: 15, dissipating: true, radius: 10 }" /> -->
     </GmapMap>
 
     <Toolbar :entities="entities" />
@@ -148,11 +155,6 @@
     </v-bottom-sheet>
 
     <!-- Popup Dialogs -->
-    <DeviceDialog v-model="showDeviceInfo" ref="deviceDialog" />
-    <BluetoothDialog v-model="showBluetoothInfo" ref="bluetoothDialog" />
-    <WeatherDialog v-model="showWeatherInfo" ref="weatherDialog" />
-    <AnomalySegmentDialog v-model="showAnomalySegmentInfo" ref="anomalySegmentDialog" />
-    <RestrictionDialog v-model="showRestrictionInfo" ref="restrictionDialog" />
     <SelectionDialog v-model="showSelection" ref="selectionDialog" />
   </div>
 </template>
@@ -162,9 +164,8 @@
 import { mapState, mapActions } from 'vuex';
 import { gmapApi } from 'vue2-google-maps';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
-import GmapHeatMap from '@/components/traffic/dashboard/HeatMap';
+// import GmapHeatMap from '@/components/traffic/dashboard/HeatMap';
 import Api from '@/utils/api/traffic';
-import Utils from '@/utils/Utils.js';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 import Constants from '@/utils/constants/traffic';
@@ -181,11 +182,6 @@ import BluetoothDataInfo from '@/components/traffic/dashboard/BluetoothDataInfo'
 import WeatherDataInfo from '@/components/traffic/dashboard/WeatherDataInfo';
 import AnomalySegmentInfo from '@/components/traffic/dashboard/AnomalySegmentInfo';
 
-import DeviceDialog from '@/components/traffic/dashboard/DeviceDialog';
-import BluetoothDialog from '@/components/traffic/dashboard/BluetoothDialog';
-import WeatherDialog from '@/components/traffic/dashboard/WeatherDialog';
-import RestrictionDialog from '@/components/traffic/dashboard/RestrictionDialog';
-import AnomalySegmentDialog from '@/components/traffic/dashboard/AnomalySegmentDialog';
 import SelectionDialog from '@/components/traffic/dashboard/SelectionDialog';
 
 export default {
@@ -195,16 +191,11 @@ export default {
     RightPanel,
     InfoWindow,
     GmapCustomMarker,
-    GmapHeatMap,
+    // GmapHeatMap,
     FlowDataInfo,
     BluetoothDataInfo,
     WeatherDataInfo,
     AnomalySegmentInfo,
-    DeviceDialog,
-    BluetoothDialog,
-    WeatherDialog,
-    RestrictionDialog,
-    AnomalySegmentDialog,
     SelectionDialog
   },
 
@@ -419,19 +410,19 @@ export default {
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
-        return
+        return;
       }
       if (darkMode) {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: DarkMapStyle})
-        })
+          map.setOptions({ styles: DarkMapStyle });
+        });
       } else {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: null})
-        })
+          map.setOptions({ styles: null });
+        });
       }
     },
-    
+
     showScrollBar(show) {
       let html = document.getElementsByTagName('html')[0];
       html.style.overflowY = show ? 'auto' : 'hidden';
@@ -504,14 +495,6 @@ export default {
     },
 
     markerClicked(marker) {
-      // if (marker && this.$refs.deviceDialog) {
-      //   this.$refs.deviceDialog.init(marker);
-      //   this.showDeviceInfo = true;
-      // }
-
-      // this.infoPosition = marker.position;
-      // this.$refs.infoWindow.show({});
-
       this.showPanelIfNot();
       this.selectedMarker = marker;
       this.currentTitle = 'Traffic Flow Detector';
@@ -528,10 +511,6 @@ export default {
     },
 
     segmentClicked(segment) {
-      // if (segment && this.$refs.bluetoothDialog) {
-      //   this.$refs.bluetoothDialog.init(segment);
-      //   this.showBluetoothInfo = true;
-      // }
       this.showPanelIfNot();
       this.selectedMarker = segment;
       this.currentTitle = 'Bluetooth Travel Time';
@@ -547,10 +526,6 @@ export default {
     },
 
     weatherMarkerClicked(marker) {
-      // if (marker && this.$refs.weatherDialog) {
-      //   this.$refs.weatherDialog.init(marker);
-      //   this.showWeatherInfo = true;
-      // }
       this.showPanelIfNot();
       this.selectedMarker = marker;
       this.currentTitle = 'Weather Station';
@@ -573,10 +548,6 @@ export default {
     },
 
     anomalySegmentClicked(segment) {
-      // if (segment && this.$refs.anomalySegmentDialog) {
-      //   this.$refs.anomalySegmentDialog.init(segment);
-      //   this.showAnomalySegmentInfo = true;
-      // }
       this.showPanelIfNot();
       this.selectedMarker = segment;
       this.currentTitle = 'Current Incident';
@@ -594,7 +565,7 @@ export default {
     },
 
     midPoint(s) {
-      return s.path[Math.round((s.path.length * 3) / 7)];
+      return s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
     },
 
     centerSegment(segment) {
@@ -713,7 +684,7 @@ export default {
       if (data.length > 0) {
         // const id = data[0].id;
         // const msg = `Anomaly segment ${id} detected`;
-        //this.$store.dispatch('traffic/setSystemStatus', { text: msg, color: 'orange darken-2' });
+        //this.$store.dispatch('setSystemStatus', { text: msg, color: 'orange darken-2' });
       }
     },
 
@@ -770,7 +741,7 @@ export default {
           }
         });
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -781,7 +752,7 @@ export default {
           this.bluetoothLocations = data.map(obj => ({ ...obj, status: 0 }));
         });
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
@@ -829,7 +800,7 @@ export default {
           this.$store.commit('traffic/SET_CURRENT_ANOMALY_SEGMENTS', anomalySegments.data.data);
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },

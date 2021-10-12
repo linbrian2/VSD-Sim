@@ -3,7 +3,7 @@
     <TitleBar title="Today's Summary" :loading="loading" :refresh="refreshData">
       <div class="update mt-3" v-if="updatedTime">{{ updatedTime | date }}</div>
     </TitleBar>
-    <v-container fluid style="max-width: 85%">
+    <v-container fluid style="max-width: 95%">
       <div class="my-2 mx-2">
         <v-data-table
           disable-sort
@@ -122,7 +122,7 @@ export default {
         this.summary = response.data;
         this.updatedTime = new Date();
       } catch (error) {
-        this.$store.dispatch('hr/setSystemStatus', { text: error, timeout: 0, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
       }
       this.loading = false;
     },

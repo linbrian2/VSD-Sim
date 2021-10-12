@@ -29,8 +29,7 @@
           </template>
         </v-text-field>
       </template>
-      <v-date-picker v-model="fromDateVal" :allowed-dates="allowedDates" no-title scrollable 
-                     color="green lighten-1">
+      <v-date-picker v-model="fromDateVal" :allowed-dates="allowedDates" no-title scrollable color="green lighten-1">
         <v-spacer></v-spacer>
         <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
         <v-btn text color="primary" @click="dateSelected">OK</v-btn>
@@ -74,6 +73,14 @@ export default {
     this.init();
   },
 
+  created() {
+    window.addEventListener('keydown', this.keydownListener);
+  },
+
+  destroyed() {
+    window.removeEventListener('keydown', this.keydownListener);
+  },
+
   methods: {
     init() {
       this.fromDateVal = Utils.formatDate(this.date);
@@ -91,11 +98,21 @@ export default {
     },
 
     prevDate() {
+      this.$emit('prev');
       this.$store.dispatch('traffic/incCurrentDate', -1);
     },
 
     nextDate() {
+      this.$emit('next');
       this.$store.dispatch('traffic/incCurrentDate', 1);
+    },
+
+    keydownListener(e) {
+      if (e.key === 'ArrowLeft') {
+        this.prevDate();
+      } else if (e.key === 'ArrowRight') {
+        this.nextDate();
+      }
     }
   }
 };

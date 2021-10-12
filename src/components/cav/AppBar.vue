@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-app-bar app dark flat dense clipped-right color="dark">
-      <NavigationDropdown />
+      <v-btn icon @click.stop="showDrawer">
+        <v-icon>mdi-view-grid-outline</v-icon>
+      </v-btn>
 
       <div class="d-flex align-center">
         <router-link to="/">
@@ -39,22 +41,10 @@
         </v-tooltip>
       </div>
 
-      <template v-if="!showPanel">
-        <v-divider vertical class="ml-4" />
-      </template>
+      <LoggedInUser v-if="user" :user="user" />
 
-      <div v-if="!showPanel">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click.stop="togglePanel">
-              <v-icon color="blue darken-2">mdi-chevron-double-left</v-icon>
-            </v-btn>
-          </template>
-          <span>Show Panel</span>
-        </v-tooltip>
-      </div>
+      <v-divider vertical class="ml-2" />
 
-      <v-divider vertical />
       <div>
         <v-menu bottom right offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -71,41 +61,46 @@
         </v-menu>
       </div>
     </v-app-bar>
+
+    <NavDrawer />
+    <SnackBar />
+    <LoadingProgress :loading="progressLoading" color="primary" />
   </div>
 </template>
 
 <script>
-import NavigationDropdown from '@/components/NavigationDropdown'
+import NavDrawer from '@/components/nav/NavDrawer';
+import LoggedInUser from '@/components/common/LoggedInUser';
+import SnackBar from '@/components/common/SnackBar';
+import LoadingProgress from '@/components/cav/LoadingProgress';
 import { mapState } from 'vuex';
-
 
 export default {
   props: ['drawer'],
   components: {
-    NavigationDropdown
+    LoggedInUser,
+    NavDrawer,
+    SnackBar,
+    LoadingProgress
   },
   data: () => ({
     title: 'CAV Data',
-    menu_items: [
-      { title: 'Trip Status' },
-      { title: 'Trip Data' },
-      { title: 'Toggle Dark Mode' }
-    ],
-    app_menu_items: [
-      { title: 'Traffic Flow Data', url: '/flow' },
-      { title: 'High Resolution Data', url: '/hr' },
-      { title: 'Machine Vision on Traffic Cameras', url: '/vision' },
-      { title: 'Bluetooth and Waze Data', url: '/bluetooth' },
-      { title: 'CAV Data', url: '/cav' },
-      { title: 'Health Monitoring', url: '/status' }
-    ]
+    menu_items: [{ title: 'Trip Status' }, { title: 'Trip Data' }, { title: 'Toggle Dark Mode' }]
   }),
 
   computed: {
-    ...mapState('cav', ['showPanel', 'currentAction'])
+    user() {
+      return this.$store.state.auth.user;
+    },
+
+    ...mapState('cav', ['currentAction', 'progressLoading'])
   },
 
   methods: {
+    showDrawer() {
+      this.$store.commit('SHOW_DRAWER', true);
+    },
+
     color(name) {
       return this.currentAction === name ? 'orange' : 'white';
     },
@@ -145,8 +140,8 @@ export default {
 
     toggleDarkMode() {
       this.$store.dispatch('saveDarkMode', !this.$vuetify.theme.dark);
-    },
-  },
+    }
+  }
 };
 </script>
 

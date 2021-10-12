@@ -11,8 +11,8 @@ export default {
   props: ['data', 'height'],
   data() {
     return {
-      reload: false,
-    }
+      reload: false
+    };
   },
   computed: {
     chartOptions() {
@@ -107,12 +107,11 @@ export default {
   },
   watch: {
     '$store.state.darkMode'() {
-      this.reload = true
+      this.reload = true;
       setTimeout(() => {
-        this.reload = false
+        this.reload = false;
       }, 1);
     }
-  },
-
+  }
 };
 </script>

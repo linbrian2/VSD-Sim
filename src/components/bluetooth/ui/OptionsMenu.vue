@@ -2,12 +2,7 @@
   <div>
     <!-- {{options}}<br/>
     {{this.$store.state.bluetooth.prefs}} -->
-    <v-menu
-      v-model="menu"
-      :close-on-content-click="false"
-      :nudge-width="200"
-      offset-x
-    >
+    <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-x>
       <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <v-tooltip top>
@@ -43,8 +38,16 @@
             </v-btn-toggle>
           </v-list-item>
           <v-list-item class="pt-10">
-             <v-text-field label="Graph Height" v-model="options.graphHeight" outlined filled dense suffix="pixels" 
-                           hint="Default: 250 pixels" type="number" />
+            <v-text-field
+              label="Graph Height"
+              v-model="options.graphHeight"
+              outlined
+              filled
+              dense
+              suffix="pixels"
+              hint="Default: 250 pixels"
+              type="number"
+            />
           </v-list-item>
           <v-list-item>
             <v-switch label="Show Buttons" v-model="options.showButtons"></v-switch>
@@ -70,7 +73,7 @@ export default {
     options: {
       colCount: 0,
       graphHeight: 250,
-      showButtons: true,
+      showButtons: true
     }
     /* options: {
       colCount: null,
@@ -90,23 +93,22 @@ export default {
   },
   methods: {
     clear() {
-      this.menu = false
-      this.options = this.oldOptions
+      this.menu = false;
+      this.options = this.oldOptions;
     },
     submit() {
       this.menu = false;
-      this.$bus.$emit("SUBMIT_MULTIGRAPH_OPTIONS", this.options);
-    },
+      this.$bus.$emit('SUBMIT_MULTIGRAPH_OPTIONS', this.options);
+    }
   },
   watch: {
     menu(data) {
       if (data) {
-        this.oldOptions = JSON.parse(JSON.stringify(this.options))
+        this.oldOptions = JSON.parse(JSON.stringify(this.options));
       }
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

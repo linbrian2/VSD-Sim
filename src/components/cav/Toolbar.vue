@@ -54,6 +54,17 @@
       <v-btn icon @click="setPlayStop" :disabled="!validTrip || stopState">
         <v-icon>mdi-stop</v-icon>
       </v-btn>
+
+      <v-divider vertical class="ml-1" />
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" @click.stop="showDetails">
+            <v-icon color="info">mdi-information-outline </v-icon>
+          </v-btn>
+        </template>
+        <span>Show Details</span>
+      </v-tooltip>
     </v-toolbar>
 
     <v-card-text style="height: 150px;" v-if="showPanel">
@@ -112,7 +123,7 @@ export default {
     },
 
     stateColor() {
-      return this.currentTrip.status === 0 ? 'red' : 'green darken-3';
+      return this.currentTrip.status === 0 ? 'red' : this.darkMode ? 'white' : 'green darken-3';
     },
 
     tripColor() {
@@ -129,6 +140,7 @@ export default {
       }
     },
 
+    ...mapState(['darkMode']),
     ...mapState('cav', ['currentTrip', 'playState', 'currentState', 'currentProgress', 'playbackSpeed'])
   },
 
@@ -150,6 +162,10 @@ export default {
   },
 
   methods: {
+    showDetails() {
+      this.$store.commit('cav/TOGGLE_SHOW_PANEL');
+    },
+
     speedMenuItemClicked(value) {
       this.$store.commit('cav/SET_PLAYBACK_SPEED', value);
     },

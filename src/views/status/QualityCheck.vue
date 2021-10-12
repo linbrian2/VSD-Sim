@@ -1,46 +1,42 @@
 <template>
   <div>
     <TitleBar title="Traffic Flow Data Quality Checking" :loading="loading" :refresh="refreshData">
-      <MenuDatePicker class="pa-0 ma-0 mt-n3" />
+      <!-- <MenuDatePicker class="pa-0 ma-0 mt-n3" /> -->
       <div class="update" v-if="updatedTime">{{ updatedTime | date }}</div>
     </TitleBar>
 
-    <v-container style="max-width:1200px">
-      <v-card class="mt-6">
-        <v-card-title class="primary pa-1 pl-3">
-          <span class="title white--text font-weight-light">Total Error Counts By Time</span>
+    <v-container fluid style="max-width: 85%">
+      <v-card tile class="mt-6 mb-4">
+        <v-card-title :class="panelStyle">
+          <span class="title white--text font-weight-light">Total Error Counts</span>
         </v-card-title>
-        <v-card-text>
-          <div class="mt-2 mx-8" v-if="totalErrorCounts">
-            <HeatmapChart :data="totalErrorCounts" :height="500" />
-          </div>
-        </v-card-text>
+
+        <div class="mt-2 mx-4" v-if="totalErrorCounts">
+          <HeatmapChart :data="totalErrorCounts" :height="600" />
+        </div>
       </v-card>
 
-      <v-card class="mt-6">
-        <v-card-title class="primary pa-1 pl-3">
-          <span class="title white--text font-weight-light">Error Counts Percentage By Type</span>
+      <v-card tile class="mt-6 mb-4">
+        <v-card-title :class="panelStyle">
+          <span class="title white--text font-weight-light">Error Counts by Type and Hour </span>
         </v-card-title>
-        <v-card-text>
-          <div class="mt-2 mx-8" v-if="errorCountsByType">
-            <PieChart :data="errorCountsByType" :height="500" />
-          </div>
-        </v-card-text>
+        <v-row>
+          <v-col>
+            <div class="mt-2 mx-6" v-if="errorCountsByType">
+              <PieChart :data="errorCountsByType" :height="600" />
+            </div>
+          </v-col>
+
+          <v-col>
+            <div class="mt-2 mx-6" v-if="errorCountsByHour">
+              <PieChart :data="errorCountsByHour" :height="600" />
+            </div>
+          </v-col>
+        </v-row>
       </v-card>
 
-      <v-card class="mt-6">
-        <v-card-title class="primary pa-1 pl-3">
-          <span class="title white--text font-weight-light">Error Counts Percentage by Hour</span>
-        </v-card-title>
-        <v-card-text>
-          <div class="mt-2 mx-8" v-if="errorCountsByHour">
-            <PieChart :data="errorCountsByHour" :height="500" />
-          </div>
-        </v-card-text>
-      </v-card>
-
-      <v-card class="mt-6 mb-4">
-        <v-card-title class="primary pa-1 pl-3">
+      <v-card tile class="mt-6 mb-4">
+        <v-card-title :class="panelStyle">
           <span class="title white--text font-weight-light">Error Counts by Sensor </span>
           <v-spacer></v-spacer>
           <!-- Region selection menu -->
@@ -87,23 +83,21 @@
         </v-card-subtitle>
 
         <v-card-text style="height: 340px;">
-          <v-container>
-            <v-data-table
-              :headers="headers"
-              height="300"
-              fixed-header
-              :items="items"
-              :items-per-page="itemsPerPage"
-              hide-default-footer
-              @click:row="handleRowClick"
-              :search="search"
-              class="elevation-1"
-            >
-              <template v-slot:[`item.id`]="{ item }">
-                <v-chip color="success" outlined small style="width:62px;">{{ item.id }}</v-chip>
-              </template>
-            </v-data-table>
-          </v-container>
+          <v-data-table
+            :headers="headers"
+            height="300"
+            fixed-header
+            :items="items"
+            :items-per-page="itemsPerPage"
+            hide-default-footer
+            @click:row="handleRowClick"
+            :search="search"
+            class="elevation-1"
+          >
+            <template v-slot:[`item.id`]="{ item }">
+              <v-chip color="success" outlined small style="width:62px;">{{ item.id }}</v-chip>
+            </template>
+          </v-data-table>
         </v-card-text>
 
         <div class="ml-8 mr-2 mb-4 sensor-chart" v-if="sensorErrorTypes">
@@ -129,7 +123,6 @@ import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/status';
 import { mapState } from 'vuex';
 import TitleBar from '@/components/status/TitleBar';
-import MenuDatePicker from '@/components/status/MenuDatePicker';
 import HeatmapChart from '@/components/status/HeatmapChart';
 import SensorHeatmapChart from '@/components/status/SensorHeatmapChart';
 import PieChart from '@/components/status/PieChart';
@@ -139,7 +132,6 @@ export default {
     TitleBar,
     PieChart,
     HeatmapChart,
-    MenuDatePicker,
     SensorHeatmapChart
   },
 
@@ -176,6 +168,10 @@ export default {
   }),
 
   computed: {
+    panelStyle() {
+      return this.darkMode ? 'pa-1 pl-3 grey darken-3' : 'pa-1 pl-3 primary';
+    },
+
     items() {
       if (this.slectedRegionId < 0) {
         return this.allItems;
@@ -183,6 +179,7 @@ export default {
         return this.allItems.filter(item => item.flags === this.slectedRegionId);
       }
     },
+    ...mapState(['darkMode']),
     ...mapState('status', ['currentDate'])
   },
 

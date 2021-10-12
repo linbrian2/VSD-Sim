@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-app-bar app dark flat dense clipped-left color="black">
-      <NavigationDropdown :title="title" />
+      <v-btn icon @click.stop="showDrawer">
+        <v-icon>mdi-view-grid-outline</v-icon>
+      </v-btn>
 
       <div class="d-flex align-center">
         <router-link to="/">
@@ -17,6 +19,10 @@
       </div>
       <v-toolbar-title v-show="$vuetify.breakpoint.mdAndUp">{{ title }}</v-toolbar-title>
 
+      <v-spacer></v-spacer>
+      <div v-if="!isDashboard">
+        <MenuDatePicker :date="currentDate" @prev="prevDate" @next="nextDate" @setdate="dateSelected" />
+      </div>
       <v-spacer></v-spacer>
 
       <div v-show="$vuetify.breakpoint.mdAndUp">
@@ -38,46 +44,51 @@
           <span>Traffic Flow Quality</span>
         </v-tooltip>
       </div>
-      <v-divider vertical />
-        <div>
-          <v-menu bottom right offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-  
-            <v-list>
-              <v-list-item v-for="(item, i) in menu_items" :key="i"      @click="menuItemClicked(i)">
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
 
-      <LoggedInUser v-if="user.name" :user="user" />
+      <LoggedInUser v-if="user" :user="user" />
+      <v-divider vertical class="ml-2" />
+
+      <div>
+        <v-menu bottom right offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item v-for="(item, i) in menu_items" :key="i" @click="menuItemClicked(i)">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
     </v-app-bar>
+
+    <NavDrawer />
+    <SnackBar />
   </div>
 </template>
 
 <script>
-import NavigationDropdown from '@/components/NavigationDropdown'
-import LoggedInUser from '@/components/status/LoggedInUser';
+import MenuDatePicker from '@/components/common/MenuDatePicker';
+import NavDrawer from '@/components/nav/NavDrawer';
+import SnackBar from '@/components/common/SnackBar';
+import LoggedInUser from '@/components/common/LoggedInUser';
 import { mapState } from 'vuex';
 
 export default {
   props: ['drawer'],
-  components: { 
+  components: {
     LoggedInUser,
-    NavigationDropdown,
+    MenuDatePicker,
+    NavDrawer,
+    SnackBar
   },
   data: () => ({
-    title: 'Health Monitoring',
+    title: 'System Monitoring',
     menu: false,
-    menu_items: [
-      { title: 'Toggle Dark Mode' }
-    ],
-
+    menu_items: [{ title: 'Toggle Dark Mode' }]
   }),
   computed: {
     icon() {
@@ -85,15 +96,14 @@ export default {
     },
 
     isDashboard() {
-      return this.currentAction == 'dashboard';
+      return this.$route.name === 'StatusDashboard';
     },
 
     user() {
-      const name = this.currentUser['X-Auth-Name'];
-      const email = this.currentUser['X-Auth-Email'];
-      return { name, email };
+      return this.$store.state.auth.user;
     },
-    ...mapState('status', ['currentUser', 'currentDate', 'currentAction'])
+
+    ...mapState('status', ['currentDate', 'currentAction'])
   },
   methods: {
     color(name) {
@@ -102,6 +112,22 @@ export default {
 
     setCurrentAction(action) {
       this.$store.commit('status/SET_CURRENT_ACTION', action);
+    },
+
+    showDrawer() {
+      this.$store.commit('SHOW_DRAWER', true);
+    },
+
+    dateSelected(date) {
+      this.$store.commit('status/SET_CURRENT_DATE', date);
+    },
+
+    prevDate() {
+      this.$store.dispatch('status/incCurrentDate', -1);
+    },
+
+    nextDate() {
+      this.$store.dispatch('status/incCurrentDate', 1);
     },
 
     showDashboard() {
@@ -124,7 +150,7 @@ export default {
           this.toggleDarkMode();
           break;
       }
-    },
-  },
+    }
+  }
 };
 </script>

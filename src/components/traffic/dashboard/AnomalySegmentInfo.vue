@@ -155,13 +155,7 @@
         </v-col>
         <v-col cols="12">
           <div class="mx-4">
-            <v-btn
-              outlined
-              v-for="id in cameraIds"
-              :key="id"
-              @click.stop="playVideo(id)"
-              class="mr-5"
-            >
+            <v-btn outlined v-for="id in cameraIds" :key="id" @click.stop="playVideo(id)" class="mr-5">
               <v-icon left color="warning">
                 mdi-camera
               </v-icon>

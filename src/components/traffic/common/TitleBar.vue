@@ -20,8 +20,8 @@
               <v-chip color="green" outlined small v-if="showId && activeSignal.id">
                 <span class="white--text">{{ activeSignal.id }}</span>
               </v-chip>
-              <v-chip color="teal" outlined small v-if="showUid && activeSignal.uid">
-                <span>{{ activeSignal.uid }}</span>
+              <v-chip color="teal ml-2" outlined small v-if="showUid && activeSignal.uid">
+                <span class="white--text">{{ activeSignal.uid }}</span>
               </v-chip>
             </span>
           </div>
@@ -31,7 +31,14 @@
         <span><slot></slot></span>
       </v-col>
       <v-col lg="1" sm="2" xs="12">
-        <v-btn small icon @click.stop="refreshData" class="title-btn float-right mt-2" :loading="loading">
+        <v-btn
+          small
+          icon
+          @click.stop="refreshData"
+          class="title-btn float-right mt-2"
+          :loading="loading"
+          v-if="showRefresh"
+        >
           <v-icon color="white">mdi-refresh</v-icon>
         </v-btn>
       </v-col>
@@ -55,6 +62,10 @@ export default {
       default: false
     },
     showMap: {
+      type: Boolean,
+      default: true
+    },
+    showRefresh: {
       type: Boolean,
       default: true
     }

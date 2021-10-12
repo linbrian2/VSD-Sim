@@ -2259,10 +2259,10 @@ export default {
             }
           }
         } else {
-          this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
 
       return result;

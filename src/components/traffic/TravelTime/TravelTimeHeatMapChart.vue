@@ -275,8 +275,8 @@ export default {
         series: [
           {
             name: 'Heatmap',
-            borderWidth: 1,
-            borderColor: 'rgba(51, 153, 0, 0.50)',
+            borderWidth: 0.1,
+            borderColor: '#64a4c1',
             turboThreshold: 0, //larger threshold or set to 0 to disable
             data: series,
             dataLabels: {
@@ -310,7 +310,7 @@ export default {
         const t = chart.renderer
           .text(row, x, y)
           .attr({ zIndex: 5 })
-          .css({ color: 'white', fontSize: '12px', fontWeight: 'bold' })
+          .css({ color: 'white', opacity: 0.6, fontSize: '10px', fontWeight: 'normal' })
           .add();
         this.customObjects.push(t);
       });
@@ -319,11 +319,11 @@ export default {
 
   watch: {
     '$store.state.darkMode'() {
-      this.reload = true
+      this.reload = true;
       setTimeout(() => {
-        this.reload = false
+        this.reload = false;
       }, 1);
     }
-  },
+  }
 };
 </script>

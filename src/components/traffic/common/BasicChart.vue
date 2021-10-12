@@ -10,7 +10,6 @@
 </template>
 
 <script>
-
 export default {
   props: {
     data: Object,
@@ -18,13 +17,13 @@ export default {
     height: Number,
     left: { type: Number, default: 90 },
     legendy: Number,
-    exporting: Boolean,
+    exporting: Boolean
   },
 
   data() {
     return {
-      reload: false,
-    }
+      reload: false
+    };
   },
 
   computed: {
@@ -32,35 +31,39 @@ export default {
       if (this.data === null || this.data === undefined) {
         return {
           credits: {
-            enabled: false,
-          },
+            enabled: false
+          }
         };
       }
       return this.makeChart(this.height, this.data);
-    },
+    }
+  },
+
+  mounted() {
+    this.$bus.$on('CHART_RELOAD', () => {
+      this.resize();
+    });
   },
 
   methods: {
+    refresh() {
+      this.reload = true;
+      setTimeout(() => {
+        this.reload = false;
+      }, 100);
+    },
+
+    resize() {
+      if (this.$refs.highcharts && this.$refs.highcharts.chart) {
+        const chart = this.$refs.highcharts.chart;
+        chart.reflow();
+      }
+    },
+
     setYAxisRange(min, max) {
       if (this.$refs.highcharts && this.$refs.highcharts.chart) {
         const chart = this.$refs.highcharts.chart;
         chart.yAxis[0].setExtremes(min, max);
-      }
-    },
-
-    resize(width) {
-      if (this.$refs.highcharts && this.$refs.highcharts.chart) {
-        this.$refs.highcharts.chart.setSize(width, null);
-      }
-    },
-
-    resizeIt() {
-      if (this.$refs.highcharts && this.$refs.highcharts.chart) {
-        //   style = chart.container.offsetParent.style;
-        // style.width = this.innerWidth - padding + 'px';
-        // style.height = this.innerHeight - padding + 'px';
-        //console.log(this.$refs.highcharts.chart.container.offsetParent.style);
-        this.$refs.highcharts.chart.setSize(null, null);
       }
     },
 
@@ -73,14 +76,14 @@ export default {
     prepareSeries(data) {
       let series = [];
       if (data) {
-        data.forEach((item) => {
+        data.forEach(item => {
           if (item.data !== null) {
             series.push({
               type: 'line',
               name: item.name,
               color: item.color,
               data: item.data,
-              lineWidth: 1.5,
+              lineWidth: 1.5
             });
           }
         });
@@ -100,17 +103,17 @@ export default {
 
       let plotLines =
         data.timeSlots &&
-        data.timeSlots.map((time) => ({
+        data.timeSlots.map(time => ({
           color: '#AAAAAA',
           width: 2,
           value: time,
-          dashStyle: 'Dot',
+          dashStyle: 'Dot'
         }));
 
       // Create chart instance
       let chart = {
         credits: {
-          enabled: false,
+          enabled: false
         },
 
         chart: {
@@ -122,42 +125,44 @@ export default {
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#DEDEDE',
-          plotBorderWidth: 1,
+          plotBorderWidth: 1
         },
 
         title: {
           style: {
             fontSize: '18px',
-            fontWeight: 'bold',
+            fontWeight: 'bold'
           },
-          text: title,
+          text: title
         },
         xAxis: {
           type: 'datetime',
           title: {
             style: {
               fontSize: 13,
-              fontWeight: 'bold',
+              fontWeight: 'bold'
             },
-            text: xAxis,
+            text: xAxis
           },
-          plotLines: plotLines,
+          min: data.xmin,
+          max: data.xmax,
+          plotLines: plotLines
         },
         yAxis: {
           allowDecimals: false,
           title: {
             style: {
               fontSize: 13,
-              fontWeight: 'bold',
+              fontWeight: 'bold'
             },
-            text: yAxis,
+            text: yAxis
           },
-          min: data.min,
-          max: data.max,
+          min: data.ymin,
+          max: data.ymax
         },
         tooltip: {
           shared: true,
-          crosshairs: true,
+          crosshairs: true
         },
         legend: {
           enabled: series.length > 0,
@@ -165,36 +170,33 @@ export default {
           verticalAlign: 'top',
           align: 'left',
           x: 80,
-          y: ly,
+          y: ly
         },
         navigation: {
           buttonOptions: {
             align: 'left',
-            verticalAlign: 'bottom',
-          },
+            verticalAlign: 'bottom'
+          }
         },
         exporting: {
           enabled: exporting,
           buttons: {
             contextButton: {
-              menuItems: ['viewFullscreen', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF'],
-            },
-          },
+              menuItems: ['viewFullscreen', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF']
+            }
+          }
         },
-        series: series,
+        series: series
       };
       return chart;
-    },
+    }
   },
 
   watch: {
     '$store.state.darkMode'() {
-      this.reload = true
-      setTimeout(() => {
-        this.reload = false
-      }, 1);
+      this.refresh();
     }
-  },
+  }
 };
 </script>
 

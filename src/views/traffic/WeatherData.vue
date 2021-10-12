@@ -9,7 +9,7 @@
       :onMarkerClick="markerClicked"
     />
     <TitleBar :title="title" :showId="true" :loading="loading" :refresh="refreshData">
-      <div style="margin-left:50px; margin-top:-3px">
+      <div style="margin-left:50px; margin-top:8px">
         <v-select
           dark
           style="width:140px; font-size: 14px"
@@ -106,7 +106,7 @@ export default {
       });
       return names;
     },
-    
+
     ...mapState('traffic', ['weatherStations', 'currentDate'])
   },
 
@@ -181,7 +181,7 @@ export default {
           this.weather.precip = this.formPrecipData(data);
         }
       } catch (error) {
-        this.$store.dispatch('traffic/setSystemStatus', { text: error, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
 
       this.loading = false;
@@ -197,7 +197,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('traffic/setSystemStatus', { text: response.data.message, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'info' });
       }
       return result;
     },
