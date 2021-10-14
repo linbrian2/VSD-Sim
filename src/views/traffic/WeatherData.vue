@@ -53,9 +53,9 @@
 <script>
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
-import MapSelectionPanel from '@/components/traffic/map/MapSelectionPanel';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import BasicChart from '@/components/traffic/common/BasicChart';
+import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPanel';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
 export default {
   components: {
@@ -107,7 +107,8 @@ export default {
       return names;
     },
 
-    ...mapState('traffic', ['weatherStations', 'currentDate'])
+    ...mapState(['currentDate']),
+    ...mapState('traffic', ['weatherStations'])
   },
 
   mounted() {

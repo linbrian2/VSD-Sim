@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import AppBar from '@/components/cav/AppBar';
+import AppBar from '@/components/modules/cav/AppBar';
 
 export default {
   name: 'App',

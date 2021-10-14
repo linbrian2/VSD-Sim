@@ -106,10 +106,10 @@
 import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
-import SelectionPanel from '@/components/traffic/common/SelectionPanel';
-import MapSelect from '@/components/traffic/map/MapSelect';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import TrafficFlowCombinedCharts from '@/components/traffic/common/TrafficFlowCombinedCharts';
+import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+import MapSelect from '@/components/modules/traffic/map/MapSelect';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TrafficFlowCombinedCharts from '@/components/modules/traffic/common/TrafficFlowCombinedCharts';
 
 export default {
   components: {
@@ -211,7 +211,8 @@ export default {
       return result;
     },
 
-    ...mapState('traffic', ['activeMarker', 'currentDate'])
+    ...mapState(['currentDate']),
+    ...mapState('traffic', ['activeMarker'])
   },
 
   mounted() {

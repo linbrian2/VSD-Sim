@@ -7,19 +7,13 @@ const state = {
     reconnectError: false
   },
   currentGPS: null,
-  position: {
-    lat: 39.084,
-    lng: -77.1528
-  },
   currentEvent: null,
   currentCarPos: null,
   showPanel: false,
   locations: [],
-  currentAction: 'status',
 
   playState: 'stop',
   progressLoading: false,
-  currentDate: new Date(),
 
   currentTrip: {},
   currentState: {},
@@ -73,9 +67,6 @@ const mutations = {
   SET_GPS_POSITION(state, pos) {
     state.currentGPS = pos;
   },
-  SET_POSITION(state, pos) {
-    state.position = pos;
-  },
   SET_CAR_POSITION(state, pos) {
     state.currentCarPos = pos;
   },
@@ -90,12 +81,6 @@ const mutations = {
   },
   SET_LOCATIONS(state, locations) {
     state.locations = locations;
-  },
-  SET_CURRENT_DATE(state, date) {
-    state.currentDate = date;
-  },
-  SET_CURRENT_ACTION(state, action) {
-    state.currentAction = action;
   },
   SET_PROGRESS_LOADING(state, loading) {
     state.progressLoading = loading;

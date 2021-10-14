@@ -172,17 +172,17 @@ import Constants from '@/utils/constants/traffic';
 import { weatherCode } from '@/mixins/weatherCode';
 import { mapIcons } from '@/mixins/mapIcons';
 
-import RightPanel from '@/components/traffic/common/RightPanel';
-import InfoWindow from '@/components/traffic/dashboard/InfoWindow';
+import RightPanel from '@/components/modules/traffic/common/RightPanel';
+import InfoWindow from '@/components/modules/traffic/dashboard/InfoWindow';
 
-import Toolbar from '@/components/traffic/dashboard/Toolbar';
+import Toolbar from '@/components/modules/traffic/dashboard/Toolbar';
 
-import FlowDataInfo from '@/components/traffic/dashboard/FlowDataInfo';
-import BluetoothDataInfo from '@/components/traffic/dashboard/BluetoothDataInfo';
-import WeatherDataInfo from '@/components/traffic/dashboard/WeatherDataInfo';
-import AnomalySegmentInfo from '@/components/traffic/dashboard/AnomalySegmentInfo';
+import FlowDataInfo from '@/components/modules/traffic/dashboard/FlowDataInfo';
+import BluetoothDataInfo from '@/components/modules/traffic/dashboard/BluetoothDataInfo';
+import WeatherDataInfo from '@/components/modules/traffic/dashboard/WeatherDataInfo';
+import AnomalySegmentInfo from '@/components/modules/traffic/dashboard/AnomalySegmentInfo';
 
-import SelectionDialog from '@/components/traffic/dashboard/SelectionDialog';
+import SelectionDialog from '@/components/modules/traffic/dashboard/SelectionDialog';
 
 export default {
   mixins: [weatherCode, mapIcons],
@@ -261,7 +261,7 @@ export default {
     },
 
     position() {
-      return this.$store.state.traffic.position;
+      return this.$store.state.position;
     },
 
     currentProperties() {
@@ -304,6 +304,7 @@ export default {
       return this.generateSearchEntities();
     },
 
+    ...mapState(['currentDate']),
     ...mapState('traffic', [
       'currentBluetoothAnomaly',
       'currentFlowAnomaly',
@@ -311,7 +312,6 @@ export default {
       'currentRestrictions',
       'currentAnomalySegments',
       'weatherStations',
-      'currentDate',
       'mapRegionSelection',
       'mapLayersSelection',
       'incidentSettings'

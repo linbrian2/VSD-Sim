@@ -62,6 +62,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import { RouterPaths } from '@/utils/constants/router';
 
 export default {
   data() {
@@ -113,7 +114,7 @@ export default {
     },
 
     handleForgetPassword() {
-      this.$router.push({ path: '/forgot-password' }).catch(() => {});
+      this.$router.push({ path: RouterPaths.AUTH_FORGOT_PASSWORD }).catch(() => {});
     },
 
     handleInput() {

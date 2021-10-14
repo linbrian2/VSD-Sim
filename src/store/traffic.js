@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Api from '@/utils/api/traffic';
-import Utils from '@/utils/Utils';
 
 const state = {
   socket: {
@@ -10,8 +9,6 @@ const state = {
     reconnectCount: 0
   },
 
-  currentUser: {},
-
   currentBluetoothAnomaly: null,
   currentFlowAnomaly: null,
   currentWeatherCode: null,
@@ -19,11 +16,6 @@ const state = {
   currentAnomalySegments: [],
 
   showFlowChart: false,
-
-  position: {
-    lat: 39.084,
-    lng: -77.1528
-  },
   showPanel: false,
   activeMarker: null,
 
@@ -32,8 +24,6 @@ const state = {
   weatherStations: [],
 
   bluetoothSegments: [],
-  currentAction: 'dashboard',
-  currentDate: new Date(),
 
   mapRegionSelection: -1,
   mapLayersSelection: null,
@@ -107,9 +97,6 @@ const mutations = {
   SOCKET_RECONNECT_ERROR(state) {
     state.socket.reconnectError = true;
   },
-  SET_CURRENT_USER(state, user) {
-    state.currentUser = user;
-  },
   SET_CURRENT_BLUETOOTH_ANOMALY_DATA(state, data) {
     state.currentBluetoothAnomaly = data;
   },
@@ -127,9 +114,6 @@ const mutations = {
   },
   SHOW_FLOW_CHART(state, show) {
     state.showFlowChart = show;
-  },
-  POSITION_SET(state, pos) {
-    state.position = pos;
   },
   SHOW_PANEL(state, show) {
     state.showPanel = show;
@@ -151,12 +135,6 @@ const mutations = {
   },
   SET_BLUETOOTH_SEGMENTS(state, segments) {
     state.bluetoothSegments = segments;
-  },
-  SET_CURRENT_ACTION(state, action) {
-    state.currentAction = action;
-  },
-  SET_CURRENT_DATE(state, date) {
-    state.currentDate = date;
   },
   SET_MAP_REGION(state, region) {
     state.mapRegionSelection = region;
@@ -251,17 +229,6 @@ const actions = {
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' });
     }
-  },
-
-  incCurrentDate({ state, commit }, days) {
-    const currentDate = state.currentDate;
-    if (Utils.isTodayAndBeyond(currentDate) && days > 0) {
-      return;
-    }
-
-    const result = new Date(currentDate);
-    result.setDate(result.getDate() + days);
-    commit('SET_CURRENT_DATE', result);
   },
 
   loadMapLayers({ commit }) {

@@ -74,10 +74,10 @@
 import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import { mapState, mapActions } from 'vuex';
-import MapSelectionPanel from '@/components/traffic/map/MapSelectionPanel';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import DrilldownHeatMapChart from '@/components/traffic/chart/DrilldownHeatMapChart';
-import AnomalyBaselineDialog from '@/components/traffic/common/AnomalyBaselineDialog';
+import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPanel';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import DrilldownHeatMapChart from '@/components/modules/traffic/chart/DrilldownHeatMapChart';
+import AnomalyBaselineDialog from '@/components/modules/traffic/common/AnomalyBaselineDialog';
 
 export default {
   components: {
@@ -110,7 +110,8 @@ export default {
       return names;
     },
 
-    ...mapState('traffic', ['activeMarker', 'anomalyDevices', 'currentDate'])
+    ...mapState(['currentDate']),
+    ...mapState('traffic', ['activeMarker', 'anomalyDevices'])
   },
 
   created() {

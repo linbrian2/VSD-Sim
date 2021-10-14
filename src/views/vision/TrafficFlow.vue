@@ -63,11 +63,11 @@
 </template>
 
 <script>
-import Api from '@/utils/api/vision';
 import { mapState } from 'vuex';
-import TitleBar from '@/components/vision/TitleBar';
-import BasicChart from '@/components/vision/BasicChart';
-import StackBarChart from '@/components/vision/StackBarChart';
+import Api from '@/utils/api/vision';
+import TitleBar from '@/components/modules/vision/TitleBar';
+import BasicChart from '@/components/modules/vision/BasicChart';
+import StackBarChart from '@/components/modules/vision/StackBarChart';
 
 export default {
   components: {
@@ -100,8 +100,8 @@ export default {
   }),
 
   computed: {
-    ...mapState(['currentSignal']),
-    ...mapState('vision', ['activeMarker', 'currentDate'])
+    ...mapState(['currentDate']),
+    ...mapState('vision', ['activeMarker', 'currentSignal'])
   },
 
   watch: {

@@ -51,11 +51,11 @@
 <script>
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
-import MapSelectionPanel from '@/components/traffic/map/MapSelectionPanel';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import LCMCurveChart from '@/components/traffic/chart/LCMCurveChart';
+import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPanel';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import LCMCurveChart from '@/components/modules/traffic/chart/LCMCurveChart';
 import Highcharts from 'highcharts';
-import SpeedVolumeChartDialog from '@/components/traffic/lcm/SpeedVolumeChartDialog';
+import SpeedVolumeChartDialog from '@/components/modules/traffic/lcm/SpeedVolumeChartDialog';
 
 export default {
   components: {
@@ -108,7 +108,8 @@ export default {
       return this.availabilityNB && this.availabilitySB ? this.defaultHeight : 750;
     },
 
-    ...mapState('traffic', ['activeMarker', 'anomalyDevices', 'currentDate'])
+    ...mapState(['currentDate']),
+    ...mapState('traffic', ['activeMarker', 'anomalyDevices'])
   },
 
   mounted() {

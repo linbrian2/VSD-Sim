@@ -60,8 +60,8 @@
 <script>
 import Api from '@/utils/api/hr';
 import Utils from '@/utils/Utils';
-import TitleBar from '@/components/hr/TitleBar';
-import FormatChip from '@/components/hr/FormatChip';
+import TitleBar from '@/components/modules/hr/TitleBar';
+import FormatChip from '@/components/modules/hr/FormatChip';
 export default {
   components: {
     TitleBar,
@@ -92,16 +92,19 @@ export default {
       return 'Updated time: ' + Utils.formatDateAndTime(date);
     }
   },
-  async mounted() {
+
+  mounted() {
     this.initPanelState = this.$store.state.hr.showPanel;
     this.$store.commit('hr/SHOW_PANEL', false);
     this.refreshData();
   },
+
   beforeDestroy() {
     if (this.initPanelState) {
       this.$store.commit('hr/SHOW_PANEL', true);
     }
   },
+
   methods: {
     powerColor(power) {
       return power > 0 ? 'green' : 'red';

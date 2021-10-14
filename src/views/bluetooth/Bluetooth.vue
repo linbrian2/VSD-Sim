@@ -88,13 +88,13 @@ import MultiGraph from '@/views/bluetooth/MultiGraph';
 import BreakdownProbabilty from '@/views/bluetooth/BreakdownProbabilty';
 import TrafficRouting from '@/views/bluetooth/TrafficRouting';
 // UI
-import AppBar from '@/components/bluetooth/ui/AppBar';
-import Map from '@/components/bluetooth/ui/Map';
-import Notifications from '@/components/bluetooth/ui/Notifications';
-import Toolbar from '@/components/bluetooth/ui/Toolbar.vue';
-import Dialogs from '@/components/bluetooth/dialogs/Dialogs.vue';
-import ToolbarAddTT from '@/components/bluetooth/ui/ToolbarAddTT.vue';
-import PlaybackToolbar from '@/components/bluetooth/ui/PlaybackToolbar.vue';
+import AppBar from '@/components/modules/bluetooth/ui/AppBar';
+import Map from '@/components/modules/bluetooth/ui/Map';
+import Notifications from '@/components/modules/bluetooth/ui/Notifications';
+import Toolbar from '@/components/modules/bluetooth/ui/Toolbar.vue';
+import Dialogs from '@/components/modules/bluetooth/dialogs/Dialogs.vue';
+import ToolbarAddTT from '@/components/modules/bluetooth/ui/ToolbarAddTT.vue';
+import PlaybackToolbar from '@/components/modules/bluetooth/ui/PlaybackToolbar.vue';
 // Utils
 import Utils from '@/utils/Utils';
 import Api from '@/utils/api/bluetooth.js';

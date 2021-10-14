@@ -18,8 +18,8 @@
 import Api from '@/utils/api/traffic';
 import { mapState } from 'vuex';
 import Utils from '@/utils/Utils';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import BasicHeatMapChart from '@/components/traffic/chart/BasicHeatMapChart';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import BasicHeatMapChart from '@/components/modules/traffic/chart/BasicHeatMapChart';
 
 export default {
   components: {
@@ -42,7 +42,7 @@ export default {
     isData1Available() {
       return !Utils.isEmpty(this.heatMapData1);
     },
-    ...mapState('traffic', ['currentDate'])
+    ...mapState(['currentDate'])
   },
 
   mounted() {

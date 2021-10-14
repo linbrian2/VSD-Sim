@@ -1,13 +1,4 @@
 export default {
-  PAGE_DASHBOARD: 'dashboard',
-  PAGE_INFO: 'info',
-  PAGE_PCD: 'pcd',
-  PAGE_SIGNAL: 'signal',
-  PAGE_PREF: 'pref',
-  PAGE_AOR: 'aor',
-  PAGE_VOLUME: 'volume',
-  PAGE_INTERVAL: 'interval',
-  PAGE_DELAY: 'delay',
   CHART_HEIGHT: 560,
 
   PREF_SIGNAL: 0,

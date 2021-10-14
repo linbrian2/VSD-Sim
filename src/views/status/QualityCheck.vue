@@ -122,10 +122,10 @@ import Api from '@/utils/api/status';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/status';
 import { mapState } from 'vuex';
-import TitleBar from '@/components/status/TitleBar';
-import HeatmapChart from '@/components/status/HeatmapChart';
-import SensorHeatmapChart from '@/components/status/SensorHeatmapChart';
-import PieChart from '@/components/status/PieChart';
+import TitleBar from '@/components/modules/status/TitleBar';
+import HeatmapChart from '@/components/modules/status/HeatmapChart';
+import SensorHeatmapChart from '@/components/modules/status/SensorHeatmapChart';
+import PieChart from '@/components/modules/status/PieChart';
 
 export default {
   components: {
@@ -179,8 +179,7 @@ export default {
         return this.allItems.filter(item => item.flags === this.slectedRegionId);
       }
     },
-    ...mapState(['darkMode']),
-    ...mapState('status', ['currentDate'])
+    ...mapState(['darkMode', 'currentDate'])
   },
 
   filters: {

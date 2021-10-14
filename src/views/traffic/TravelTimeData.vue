@@ -75,10 +75,10 @@
 <script>
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
-import SelectionPanel from '@/components/traffic/common/SelectionPanel';
-import MapSelect from '@/components/traffic/map/MapSelect';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import BasicChart from '@/components/traffic/common/BasicChart';
+import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+import MapSelect from '@/components/modules/traffic/map/MapSelect';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
 export default {
   components: {
@@ -163,7 +163,8 @@ export default {
       return this.markers.map(item => item.name);
     },
 
-    ...mapState('traffic', ['activeMarker', 'bluetoothSegments', 'currentDate'])
+    ...mapState(['currentDate']),
+    ...mapState('traffic', ['activeMarker', 'bluetoothSegments'])
   },
 
   mounted() {

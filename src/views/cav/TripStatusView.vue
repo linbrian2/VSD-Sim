@@ -8,9 +8,9 @@
 </template>
 
 <script>
-import VehicleList from '@/components/cav/VehicleList';
-import MapView from '@/components/cav/MapView';
-import SelectionPanel from '@/components/cav/SelectionPanel';
+import VehicleList from '@/components/modules/cav/VehicleList';
+import MapView from '@/components/modules/cav/MapView';
+import SelectionPanel from '@/components/modules/cav/SelectionPanel';
 
 export default {
   components: {

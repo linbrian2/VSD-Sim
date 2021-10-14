@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import Utils from '@/utils/Utils';
 import auth from '@/store/auth';
 import cav from '@/store/cav';
 import hr from '@/store/hr';
 import bluetooth from '@/store/bluetooth';
 import traffic from '@/store/traffic';
 import vision from '@/store/vision';
-import status from '@/store/status';
 
 Vue.use(Vuex);
 
@@ -16,7 +16,6 @@ const modules = {
   bluetooth,
   cav,
   hr,
-  status,
   traffic,
   vision
 };
@@ -24,7 +23,9 @@ const modules = {
 const state = {
   darkMode: null,
   showDrawer: false,
-  snackbar: {}
+  snackbar: {},
+  position: { lat: 39.084, lng: -77.1528 },
+  currentDate: new Date()
 };
 
 const mutations = {
@@ -42,6 +43,14 @@ const mutations = {
 
   SET_SNACKBAR(state, snackbar) {
     state.snackbar = snackbar;
+  },
+
+  SET_POSITION(state, pos) {
+    state.position = pos;
+  },
+
+  SET_CURRENT_DATE(state, date) {
+    state.currentDate = date;
   }
 };
 
@@ -60,6 +69,17 @@ const actions = {
     let snackbar = { showing: true, color: 'info', timeout: 2000, text: '' };
     Object.assign(snackbar, status);
     commit('SET_SNACKBAR', snackbar);
+  },
+
+  incCurrentDate({ state, commit }, days) {
+    const currentDate = state.currentDate;
+    if (Utils.isTodayAndBeyond(currentDate) && days > 0) {
+      return;
+    }
+
+    const result = new Date(currentDate);
+    result.setDate(result.getDate() + days);
+    commit('SET_CURRENT_DATE', result);
   }
 };
 

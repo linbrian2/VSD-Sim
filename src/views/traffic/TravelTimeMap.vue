@@ -79,11 +79,11 @@
 import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import TravelTimeHeatMapChart from '@/components/traffic/TravelTime/TravelTimeHeatMapChart';
-import SelectionPanel from '@/components/traffic/common/SelectionPanel';
-import MapSegments from '@/components/traffic/map/MapSegments';
-import TrafficFlowChartsDialog from '@/components/traffic/TravelTime/TrafficFlowChartsDialog';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TravelTimeHeatMapChart from '@/components/modules/traffic/TravelTime/TravelTimeHeatMapChart';
+import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+import MapSegments from '@/components/modules/traffic/map/MapSegments';
+import TrafficFlowChartsDialog from '@/components/modules/traffic/TravelTime/TrafficFlowChartsDialog';
 
 export default {
   components: {
@@ -146,8 +146,7 @@ export default {
       const index = this.routeDirections.findIndex(r => r.value === this.routeDir);
       return index == 0 ? this.allSegments[0] : this.allSegments[1];
     },
-
-    ...mapState('traffic', ['currentDate'])
+    ...mapState(['currentDate'])
   },
 
   created() {

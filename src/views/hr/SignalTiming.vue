@@ -60,10 +60,10 @@ import { mapState, mapActions } from 'vuex';
 //import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapStyle from '@/utils/MapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
-import SignalDisplay from '@/components/hr/SignalDisplay';
-import TimingChart from '@/components/hr/TimingChart';
-import TitleBar from '@/components/hr/TitleBar';
-import MenuTimePicker from '@/components/hr/MenuTimePicker';
+import SignalDisplay from '@/components/modules/hr/SignalDisplay';
+import TimingChart from '@/components/modules/hr/TimingChart';
+import TitleBar from '@/components/modules/hr/TitleBar';
+import MenuTimePicker from '@/components/modules/hr/MenuTimePicker';
 
 export default {
   components: {
@@ -103,10 +103,13 @@ export default {
     markers() {
       return this.$store.state.hr.locations;
     },
+
     position() {
-      return this.$store.state.hr.position;
+      return this.$store.state.position;
     },
-    ...mapState('hr', ['activeMarker', 'timing', 'currentDate'])
+
+    ...mapState(['currentDate']),
+    ...mapState('hr', ['activeMarker', 'timing'])
   },
   watch: {
     currentDate(value) {

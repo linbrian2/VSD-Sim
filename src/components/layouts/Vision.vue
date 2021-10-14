@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import Constants from '@/utils/constants/vision';
-import AppBar from '@/components/vision/AppBar';
-import MapSelect from '@/components/vision/MapSelect';
+import AppBar from '@/components/modules/vision/AppBar';
+import MapSelect from '@/components/modules/vision/MapSelect';
+import { RouterNames } from '@/utils/constants/router';
 import { mapState } from 'vuex';
 export default {
   name: 'App',
@@ -58,7 +58,9 @@ export default {
     icon() {
       return this.$store.state.vision.showPanel ? 'mdi-close' : 'mdi-menu';
     },
-    ...mapState('vision', ['locations', 'currentAction', 'currentDate'])
+
+    ...mapState(['currentDate']),
+    ...mapState('vision', ['locations'])
   },
   methods: {
     hidePanel() {
@@ -71,11 +73,11 @@ export default {
 
     onMapClick(marker) {
       let time = this.currentDate.getTime();
-      switch (this.currentAction) {
-        case Constants.PAGE_DASHBOARD:
+      switch (this.$route.name) {
+        case RouterNames.VISION_DASHBOARD:
           this.$bus.$emit('GET_INFO', { marker, time });
           break;
-        case Constants.PAGE_RE_ID:
+        case RouterNames.VISION_REID:
           this.$bus.$emit('GET_VIDEO', { marker, time });
           break;
       }

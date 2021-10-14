@@ -52,11 +52,11 @@ import Api from '@/utils/api/vision';
 import { mapState } from 'vuex';
 import Constants from '@/utils/constants/vision';
 import Utils from '@/utils/Utils';
-import TitleBar from '@/components/vision/TitleBar';
-import MenuTimePicker from '@/components/vision/MenuTimePicker';
-import VideoPlayer from '@/components/vision/VideoPlayer';
-import HeatMapChart from '@/components/vision/HeatMapChart';
-import TrafficFlowCharts from '@/components/vision/TrafficFlowCharts';
+import TitleBar from '@/components/modules/vision/TitleBar';
+import MenuTimePicker from '@/components/modules/vision/MenuTimePicker';
+import VideoPlayer from '@/components/modules/vision/VideoPlayer';
+import HeatMapChart from '@/components/modules/vision/HeatMapChart';
+import TrafficFlowCharts from '@/components/modules/vision/TrafficFlowCharts';
 
 export default {
   components: {
@@ -131,7 +131,8 @@ export default {
     video() {
       return this.info.uri;
     },
-    ...mapState('vision', ['activeMarker', 'currentDate', 'currentTime'])
+    ...mapState(['currentDate']),
+    ...mapState('vision', ['activeMarker', 'currentTime'])
   },
 
   mounted() {

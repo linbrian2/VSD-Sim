@@ -42,9 +42,9 @@
 
 <script>
 import Api from '@/utils/api/hr';
-import PcdChart from '@/components/hr/PcdChart';
-import LoadingProgress from '@/components/hr/LoadingProgress';
-import PCDSignalSelectionDialog from '@/components/hr/PCDSignalSelectionDialog';
+import PcdChart from '@/components/modules/hr/PcdChart';
+import LoadingProgress from '@/components/modules/hr/LoadingProgress';
+import PCDSignalSelectionDialog from '@/components/modules/hr/PCDSignalSelectionDialog';
 
 export default {
   components: {
@@ -67,7 +67,7 @@ export default {
 
   computed: {
     date() {
-      return this.$store.state.hr.currentDate;
+      return this.$store.state.currentDate;
     },
     markers() {
       return this.$store.state.hr.locations;
@@ -107,7 +107,7 @@ export default {
     },
 
     goBack() {
-      this.$router.push({ path: '/hr/pcd' });
+      this.$router.go(-1);
     },
 
     showAll() {

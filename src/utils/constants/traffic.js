@@ -1,17 +1,4 @@
 export default Object.freeze({
-  PAGE_DASHBOARD: 'dashboard',
-  PAGE_FLOW: 'flow',
-  PAGE_LCM: 'lcm',
-  PAGE_FLOW_PER_LANE: 'flowPerLane',
-  PAGE_FLOW_PER_MINUTE: 'flowPerMinute',
-  PAGE_PREDICT: 'predict',
-  PAGE_ANOMALY: 'anomaly',
-  PAGE_WEATHER: 'weather',
-  PAGE_TRAVEL_TIME_DATA: 'travelTimeData',
-  PAGE_TRAVEL_TIME_MAP: 'travelTimeMap',
-  PAGE_INCIDENTS: 'incidents',
-  PAGE_COMBINED_ANOMALY: 'combinedAnomaly',
-  PAGE_INCIDENT_VIEW: 'IncidentView',
   CHART_HEIGHT: 560,
 
   DEVICE_TRAFFIC: 'Traffic Detectors',

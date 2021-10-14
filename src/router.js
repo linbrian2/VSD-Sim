@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import { RouterNames, RouterPaths } from '@/utils/constants/router';
 
 import AuthToken from '@/auth/services/auth-token';
 import LayoutAuth from '@/components/layouts/Auth';
@@ -18,7 +19,6 @@ import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
 import TravelTimeMap from '@/views/traffic/TravelTimeMap.vue';
 import IncidentList from '@/views/traffic/IncidentList.vue';
-import CombinedAnomalyMap from '@/views/traffic/CombinedAnomalyMap.vue';
 
 import HRDashboard from '@/views/hr/Dashboard.vue';
 import PCD from '@/views/hr/PCD.vue';
@@ -28,7 +28,6 @@ import MultiPCD from '@/views/hr/MultiPCD.vue';
 import MultiOcc from '@/views/hr/MultiOcc.vue';
 
 import VisionDashboard from '@/views/vision/Dashboard.vue';
-import VisionTrafficFlow from '@/views/vision/TrafficFlow.vue';
 import ReID from '@/views/vision/ReID.vue';
 
 import Bluetooth from '@/views/bluetooth/Bluetooth.vue';
@@ -58,178 +57,168 @@ const router = new Router({
       children: [
         {
           path: '',
-          name: 'TrafficDashboard',
+          name: RouterNames.TRAFFIC_DASHBOARD,
           component: TrafficDashboard
         },
         {
-          path: 'traffic-flow',
-          name: 'TrafficFlow',
+          path: RouterPaths.TRAFFIC_FLOW,
+          name: RouterNames.TRAFFIC_FLOW,
           component: TrafficFlow
         },
         {
-          path: 'lcm',
-          name: 'LCM',
+          path: RouterPaths.TRAFFIC_LCM,
+          name: RouterNames.TRAFFIC_LCM,
           component: TrafficLCM
         },
         {
-          path: 'predict',
-          name: 'Predict',
+          path: RouterPaths.TRAFFIC_PREDICT,
+          name: RouterNames.TRAFFIC_PREDICT,
           component: TrafficPredict
         },
         {
-          path: 'anomaly',
-          name: 'Anaomaly',
+          path: RouterPaths.TRAFFIC_ANOMALY,
+          name: RouterNames.TRAFFIC_ANOMALY,
           component: AnomalyMap
         },
         {
-          path: 'weather',
-          name: 'Weather',
+          path: RouterPaths.TRAFFIC_WEATHER,
+          name: RouterNames.TRAFFIC_WEATHER,
           component: WeatherData
         },
         {
-          path: 'travel-time-data',
-          name: 'TravelTimeData',
+          path: RouterPaths.TRAVEL_TIME_DATA,
+          name: RouterNames.TRAVEL_TIME_DATA,
           component: TravelTimeData
         },
         {
-          path: 'travel-time-map',
-          name: 'TravelTimeMap',
+          path: RouterPaths.TRAVEL_TIME_MAP,
+          name: RouterNames.TRAVEL_TIME_MAP,
           component: TravelTimeMap
         },
         {
-          path: 'incidents',
-          name: 'Incidents',
+          path: RouterPaths.TRAFFIC_INCIDENT,
+          name: RouterNames.TRAFFIC_INCIDENT,
           component: IncidentList
-        },
-        {
-          path: 'combined-anomaly',
-          name: 'CombinedAnomalyMap',
-          component: CombinedAnomalyMap
         }
       ]
     },
     {
-      path: '/hr',
+      path: RouterPaths.HR_DASHBOARD,
       component: HR,
       children: [
         {
-          path: '',
-          name: 'HRDashboard',
+          path: RouterPaths.HR_DASHBOARD,
+          name: RouterNames.HR_DASHBOARD,
           component: HRDashboard
         },
         {
-          path: 'pcd',
-          name: 'pcd',
+          path: RouterPaths.HR_PCD,
+          name: RouterNames.HR_PCD,
           component: PCD
         },
         {
-          path: 'signal',
-          name: 'signal',
+          path: RouterPaths.HR_SIGNAL,
+          name: RouterNames.HR_SIGNAL,
           component: SignalTiming
         },
         {
-          path: 'measure',
-          name: 'pref',
+          path: RouterPaths.HR_PERFORMANCE_MEASURES,
+          name: RouterNames.HR_PERFORMANCE_MEASURES,
           component: PerformanceMeasures
         },
         {
-          path: 'pcds',
-          name: 'MultiPCD',
+          path: RouterPaths.HR_MULTI_PCD,
+          name: RouterNames.HR_MULTI_PCD,
           component: MultiPCD
         },
         {
-          path: 'occs',
-          name: 'MultiOcc',
+          path: RouterPaths.HR_MULTI_OCC,
+          name: RouterNames.HR_MULTI_OCC,
           component: MultiOcc
         }
       ]
     },
     {
-      path: '/vision',
+      path: RouterPaths.VISION_DASHBOARD,
       component: Vision,
       children: [
         {
-          path: '',
-          name: 'VisionDashboard',
+          path: RouterPaths.VISION_DASHBOARD,
+          name: RouterNames.VISION_DASHBOARD,
           component: VisionDashboard
         },
         {
-          path: 'flow',
-          name: 'VisionTrafficFlow',
-          component: VisionTrafficFlow
-        },
-        {
-          path: 're-id',
-          name: 'Re-ID',
+          path: RouterPaths.VISION_REID,
+          name: RouterNames.VISION_REID,
           component: ReID
         }
       ]
     },
     {
-      path: '/bluetooth',
-      name: 'Bluetooth',
+      path: RouterPaths.BLUETOOTH_DASHBOARD,
+      name: RouterNames.BLUETOOTH_DASHBOARD,
       component: Bluetooth
     },
     {
-      path: '/cav',
+      path: RouterPaths.CAV_DASHBOARD,
       component: CAV,
       children: [
         {
-          path: '',
-          name: 'TripData',
+          path: RouterPaths.CAV_DASHBOARD,
+          name: RouterNames.CAV_DASHBOARD,
           component: TripDataView
         },
         {
-          path: 'status',
-          name: 'TripStatus',
+          path: RouterPaths.CAV_STATUS,
+          name: RouterNames.CAV_STATUS,
           component: TripStatusView
         }
       ]
     },
     {
-      path: '/status',
+      path: RouterPaths.STATUS_DASHBOARD,
       component: Status,
       children: [
         {
-          path: '',
-          name: 'StatusDashboard',
+          path: RouterPaths.STATUS_DASHBOARD,
+          name: RouterNames.STATUS_DASHBOARD,
           component: StatusDashboard
         },
         {
-          path: 'quality',
-          name: 'QualityCheck',
+          path: RouterPaths.STATUS_QUALITY_CHECK,
+          name: RouterNames.STATUS_QUALITY_CHECK,
           component: QualityCheck
         }
       ]
     },
     {
       path: '',
-      redirect: '/login',
+      redirect: RouterNames.AUTH_LOGIN,
       component: LayoutAuth,
       children: [
         {
-          path: '/login',
-          name: 'Login',
+          path: RouterPaths.AUTH_LOGIN,
+          name: RouterNames.AUTH_LOGIN,
           component: LoginPage
         },
         {
-          path: '/change-password',
-          name: 'ChangePassword',
+          path: RouterPaths.AUTH_CHANGE_PASSWORD,
+          name: RouterNames.AUTH_CHANGE_PASSWORD,
           component: ChangePasswordPage
         },
         {
-          path: '/account/reset-password',
-          name: 'ResetPassword',
+          path: RouterPaths.AUTH_RESET_PASSWORD,
+          name: RouterNames.AUTH_RESET_PASSWORD,
           component: ResetPasswordPage
         },
         {
-          path: '/forgot-password',
-          name: 'FogotPassword',
+          path: RouterPaths.AUTH_FORGOT_PASSWORD,
+          name: RouterNames.AUTH_FORGOT_PASSWORD,
           component: ForgotPasswordPage
         },
         {
-          path: '/pref',
-          name: 'preferences',
+          path: RouterPaths.AUTH_PREFERENCES,
+          name: RouterNames.AUTH_PREFERENCES,
           component: PreferencePage
         }
       ]

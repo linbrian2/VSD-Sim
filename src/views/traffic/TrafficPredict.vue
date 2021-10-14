@@ -75,9 +75,9 @@
 import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
-import MapSelectionPanel from '@/components/traffic/map/MapSelectionPanel';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import FlowChartDisplay from '@/components/traffic/predict/FlowChartDisplay';
+import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPanel';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import FlowChartDisplay from '@/components/modules/traffic/predict/FlowChartDisplay';
 
 export default {
   components: {
@@ -140,7 +140,7 @@ export default {
       return this.tab === 'LSTM' ? this.timeUsed0 : this.timeUsed1;
     },
 
-    ...mapState('traffic', ['currentDate'])
+    ...mapState(['currentDate'])
   },
 
   mounted() {

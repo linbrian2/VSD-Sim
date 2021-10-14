@@ -19,10 +19,10 @@
 </template>
 
 <script>
-import TripData from '@/components/cav/TripData';
-import MapDisplay from '@/components/cav/MapDisplay';
-import SelectionPanel from '@/components/cav/SelectionPanel';
-import TripSelectionDialog from '@/components/cav/TripSelectionDialog';
+import TripData from '@/components/modules/cav/TripData';
+import MapDisplay from '@/components/modules/cav/MapDisplay';
+import SelectionPanel from '@/components/modules/cav/SelectionPanel';
+import TripSelectionDialog from '@/components/modules/cav/TripSelectionDialog';
 
 export default {
   components: {

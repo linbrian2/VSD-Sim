@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { RouterPaths } from '@/utils/constants/router';
 export default {
   props: {
     user: Object
@@ -78,11 +79,11 @@ export default {
 
   methods: {
     changePassword() {
-      this.$router.push({ path: '/change-password' }).catch(() => {});
+      this.$router.push({ path: RouterPaths.AUTH_CHANGE_PASSWORD }).catch(() => {});
     },
 
     preferences() {
-      this.$router.push({ path: '/pref' }).catch(() => {});
+      this.$router.push({ path: RouterPaths.AUTH_PREFERENCES }).catch(() => {});
     },
 
     logout() {

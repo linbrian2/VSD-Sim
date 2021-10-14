@@ -1,29 +1,19 @@
-import Utils from '@/utils/Utils';
 import Api from '@/utils/api/hr';
 
 const state = {
-  position: {
-    lat: 39.084,
-    lng: -77.1528
-  },
   showPanel: true,
   showSelectionDlg: false,
   activeMarker: null,
   timing: null,
   phaseTiming: null,
   locations: [],
-  currentAction: 'dashboard',
   currentSignal: null,
-  currentDate: Utils.yesterday(),
   multiSignals: [],
   mapProjection: null,
   currentSignalTime: null
 };
 
 const mutations = {
-  POSITION_SET(state, pos) {
-    state.position = pos;
-  },
   SHOW_PANEL(state, show) {
     state.showPanel = show;
   },
@@ -45,14 +35,8 @@ const mutations = {
   LOCATIONS_SET(state, locations) {
     state.locations = locations;
   },
-  SET_CURRENT_ACTION(state, action) {
-    state.currentAction = action;
-  },
   SIGNAL_SET(state, signal) {
     state.currentSignal = signal;
-  },
-  SET_CURRENT_DATE(state, date) {
-    state.currentDate = date;
   },
   SET_MULTI_SIGNALS(state, signals) {
     state.multiSignals = signals;
@@ -66,17 +50,6 @@ const mutations = {
 };
 
 const actions = {
-  incCurrentDate({ state, commit }, days) {
-    const currentDate = state.currentDate;
-    if (Utils.isTodayAndBeyond(currentDate) && days > 0) {
-      return;
-    }
-
-    const result = new Date(currentDate);
-    result.setDate(result.getDate() + days);
-    commit('SET_CURRENT_DATE', result);
-  },
-
   async fetchLocations({ state, commit, dispatch }) {
     try {
       const response = await Api.fetchDevices();
@@ -114,7 +87,6 @@ const actions = {
       if (timing.data.status === 'OK') {
         commit('SET_TIMING', timing.data.data);
       } else {
-        this.setSystemStatus({ commit }, status);
         dispatch('setSystemStatus', { text: timing.data.message, color: 'error' });
       }
 

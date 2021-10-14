@@ -53,6 +53,7 @@
 
 <script>
 import AuthService from '../services/auth.service';
+import { RouterPaths } from '@/utils/constants/router';
 
 export default {
   data() {
@@ -84,7 +85,7 @@ export default {
                 this.type = 'success';
                 this.message = data.message;
                 setTimeout(() => {
-                  this.$router.push('/login');
+                  this.$router.push(RouterPaths.AUTH_LOGIN);
                 }, 6000);
               },
               error => {
@@ -100,7 +101,7 @@ export default {
     },
 
     handleBackToLogin() {
-      this.$router.push('/login', () => {});
+      this.$router.push(RouterPaths.AUTH_LOGIN, () => {});
     },
 
     handleInput() {

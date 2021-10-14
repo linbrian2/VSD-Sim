@@ -85,9 +85,9 @@
 
 <script>
 import Api from '@/utils/api/bluetooth.js';
-import AreaRangeChart from '@/components/bluetooth/graphs/AreaRangeChart';
-import MenuPopover from '@/components/bluetooth/ui/MenuPopover.vue';
-import OptionsMenu from '@/components/bluetooth/ui/OptionsMenu.vue';
+import AreaRangeChart from '@/components/modules/bluetooth/graphs/AreaRangeChart';
+import MenuPopover from '@/components/modules/bluetooth/ui/MenuPopover.vue';
+import OptionsMenu from '@/components/modules/bluetooth/ui/OptionsMenu.vue';
 
 export default {
   props: ['segmentInfo'],

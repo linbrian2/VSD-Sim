@@ -24,9 +24,10 @@
 </template>
 
 <script>
-import Constants from '@/utils/constants/hr';
-import AppBar from '@/components/hr/AppBar';
-import MapSelect from '@/components/hr/MapSelect';
+import Utils from '@/utils/Utils';
+import AppBar from '@/components/modules/hr/AppBar';
+import MapSelect from '@/components/modules/hr/MapSelect';
+import { RouterNames } from '@/utils/constants/router';
 import { mapState } from 'vuex';
 
 export default {
@@ -62,8 +63,14 @@ export default {
       return this.$store.state.hr.showPanel ? 'mdi-close' : 'mdi-menu';
     },
 
-    ...mapState('hr', ['locations', 'currentSignal', 'currentDate', 'currentAction'])
+    ...mapState(['currentDate']),
+    ...mapState('hr', ['locations', 'currentSignal'])
   },
+
+  created() {
+    this.$store.commit('SET_CURRENT_DATE', Utils.yesterday());
+  },
+
   methods: {
     hidePanel() {
       this.$store.commit('hr/SHOW_PANEL', false);
@@ -75,30 +82,15 @@ export default {
 
     onMapClick(marker) {
       let time = this.currentDate.getTime();
-      switch (this.currentAction) {
-        case Constants.PAGE_INFO:
-          this.$bus.$emit('GET_PLANS', { marker, time });
-          break;
-        case Constants.PAGE_PCD:
+      switch (this.$route.name) {
+        case RouterNames.HR_PCD:
           this.$bus.$emit('GET_PCD', { marker, time });
           break;
-        case Constants.PAGE_SIGNAL:
+        case RouterNames.HR_SIGNAL:
           this.$bus.$emit('GET_SIGNALS', { marker, time });
           break;
-        case Constants.PAGE_PREF:
+        case RouterNames.HR_PERFORMANCE_MEASURES:
           this.$bus.$emit('GET_PREF', { marker, time });
-          break;
-        case Constants.PAGE_AOR:
-          this.$bus.$emit('GET_AOR', { marker, time });
-          break;
-        case Constants.PAGE_VOLUME:
-          this.$bus.$emit('GET_VOLUME', { marker, time });
-          break;
-        case Constants.PAGE_INTERVAL:
-          this.$bus.$emit('GET_INTERVAL', { marker, time });
-          break;
-        case Constants.PAGE_DELAY:
-          this.$bus.$emit('GET_DELAY', { marker, time });
           break;
       }
     }

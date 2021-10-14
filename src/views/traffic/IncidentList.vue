@@ -71,13 +71,13 @@ import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
 import { mapState, mapActions } from 'vuex';
-import TitleBar from '@/components/traffic/common/TitleBar';
-import MapSegment from '@/components/traffic/incident/MapSegment';
-import SelectionPanel from '@/components/traffic/common/SelectionPanel';
-import IncidentTable from '@/components/traffic/incident/IncidentTable';
-import IncidentSettings from '@/components/traffic/incident/IncidentSettings';
-import IncidentHeatMapChart from '@/components/traffic/incident/IncidentHeatMapChart';
-import EvidenceListDisplay from '@/components/traffic/incident/EvidenceListDisplay';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import MapSegment from '@/components/modules/traffic/incident/MapSegment';
+import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+import IncidentTable from '@/components/modules/traffic/incident/IncidentTable';
+import IncidentSettings from '@/components/modules/traffic/incident/IncidentSettings';
+import IncidentHeatMapChart from '@/components/modules/traffic/incident/IncidentHeatMapChart';
+import EvidenceListDisplay from '@/components/modules/traffic/incident/EvidenceListDisplay';
 
 export default {
   components: {
@@ -119,14 +119,8 @@ export default {
       return this.showPanel ? '100%' : '85%';
     },
 
-    ...mapState('traffic', [
-      'anomalyDevices',
-      'weatherStations',
-      'bluetoothSegments',
-      'currentDate',
-      'incidentSettings',
-      'showPanel'
-    ])
+    ...mapState(['currentDate']),
+    ...mapState('traffic', ['anomalyDevices', 'weatherStations', 'bluetoothSegments', 'incidentSettings', 'showPanel'])
   },
 
   created() {

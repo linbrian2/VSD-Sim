@@ -190,11 +190,11 @@
 import { mapState, mapActions } from 'vuex';
 import Api from '@/utils/api/hr';
 import Constants from '@/utils/constants/hr';
-import TitleBar from '@/components/hr/TitleBar';
-import TimingPlans from '@/components/hr/TimingPlans';
-import AorChart from '@/components/hr/AorChart';
-import BasicChart from '@/components/hr/BasicChart';
-import IntervalChart from '@/components/hr/IntervalChart';
+import TitleBar from '@/components/modules/hr/TitleBar';
+import TimingPlans from '@/components/modules/hr/TimingPlans';
+import AorChart from '@/components/modules/hr/AorChart';
+import BasicChart from '@/components/modules/hr/BasicChart';
+import IntervalChart from '@/components/modules/hr/IntervalChart';
 
 export default {
   components: {
@@ -281,8 +281,8 @@ export default {
     maxWidth() {
       return this.showPanel ? '100%' : '85%';
     },
-    ...mapState(['darkMode']),
-    ...mapState('hr', ['showPanel', 'activeMarker', 'currentSignal', 'currentDate'])
+    ...mapState(['darkMode', 'currentDate']),
+    ...mapState('hr', ['showPanel', 'activeMarker', 'currentSignal'])
   },
 
   watch: {
@@ -594,27 +594,6 @@ export default {
         10: 'SB'
       };
       return total > 2 ? LANE_DESC[detectorId] : LANE_DESC_1[detectorId];
-    },
-
-    showInfo() {
-      this.$store.commit('hr/SET_CURRENT_ACTION', Constants.PAGE_INFO);
-      this.$router.push({ path: '/hr/info' }).catch(() => {});
-    },
-    arrivalOnRed() {
-      this.$store.commit('hr/SET_CURRENT_ACTION', Constants.PAGE_AOR);
-      this.$router.push({ path: '/hr/aor' }).catch(() => {});
-    },
-    approachVolume() {
-      this.$store.commit('hr/SET_CURRENT_ACTION', Constants.PAGE_VOLUME);
-      this.$router.push({ path: '/hr/volume' }).catch(() => {});
-    },
-    phaseInterval() {
-      this.$store.commit('hr/SET_CURRENT_ACTION', Constants.PAGE_INTERVAL);
-      this.$router.push({ path: '/hr/interval' }).catch(() => {});
-    },
-    simpleDelay() {
-      this.$store.commit('hr/SET_CURRENT_ACTION', Constants.PAGE_DELAY);
-      this.$router.push({ path: '/hr/delay' }).catch(() => {});
     },
 
     ...mapActions('hr', ['fetchPlans'])

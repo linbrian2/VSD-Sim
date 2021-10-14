@@ -43,9 +43,9 @@
 <script>
 import Api from '@/utils/api/status';
 import Utils from '@/utils/Utils';
-import TitleBar from '@/components/status/TitleBar';
-import SummaryTable from '@/components/status/SummaryTable';
-import ViewTable from '@/components/status/ViewTable';
+import TitleBar from '@/components/modules/status/TitleBar';
+import SummaryTable from '@/components/modules/status/SummaryTable';
+import ViewTable from '@/components/modules/status/ViewTable';
 export default {
   components: {
     TitleBar,

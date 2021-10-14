@@ -22,7 +22,7 @@
           label=""
           readonly
           v-on="on"
-          style="width: 260px; color:grey;"
+          style="width: 190px; color:grey;"
         >
           <template v-slot:prepend>
             <v-icon class="mt-0 mr-n2" color="grey lighten-1">mdi-calendar-month</v-icon>
@@ -59,7 +59,7 @@ export default {
 
   computed: {
     dateFormatted() {
-      return this.fromDateVal ? Utils.formatDateLong(Utils.dateFromString(this.fromDateVal)) : '';
+      return this.fromDateVal ? Utils.formatDateLong2(Utils.dateFromString(this.fromDateVal)) : '';
     }
   },
 
@@ -94,17 +94,19 @@ export default {
 
     dateSelected() {
       this.$refs.menu.save(this.fromDateVal);
-      this.$emit('setdate', Utils.dateFromString(this.fromDateVal));
+      const date = Utils.dateFromString(this.fromDateVal);
+      this.$store.commit('SET_CURRENT_DATE', date);
+      this.$emit('setdate', date);
     },
 
     prevDate() {
       this.$emit('prev');
-      this.$store.dispatch('traffic/incCurrentDate', -1);
+      this.$store.dispatch('incCurrentDate', -1);
     },
 
     nextDate() {
       this.$emit('next');
-      this.$store.dispatch('traffic/incCurrentDate', 1);
+      this.$store.dispatch('incCurrentDate', 1);
     },
 
     keydownListener(e) {

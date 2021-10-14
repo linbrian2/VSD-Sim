@@ -35,9 +35,9 @@
 <script>
 import Api from '@/utils/api/hr';
 import Constants from '@/utils/constants/hr';
-import BasicChart from '@/components/hr/BasicChart';
-import LoadingProgress from '@/components/hr/LoadingProgress';
-import SignalSelectionDialog from '@/components/hr/SignalSelectionDialog';
+import BasicChart from '@/components/modules/hr/BasicChart';
+import LoadingProgress from '@/components/modules/hr/LoadingProgress';
+import SignalSelectionDialog from '@/components/modules/hr/SignalSelectionDialog';
 export default {
   components: {
     LoadingProgress,
@@ -54,7 +54,7 @@ export default {
 
   computed: {
     date() {
-      return this.$store.state.hr.currentDate;
+      return this.$store.state.currentDate;
     }
   },
 
@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push({ path: '/hr' });
+      this.$router.go(-1);
     },
 
     selectSignals() {

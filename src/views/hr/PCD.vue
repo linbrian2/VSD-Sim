@@ -40,8 +40,8 @@
 <script>
 import Api from '@/utils/api/hr';
 import { mapState } from 'vuex';
-import PcdChart from '@/components/hr/PcdChart';
-import TitleBar from '@/components/hr/TitleBar';
+import PcdChart from '@/components/modules/hr/PcdChart';
+import TitleBar from '@/components/modules/hr/TitleBar';
 
 export default {
   components: {
@@ -59,7 +59,8 @@ export default {
       let signal = this.activeMarker || { phases: [] };
       return signal.phases;
     },
-    ...mapState('hr', ['activeMarker', 'currentDate'])
+    ...mapState(['currentDate']),
+    ...mapState('hr', ['activeMarker'])
   },
   watch: {
     currentDate() {

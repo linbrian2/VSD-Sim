@@ -12,7 +12,7 @@
     <v-toolbar dense flat fixed overflow dark>
       <v-icon class="mr-6">mdi-view-grid-outline</v-icon>
       <v-toolbar-title>
-        <span class="hidden-sm-and-down">Main Menu</span>
+        <span class="hidden-sm-and-down">AI-TOMS</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
@@ -66,6 +66,7 @@ import VuePerfectScrollbar from 'vue-perfect-scrollbar';
 import Utils from '@/utils/Utils';
 import NavList from '@/components/nav/NavList';
 import routes from '@/components/nav/configs';
+import { RouterPaths } from '@/utils/constants/router';
 
 export default {
   name: 'AppDrawer',
@@ -103,6 +104,15 @@ export default {
     }
   },
 
+  mounted() {
+    // Because switch different apps will reload the NavDrawer, we need to specifically close the drawer if
+    // it is reloaded, otherwise the drawer will remain opened.
+    // Of course, if it stays in the same app(from example flow), then click an item will automatically close the drawer
+    setTimeout(() => {
+      this.showDrawer = false;
+    }, 300);
+  },
+
   methods: {
     filterRouteItem(routes) {
       return routes
@@ -125,7 +135,7 @@ export default {
     },
 
     handleSettings() {
-      this.$router.push({ path: '/pref' }).catch(() => {});
+      this.$router.push({ path: RouterPaths.AUTH_PREFERENCES }).catch(() => {});
     }
   }
 };

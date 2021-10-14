@@ -8,12 +8,15 @@
 </template>
 
 <script>
-import AppBar from '@/components/traffic/app/AppBar';
+import AppBar from '@/components/modules/traffic/app/AppBar';
 
 export default {
   name: 'App',
   components: {
     AppBar
+  },
+  created() {
+    this.$store.commit('SET_CURRENT_DATE', new Date());
   }
 };
 </script>
