@@ -24,6 +24,9 @@ const mutations = {
   },
   SET_LOCATIONS(state, locations) {
     state.locations = locations;
+  },
+  SET_CURRENT_TIME(state, time) {
+    state.currentTime = time;
   }
 };
 
@@ -37,7 +40,7 @@ const actions = {
         commit('SET_ACTIVE_MARKER', state.locations[0]);
       }
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
+      dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' }, { root: true });
     }
   }
 };

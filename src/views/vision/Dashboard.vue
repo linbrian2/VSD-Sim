@@ -15,7 +15,7 @@
         </v-tooltip>
       </v-row>
     </TitleBar>
-    <v-container>
+    <div>
       <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
         <v-tab key="0">Live Feed</v-tab>
         <v-tab key="1">Historical Video</v-tab>
@@ -30,6 +30,10 @@
           </v-tab-item>
           <v-tab-item key="1">
             <v-card class="mt-3 mx-5" v-if="showHeatmap">
+              <v-card-title class="d-flex justify-space-between">
+                <h4 class="overline">Click the heatmap cell to select video</h4>
+                <v-btn icon @click="showHeatmap = false"><v-icon>mdi-close</v-icon></v-btn>
+              </v-card-title>
               <HeatMapChart :data="timeSeries" :height="heatMapHeight" @cell-click="cellClicked" />
             </v-card>
             <v-card class="mt-3 mx-5">
@@ -43,14 +47,13 @@
           </v-tab-item>
         </v-tabs-items>
       </div>
-    </v-container>
+    </div>
   </div>
 </template>
 
 <script>
 import Api from '@/utils/api/vision';
 import { mapState } from 'vuex';
-import Constants from '@/utils/constants/vision';
 import Utils from '@/utils/Utils';
 import TitleBar from '@/components/modules/vision/TitleBar';
 import MenuTimePicker from '@/components/modules/vision/MenuTimePicker';
@@ -76,8 +79,12 @@ export default {
     timeSeries: [],
     liveUrl: null,
     mp4Url: null,
-
-    videoServer: process.env.VUE_APP_VIDEO_URL
+    videoServer: process.env.VUE_APP_VIDEO_URL,
+    Constants: {
+      TAB_LIVE_FEED: 0,
+      TAB_HISTORICAL: 1,
+      TAB_TRAFFIC_FLOW: 2
+    }
   }),
   computed: {
     livePlayerOptions() {
@@ -151,7 +158,7 @@ export default {
     },
 
     currentTime() {
-      if (this.tab == 2) {
+      if (this.tab == this.Constants.TAB_HISTORICAL) {
         this.selectVideoByTime();
       }
     }
@@ -159,30 +166,23 @@ export default {
 
   methods: {
     tabChanged() {
-      switch (this.tab) {
-        case Constants.TAB_LIVE_FEED:
-          if (this.info) {
-            this.liveUrl = this.info.uri;
-            // Wait a monment to allow VideoPlayer created
-            setTimeout(() => {
-              this.changeLiveVideoSource(this.info.uri);
-            }, 300);
-          }
-          break;
-        case Constants.TAB_LIVE_PROCESSED:
-          break;
-        case Constants.TAB_HISTORICAL:
-          {
-            let url = this.getVideoByTime();
-            if (url) {
-              this.mp4Url = url;
-              // Wait a monment to allow VideoPlayer created
-              setTimeout(() => {
-                this.changeMp4VideoSource(url);
-              }, 300);
-            }
-          }
-          break;
+      if (this.tab == this.Constants.TAB_LIVE_FEED) {
+        if (this.info) {
+          this.liveUrl = this.info.uri;
+          // Wait a monment to allow VideoPlayer created
+          setTimeout(() => {
+            this.changeLiveVideoSource(this.info.uri);
+          }, 300);
+        }
+      } else if (this.tab == this.Constants.TAB_HISTORICAL) {
+        let url = this.getVideoByTime();
+        if (url) {
+          this.mp4Url = url;
+          // Wait a monment to allow VideoPlayer created
+          setTimeout(() => {
+            this.changeMp4VideoSource(url);
+          }, 300);
+        }
       }
     },
 
@@ -225,7 +225,7 @@ export default {
         const response = await Api.fetchInfo(id);
         if (response.data.status === 'OK') {
           this.info = response.data.data;
-          if (this.tab == Constants.TAB_LIVE_FEED) {
+          if (this.tab == this.Constants.TAB_LIVE_FEED) {
             this.changeLiveVideoSource(this.info.uri);
           }
         } else {
@@ -244,7 +244,7 @@ export default {
         if (response.data.status === 'OK') {
           this.visionResult = response.data.data;
 
-          if (this.tab == Constants.TAB_HISTORICAL) {
+          if (this.tab == this.Constants.TAB_HISTORICAL) {
             this.timeSeries = this.composeHeatMapData(this.visionResult);
             this.selectVideoByTime(this.currentTime);
           }
@@ -351,7 +351,6 @@ export default {
     selectVideoByTime() {
       let video = this.getVideoByTime();
       if (video) {
-        //console.log(video);
         this.changeMp4VideoSource(video);
       }
     }

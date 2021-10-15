@@ -93,7 +93,7 @@ export default {
     endPoint() {
       return this.segment && this.segment[this.segment.length - 1];
     },
-    ...mapState('cav', ['socket', 'currentCarPos', 'currentEvent', 'currentTrip', 'playState', 'playbackSpeed'])
+    ...mapState('cav', ['currentCarPos', 'currentEvent', 'currentTrip', 'playState', 'playbackSpeed'])
   },
   watch: {
     position() {
@@ -265,8 +265,8 @@ export default {
 
       if (this.currentTrip.status === 0) {
         // const url = `${websocketUrl}/${this.currentTrip.id}`;
-        // this.$store.dispatch('cav/WSConnect', { vm: this, url });
-        // this.$store.dispatch('cav/WSSendMessage', JSON.stringify({ data: 'Hello from frontend ...' }));
+        // this.$store.dispatch('WSConnect',url);
+        // this.$store.dispatch('WSSendMessage', JSON.stringify({ data: 'Hello from frontend ...' }));
         // this.$store.commit('cav/SET_PLAYBACK_SPEED', 1);
         // // Move th start time to the five minutes before
         // this.fastForward(300);
@@ -288,9 +288,7 @@ export default {
       // Hide car
       this.showCar(false);
 
-      if (this.socket.isConnected) {
-        this.$store.dispatch('cav/WSDisconnect', { vm: this });
-      }
+      //   this.$store.dispatch('WSDisconnect');
     },
 
     animateCar() {

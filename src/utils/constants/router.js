@@ -13,11 +13,11 @@ export const RouterNames = {
   HR_PCD: 'PCD',
   HR_SIGNAL: 'Signal Playback',
   HR_PERFORMANCE_MEASURES: 'Performance Measures',
-  HR_MULTI_PCD: 'Multi PCD',
-  HR_MULTI_OCC: 'Multi OCC',
+  HR_MULTI_PCD: 'Corridor PCD Charts',
+  HR_MULTI_OCC: 'Corridor Occupancy Charts',
 
   VISION_DASHBOARD: 'Traffic Cameras',
-  VISION_REID: 'Re-ID',
+  VISION_REID: 'Vehicle Re-ID',
 
   BLUETOOTH_DASHBOARD: 'Bluetooth',
 

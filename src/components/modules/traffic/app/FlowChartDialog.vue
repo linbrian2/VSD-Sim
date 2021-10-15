@@ -3,9 +3,9 @@
     <v-row justify="center">
       <v-dialog v-model="show" hide-overlay max-width="900px">
         <v-card>
-          <v-app-bar color="#009688" dark dense>
+          <v-app-bar :color="color" dark dense>
             <v-icon class="mt-n1 mr-2">mdi-sitemap </v-icon>
-            <v-toolbar-title>M-dist Detection Flow Chart</v-toolbar-title>
+            <v-toolbar-title>Detection Flow Diagram</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon @click="show = false">
               <v-icon>mdi-close</v-icon>
@@ -40,6 +40,9 @@ export default {
       set(value) {
         this.$store.commit('traffic/SHOW_FLOW_CHART', value);
       }
+    },
+    color() {
+      return this.$store.state.darkMode ? '' : '#009688';
     }
   },
 

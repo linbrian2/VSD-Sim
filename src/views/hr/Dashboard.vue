@@ -94,8 +94,10 @@ export default {
   },
 
   mounted() {
-    this.initPanelState = this.$store.state.hr.showPanel;
-    this.$store.commit('hr/SHOW_PANEL', false);
+    setTimeout(() => {
+      this.initPanelState = this.$store.state.hr.showPanel;
+      this.$store.commit('hr/SHOW_PANEL', false);
+    }, 100);
     this.refreshData();
   },
 

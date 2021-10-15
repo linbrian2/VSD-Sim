@@ -1,14 +1,6 @@
-import Vue from 'vue';
 import Api from '@/utils/api/traffic';
 
 const state = {
-  socket: {
-    isConnected: false,
-    message: '',
-    reconnectError: false,
-    reconnectCount: 0
-  },
-
   currentBluetoothAnomaly: null,
   currentFlowAnomaly: null,
   currentWeatherCode: null,
@@ -34,68 +26,23 @@ const state = {
     duration: 30
   },
 
-  notifications: [
-    {
-      title: 'New user registered',
-      color: 'light-green',
-      icon: 'mdi-account-circle',
-      timeLabel: 'Just now'
-    },
-    {
-      title: 'New order received',
-      color: 'light-blue',
-      icon: 'mdi-cart-plus',
-      timeLabel: '2 min ago'
-    }
-  ]
+  notifications: []
 };
 
 const mutations = {
-  SOCKET_ONOPEN(state, event) {
-    Vue.prototype.$socket = event.currentTarget;
-    state.socket.isConnected = true;
-    console.log('--ws connected--');
+  SOCKET_FLOW(state, message) {
+    state.currentFlowAnomaly = message.data;
   },
-  SOCKET_ONCLOSE(state) {
-    state.socket.isConnected = false;
-    console.log('--ws closed--');
+  SOCKET_WEATHER(state, message) {
+    state.currentWeatherCode = message.data;
   },
-  SOCKET_ONERROR(state) {
-    console.error(state);
+  SOCKET_BLUETOOTH(state, message) {
+    state.currentBluetoothAnomaly = message.data;
   },
-  // default handler called for all methods
-  SOCKET_ONMESSAGE(state, message) {
-    state.socket.message = message;
-    try {
-      const json = JSON.parse(message.data);
-      if (json && typeof json === 'object') {
-        switch (json.type) {
-          case 0:
-            state.currentBluetoothAnomaly = json.data;
-            break;
-          case 1:
-            state.currentFlowAnomaly = json.data;
-            break;
-          case 2:
-            state.currentWeatherCode = json.data;
-            break;
-          case 3:
-            {
-              console.log('anomaly segment received.');
-              const { severity, duration } = state.incidentSettings;
-              state.currentAnomalySegments = json.data.filter(s => s.severity >= severity && s.duration >= duration);
-            }
-            break;
-        }
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  },
-  SOCKET_RECONNECT(state, count) {
-    state.socket.reconnectCount = count;
-  },
-  SOCKET_RECONNECT_ERROR(state) {
-    state.socket.reconnectError = true;
+  SOCKET_ANOMALY(state, message) {
+    console.log('anomaly segment received.');
+    const { severity, duration } = state.incidentSettings;
+    state.currentAnomalySegments = message.data.filter(s => s.severity >= severity && s.duration >= duration);
   },
   SET_CURRENT_BLUETOOTH_ANOMALY_DATA(state, data) {
     state.currentBluetoothAnomaly = data;
@@ -185,7 +132,7 @@ const actions = {
       }
     } catch (error) {
       console.log(error);
-      dispatch('setSystemStatus', { text: error, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
   async fetchAnomalyDevices({ commit, dispatch }) {
@@ -193,7 +140,7 @@ const actions = {
       const response = await Api.fetchAnomalyDevices();
       commit('SET_ANOMALY_DEVICES', response.data);
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
 
@@ -205,7 +152,7 @@ const actions = {
         commit('SET_ACTIVE_MARKER', state.weatherStations[0]);
       }
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
 
@@ -214,7 +161,7 @@ const actions = {
       const response = await Api.fetchBluetoothSegments();
       commit('SET_BLUETOOTH_SEGMENTS', response.data);
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
 
@@ -224,10 +171,10 @@ const actions = {
       if (response.data.status === 'OK') {
         commit('SIGNAL_SET', response.data.data);
       } else {
-        dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
+        dispatch('setSystemStatus', { text: response.data.message, color: 'error' }, { root: true });
       }
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
 

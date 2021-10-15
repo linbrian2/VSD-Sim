@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog v-model="show" persistent max-width="1200px">
       <v-card>
-        <v-app-bar color="#009688" dark dense>
+        <v-app-bar :color="color" dark dense>
           <v-icon class="mt-n1 mr-2">mdi-grid</v-icon>
           <v-toolbar-title>{{ title }} </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -74,6 +74,9 @@ export default {
       set(value) {
         this.$emit('input', value);
       }
+    },
+    color() {
+      return this.$store.state.darkMode ? '' : '#009688';
     }
   },
 

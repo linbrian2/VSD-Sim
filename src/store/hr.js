@@ -59,7 +59,7 @@ const actions = {
         commit('SET_ACTIVE_MARKER', state.locations[0]);
       }
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
 
@@ -69,10 +69,10 @@ const actions = {
       if (response.data.status === 'OK') {
         commit('SIGNAL_SET', response.data.data);
       } else {
-        dispatch('setSystemStatus', { text: response.data.message, timeout: 0, color: 'error' });
+        dispatch('setSystemStatus', { text: response.data.message, color: 'error' }, { root: true });
       }
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
 
@@ -87,16 +87,16 @@ const actions = {
       if (timing.data.status === 'OK') {
         commit('SET_TIMING', timing.data.data);
       } else {
-        dispatch('setSystemStatus', { text: timing.data.message, color: 'error' });
+        dispatch('setSystemStatus', { text: timing.data.message, color: 'error' }, { root: true });
       }
 
       if (phaseTiming.data.status === 'OK') {
         commit('SET_PHASE_TIMING', phaseTiming.data.data);
       } else {
-        dispatch('setSystemStatus', { text: phaseTiming.data.message, color: 'error' });
+        dispatch('setSystemStatus', { text: phaseTiming.data.message, color: 'error' }, { root: true });
       }
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, color: 'error' });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   }
 };

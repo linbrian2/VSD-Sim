@@ -209,10 +209,8 @@ export default {
     async fetchTripList(time) {
       try {
         const response = await Api.fetchTrips(time, 50);
-        console.log(response);
         if (response.status === 200) {
           const trips = response.data;
-          /* console.log("Trips:\n%o", trips); */
           this.items = trips;
         }
       } catch (error) {

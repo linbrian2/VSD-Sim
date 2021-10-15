@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog v-model="show" persistent max-width="900px">
       <v-card>
-        <v-app-bar color="#009688" dark dense>
+        <v-app-bar :color="color" dark dense>
           <v-icon class="mt-n1 mr-2">mdi-map-marker</v-icon>
           <v-toolbar-title>{{ title }} </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -10,7 +10,7 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-app-bar>
-        <v-container style="height:540px">
+        <div style="height:540px">
           <TrafficFlowCharts
             ref="trafficFlowCharts"
             :deviceId="deviceId"
@@ -19,7 +19,7 @@
             :time="time"
             :showTitle="false"
           />
-        </v-container>
+        </div>
       </v-card>
     </v-dialog>
   </v-row>
@@ -52,6 +52,9 @@ export default {
       set(value) {
         this.$emit('input', value);
       }
+    },
+    color() {
+      return this.$store.state.darkMode ? '' : '#009688';
     }
   },
 

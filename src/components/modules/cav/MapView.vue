@@ -27,7 +27,6 @@ import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import CarMarker from '@/components/modules/cav/CarMarker';
 import MapUtils from '@/utils/MapUtils.js';
-import { websocketUrl } from '@/utils/websocketUrl';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 
 export default {
@@ -64,8 +63,7 @@ export default {
       return this.$store.state.position;
     },
 
-    ...mapState(['currentUpdates', 'liveCars']),
-    ...mapState('cav', ['socket'])
+    ...mapState('cav', ['currentUpdates', 'liveCars'])
   },
 
   watch: {
@@ -92,7 +90,6 @@ export default {
       this.centerSelectedCar(deviceId);
     });
 
-    this.startWebSocket();
     this.startCleanUpTimer();
 
     this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
@@ -102,7 +99,6 @@ export default {
   },
 
   beforeDestroy() {
-    this.stopWebSocket();
     this.stopCleanUpTimer();
     this.stopAnimateCars();
   },
@@ -211,10 +207,6 @@ export default {
     randomCarColor() {
       // Generate color based on popularity distribution
       const VEHICLE_COLORS = [
-        // { name: 'black', color: '#000000', popularity: 22.25 },
-        // { name: 'white', color: '#FFFFFF', popularity: 19.34 },
-        // { name: 'grey', color: '#808080', popularity: 17.63 },
-        // { name: 'silver', color: '#AAA9AD', popularity: 14.64 },
         { name: 'blue', color: '#0000FF', popularity: 10 },
         { name: 'red', color: '#FF0000', popularity: 25 },
         { name: 'brown', color: '#AC4313', popularity: 12 },
@@ -237,19 +229,6 @@ export default {
     },
 
     //-------------------- Update Live Cars -------------------------------------------
-
-    startWebSocket() {
-      const url = `${websocketUrl}/live`;
-      this.$store.dispatch('cav/WSConnect', { vm: this, url });
-      this.$store.dispatch('cav/WSSendMessage', JSON.stringify({ data: 'Hello from frontend ...' }));
-    },
-
-    stopWebSocket() {
-      if (this.socket.isConnected) {
-        this.$store.dispatch('cav/WSDisconnect', { vm: this });
-      }
-    },
-
     startCleanUpTimer() {
       // Runs every minute
       this.cluenupTimerHandle = setInterval(this.cleanupLiveCars, this.cleanUpInterval);

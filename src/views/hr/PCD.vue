@@ -21,12 +21,7 @@
             </v-combobox>
           </div>
         </v-col>
-        <v-col cols="3">
-          <v-btn small outlined class="mt-1" color="white" @click.stop="showCorridorPCD">
-            <v-icon left color="light-green accent-3">mdi-map-legend</v-icon>
-            <span> Corridor PCD Charts </span>
-          </v-btn>
-        </v-col>
+        <v-col cols="3"> </v-col>
       </v-row>
     </TitleBar>
     <v-container>

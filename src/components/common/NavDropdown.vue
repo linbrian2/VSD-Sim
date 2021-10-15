@@ -10,7 +10,10 @@
       <template v-for="(item, i) in menuItems">
         <v-divider v-if="item.divider" :key="i"></v-divider>
         <v-list-item v-else :key="i" @click="changeApp(item.url)">
-          <v-list-item-title :class="{ 'font-weight-bold': item.title === title }"> {{ item.title }}</v-list-item-title>
+          <v-list-item-title :class="{ 'font-weight-bold': item.title === title }">
+            <v-icon class="mr-1" v-if="item.title === title">mdi-check</v-icon>
+            <span :class="{ 'ml-8': item.title !== title }"> {{ item.title }} </span>
+          </v-list-item-title>
         </v-list-item>
       </template>
     </v-list>

@@ -1,11 +1,4 @@
-import Vue from 'vue';
-
 const state = {
-  socket: {
-    isConnected: false,
-    message: '',
-    reconnectError: false
-  },
   currentGPS: null,
   currentEvent: null,
   currentCarPos: null,
@@ -25,45 +18,16 @@ const state = {
 };
 
 const mutations = {
-  SOCKET_ONOPEN(state, event) {
-    if (!state.socket.isConnected) {
-      Vue.prototype.$socket = event.currentTarget;
-      state.socket.isConnected = true;
-      console.log('WebSocket connected successfully.');
-    }
+  SOCKET_EVENT(state, message) {
+    console.log('socket_event', message);
+    state.currentEvent = message.data;
   },
-  SOCKET_ONCLOSE(state) {
-    state.socket.isConnected = false;
-    Vue.prototype.$socket = null;
-    console.log('WebSocket closed successfully.');
+
+  SOCKET_UPDATES(state, message) {
+    console.log('socket_updates', message);
+    state.currentUpdates = message.data;
   },
-  SOCKET_ONERROR(state, event) {
-    console.error(state, event);
-  },
-  // default handler called for all methods
-  SOCKET_ONMESSAGE(state, message) {
-    state.socket.message = message;
-    try {
-      if (message.type && message.data) {
-        const json = message.data;
-        switch (message.type) {
-          case 0:
-            state.currentEvent = json;
-            break;
-          case 1:
-            state.currentUpdates = json;
-            break;
-        }
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  },
-  SOCKET_RECONNECT(state, count) {
-    console.info(state, count);
-  },
-  SOCKET_RECONNECT_ERROR(state) {
-    state.socket.reconnectError = true;
-  },
+
   SET_GPS_POSITION(state, pos) {
     state.currentGPS = pos;
   },
@@ -111,19 +75,7 @@ const mutations = {
   }
 };
 
-const actions = {
-  WSSendMessage({ state }, message) {
-    if (state.socket.isConnected) {
-      Vue.prototype.$socket.send(message);
-    }
-  },
-  WSConnect(context, { vm, url }) {
-    vm.$connect(url);
-  },
-  WSDisconnect(context, { vm }) {
-    vm.$disconnect();
-  }
-};
+const actions = {};
 
 export default {
   namespaced: true,

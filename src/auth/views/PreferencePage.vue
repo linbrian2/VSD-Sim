@@ -10,7 +10,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn small outlined class="mt-1" color="white" @click.stop="saveData">
-        <v-icon left color="indigo darken-2">mdi-content-save </v-icon>
+        <v-icon left>mdi-content-save </v-icon>
         <span> Save </span>
       </v-btn>
       <v-spacer></v-spacer>

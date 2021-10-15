@@ -2,7 +2,7 @@
   <v-row>
     <v-dialog scrollable v-model="show" persistent max-width="700px">
       <v-card>
-        <v-app-bar dark color="#009688" dense>
+        <v-app-bar dark :color="color" dense>
           <v-icon small class="mr-2" v-text="icon"></v-icon>
           <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -25,23 +25,25 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-app-bar>
-        <v-card-text style="height: 450px;">
-          <v-container>
-            <v-data-table
-              disable-sort
-              :headers="headers"
-              height="400"
-              fixed-header
-              :items="items"
-              :items-per-page="itemsPerPage"
-              hide-default-footer
-              :item-class="itemRowBackground"
-              @click:row="handleRowClick"
-              :search="search"
-            >
-            </v-data-table>
-          </v-container>
-        </v-card-text>
+        <div style="height: 450px;">
+          <vue-perfect-scrollbar class="app-drawer__scrollbar">
+            <div class="app-drawer__inner">
+              <v-data-table
+                disable-sort
+                :headers="headers"
+                height="420"
+                fixed-header
+                :items="items"
+                :items-per-page="itemsPerPage"
+                hide-default-footer
+                :item-class="itemRowBackground"
+                @click:row="handleRowClick"
+                :search="search"
+              >
+              </v-data-table>
+            </div>
+          </vue-perfect-scrollbar>
+        </div>
       </v-card>
     </v-dialog>
   </v-row>
@@ -49,7 +51,11 @@
 
 <script>
 import Utils from '@/utils/Utils';
+import VuePerfectScrollbar from 'vue-perfect-scrollbar';
 export default {
+  components: {
+    VuePerfectScrollbar
+  },
   props: {
     value: Boolean
   },
@@ -66,7 +72,10 @@ export default {
     type: 0,
     items: [],
     headers: [],
-    searchItems: []
+    searchItems: [],
+    scrollSettings: {
+      maxScrollbarLength: 160
+    }
   }),
   computed: {
     show: {
@@ -76,6 +85,9 @@ export default {
       set(value) {
         this.$emit('input', value);
       }
+    },
+    color() {
+      return this.$store.state.darkMode ? '' : '#009688';
     }
   },
 

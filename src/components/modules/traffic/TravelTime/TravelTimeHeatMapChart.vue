@@ -241,7 +241,7 @@ export default {
           x: -10,
           reversed: true,
           valueDecimals: 0,
-          backgroundColor: 'rgba(255,255,255,0.9)',
+          backgroundColor: 'rgba(55,55,55,0.9)',
           borderColor: '#C98657',
           borderWidth: 1,
           itemMarginBottom: 5,

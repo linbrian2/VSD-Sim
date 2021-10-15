@@ -1,6 +1,7 @@
 <template>
   <div>
-    <TitleBarReID title="Video Matching for Vehicle Re-ID" :loading="loading" :refresh="refreshData" />
+    <TitleBarReID title="Vehicle Re-ID" :loading="loading" :refresh="refreshData" />
+    <!-- <TitleBar :title="title" :loading="loading" :refresh="refreshData" /> -->
     <v-container>
       <v-row v-show="$store.state.vision.showReIDVideos" v-if="$store.state.vision.snippetInfo">
         <!-- Upstream Video -->
@@ -45,15 +46,18 @@
 <script>
 import Api from '@/utils/api/vision';
 import TitleBarReID from '@/components/modules/vision/TitleBarReID';
+//import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import DetectionBoxes from '@/components/modules/vision/DetectionBoxes.vue';
 
 export default {
   components: {
-    TitleBarReID,
+  //  TitleBar,
+   TitleBarReID,
     DetectionBoxes
   },
 
   data: () => ({
+    title: 'Vehicle Re-ID',
     loading: false,
     initialFetch: true,
     fetchSuccess: false,
@@ -101,7 +105,6 @@ export default {
           if (this.initialFetch) {
             this.$store.dispatch('setSystemStatus', {
               text: 'Successfully connected to Vehicle Re-ID API',
-              timeout: 3000,
               color: 'info'
             });
             this.initialFetch = false;
@@ -114,8 +117,7 @@ export default {
             console.log(2);
             this.$store.dispatch('setSystemStatus', {
               text: 'Failed to connect to Vehicle Re-ID API',
-              timeout: 5000,
-              color: 'error'
+              color: 'warning'
             });
             this.initialFetch = false;
           }

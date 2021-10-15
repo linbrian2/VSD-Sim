@@ -6,7 +6,7 @@
         :key="s.id"
         :title="s.desc"
         :path.sync="s.path"
-        :options="defaultSegmentOptions"
+        :options="segmentOptions(s.id)"
         @click="segmentClicked(s)"
       />
 
@@ -29,7 +29,9 @@
         :offsetY="0"
         :marker="midPoint(s)"
       >
-        <v-chip small :color="getChipColor(s)" outlined @click="segmentClicked(s)">{{ s.name }}</v-chip>
+        <div v-if="s.id == selectedSegmentId">
+          <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.name }}</v-chip>
+        </div>
       </GmapCustomMarker>
     </MapBase>
   </div>
@@ -52,7 +54,8 @@ export default {
     defaultSegmentOptions: {
       strokeColor: 'green',
       strokeOpacity: 1.0,
-      strokeWeight: 8
+      strokeWeight: 8,
+      zIndex: 100
     },
 
     redIcon: {
@@ -95,8 +98,8 @@ export default {
       return segment.path[Math.round(segment.path.length / 2)];
     },
 
-    segmentOptions(index) {
-      const color = index % 2 == 0 ? 'green' : 'lime';
+    segmentOptions(id) {
+      const color = id === this.selectedSegmentId ? 'orange' : 'green';
       return { ...this.defaultSegmentOptions, strokeColor: color };
     },
 

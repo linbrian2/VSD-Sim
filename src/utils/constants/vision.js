@@ -1,6 +1,0 @@
-export default {
-  CHART_HEIGHT: 560,
-  TAB_LIVE_FEED: 0,
-  TAB_LIVE_PROCESSED: 1,
-  TAB_HISTORICAL: 2
-};

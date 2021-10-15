@@ -5,7 +5,7 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import axios from 'axios';
 import VueNativeSock from 'vue-native-websocket';
-import { websocketUrl } from './utils/websocketUrl';
+import { trafficWocketUrl } from './utils/websocketUrl';
 
 import HighchartsVue from 'highcharts-vue';
 /* import 'material-design-icons-iconfont/dist/material-design-icons.css' */
@@ -18,11 +18,17 @@ Vue.config.productionTip = false;
 
 // WebSocket
 // https://stackoverflow.com/questions/57451148/receive-websockets-data-from-vuex-and-vue-native-websocket-plugin
-Vue.use(VueNativeSock, websocketUrl, {
+Vue.use(VueNativeSock, trafficWocketUrl, {
   store: store,
   format: 'json',
   connectManually: true
 });
+// Vue.use(VueNativeSock, trafficWocketUrl, {
+//   store: store,
+//   reconnection: true, // (Boolean) whether to reconnect automatically (false)
+//   reconnectionAttempts: 5, // (Number) number of reconnection attempts before giving up (Infinity),
+//   reconnectionDelay: 3000 // (Number) how long to initially wait before attempting a new (1000)
+// });
 
 // Add an event bus to the root
 Vue.prototype.$bus = new Vue();
@@ -34,7 +40,6 @@ new Vue({
   created: () => {
     store.dispatch('bluetooth/loadPreferences');
     store.dispatch('bluetooth/loadMapLayers');
-
     store.dispatch('auth/startRefreshTokenTimer');
     store.dispatch('traffic/loadMapLayers');
     store.dispatch('traffic/loadIncidentSettings');

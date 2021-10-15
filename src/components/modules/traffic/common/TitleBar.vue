@@ -6,7 +6,7 @@
           <span v-if="showMap">
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn outlined class="mb-1 mr-2" color="teal" icon v-on="on" @click.stop="showPanel()">
+                <v-btn outlined class="mb-1 mr-2" color="teal" icon v-on="on" @click.stop="showPanel">
                   <v-icon color="teal accent-3">mdi-map</v-icon>
                 </v-btn>
               </template>
@@ -15,7 +15,7 @@
           </span>
 
           <div class="mt-2">
-            <span>{{ loading ? 'Loading ...' : activeTitle }}</span>
+            <span>{{ loading ? 'Loading ...' : title }}</span>
             <span class="ml-2 mt-0" v-if="!loading">
               <v-chip color="green" outlined small v-if="showId || showUid">
                 <span class="white--text">{{ label }}</span>
@@ -69,14 +69,6 @@ export default {
   },
 
   computed: {
-    activeTitle() {
-      if (this.title !== undefined) {
-        return this.title;
-      } else {
-        return this.activeSignal.name;
-      }
-    },
-
     activeSignal() {
       return (
         this.activeMarker || {
@@ -115,8 +107,7 @@ export default {
 <style lang="scss" scoped>
 .title-name {
   background-color: hsl(200, 18%, 46%);
-  padding: 5px 10px;
-  margin-top: -8px;
+  padding: 3px 10px;
   color: white;
   font-size: normal;
   font-weight: bold;

@@ -17,7 +17,7 @@
           />
         </router-link>
       </div>
-      <NavDropdown />
+      <NavDropdown :title="title" />
       <v-toolbar-title v-show="$vuetify.breakpoint.mdAndUp">{{ title }}</v-toolbar-title>
       <!-- Update Button -->
       <div class="middle-header">
@@ -189,9 +189,7 @@ export default {
       { title: 'Multi-graph' },
       { title: 'Breakdown Probability' },
       { title: 'Reset Map' },
-      { title: 'Toggle Progress Circle' },
-      { title: 'Toggle Dark Mode' }
-      /* { title: 'Debug Log'}, */
+      { title: 'Toggle Progress Circle' }
     ],
     appMenuItems: [],
     lastUpdateDT: 'N/A',

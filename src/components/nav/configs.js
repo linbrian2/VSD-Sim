@@ -12,7 +12,7 @@ const protectedRoute = [
         path: '/',
         name: RouterNames.TRAFFIC_DASHBOARD,
         meta: {
-          title: 'Dashboard',
+          title: RouterNames.TRAFFIC_DASHBOARD,
           icon: 'mdi-view-dashboard'
         }
       },
@@ -29,7 +29,7 @@ const protectedRoute = [
             path: RouterPaths.TRAFFIC_DASHBOARD,
             name: RouterNames.TRAFFIC_DASHBOARD,
             meta: {
-              title: 'Dashboard',
+              title: RouterNames.TRAFFIC_DASHBOARD,
               icon: 'mdi-view-dashboard'
             }
           },
@@ -37,7 +37,7 @@ const protectedRoute = [
             path: RouterPaths.TRAFFIC_FLOW,
             name: RouterNames.TRAFFIC_FLOW,
             meta: {
-              title: 'Traffic Flow Charts',
+              title: RouterNames.TRAFFIC_FLOW,
               icon: 'mdi-chart-line'
             }
           },
@@ -45,7 +45,7 @@ const protectedRoute = [
             path: RouterPaths.TRAVEL_TIME_DATA,
             name: RouterNames.TRAVEL_TIME_DATA,
             meta: {
-              title: 'Travel Time Charts',
+              title: RouterNames.TRAVEL_TIME_DATA,
               icon: 'mdi-chart-line'
             }
           },
@@ -53,7 +53,7 @@ const protectedRoute = [
             path: RouterPaths.TRAFFIC_WEATHER,
             name: RouterNames.TRAFFIC_WEATHER,
             meta: {
-              title: 'Weather Data Charts',
+              title: RouterNames.TRAFFIC_WEATHER,
               icon: 'mdi-chart-line'
             }
           },
@@ -61,7 +61,7 @@ const protectedRoute = [
             path: RouterPaths.TRAFFIC_ANOMALY,
             name: RouterNames.TRAFFIC_ANOMALY,
             meta: {
-              title: 'Traffic Anomaly Map',
+              title: RouterNames.TRAFFIC_ANOMALY,
               icon: 'mdi-view-comfy'
             }
           },
@@ -69,7 +69,7 @@ const protectedRoute = [
             path: RouterPaths.TRAVEL_TIME_MAP,
             name: RouterNames.TRAVEL_TIME_MAP,
             meta: {
-              title: 'Travel Time Map',
+              title: RouterNames.TRAVEL_TIME_MAP,
               icon: 'mdi-view-comfy'
             }
           },
@@ -77,7 +77,7 @@ const protectedRoute = [
             path: RouterPaths.TRAFFIC_INCIDENT,
             name: RouterNames.TRAFFIC_INCIDENT,
             meta: {
-              title: 'Traffic Incident List',
+              title: RouterNames.TRAFFIC_INCIDENT,
               icon: 'mdi-format-list-bulleted '
             }
           },
@@ -85,7 +85,7 @@ const protectedRoute = [
             path: RouterPaths.TRAFFIC_PREDICT,
             name: RouterNames.TRAFFIC_PREDICT,
             meta: {
-              title: 'Traffic Flow Prediction',
+              title: RouterNames.TRAFFIC_PREDICT,
               icon: 'mdi-waveform'
             }
           },
@@ -93,7 +93,7 @@ const protectedRoute = [
             path: RouterPaths.TRAFFIC_LCM,
             name: RouterNames.TRAFFIC_LCM,
             meta: {
-              title: 'Traffic LCM',
+              title: RouterNames.TRAFFIC_LCM,
               icon: 'mdi-chart-bell-curve '
             }
           }
@@ -111,7 +111,7 @@ const protectedRoute = [
             path: RouterPaths.HR_DASHBOARD,
             name: RouterNames.HR_DASHBOARD,
             meta: {
-              title: "Today's Summary",
+              title: RouterNames.HR_DASHBOARD,
               icon: 'mdi-clipboard-list-outline '
             }
           },
@@ -127,7 +127,7 @@ const protectedRoute = [
             path: RouterPaths.HR_SIGNAL,
             name: RouterNames.HR_SIGNAL,
             meta: {
-              title: 'Signal Timing',
+              title: RouterNames.HR_SIGNAL,
               icon: 'mdi-clock'
             }
           },
@@ -135,7 +135,7 @@ const protectedRoute = [
             path: RouterPaths.HR_PERFORMANCE_MEASURES,
             name: RouterNames.HR_PERFORMANCE_MEASURES,
             meta: {
-              title: 'Performance Measures',
+              title: RouterNames.HR_PERFORMANCE_MEASURES,
               icon: 'mdi-chart-bar'
             }
           },
@@ -143,7 +143,7 @@ const protectedRoute = [
             path: RouterPaths.HR_MULTI_PCD,
             name: RouterNames.HR_MULTI_PCD,
             meta: {
-              title: 'Corridor PCD Charts',
+              title: RouterNames.HR_MULTI_PCD,
               icon: 'mdi-chart-gantt'
             }
           },
@@ -151,7 +151,7 @@ const protectedRoute = [
             path: RouterPaths.HR_MULTI_OCC,
             name: RouterNames.HR_MULTI_OCC,
             meta: {
-              title: 'Corridor Occupancy Charts',
+              title: RouterNames.HR_MULTI_OCC,
               icon: 'mdi-chart-gantt'
             }
           }
@@ -169,7 +169,7 @@ const protectedRoute = [
             path: RouterPaths.VISION_DASHBOARD,
             name: RouterNames.VISION_DASHBOARD,
             meta: {
-              title: 'Traffic Cameras',
+              title: RouterNames.VISION_DASHBOARD,
               icon: 'mdi-cctv'
             }
           },
@@ -177,7 +177,7 @@ const protectedRoute = [
             path: RouterPaths.VISION_REID,
             name: RouterNames.VISION_REID,
             meta: {
-              title: 'Vehicle Re-ID',
+              title: RouterNames.VISION_REID,
               icon: 'mdi-car-2-plus'
             }
           }
@@ -203,7 +203,7 @@ const protectedRoute = [
             path: RouterPaths.CAV_DASHBOARD,
             name: RouterNames.CAV_DASHBOARD,
             meta: {
-              title: 'CAV Trip Data',
+              title: RouterNames.CAV_DASHBOARD,
               icon: 'mdi-format-list-bulleted'
             }
           },
@@ -211,7 +211,7 @@ const protectedRoute = [
             path: RouterPaths.CAV_STATUS,
             name: RouterNames.CAV_STATUS,
             meta: {
-              title: 'Real Time Status',
+              title: RouterNames.CAV_STATUS,
               icon: 'mdi-truck-check-outline'
             }
           }
@@ -229,7 +229,7 @@ const protectedRoute = [
             path: RouterPaths.STATUS_DASHBOARD,
             name: RouterNames.STATUS_DASHBOARD,
             meta: {
-              title: 'System Health Check',
+              title: RouterNames.STATUS_DASHBOARD,
               icon: 'mdi-list-status'
             }
           },
@@ -237,7 +237,7 @@ const protectedRoute = [
             path: RouterPaths.STATUS_QUALITY_CHECK,
             name: RouterNames.STATUS_QUALITY_CHECK,
             meta: {
-              title: 'Traffic Flow Quality Check',
+              title: RouterNames.STATUS_QUALITY_CHECK,
               icon: 'mdi-check-decagram'
             }
           }
