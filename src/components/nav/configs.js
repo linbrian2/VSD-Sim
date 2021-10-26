@@ -191,6 +191,40 @@ const protectedRoute = [
           icon: 'btIcon'
         }
       },
+      //Bluetooth New
+      {
+        path: RouterPaths.BLUETOOTH_NEW_DASHBOARD,
+        meta: {
+          title: 'Bluetooth and Waze Data (New)',
+          icon: 'btIcon'
+        },
+        children: [
+          {
+            path: RouterPaths.BLUETOOTH_NEW_DASHBOARD,
+            name: RouterNames.BLUETOOTH_NEW_DASHBOARD,
+            meta: {
+              title: RouterNames.BLUETOOTH_NEW_DASHBOARD,
+              icon: 'mdi-view-dashboard'
+            }
+          },
+          {
+            path: RouterPaths.BLUETOOTH_NEW_MULTIGRAPH,
+            name: RouterNames.BLUETOOTH_NEW_MULTIGRAPH,
+            meta: {
+              title: RouterNames.BLUETOOTH_NEW_MULTIGRAPH,
+              icon: 'mdi-chart-areaspline'
+            }
+          },
+          {
+            path: RouterPaths.BLUETOOTH_NEW_BREAKDOWNPROB,
+            name: RouterNames.BLUETOOTH_NEW_BREAKDOWNPROB,
+            meta: {
+              title: RouterNames.BLUETOOTH_NEW_BREAKDOWNPROB,
+              icon: 'mdi-dice-6'
+            }
+          },
+        ]
+      },
       //CAV
       {
         path: RouterPaths.CAV_DASHBOARD,

@@ -9,6 +9,7 @@ import HR from '@/components/layouts/HR.vue';
 import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
+import BluetoothNew from '@/components/layouts/Bluetooth.vue';
 
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficFlow from '@/views/traffic/TrafficFlow.vue';
@@ -31,6 +32,10 @@ import VisionDashboard from '@/views/vision/Dashboard.vue';
 import ReID from '@/views/vision/ReID.vue';
 
 import Bluetooth from '@/views/bluetooth/Bluetooth.vue';
+
+import BluetoothNewDashboard from '@/views/bluetooth-new/Dashboard.vue';
+import BluetoothNewMultigraph from '@/views/bluetooth-new/MultiGraph.vue';
+import BluetoothNewBreakdownProb from '@/views/bluetooth-new/BreakdownProbability.vue';
 
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
@@ -158,6 +163,28 @@ const router = new Router({
       path: RouterPaths.BLUETOOTH_DASHBOARD,
       name: RouterNames.BLUETOOTH_DASHBOARD,
       component: Bluetooth
+    },
+    {
+      path: RouterPaths.BLUETOOTH_NEW_DASHBOARD,
+      name: RouterNames.BLUETOOTH_NEW_DASHBOARD,
+      component: BluetoothNew,
+      children: [
+        {
+          path: RouterPaths.BLUETOOTH_NEW_DASHBOARD,
+          name: RouterNames.BLUETOOTH_NEW_DASHBOARD,
+          component: BluetoothNewDashboard
+        },
+        {
+          path: RouterPaths.BLUETOOTH_NEW_MULTIGRAPH,
+          name: RouterNames.BLUETOOTH_NEW_MULTIGRAPH,
+          component: BluetoothNewMultigraph
+        },
+        {
+          path: RouterPaths.BLUETOOTH_NEW_BREAKDOWNPROB,
+          name: RouterNames.BLUETOOTH_NEW_BREAKDOWNPROB,
+          component: BluetoothNewBreakdownProb
+        },
+      ]
     },
     {
       path: RouterPaths.CAV_DASHBOARD,

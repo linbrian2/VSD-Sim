@@ -73,7 +73,7 @@ export default {
     },
 
     firstLetter() {
-      return this.user && this.user.lastName && this.user.lastName[0].toUpperCase();
+      return this.user && this.user.firstName && this.user.firstName[0].toUpperCase();
     },
 
     color() {

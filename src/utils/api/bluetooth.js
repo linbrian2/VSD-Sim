@@ -5,7 +5,7 @@ const AxiosClient = client(process.env.VUE_APP_BLUETOOTH_API_URL);
 export default {
   /* Segments */
   fetchSegments(printInfo = true) {
-    return AxiosClient.get('api/segments')
+    return AxiosClient.get('bluetooth/segments')
       .then(res => {
         if (printInfo) console.log('Fetched Segment Data: %o', res.data);
         return res.data;
@@ -15,7 +15,7 @@ export default {
       });
   },
   fetchSegmentsFull(printInfo = true) {
-    return AxiosClient.get('api/segments/full')
+    return AxiosClient.get('bluetooth/segments/full')
       .then(res => {
         if (printInfo) console.log('Fetched Segments Data (Full Day Curr): %o', res.data);
         return res.data;
@@ -25,7 +25,7 @@ export default {
       });
   },
   fetchSegmentsHist(endTS, printInfo = true) {
-    return AxiosClient.get(`api/segments/${endTS}`)
+    return AxiosClient.get(`bluetooth/segments/${endTS}`)
       .then(res => {
         if (printInfo) console.log('Fetched Segment Data: %o', res.data);
         return res.data;
@@ -35,7 +35,7 @@ export default {
       });
   },
   fetchSegmentsHistFull(endTS, printInfo = true) {
-    return AxiosClient.get(`api/segments/full/${endTS}`)
+    return AxiosClient.get(`bluetooth/segments/full/${endTS}`)
       .then(res => {
         if (printInfo) console.log('Fetched Segment Data (Full Day Hist): %o', res.data);
         return res.data;
@@ -46,7 +46,7 @@ export default {
   },
   /* Waze */
   fetchWazeData(printInfo = true) {
-    return AxiosClient.get('api/waze')
+    return AxiosClient.get('bluetooth/waze')
       .then(res => {
         if (printInfo) console.log('Fetched Waze Data (Short Curr): %o', res.data);
         return res.data;
@@ -56,7 +56,7 @@ export default {
       });
   },
   fetchWazeDataFull(printInfo = true) {
-    return AxiosClient.get('api/waze/full')
+    return AxiosClient.get('bluetooth/waze/full')
       .then(res => {
         if (printInfo) console.log('Fetched Waze Data (Full Day Curr): %o', res.data);
         return res.data;
@@ -66,7 +66,7 @@ export default {
       });
   },
   fetchWazeDataHist(min, endTS, printInfo = true) {
-    return AxiosClient.get(`api/waze/latest-${min}m/${endTS}`)
+    return AxiosClient.get(`bluetooth/waze/latest-${min}m/${endTS}`)
       .then(res => {
         if (printInfo) console.log('Fetched Waze Data (Short Hist): %o', res.data);
         return res.data;
@@ -76,7 +76,7 @@ export default {
       });
   },
   fetchWazeDataHistFull(endTS, printInfo = true) {
-    return AxiosClient.get(`api/waze/full/${endTS}`)
+    return AxiosClient.get(`bluetooth/waze/full/${endTS}`)
       .then(res => {
         if (printInfo) console.log('Fetched Waze Data (Full Day Hist): %o', res.data);
         return res.data;
@@ -87,7 +87,7 @@ export default {
   },
   /* Traffic Flow */
   fetchHistoricalTTWIncidentsByLinkID(linkId, printInfo = true) {
-    return AxiosClient.get(`api/historical/${linkId}/w-incidents`)
+    return AxiosClient.get(`bluetooth/historical/${linkId}/w-incidents`)
       .then(res => {
         if (printInfo) console.log('Fetched Historical Data w/ Incidents: %o', res.data);
         return res.data;
@@ -97,7 +97,7 @@ export default {
       });
   },
   fetchHistoricalTTWoIncidentsByLinkID(linkId, printInfo = true) {
-    return AxiosClient.get(`api/historical/${linkId}/wo-incidents`)
+    return AxiosClient.get(`bluetooth/historical/${linkId}/wo-incidents`)
       .then(res => {
         if (printInfo) console.log('Fetched Historical Data w/o Incidents: %o', res.data);
         return res.data;
@@ -107,7 +107,7 @@ export default {
       });
   },
   fetchCurrTTByLinkId(linkId, endTS, printInfo = true) {
-    return AxiosClient.get(`api/current/${linkId}/${endTS}`)
+    return AxiosClient.get(`bluetooth/current/${linkId}/${endTS}`)
       .then(res => {
         if (printInfo) console.log('Fetched Current Data: %o', res.data);
         return res.data;
@@ -118,7 +118,7 @@ export default {
   },
   /* Sensors */
   fetchSensors(printInfo = true) {
-    return AxiosClient.get('api/sensors')
+    return AxiosClient.get('bluetooth/sensors')
       .then(res => {
         if (printInfo) console.log('Fetched Sensor Data: %o', res.data);
         return res.data;
@@ -129,9 +129,9 @@ export default {
   },
   /* Devices */
   fetchDevices(printInfo = true) {
-    return AxiosClient.get('api/devices')
+    return AxiosClient.get('bluetooth/devices')
       .then(res => {
-        if (printInfo) console.log('Fetched Device Data: %o', res.data);
+        /* if (printInfo) */ console.log('Fetched Device Data: %o', res.data);
         return res.data;
       })
       .catch(err => {
@@ -139,9 +139,9 @@ export default {
       });
   },
   fetchDevicesFull(printInfo = true) {
-    return AxiosClient.get('api/devices/full')
+    return AxiosClient.get('bluetooth/devices/full')
       .then(res => {
-        if (printInfo) console.log('Fetched Device Data (Full Day Curr): %o', res.data);
+        /* if (printInfo) */ console.log('Fetched Device Data (Full Day Curr): %o', res.data);
         return res.data;
       })
       .catch(err => {
@@ -149,7 +149,7 @@ export default {
       });
   },
   fetchDevicesHist(endTS, printInfo = true) {
-    return AxiosClient.get(`api/devices/${endTS}`)
+    return AxiosClient.get(`bluetooth/devices/${endTS}`)
       .then(res => {
         if (printInfo) console.log('Fetched Device Data: %o', res.data);
         return res.data;
@@ -159,7 +159,7 @@ export default {
       });
   },
   fetchDevicesHistFull(endTS, printInfo = true) {
-    return AxiosClient.get(`api/devices/full/${endTS}`)
+    return AxiosClient.get(`bluetooth/devices/full/${endTS}`)
       .then(res => {
         if (printInfo) console.log('Fetched Device Data (Full Day Hist): %o', res.data);
         return res.data;
@@ -170,9 +170,9 @@ export default {
   },
   /* Breakdown Probability */
   fetchDevicesBPData(printInfo = true) {
-    return AxiosClient.get('api/breakdown-prob/list')
+    return AxiosClient.get('bluetooth/breakdown-prob/list')
       .then(res => {
-        if (printInfo) console.log('Fetched Devices Breakdown Probability Data: %o', res.data);
+        /* if (printInfo) */ console.log('Fetched Devices Breakdown Probability Data: %o', res.data);
         return res.data;
       })
       .catch(err => {
@@ -180,9 +180,9 @@ export default {
       });
   },
   fetchBP(apiReqName, start, end, printInfo = true) {
-    return AxiosClient.get(`api/breakdown-prob/${apiReqName}-${start}-${end}`)
+    return AxiosClient.get(`bluetooth/breakdown-prob/${apiReqName}-${start}-${end}`)
       .then(res => {
-        if (printInfo) console.log('Fetched Breakdown Probability Data: %o', res.data);
+        /* if (printInfo) */ console.log('Fetched Breakdown Probability Data: %o', res.data);
         return res.data;
       })
       .catch(err => {

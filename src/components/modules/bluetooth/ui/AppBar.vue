@@ -101,10 +101,6 @@
               headerColor: 'transparent'
             }"
           />
-          <!-- <h5 class="mt-2 ml-5">
-            {{$store.state.bluetooth.selectedDatetime}}<br/>
-            {{submittedDateTime}}
-          </h5> -->
         </div>
       </div>
       <!-- Tabs -->
