@@ -124,6 +124,14 @@ const protectedRoute = [
             }
           },
           {
+            path: RouterPaths.HR_TIME_SPACE_DIAGRAM,
+            name: RouterNames.HR_TIME_SPACE_DIAGRAM,
+            meta: {
+              title: RouterNames.HR_TIME_SPACE_DIAGRAM,
+              icon: 'mdi-chart-timeline'
+            }
+          },
+          {
             path: RouterPaths.HR_SIGNAL,
             name: RouterNames.HR_SIGNAL,
             meta: {

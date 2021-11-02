@@ -16,12 +16,21 @@
             <v-icon>mdi-chart-areaspline</v-icon></v-btn
           >
         </template>
-        <span>Show PCD</span>
+        <span>PCD</span>
       </v-tooltip>
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(2)" icon v-on="on" @click.stop="showSignal()">
+          <v-btn class="mx-1" fab :color="color(2)" icon v-on="on" @click.stop="showTimeSpaceDiagram">
+            <v-icon>mdi-chart-timeline</v-icon></v-btn
+          >
+        </template>
+        <span>Time Space Diagram</span>
+      </v-tooltip>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn class="mx-1" fab :color="color(3)" icon v-on="on" @click.stop="showSignal()">
             <v-icon>mdi-clock</v-icon>
           </v-btn>
         </template>
@@ -30,7 +39,7 @@
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(3)" icon v-on="on" @click.stop="showPerformanceMeasures()">
+          <v-btn class="mx-1" fab :color="color(4)" icon v-on="on" @click.stop="showPerformanceMeasures()">
             <v-icon>mdi-chart-bar</v-icon>
           </v-btn>
         </template>
@@ -55,6 +64,7 @@ export default {
     action_menu_items: [
       { title: RouterNames.HR_DASHBOARD, url: RouterPaths.HR_DASHBOARD },
       { title: RouterNames.HR_PCD, url: RouterPaths.HR_PCD },
+      { title: RouterNames.HR_TIME_SPACE_DIAGRAM, url: RouterPaths.HR_TIME_SPACE_DIAGRAM },
       { title: RouterNames.HR_SIGNAL, url: RouterPaths.HR_SIGNAL },
       { title: RouterNames.HR_PERFORMANCE_MEASURES, url: RouterPaths.HR_PERFORMANCE_MEASURES },
       { divider: true },
@@ -76,8 +86,10 @@ export default {
         case 1:
           return this.$route.name === RouterNames.HR_PCD ? 'orange' : 'teal';
         case 2:
-          return this.$route.name === RouterNames.HR_SIGNAL ? 'orange' : 'teal';
+          return this.$route.name === RouterNames.HR_TIME_SPACE_DIAGRAM ? 'orange' : 'teal';
         case 3:
+          return this.$route.name === RouterNames.HR_SIGNAL ? 'orange' : 'teal';
+        case 4:
           return this.$route.name === RouterNames.HR_PERFORMANCE_MEASURES ? 'orange' : 'teal';
       }
     },
@@ -89,6 +101,9 @@ export default {
     },
     showPCD() {
       this.switchTo(RouterPaths.HR_PCD);
+    },
+    showTimeSpaceDiagram() {
+      this.switchTo(RouterPaths.HR_TIME_SPACE_DIAGRAM);
     },
     showSignal() {
       this.switchTo(RouterPaths.HR_SIGNAL);
