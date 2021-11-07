@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import AppBar from '@/components/modules/bluetooth-new/AppBar';
+import AppBar from '@/components/modules/bluetooth/ui/AppBar';
 
 export default {
   name: 'App',

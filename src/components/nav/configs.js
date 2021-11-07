@@ -189,37 +189,29 @@ const protectedRoute = [
         meta: {
           title: 'Bluetooth and Waze Data',
           icon: 'btIcon'
-        }
-      },
-      //Bluetooth New
-      {
-        path: RouterPaths.BLUETOOTH_NEW_DASHBOARD,
-        meta: {
-          title: 'Bluetooth and Waze Data (New)',
-          icon: 'btIcon'
         },
         children: [
           {
-            path: RouterPaths.BLUETOOTH_NEW_DASHBOARD,
-            name: RouterNames.BLUETOOTH_NEW_DASHBOARD,
+            path: RouterPaths.BLUETOOTH_DASHBOARD,
+            name: RouterNames.BLUETOOTH_DASHBOARD,
             meta: {
-              title: RouterNames.BLUETOOTH_NEW_DASHBOARD,
+              title: RouterNames.BLUETOOTH_DASHBOARD,
               icon: 'mdi-view-dashboard'
             }
           },
           {
-            path: RouterPaths.BLUETOOTH_NEW_MULTIGRAPH,
-            name: RouterNames.BLUETOOTH_NEW_MULTIGRAPH,
+            path: RouterPaths.BLUETOOTH_MULTIGRAPH,
+            name: RouterNames.BLUETOOTH_MULTIGRAPH,
             meta: {
-              title: RouterNames.BLUETOOTH_NEW_MULTIGRAPH,
+              title: RouterNames.BLUETOOTH_MULTIGRAPH,
               icon: 'mdi-chart-areaspline'
             }
           },
           {
-            path: RouterPaths.BLUETOOTH_NEW_BREAKDOWNPROB,
-            name: RouterNames.BLUETOOTH_NEW_BREAKDOWNPROB,
+            path: RouterPaths.BLUETOOTH_BREAKDOWNPROB,
+            name: RouterNames.BLUETOOTH_BREAKDOWNPROB,
             meta: {
-              title: RouterNames.BLUETOOTH_NEW_BREAKDOWNPROB,
+              title: RouterNames.BLUETOOTH_BREAKDOWNPROB,
               icon: 'mdi-dice-6'
             }
           },

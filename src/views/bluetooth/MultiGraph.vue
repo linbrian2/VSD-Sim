@@ -1,100 +1,113 @@
 <template>
-  <v-card class="main-card">
-    <v-col>
-      <v-row>
-        <v-col style="display:flex;">
-          <v-autocomplete
-            v-model="$store.state.bluetooth.segGraph"
-            dense
-            :items="segmentInfo"
-            :loading="isLoading"
-            :search-input.sync="search"
-            color="white"
-            hide-no-data
-            hide-selected
-            item-text="info.description"
-            item-value="API"
-            label="Search"
-            return-object
-            small-chips
-            multiple
-            deletable-chips
-            class="mt-0 mx-6"
-            prepend-icon="mdi-chart-areaspline"
-          />
-          <!-- Add From Map Button -->
-          <v-tooltip top>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" @click="addFromMap()" class="mx-1">
-                <v-icon>mdi-map-plus</v-icon>
-              </v-btn>
-            </template>
-            <span>Map Add</span>
-          </v-tooltip>
-          <!-- Add Using Filters -->
-          <MenuPopover />
-          <!-- Options Button -->
-          <OptionsMenu />
-          <!-- Clear Button -->
-          <v-tooltip top>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" @click="clearAll()" class="mx-1">
-                <v-icon>mdi-backspace-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Clear all</span>
-          </v-tooltip>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col :cols="col[0]" :lg="col[1]" :xl="col[2]" v-for="(s, i) in $store.state.bluetooth.segGraph" :key="s.id">
-          <!-- Current & Baseline travel time found -->
-          <v-card v-if="s.data && !reload">
-            <AreaRangeChart
-              :historicData="s.data.histTT"
-              :currData="s.data.currTT"
-              :interval="5"
-              :minWidth="320"
-              :height="$store.state.bluetooth.prefs.multiGraph.graphHeight"
-              :title="s.info.description"
-              :subtitle="null"
-              :containerName="`container-${i}`"
-              :legendX="60"
-              :legendY="20"
-              :multiGraph="true"
-              :legendWidth="'450px'"
-              :visibility="[false, false, true, true, false, false, false]"
-            />
-            <div id="buttons">
-              <v-row v-if="$store.state.bluetooth.prefs.multiGraph.showButtons">
-                <v-col cols="6" class="pt-1 pr-1 pb-0">
-                  <v-btn @click="viewAdditionalInfo(s)" block dense>Additional Info</v-btn>
-                </v-col>
-                <v-col cols="6" class="pt-1 pl-1 pb-0">
-                  <v-btn @click="goToMapLocation(s)" block dense>Go to location</v-btn>
-                </v-col>
-              </v-row>
+  <div class="multigraph">
+    <v-container fluid style="max-width: 85%">
+      <v-card class="rounded-0 elevation-5">
+        <v-card-title>Multigraph</v-card-title>
+        <v-card-text class="mb-10">
+          <v-container fluid>
+            <div style="display: flex">
+              <v-autocomplete
+                v-model="$store.state.bluetooth.segGraph"
+                dense
+                :items="segments"
+                :loading="isLoading"
+                :search-input.sync="search"
+                color="white"
+                hide-no-data
+                hide-selected
+                item-text="info.description"
+                item-value="API"
+                label="Search"
+                return-object
+                small-chips
+                multiple
+                deletable-chips
+                class="mt-0 mx-6"
+                prepend-icon="mdi-chart-areaspline"
+              />
+              <!-- Add From Map Button -->
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on" @click="addFromMap()" class="mx-1">
+                    <v-icon>mdi-map-plus</v-icon>
+                  </v-btn>
+                </template>
+                <span>Map Add</span>
+              </v-tooltip>
+              <!-- Add Using Filters -->
+              <MenuPopover />
+              <!-- Options Button -->
+              <OptionsMenu />
+              <!-- Clear Button -->
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on" @click="clearAll()" class="mx-1">
+                    <v-icon>mdi-backspace-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>Clear all</span>
+              </v-tooltip>
             </div>
-          </v-card>
-          <v-card :height="$store.state.bluetooth.prefs.multiGraph.graphHeight + 40" loading v-else> </v-card>
-        </v-col>
-      </v-row>
-    </v-col>
-  </v-card>
+          </v-container>
+          <v-container v-if="$store.state.bluetooth.segGraph" fluid>
+            <v-row>
+              <v-col
+                :cols="col[0]"
+                :lg="col[1]"
+                :xl="col[2]"
+                v-for="(s, i) in $store.state.bluetooth.segGraph"
+                :key="s.id"
+              >
+                <!-- Current & Baseline travel time found -->
+                <v-card v-if="s.data && !reload">
+                  <AreaRangeChart
+                    :historicData="s.data.histTT"
+                    :currData="s.data.currTT"
+                    :interval="5"
+                    :minWidth="320"
+                    :height="$store.state.bluetooth.prefs.multiGraph.graphHeight"
+                    :title="s.info.description"
+                    :subtitle="null"
+                    :containerName="`container-${i}`"
+                    :legendX="60"
+                    :legendY="20"
+                    :multiGraph="true"
+                    :legendWidth="'450px'"
+                    :visibility="[false, false, true, true, false, false, false]"
+                  />
+                  <div id="buttons">
+                    <v-row v-if="$store.state.bluetooth.prefs.multiGraph.showButtons">
+                      <v-col cols="6" class="pt-1 pr-1 pb-0">
+                        <v-btn @click="viewAdditionalInfo(s)" block dense>Additional Info</v-btn>
+                      </v-col>
+                      <v-col cols="6" class="pt-1 pl-1 pb-0">
+                        <v-btn @click="goToMapLocation(s)" block dense>Go to location</v-btn>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </v-card>
+                <v-card :height="$store.state.bluetooth.prefs.multiGraph.graphHeight + 40" loading v-else> </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
+    </v-container>
+  </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Api from '@/utils/api/bluetooth.js';
 import AreaRangeChart from '@/components/modules/bluetooth/graphs/AreaRangeChart';
 import MenuPopover from '@/components/modules/bluetooth/ui/MenuPopover.vue';
 import OptionsMenu from '@/components/modules/bluetooth/ui/OptionsMenu.vue';
 
 export default {
-  props: ['segmentInfo'],
   components: {
     AreaRangeChart,
     MenuPopover,
-    OptionsMenu
+    OptionsMenu,
   },
   data: () => ({
     reload: false,
@@ -105,17 +118,17 @@ export default {
       [12, 12, 12] /* 1 */,
       [6, 6, 6] /* 2 */,
       [4, 4, 4] /* 3 */,
-      [3, 3, 3] /* 4 */
-    ]
+      [3, 3, 3] /* 4 */,
+    ],
   }),
   mounted() {
-    this.$bus.$on('SUBMIT_MULTIGRAPH_FILTERS', filters => {
+    this.$bus.$on('SUBMIT_MULTIGRAPH_FILTERS', (filters) => {
       this.processFilters(filters);
     });
-    this.$bus.$on('SUBMIT_MULTIGRAPH_OPTIONS', ops => {
+    this.$bus.$on('SUBMIT_MULTIGRAPH_OPTIONS', (ops) => {
       this.processOptions(ops);
     });
-    this.$bus.$on('SUBMIT_SEGMENTS', segsList => {
+    this.$bus.$on('SUBMIT_SEGMENTS', (segsList) => {
       this.processSegments(segsList);
     });
     this.$bus.$on('SEGMENTS_UPDATE', () => {
@@ -152,9 +165,9 @@ export default {
     },
     processFilters(filters) {
       console.log('processFilters: %o', filters);
-      let segmentsFilt = this.segments.filter(s => {
+      let segmentsFilt = this.segments.filter((s) => {
         let isValid = false;
-        filters.levels.forEach(level => {
+        filters.levels.forEach((level) => {
           if (s.travelTime.level == level) {
             isValid = true;
             return;
@@ -163,7 +176,7 @@ export default {
         return isValid;
       });
       let segments = [];
-      segmentsFilt.forEach(s => {
+      segmentsFilt.forEach((s) => {
         segments.push(s);
       });
       this.$store.state.bluetooth.segGraph = segments;
@@ -181,29 +194,29 @@ export default {
       let printInfo = false;
       let dt = this.$store.state.bluetooth.selectedDatetime;
       Api.fetchCurrTTByLinkId(linkId, dt.valueOf(), printInfo).then(
-        currData => {
+        (currData) => {
           Api.fetchHistoricalTTWIncidentsByLinkID(linkId, printInfo).then(
-            histData => {
+            (histData) => {
               if (seg) {
                 this.$set(seg, 'data', {
                   currTT: currData,
-                  histTT: histData
+                  histTT: histData,
                 });
               }
               if (segsToAdd.length > 0 && this.$store.state.bluetooth.segGraph.length > 0) {
                 this.fetchTTData(segsToAdd);
               }
             },
-            error => {
+            (error) => {
               console.log(error);
             }
           );
         },
-        error => {
+        (error) => {
           console.log(error);
         }
       );
-    }
+    },
   },
   computed: {
     col() {
@@ -211,15 +224,16 @@ export default {
     },
     segments() {
       return this.$store.state.bluetooth.apiData.segments;
-    }
+    },
+    ...mapState(['currentDate']),
   },
   watch: {
     '$store.state.bluetooth.segGraph': {
       deep: true,
-      handler: function(newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
-          let newSegs = newVal.map(x => x.info.description);
-          let oldSegs = oldVal.map(x => x.info.description);
+          let newSegs = newVal.map((x) => x.info.description);
+          let oldSegs = oldVal.map((x) => x.info.description);
           console.log('segGraph - oldSegs: %o, newSegs: %o', oldSegs, newSegs);
           let segsToAdd = [];
           newSegs.forEach((segName, i) => {
@@ -231,9 +245,9 @@ export default {
             this.fetchTTData(segsToAdd);
           }
         }
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

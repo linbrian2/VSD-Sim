@@ -61,7 +61,9 @@ const state = {
   prefs: null,
   playState: 'stop',
   playbackSpeed: 10,
-  currentProgress: 0
+  currentProgress: 0,
+  currentTime: new Date(),
+  timePickerMenu: false,
 };
 
 const mutations = {
