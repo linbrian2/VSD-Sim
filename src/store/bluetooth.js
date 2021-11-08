@@ -64,6 +64,9 @@ const state = {
   currentProgress: 0,
   currentTime: new Date(),
   timePickerMenu: false,
+  autoUpdate: true,
+  timeSinceUpdate: 0,
+  multigraphSegs: null,
 };
 
 const mutations = {

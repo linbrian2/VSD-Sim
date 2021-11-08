@@ -1,28 +1,37 @@
 <template>
   <div>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          small
+          v-bind="attrs"
+          v-on="on"
+          @click="playbackToggle = !playbackToggle"
+          style="position: absolute; top: 10px; left: 438px; height: 40px"
+        >
+          <v-icon>mdi-map-clock-outline</v-icon>
+        </v-btn>
+      </template>
+      <span>{{ playbackToggle ? 'Toggle Playback Mode Off' : 'Toggle Playback Mode On' }}</span>
+    </v-tooltip>
     <v-scroll-x-reverse-transition>
-      <v-toolbar dense floating height="40" style="position: absolute; top: 10px; left: 440px">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon v-bind="attrs" v-on="on" @click="playbackToggle = !playbackToggle">
-              <v-icon>mdi-map-clock-outline</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ playbackToggle ? 'Toggle Playback Mode Off' : 'Toggle Playback Mode On' }}</span>
-        </v-tooltip>
-        <v-divider vertical v-if="playbackToggle" />
+      <v-toolbar
+        dense
+        floating
+        height="40"
+        style="position: absolute; top: 10px; left: 494px; height: 40px"
+        v-if="playbackToggle"
+      >
         <v-chip
           @click="menu2 = !menu2"
           :disabled="playState == 'play' || playState == 'resume'"
           small
           outlined
           class="ma-2 overline"
-          v-if="playbackToggle"
         >
           {{ timeStr }}
         </v-chip>
         <v-slider
-          v-if="playbackToggle"
           v-model="progress"
           class="mt-6"
           style="width: 160px"
@@ -32,7 +41,7 @@
           :disabled="!fullDayDataDone"
         ></v-slider>
 
-        <v-menu bottom right offset-y v-if="playbackToggle">
+        <v-menu bottom right offset-y>
           <template v-slot:activator="{ on: menu, attrs }">
             <v-tooltip bottom>
               <template v-slot:activator="{ on: tooltip }">
@@ -50,37 +59,29 @@
           </v-list>
         </v-menu>
 
-        <v-divider vertical v-if="playbackToggle" />
+        <v-divider vertical />
 
-        <!-- <v-tooltip bottom v-if="!playbackToggle">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon v-bind="attrs" v-on="on" @click="setNewTime">
-              <v-icon>mdi-arrow-right-bold</v-icon>
-            </v-btn>
-          </template>
-          <span>Set time for map</span>
-        </v-tooltip> -->
-        <v-btn icon @click="setPlayStart" :disabled="!fullDayDataDone" v-if="playbackToggle">
+        <v-btn icon @click="setPlayStart" :disabled="!fullDayDataDone">
           <v-icon v-text="playButtonIcon"></v-icon>
         </v-btn>
-        <v-btn icon @click="setPlayStop" :disabled="stopState || !fullDayDataDone" v-if="playbackToggle">
+        <v-btn icon @click="setPlayStop" :disabled="stopState || !fullDayDataDone">
           <v-icon>mdi-stop</v-icon>
         </v-btn>
-        <v-btn icon @click="progress = 0" :disabled="progress == 0" v-if="playbackToggle">
+        <v-btn icon @click="progress = 0" :disabled="progress == 0">
           <v-icon>mdi-replay</v-icon>
         </v-btn>
       </v-toolbar>
     </v-scroll-x-reverse-transition>
     <v-scroll-x-reverse-transition>
-      <v-toolbar
-        dense
-        floating
-        height="40"
-        style="position: absolute; top: 10px; right: 10px"
-        loading
-      >
+      <v-toolbar dense floating height="40" style="position: absolute; top: 10px; right: 10px" loading>
         <div>
           Timeline Data availability:
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon color="green" class="px-1" v-bind="attrs" v-on="on" :disabled="!wazeFull">mdi-waze</v-icon>
+            </template>
+            <span>Waze Data - Full Day</span>
+          </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon color="green" class="pr-1" v-bind="attrs" v-on="on" :disabled="!segmentsFull"
@@ -94,12 +95,6 @@
               <v-icon color="green" class="pr-1" v-bind="attrs" v-on="on" :disabled="!devicesFull">mdi-leak</v-icon>
             </template>
             <span>Traffic Flow Detector Data - Full Day</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon color="green" class="px-1" v-bind="attrs" v-on="on" :disabled="!wazeFull">mdi-waze</v-icon>
-            </template>
-            <span>Waze Data - Full Day</span>
           </v-tooltip>
         </div>
       </v-toolbar>
@@ -205,7 +200,7 @@ export default {
     setPlayStop() {
       this.playButtonIcon = 'mdi-play';
       this.$store.commit('bluetooth/SET_PLAY_STATE', 'stop');
-      this.$bus.$emit('RESET_TO_SELECTED_TIME', this.$store.state.bluetooth.selectedDatetime);
+      this.$bus.$emit('RESET_TO_SELECTED_TIME', this.$store.state.currentDate);
     },
   },
   computed: {
@@ -238,7 +233,7 @@ export default {
     },
 
     max() {
-      if (this.endDT) {
+      if (this.isToday) {
         let mins = this.endDT.hour * 60 + this.endDT.minute;
         return mins;
       } else {
@@ -279,6 +274,17 @@ export default {
 
     stopState() {
       return this.playState === 'stop';
+    },
+
+    isToday() {
+      if (this.currentDate) {
+        const today = new Date()
+        return this.currentDate.getDate() == today.getDate() &&
+               this.currentDate.getMonth() == today.getMonth() &&
+               this.currentDate.getFullYear() == today.getFullYear()
+      } else {
+        return true
+      }
     },
 
     progress: {

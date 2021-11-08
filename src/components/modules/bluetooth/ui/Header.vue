@@ -28,10 +28,22 @@
         <MenuDatePicker :date="currentDate" />
       </div>
       <div>
-        <v-chip @click="$store.state.bluetooth.timePickerMenu = !$store.state.bluetooth.timePickerMenu" 
-                        small outlined class="overline" color="white">
-          {{ timeStr }}
-        </v-chip>
+        <v-tooltip right>
+          <template v-slot:activator="{ on, attrs }">
+            <v-chip
+              v-bind="attrs"
+              v-on="on"
+              @click="$store.state.bluetooth.timePickerMenu = !$store.state.bluetooth.timePickerMenu"
+              small
+              outlined
+              class="overline"
+              color="white"
+            >
+              {{ timeStr }}
+            </v-chip>
+          </template>
+          <span>{{ timeRemaining }}</span>
+        </v-tooltip>
       </div>
       <v-spacer></v-spacer>
 
@@ -114,7 +126,18 @@ export default {
       return `${Utils.formatXX(this.currentDate.getHours())}:${Utils.formatXX(this.currentDate.getMinutes())}`;
     },
 
+    timeRemaining() {
+      if (this.$store.state.bluetooth.autoUpdate) {
+        let min = 5 - Math.ceil(this.timeSinceUpdate / 60)
+        let sec = 60 - this.timeSinceUpdate % 60
+        if (sec == 60) sec = 0
+        return `Next update in ${min}m ${sec}s`;
+      } else {
+        return `Auto-update disabled`
+      }
+    },
     ...mapState(['currentDate', 'darkMode']),
+    ...mapState('bluetooth', ['timeSinceUpdate'])
   },
 
   watch: {
@@ -141,6 +164,7 @@ export default {
     },
 
     menuItemClicked(action) {
+      console.log(action);
       this.$emit('menuItemclick', action);
     },
   },

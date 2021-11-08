@@ -98,6 +98,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import { RouterPaths } from '@/utils/constants/router';
 import Api from '@/utils/api/bluetooth.js';
 import AreaRangeChart from '@/components/modules/bluetooth/graphs/AreaRangeChart';
 import MenuPopover from '@/components/modules/bluetooth/ui/MenuPopover.vue';
@@ -151,7 +152,6 @@ export default {
     processSegments(segsList) {
       setTimeout(() => {
         this.$store.state.bluetooth.segGraph = segsList;
-        this.$store.state.bluetooth.modes.addFromMap = false;
       }, 1);
     },
     processOptions(ops) {
@@ -186,16 +186,16 @@ export default {
     },
     addFromMap() {
       this.$store.state.bluetooth.modes.addFromMap = true;
-      this.$store.commit('bluetooth/SET_SELECTED_PAGE', 0);
+      let path = RouterPaths.BLUETOOTH_DASHBOARD
+      this.$router.push({ path }).catch(() => {});
     },
     fetchTTData(segsToAdd) {
       let seg = segsToAdd.shift();
       let linkId = seg.info.linkId;
-      let printInfo = false;
-      let dt = this.$store.state.bluetooth.selectedDatetime;
-      Api.fetchCurrTTByLinkId(linkId, dt.valueOf(), printInfo).then(
+      let dt = this.currentDate;
+      Api.fetchCurrTTByLinkId(linkId, dt.valueOf()).then(
         (currData) => {
-          Api.fetchHistoricalTTWIncidentsByLinkID(linkId, printInfo).then(
+          Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(
             (histData) => {
               if (seg) {
                 this.$set(seg, 'data', {

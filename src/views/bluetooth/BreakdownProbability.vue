@@ -33,7 +33,6 @@
 <script>
 import { mapState } from 'vuex';
 import Utils from '@/utils/Utils';
-import DateTimePicker from '@/components/modules/bluetooth/ui/DateTimePicker';
 import BPGraph from '@/components/modules/bluetooth/graphs/BPGraph';
 import Api from '@/utils/api/bluetooth.js';
 
@@ -41,7 +40,6 @@ import { DateTime } from 'luxon';
 
 export default {
   components: {
-    DateTimePicker,
     BPGraph,
   },
   data: () => ({
