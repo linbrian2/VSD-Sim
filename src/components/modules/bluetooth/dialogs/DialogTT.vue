@@ -136,7 +136,7 @@ export default {
         }
       );
       /* Fetch Current Day Data */
-      let dt = this.$store.state.bluetooth.selectedDatetime;
+      let dt = this.$store.state.currentDate;
       Api.fetchCurrTTByLinkId(linkId, dt.valueOf()).then(
         dataC => {
           this.$store.state.bluetooth.selectedSeg.curr = dataC;

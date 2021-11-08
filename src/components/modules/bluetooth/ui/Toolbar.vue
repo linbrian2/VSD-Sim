@@ -1,12 +1,9 @@
 <template>
   <v-toolbar dense floating height="40" style="position: absolute; top: 10px; left:10px; ">
-    <!-- {{mapLayers}}
-    {{wazeLayers}}
-    {{deviceLayers}} -->
     <!-- Menu Items -->
     <v-menu bottom left offset-y min-width="350">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on" :disabled="!fetchDone">
+        <v-btn icon v-bind="attrs" v-on="on" >
           <v-app-bar-nav-icon></v-app-bar-nav-icon>
         </v-btn>
       </template>
@@ -49,7 +46,7 @@
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on: tooltip }">
-            <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }" :disabled="!fetchDone">
+            <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }" >
               <v-icon>mdi-layers-outline</v-icon>
             </v-btn>
           </template>
@@ -83,8 +80,6 @@
               </v-expansion-panel-header>
               <v-expansion-panel-content v-if="item.id == 3 || item.id == 2">
                 <template v-if="item.id == 3">
-                  <!-- <v-checkbox @click.native="layerItemClicked($event, item.id)" hide-details :label="item.title" :value="item.id" 
-                            class="mt-0" v-model="mapLayers" /> -->
                   <v-switch
                     dense
                     label="Grouped"
@@ -124,26 +119,6 @@
           </v-expansion-panels>
         </v-row>
       </template>
-      <!-- <v-list dense>
-        <v-list-item-group>
-          <template v-for="item in layerItems">
-            <v-list-item @click="layerItemClicked(item.id)" :key="item.id">
-              <v-list-item-content class="pa-2 mb-1">
-                <v-checkbox hide-details :label="item.title" :value="item.id" class="mt-0" v-model="mapLayers" />
-              </v-list-item-content>
-              <template v-if="(item.id == 3 && mapLayers.includes(3)) || (item.id == 4 && mapLayers.includes(4))">
-                <v-checkbox v-for="subtoggle in wazeSubtoggles" :key="subtoggle.id" v-model="wazeLayers" :label="subtoggle.title" 
-                            :value="subtoggle.id" class="pt-0 mt-0 px-3" hide-details dense />
-              </template>
-              <template v-if="item.id == 2 && mapLayers.includes(2)">
-                <v-checkbox v-for="subtoggle in deviceSubtoggles" :key="subtoggle.id" v-model="deviceLayers" :label="subtoggle.title" 
-                            :value="subtoggle.id" class="pt-0 mt-0 px-3" hide-details dense />
-              </template>
-            </v-list-item>
-            <v-divider v-if="item.id == 4" :key="item.key" />
-          </template>
-        </v-list-item-group>
-      </v-list> -->
     </v-menu>
   </v-toolbar>
 </template>
@@ -201,11 +176,6 @@ export default {
     });
   },
   methods: {
-    check(e, id) {
-      console.log(e);
-      console.log(id);
-      e.cancelBubble = true;
-    },
     changeLayer(id, op) {
       if (op == 'add') {
         console.log(this.mapLayers);
@@ -213,12 +183,12 @@ export default {
           let newMapLayers = JSON.parse(JSON.stringify(this.mapLayers));
           newMapLayers.push(id);
           this.mapLayers = newMapLayers;
-          this.layerItemClicked(id);
+          this.layerItemClicked(null, id);
         }
       } else if (op == 'remove') {
         if (this.mapLayers.includes(id)) {
           this.mapLayers = this.mapLayers.filter(x => x != id);
-          this.layerItemClicked(id);
+          this.layerItemClicked(null, id);
         }
       }
     },
@@ -238,13 +208,9 @@ export default {
     layerItemClicked(e, id) {
       console.log(e);
       console.log(id);
-      e.cancelBubble = true;
-      /* if (id == 3 && this.mapLayers.includes(3) && this.mapLayers.includes(4)) {
-        this.mapLayers = this.mapLayers.filter(x => x != 4)
+      if (e) {
+        e.cancelBubble = true;
       }
-      else if (id == 4 && this.mapLayers.includes(4) && this.mapLayers.includes(3)) {
-        this.mapLayers = this.mapLayers.filter(x => x != 3)
-      } */
       this.mapLayers.sort();
       this.wazeLayers.sort();
       this.deviceLayers.sort();
