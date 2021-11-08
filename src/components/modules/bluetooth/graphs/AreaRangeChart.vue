@@ -3,6 +3,7 @@
 </template>
 <script>
 import Highcharts from 'highcharts';
+import { mapState } from 'vuex';
 import * as HighchartsMore from 'highcharts/highcharts-more';
 import ChartStyles from '@/utils/ChartStyles.js';
 
@@ -46,6 +47,9 @@ export default {
       this.addChart();
     }
   },
+  computed: {
+    ...mapState(['currentDate']),
+  },
   methods: {
     init() {
       if (this.multiGraph) {
@@ -56,7 +60,7 @@ export default {
       this.addChart();
     },
     addDataMultiGraph() {
-      let selectedDT = this.$store.state.bluetooth.selectedDatetime;
+      let selectedDT = this.currentDate;
       var twoHoursBefore = new Date(selectedDT.toISOString());
       twoHoursBefore.setHours(twoHoursBefore.getHours() - 6);
       var oneHourAfter = new Date(selectedDT.toISOString());
@@ -104,8 +108,8 @@ export default {
       }
     },
     addData() {
-      let selectedDT = this.$store.state.bluetooth.selectedDatetime;
-      console.log(this.$store.state.bluetooth.selectedDatetime);
+      let selectedDT = this.currentDate;
+      console.log(this.currentDate);
       var time = new Date(selectedDT.toISOString());
       console.log(time);
       var index = 0;
@@ -168,12 +172,19 @@ export default {
       this.addTheme();
       Highcharts.chart(this.containerName, {
         chart: {
-          height: this.height ? this.height : 475,
+          marginBottom: 85,
+          height: this.height ? this.height : 600,
           zoomType: this.multiGraph ? null : 'x',
           scrollablePlotArea: {
             minWidth: this.minWidth ? this.minWidth : 600,
             scrollPositionX: 1
           }
+        },
+
+        legend: {
+          align: "center",
+          verticalAlign: "bottom",
+          y: 0,
         },
 
         exporting: {

@@ -28,7 +28,6 @@ export default {
   },
   methods: {
     addData() {
-      console.log('ADD DATA');
       this.volume = [];
       this.bp = [];
       for (var i = 0; i < this.bpInfo.length; i++) {

@@ -27,20 +27,25 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import { RouterPaths } from '@/utils/constants/router';
+
 export default {
-  props: ['multigraphSegs'],
   methods: {
     submit() {
-      console.log('Submit');
-      console.log(this.multigraphSegs);
-      this.$store.commit('bluetooth/SET_SELECTED_PAGE', 1);
-      this.$bus.$emit('SUBMIT_SEGMENTS', this.multigraphSegs);
+      this.$bus.$emit('SUBMIT_SEGMENTS', this.multigraphSegs.slice());
+      this.$store.state.bluetooth.modes.addFromMap = false;
+      setTimeout(() => {
+        let path = RouterPaths.BLUETOOTH_MULTIGRAPH
+        this.$router.push({ path }).catch(() => {});
+      }, 1)
     }
   },
   computed: {
     selectionMade() {
       return this.multigraphSegs && this.multigraphSegs.length > 0;
-    }
+    },
+    ...mapState('bluetooth', ['multigraphSegs'])
   }
 };
 </script>
