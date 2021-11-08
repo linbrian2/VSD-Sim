@@ -51,7 +51,6 @@ export default {
       marginRight: 125,
       titleOffset: -30,
     },
-    selectedDatetime: null,
     selectedDevice: null,
     bpInfo: null,
     deviceList: null,
@@ -59,9 +58,6 @@ export default {
     search: null,
   }),
   mounted() {
-    console.log(this.$store.state.bluetooth.apiData.devices);
-    let dt = DateTime.now().setZone('America/New_York').startOf('minute');
-    this.selectedDatetime = new Date(dt.year, dt.month - 1, dt.day, dt.hour, dt.minute, 0);
     this.createDeviceList();
   },
   methods: {
