@@ -8,7 +8,7 @@
           v-bind="attrs"
           v-on="on"
           @click="toggleTrafficRouting()"
-          style="position: absolute; top: 10px; left: 382px; height: 40px"
+          style="position: absolute; top: 10px; left: 362px; height: 40px"
         >
           <v-icon>mdi-vector-radius</v-icon>
         </v-btn>

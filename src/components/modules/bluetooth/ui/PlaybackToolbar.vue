@@ -7,7 +7,7 @@
           v-bind="attrs"
           v-on="on"
           @click="playbackToggle = !playbackToggle"
-          style="position: absolute; top: 10px; left: 438px; height: 40px"
+          style="position: absolute; top: 10px; left: 422px; height: 40px"
         >
           <v-icon>mdi-map-clock-outline</v-icon>
         </v-btn>
