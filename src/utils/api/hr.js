@@ -43,6 +43,10 @@ export default {
     });
   },
 
+  fetchTimeSpaceData(ids, start, duration) {
+    return AxiosClient.post('api/timeSpaceData', { ids, start, duration });
+  },
+
   fetchVolumeSet(series, start) {
     return AxiosClient.post('api/volume', { series, start });
   },

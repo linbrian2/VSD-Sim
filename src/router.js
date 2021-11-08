@@ -23,6 +23,7 @@ import IncidentList from '@/views/traffic/IncidentList.vue';
 
 import HRDashboard from '@/views/hr/Dashboard.vue';
 import PCD from '@/views/hr/PCD.vue';
+import TimeSpaceDiagram from '@/views/hr/TimeSpaceDiagram.vue';
 import SignalTiming from '@/views/hr/SignalTiming.vue';
 import PerformanceMeasures from '@/views/hr/PerformanceMeasures.vue';
 import MultiPCD from '@/views/hr/MultiPCD.vue';
@@ -118,6 +119,11 @@ const router = new Router({
           path: RouterPaths.HR_PCD,
           name: RouterNames.HR_PCD,
           component: PCD
+        },
+        {
+          path: RouterPaths.HR_TIME_SPACE_DIAGRAM,
+          name: RouterNames.HR_TIME_SPACE_DIAGRAM,
+          component: TimeSpaceDiagram
         },
         {
           path: RouterPaths.HR_SIGNAL,

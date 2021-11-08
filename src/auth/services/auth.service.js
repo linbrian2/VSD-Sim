@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AuthToken from './auth-token';
 
-const API_URL = `${process.env.VUE_APP_AUTH_API_URL}account`;
+const API_URL = `${process.env.VUE_APP_AUTH_API_URL}/account`;
 
 export default {
   login,

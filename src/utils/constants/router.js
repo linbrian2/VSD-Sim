@@ -11,6 +11,7 @@ export const RouterNames = {
 
   HR_DASHBOARD: "Today's Summary",
   HR_PCD: 'PCD',
+  HR_TIME_SPACE_DIAGRAM: 'Time Space Diagram',
   HR_SIGNAL: 'Signal Playback',
   HR_PERFORMANCE_MEASURES: 'Performance Measures',
   HR_MULTI_PCD: 'Corridor PCD Charts',
@@ -53,6 +54,7 @@ export const RouterPaths = {
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',
   HR_PCD: '/hr/pcd',
+  HR_TIME_SPACE_DIAGRAM: '/hr/tsd',
   HR_SIGNAL: '/hr/signal',
   HR_PERFORMANCE_MEASURES: '/hr/measures',
   HR_MULTI_PCD: '/hr/pcds',

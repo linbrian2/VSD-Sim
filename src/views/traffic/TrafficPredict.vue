@@ -8,25 +8,7 @@
       :onMarkerClick="markerClicked"
     />
 
-    <TitleBar title="Traffic Flow Prediction" :showId="true" :loading="loading" :refresh="refreshData">
-      <!-- <div class="d-flex justify-space-between align-center">
-        <div style="margin-left:60px; margin-top:3px">
-          <v-select
-            dark
-            style="width:120px; font-size:14px"
-            dense
-            v-model="currentDir"
-            :items="dirItems"
-            item-text="text"
-            item-value="value"
-            @input="dirSelected"
-            hide-details
-            prepend-icon="mdi-format-list-bulleted"
-            single-line
-          />
-        </div>
-      </div> -->
-    </TitleBar>
+    <TitleBar title="Traffic Flow Prediction" :showId="true" :loading="loading" :refresh="refreshData" />
 
     <v-container>
       <div class="d-flex justify-space-between">

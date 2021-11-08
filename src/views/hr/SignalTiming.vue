@@ -38,7 +38,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn dark icon v-on="on" @click.stop="showTimeline">
-                <v-icon>mdi-chart-timeline</v-icon>
+                <v-icon>mdi-chart-gantt</v-icon>
               </v-btn>
             </template>
             <span>Show Timeline</span>
@@ -243,6 +243,7 @@ export default {
 
     speedMenuItemSelected(speed) {
       //this.selectedSpeed = speed;
+      console.log('speed=', speed);
     },
 
     showTimeline() {
