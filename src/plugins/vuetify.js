@@ -1,3 +1,4 @@
+import '@mdi/font/css/materialdesignicons.css'; // Ensure you are using css-loader
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
 import * as VueGoogleMaps from 'vue2-google-maps';
@@ -38,4 +39,8 @@ Vue.use(VueGoogleMaps, {
 });
 Vue.use(Vuetify);
 
-export default new Vuetify({});
+export default new Vuetify({
+  icons: {
+    iconfont: 'mdi' // default - only for display purposes
+  }
+});
