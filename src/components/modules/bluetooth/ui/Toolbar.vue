@@ -178,7 +178,6 @@ export default {
   methods: {
     changeLayer(id, op) {
       if (op == 'add') {
-        console.log(this.mapLayers);
         if (!this.mapLayers.includes(id)) {
           let newMapLayers = JSON.parse(JSON.stringify(this.mapLayers));
           newMapLayers.push(id);
@@ -197,17 +196,14 @@ export default {
     },
     onSearchChange(item) {
       if (item) {
-        /* console.log(`onSearchChange(item): ${item}`); */
         this.$bus.$emit('DISPLAY_MARKER_DETAILS', item);
       }
     },
     menuItemClicked(type) {
-      /* console.log(`menuItemClicked(type): ${type}`); */
       this.$bus.$emit('SHOW_SELECTION_POPUP', type);
     },
     layerItemClicked(e, id) {
-      console.log(e);
-      console.log(id);
+      console.log(`Layer ${id} Clicked`);
       if (e) {
         e.cancelBubble = true;
       }

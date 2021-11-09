@@ -77,12 +77,10 @@ import ToolbarAddTT from '@/components/modules/bluetooth/ui/ToolbarAddTT.vue';
 import PlaybackToolbar from '@/components/modules/bluetooth/ui/PlaybackToolbar.vue';
 // Utils
 import Utils from '@/utils/Utils';
-import Api from '@/utils/api/bluetooth.js';
 /* import MapOption from '@/utils/MapOption.js'; */
 import * as infoWindows from '@/utils/InfoWindows.js';
 // Custom Event Bus (yang)
 import { eventBus } from '@/utils/EventBusBT.js';
-/* import $Scriptjs from 'scriptjs'; */
 
 /* eslint-disable no-undef */
 
@@ -136,47 +134,40 @@ export default {
       vm.getAdditionalDeviceInfo(data);
     };
 
-    this.$bus.$on('RESET_TO_SELECTED_TIME', date => {
-      this.resetSegmentsAndWaze(date);
-    });
-
-    this.$bus.$on('UPDATE_TIMELINE', date => {
-      this.updateTimeline(date);
-    });
-
-    this.$bus.$on('DISPLAY_MARKER_DETAILS', item => {
-      this.handleMarkerClick(item);
-    });
-
-    this.$bus.$on('SHOW_SELECTION_POPUP', id => {
-      this.showSelectionDialog(id);
-    });
-
-    this.$bus.$on('GO_TO_SEGMENT_LOCATION', seg => {
-      this.goToSegmentLocation(seg.info.coordinates, seg.info.name);
-    });
-
-    this.$bus.$on('GO_TO_MARKER_LOCATION', (obj, markerType) => {
-      this.goToMarkerLocation(obj, markerType);
-    });
+    this.$bus.$on('RESET_TO_SELECTED_TIME', date => { this.resetSegmentsAndWaze(date) });
+    this.$bus.$on('UPDATE_TIMELINE', date => { this.updateTimeline(date) });
+    this.$bus.$on('DISPLAY_MARKER_DETAILS', item => { this.handleMarkerClick(item) });
+    this.$bus.$on('SHOW_SELECTION_POPUP', id => { this.showSelectionDialog(id) });
+    this.$bus.$on('GO_TO_SEGMENT_LOCATION', seg => { this.goToSegmentLocation(seg.info.coordinates, seg.info.name) });
+    this.$bus.$on('GO_TO_MARKER_LOCATION', (obj, markerType) => { this.goToMarkerLocation(obj, markerType) });
+    this.$bus.$on('CREATE_SEGMENTS', () => { this.createSegments() });
+    this.$bus.$on('CREATE_DEVICES', () => { this.createDevices() });
+    this.$bus.$on('CREATE_WAZE_ALERTS', () => { this.createWazeAlerts() });
+    this.$bus.$on('ADD_SEGMENTS', () => { this.addSegments(); });
+    this.$bus.$on('ADD_MARKERS', markers => { this.addMarkers(markers) });
+    this.$bus.$on('ADD_WAZE_CLUSTERS', () => { this.addWazeClusters() });
   },
   methods: {
     resetSegmentsAndWaze(time) {
       console.log('Reset to selected time:\n %o', time);
       this.createSegments();
       if (this.mapLayerSelection.includes(0)) this.addSegments();
-      this.createWazeAlerts();
-      if (this.mapLayerSelection.includes(3) && !this.mapLayerSelection.includes(4))
+        this.createWazeAlerts();
+      if (this.isWazeMarkers) {
         this.addMarkers(this.filteredWazeMarkers);
-      if (this.mapLayerSelection.includes(3) && this.mapLayerSelection.includes(4)) this.addWazeClusters();
+      }
+      if (this.isWazeClusters) 
+        this.addWazeClusters();
     },
     updateTimeline(date) {
       this.changeDeviceLevels(date);
 
       this.createWazeAlerts(60, date);
-      if (this.mapLayerSelection.includes(3) && !this.mapLayerSelection.includes(4))
+      if (this.isWazeMarkers) {
         this.addMarkers(this.filteredWazeMarkers);
-      if (this.mapLayerSelection.includes(3) && this.mapLayerSelection.includes(4)) this.addWazeClusters();
+      }
+      if (this.isWazeClusters)
+        this.addWazeClusters();
 
       this.changeSegmentLevels(date);
     },
@@ -342,156 +333,15 @@ export default {
       }
       this.clearRoutingComponent();
     },
-    displayAPISuccess() {
-      let notifText = 'Successfully fetched map data';
-      this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
-    },
-    displayAPIFail() {
-      let notifText = 'Failed to fetch map data';
-      this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'error' });
-    },
-    /* API Invocation */
-    fetchData(dateChanged, timeChanged) {
-      this.$bus.$emit('CHANGE_BLUETOOTH_TIME', this.currentDate);
-      if (dateChanged) {
-        this.getFullDayData(this.currentDate)
-        this.getCurrTimeData(this.currentDate)
-      } else if (timeChanged) {
-        this.getCurrTimeData(this.currentDate)
-      }
-    },
-    getFullDayData(currDate) {
-      let dt = this.isToday ? null : currDate.getTime()
-      this.$store.state.bluetooth.apiData.segmentsFull = null;
-      this.$store.state.bluetooth.apiData.wazeFull = null;
-      this.$store.state.bluetooth.apiData.devicesFull = null;
-      if (this.isToday) {
-        Api.initFullDay().then(() => { 
-            this.getFullDaySegment(dt)
-            this.getFullDayWaze(dt)
-            this.getFullDayDevice(dt)
-            if (!this.$store.state.bluetooth.apiData.sensors) {
-              this.fetchSensors()
-            }
-            this.$store.state.bluetooth.timeSinceUpdate = 0
-          },
-          error => { console.log(error); }
-        );
-      } else {
-        this.getFullDaySegment(dt)
-        this.getFullDayWaze(dt)
-        this.getFullDayDevice(dt)
-        this.$store.state.bluetooth.timeSinceUpdate = 0
-      }
-    },
-    getCurrTimeData(currDate) {
-      let dt = currDate.getTime()
-      this.$store.state.bluetooth.apiData.segments = null;
-      this.$store.state.bluetooth.apiData.waze = null;
-      this.$store.state.bluetooth.apiData.devices = null;
-      this.getCurrTimeSegment(dt)
-      this.getCurrTimeWaze(dt)
-      this.getCurrTimeDevice(dt)
-      this.$store.state.bluetooth.timeSinceUpdate = 0
-    },
-    getFullDaySegment(dt) {
-      Api.fetchSegmentsFull(dt).then(
-        data => { this.$store.state.bluetooth.apiData.segmentsFull = data; },
-        error => { console.log(error); }
-      );
-    },
-    getFullDayWaze(dt) {
-      Api.fetchWazeDataFull(dt).then(
-        data => { this.$store.state.bluetooth.apiData.wazeFull = data; },
-        error => { console.log(error); }
-      );
-    },
-    getFullDayDevice(dt) {
-      Api.fetchDevicesFull(dt).then(
-        data => { this.$store.state.bluetooth.apiData.devicesFull = data; },
-        error => { console.log(error); }
-      );
-    },
-    getCurrTimeSegment(dt) {
-      Api.fetchSegments(dt).then(data => {
-        this.$store.state.bluetooth.apiData.segments = data;
-        this.createSegments();
-        if (this.mapLayerSelection.includes(0)) this.addSegments();
-        let notifText = 'Successfully fetched segment data';
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
-      }, error => {
-        console.log(error);
-        this.displayAPIFail();
-      });
-    },
-    getCurrTimeWaze(dt) {
-      Api.fetchWazeData(60, dt).then(data => {
-        this.$store.state.bluetooth.apiData.waze = data;
-        this.createWazeAlerts();
-        if (this.mapLayerSelection.includes(3) && !this.mapLayerSelection.includes(4))
-          this.addMarkers(this.filteredWazeMarkers);
-        if (this.mapLayerSelection.includes(3) && this.mapLayerSelection.includes(4)) this.addWazeClusters();
-        let notifText = 'Successfully fetched waze data';
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
-      }, error => {
-        console.log(error);
-        this.displayAPIFail();
-      });
-    },
-    getCurrTimeDevice(dt) {
-      Api.fetchDevicesBPData().then(
-        dataBP => {
-          Api.fetchDevices(dt).then(
-            dataDev => {
-              this.$store.state.bluetooth.apiData.devices = dataDev;
-              dataBP.forEach((bpData, i) => {
-                let added = false;
-                this.$store.state.bluetooth.apiData.devices.forEach((d, j) => {
-                  if (parseInt(bpData.deviceId) == d.deviceId) {
-                    if (bpData.direction == 'NB') {
-                      bpData.fullName = `${d.title} - NB`;
-                      this.$set(d, 'bpInfoNB', bpData);
-                      added = true;
-                    } else if (bpData.direction == 'SB') {
-                      bpData.fullName = `${d.title} - SB`;
-                      this.$set(d, 'bpInfoSB', bpData);
-                      added = true;
-                    }
-                  }
-                  if (!added && j == this.$store.state.bluetooth.apiData.devices.length - 1) {
-                    console.log('Item %i idx %i: %o', i, j, bpData);
-                  }
-                });
-              });
-              this.createDevices();
-              if (this.mapLayerSelection.includes(2)) this.addMarkers(this.filteredDeviceMarkers);
-              let notifText = 'Successfully fetched Device data';
-              this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
-            }, error => {
-              console.log(error);
-            }
-          );
-        }, error => {
-          console.log(error);
-        }
-      );
-    },
-    fetchSensors() {
-      Api.fetchSensors().then(data => {
-        this.$store.state.bluetooth.apiData.sensors = data;
-        this.createSensors();
-        if (this.mapLayerSelection.includes(1)) this.addMarkers(this.$store.state.bluetooth.sensorMarkers);
-      }, error => {
-        console.log(error);
-      });
-    },
     refreshMapObjects() {
       let layers = this.mapLayerSelection;
       if (layers.includes(0)) this.addSegments();
       if (layers.includes(1)) this.addMarkers(this.$store.state.bluetooth.sensorMarkers);
       if (layers.includes(2)) this.addMarkers(this.filteredDeviceMarkers);
-      if (layers.includes(3)) this.addMarkers(this.filteredWazeMarkers);
-      if (layers.includes(4)) this.addWazeClusters();
+      if (this.isWazeMarkers) {
+        this.addMarkers(this.filteredWazeMarkers);
+      }
+      if (this.isWazeClusters) this.addWazeClusters();
     },
     /* Segments Methods */
     createSegments() {
@@ -519,15 +369,12 @@ export default {
       this.$store.state.bluetooth.segmentPolylines.push(path);
       google.maps.event.addListener(path, 'click', event => {
         if (this.$store.state.bluetooth.modes.addFromMap) {
-          console.log(this.$store.state.bluetooth.multigraphSegs);
           if (!this.$store.state.bluetooth.multigraphSegs) {
             this.$store.state.bluetooth.multigraphSegs = []
           } 
-          console.log(this.$store.state.bluetooth.multigraphSegs);
           if (path.strokeColor != 'purple') {
             path.setOptions({ strokeWeight: 10, strokeOpacity: 1, strokeColor: 'purple' });
             this.$store.state.bluetooth.multigraphSegs.push(data);
-            console.log(this.$store.state.bluetooth.multigraphSegs);
           } else {
             let strokeColor = Utils.getStrokeColor(data.travelTime.level);
             path.setOptions({ strokeWeight: map.getZoom() / 3, strokeOpacity: 0.8, strokeColor: strokeColor });
@@ -564,6 +411,7 @@ export default {
     },
     /* Marker Methods */
     addMarkers(markers) {
+      console.log("Add Markers");
       if (markers) {
         markers.forEach(m => {
           m.setMap(this.$store.state.bluetooth.map);
@@ -571,7 +419,6 @@ export default {
       }
     },
     removeMarkers(markers) {
-      /* console.log(markers); */
       if (markers) {
         markers.forEach(m => {
           m.setMap(null);
@@ -774,6 +621,7 @@ export default {
       else return 0;
     },
     addWazeClusters() {
+      console.log("Add Waze Cluster");
       let map = this.$store.state.bluetooth.map
       if (this.filteredWazeMarkers) {
         let markers = this.filteredWazeMarkers        
@@ -794,16 +642,12 @@ export default {
       this.$store.state.bluetooth.map.setCenter(loc);
       this.$store.state.bluetooth.map.setZoom(17);
       if (markerType == 'devices') {
-        console.log('devices');
         this.$bus.$emit('CHANGE_LAYER', 2, 'add');
       } else if (markerType == 'sensors') {
-        console.log('sensors');
         this.$bus.$emit('CHANGE_LAYER', 1, 'add');
       } else if (markerType == 'waze') {
-        console.log('waze');
         this.$bus.$emit('CHANGE_LAYER', 3, 'add');
       }
-      console.log('Go to Marker Location\n%o', obj);
     },
     goToSegmentLocation(coords, name) {
       var bounds = new google.maps.LatLngBounds();
@@ -840,7 +684,6 @@ export default {
     getAdditionalInfoMain(name) {
       this.$store.state.bluetooth.apiData.segments.forEach(s => {
         if (s.info && s.info.name == name) {
-          console.log(this.$store.state.bluetooth.selectedSeg);
           this.$store.state.bluetooth.selectedSeg.data = s;
           return;
         }
@@ -849,20 +692,12 @@ export default {
     },
   },
   watch: {
-    '$store.state.bluetooth.map'(data) {
-      if (data && !this.fetchDone) {
-        this.fetchData(true, true);
-      } else if (data && this.fetchDone) {
-        this.refreshMapObjects();
-      }
-    },
     '$store.state.bluetooth.modes.addFromMap': {
       handler: function(newVal, oldVal) {
         if (newVal && !oldVal) {
           this.$store.state.bluetooth.multigraphSegs = [];
         } else {
           this.$store.state.bluetooth.multigraphSegs.forEach(s => {
-            console.log(s.info.name);
             this.$store.state.bluetooth.segmentPolylines.forEach(p => {
               if (p.title == s.info.name) {
                 let zoom = this.$store.state.bluetooth.map.getZoom() / 3;
@@ -878,23 +713,23 @@ export default {
     '$store.state.bluetooth.mapLayerSelection': {
       deep: true,
       handler: function(newVal, oldVal) {
-        console.log('Old\n%o\nNew\n%o', oldVal, newVal);
+        /* console.log('Old\n%o\nNew\n%o', oldVal, newVal); */
         /* Add */
         let addDiff = newVal.filter(x => !oldVal.includes(x));
         if (addDiff.length > 0) {
-          console.log('Add: %o', addDiff[0]);
+          /* console.log('Add: %o', addDiff[0]); */
           if (addDiff[0] == 0) this.addSegments();
           else if (addDiff[0] == 1) this.addMarkers(this.$store.state.bluetooth.sensorMarkers);
           else if (addDiff[0] == 2) this.addMarkers(this.filteredDeviceMarkers);
           else if (addDiff[0] == 3) {
             this.removeWazeClusters();
-            if (this.mapLayerSelection.includes(3)) {
+            if (this.isWazeMarkers) {
               this.addMarkers(this.filteredWazeMarkers);
             }
             if (this.mapLayerSelection.includes(4)) {
               this.addWazeClusters();
             }
-          } else if (addDiff[0] == 4 && this.mapLayerSelection.includes(3)) {
+          } else if (addDiff[0] == 4 && this.isWazeClusters) {
             this.removeMarkers(this.$store.state.bluetooth.wazeMarkers);
             this.addWazeClusters();
           } else if (addDiff[0] == 5) this.addBB();
@@ -903,7 +738,7 @@ export default {
         /* Delete */
         let delDiff = oldVal.filter(x => !newVal.includes(x));
         if (delDiff.length > 0) {
-          console.log('Delete: %o', delDiff[0]);
+          /* console.log('Delete: %o', delDiff[0]); */
           if (delDiff[0] == 0) this.removeSegments();
           else if (delDiff[0] == 1) this.removeMarkers(this.$store.state.bluetooth.sensorMarkers);
           else if (delDiff[0] == 2) this.removeMarkers(this.$store.state.bluetooth.deviceMarkers);
@@ -917,17 +752,10 @@ export default {
       }
     },
     '$store.state.bluetooth.wazeLayerSelection'() {
-      let mapLayerSelection = this.$store.state.bluetooth.mapLayerSelection;
-      if (mapLayerSelection.includes(3)) {
-        if (this.mapLayerSelection.includes(3)) {
-          this.removeMarkers(this.$store.state.bluetooth.wazeMarkers);
-          this.addMarkers(this.filteredWazeMarkers);
-        }
-        if (this.mapLayerSelection.includes(4)) {
-          this.removeWazeClusters();
-          this.addWazeClusters();
-        }
-      } else if (mapLayerSelection.includes(4) && this.mapLayerSelection.includes(3)) {
+      if (this.isWazeMarkers) {
+        this.removeMarkers(this.$store.state.bluetooth.wazeMarkers);
+        this.addMarkers(this.filteredWazeMarkers);
+      } else if (this.isWazeClusters) {
         this.removeWazeClusters();
         this.addWazeClusters();
       }
@@ -939,13 +767,6 @@ export default {
         this.addMarkers(this.filteredDeviceMarkers);
       }
     },
-    currentDate(n, o) {
-      let dateChanged = (n.getFullYear() == o.getFullYear() && 
-                         n.getMonth() == o.getMonth() && 
-                         n.getDate() == o.getDate()) ? false : true
-      let timeChanged = (n.getHours() == o.getHours() && n.getMinutes() == o.getMinutes()) ? false : true
-      this.fetchData(dateChanged, timeChanged)
-    }
   },
   computed: {
     position() {
@@ -961,7 +782,6 @@ export default {
         return this.$store.state.bluetooth.wazeMarkers;
       }
     },
-    /* filteredDeviceMarkers */
     filteredDeviceMarkers() {
       if (this.$store.state.bluetooth.deviceLayerSelection && this.$store.state.bluetooth.deviceMarkers) {
         let filterLevels = [];
@@ -996,15 +816,11 @@ export default {
         !!this.$store.state.bluetooth.apiData.waze
       );
     },
-    isToday() {
-      if (this.currentDate) {
-        const today = new Date()
-        return this.currentDate.getDate() == today.getDate() &&
-               this.currentDate.getMonth() == today.getMonth() &&
-               this.currentDate.getFullYear() == today.getFullYear()
-      } else {
-        return true
-      }
+    isWazeMarkers() {
+      return this.mapLayerSelection.includes(3) && !this.mapLayerSelection.includes(4)
+    },
+    isWazeClusters() {
+      return this.mapLayerSelection.includes(3) && this.mapLayerSelection.includes(4)
     },
     ...mapState(['currentDate']),
   }
