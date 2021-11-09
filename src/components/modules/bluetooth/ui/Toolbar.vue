@@ -3,7 +3,7 @@
     <!-- Menu Items -->
     <v-menu bottom left offset-y min-width="350">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on" >
+        <v-btn icon v-bind="attrs" v-on="on">
           <v-app-bar-nav-icon></v-app-bar-nav-icon>
         </v-btn>
       </template>
@@ -46,7 +46,7 @@
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on: tooltip }">
-            <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }" >
+            <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
               <v-icon>mdi-layers-outline</v-icon>
             </v-btn>
           </template>

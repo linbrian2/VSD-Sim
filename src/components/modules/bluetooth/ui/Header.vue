@@ -78,20 +78,20 @@ export default {
     actionItems: Array,
     dotItems: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     showDate: {
       type: Boolean,
-      default: true,
+      default: true
     },
     clipLeft: {
       type: Boolean,
-      default: true,
+      default: true
     },
     clipRight: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
   components: {
@@ -100,7 +100,7 @@ export default {
     MenuDatePicker,
     NavDrawer,
     ThreeDotMenu,
-    SnackBar,
+    SnackBar
   },
 
   data: () => ({}),
@@ -128,12 +128,12 @@ export default {
 
     timeRemaining() {
       if (this.$store.state.bluetooth.autoUpdate) {
-        let min = 5 - Math.ceil(this.timeSinceUpdate / 60)
-        let sec = 60 - this.timeSinceUpdate % 60
-        if (sec == 60) sec = 0
+        let min = 5 - Math.ceil(this.timeSinceUpdate / 60);
+        let sec = 60 - (this.timeSinceUpdate % 60);
+        if (sec == 60) sec = 0;
         return `Next update in ${min}m ${sec}s`;
       } else {
-        return `Auto-update disabled`
+        return `Auto-update disabled`;
       }
     },
     ...mapState(['currentDate', 'darkMode']),
@@ -145,7 +145,7 @@ export default {
       this.$vuetify.theme.dark = value;
       this.setHighChartsTheme(value);
       this.$bus.$emit('UPDATE_DARK_MODE', value);
-    },
+    }
   },
 
   mounted() {
@@ -166,7 +166,7 @@ export default {
     menuItemClicked(action) {
       console.log(action);
       this.$emit('menuItemclick', action);
-    },
-  },
+    }
+  }
 };
 </script>

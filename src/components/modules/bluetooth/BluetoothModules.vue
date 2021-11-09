@@ -19,7 +19,7 @@ import { mapState } from 'vuex';
 export default {
   data() {
     return {
-      time: null,
+      time: null
     };
   },
   mounted() {
@@ -33,12 +33,12 @@ export default {
     });
   },
   computed: {
-    ...mapState(['currentDate']),
+    ...mapState(['currentDate'])
   },
   methods: {
     /* Time Picker */
     setTime(date) {
-      this.time = date
+      this.time = date;
     },
     cancelTimePicker() {
       this.time = this.currentDate;
@@ -59,10 +59,7 @@ export default {
         this.time = this.currentDate;
         this.$store.state.bluetooth.timePickerMenu = false;
       }
-    },
-  },
+    }
+  }
 };
 </script>
-
-<style>
-</style>
