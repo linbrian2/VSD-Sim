@@ -776,36 +776,8 @@ export default {
     addWazeClusters() {
       let map = this.$store.state.bluetooth.map
       if (this.filteredWazeMarkers) {
-        let markers = this.filteredWazeMarkers
-        let options = {
-          styles: [{
-            height: 53,
-            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png",
-            width: 53
-          },
-          {
-            height: 56,
-            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m2.png",
-            width: 56
-          },
-          {
-            height: 66,
-            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m3.png",
-            width: 66
-          },
-          {
-            height: 78,
-            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m4.png",
-            width: 78
-          },
-          {
-            height: 90,
-            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m5.png",
-            width: 90
-          }
-        ]}
-        
-        this.$store.state.bluetooth.wazeClusters = new MarkerClusterer({ markers, map, options }); 
+        let markers = this.filteredWazeMarkers        
+        this.$store.state.bluetooth.wazeClusters = new MarkerClusterer({ markers, map }); 
       }
     },
     removeWazeClusters(clusters = null) {
