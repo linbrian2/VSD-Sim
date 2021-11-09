@@ -1,14 +1,14 @@
 <template>
   <div class="breakdown-probability">
     <v-container fluid style="max-width: 85%">
-      <v-card class="rounded-0 elevation-5">
+      <v-card class="rounded-0 elevation-5" :loading="devicesBP.length == 0" style="height: 90vh; overflow-y: auto;">
         <v-card-title>Breakdown Probability</v-card-title>
         <v-card-text class="mb-10">
           <v-container fluid>
             <v-autocomplete
               v-model="selectedDevice"
               dense
-              :items="deviceInfo"
+              :items="devicesBP"
               :loading="isLoading"
               :search-input.sync="search"
               color="white"
@@ -63,7 +63,7 @@ export default {
   methods: {
     createDeviceList() {
       this.deviceList = [];
-      this.deviceInfo.forEach((d) => {
+      this.devicesBP.forEach((d) => {
         this.deviceList.push(d.apiReqName);
       });
     },
@@ -109,8 +109,8 @@ export default {
     },
     changeSelectedDevice() {
       if (this.$store.state.bluetooth.selectedDevice) {
-        console.log('Device Info: %o', this.deviceInfo);
-        this.deviceInfo.forEach((d) => {
+        console.log('Device Info: %o', this.devicesBP);
+        this.devicesBP.forEach((d) => {
           if (this.$store.state.bluetooth.selectedDevice == d.deviceId) {
             this.selectedDevice = d.apiReqName;
             return;
@@ -134,9 +134,8 @@ export default {
     },
   },
   computed: {
-    deviceInfo() {
+    devicesBP() {
       let devices = this.$store.state.bluetooth.apiData.devices;
-      console.log(devices);
       if (devices) {
         devices = devices.filter((d) => d.bpInfoNB || d.bpInfoSB);
         let deviceInfo = [];
@@ -148,15 +147,14 @@ export default {
             deviceInfo.push(d.bpInfoSB);
           }
         });
-        console.log(deviceInfo);
         return deviceInfo;
       } else {
-        return null;
+        return []
       }
     },
     label() {
-      if (this.deviceInfo) {
-        return `Search (Items: ${this.deviceInfo.length})`;
+      if (this.devicesBP) {
+        return `Search (Items: ${this.devicesBP.length})`;
       } else {
         return 'Search';
       }

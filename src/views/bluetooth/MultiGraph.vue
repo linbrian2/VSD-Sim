@@ -1,7 +1,7 @@
 <template>
   <div class="multigraph">
     <v-container fluid style="max-width: 85%">
-      <v-card class="rounded-0 elevation-5">
+      <v-card class="rounded-0 elevation-5" :loading="segments.length == 0" style="height: 90vh; overflow-y: auto;">
         <v-card-title>Multigraph</v-card-title>
         <v-card-text class="mb-10">
           <v-container fluid>
@@ -223,7 +223,7 @@ export default {
       return this.colCount[this.$store.state.bluetooth.prefs.multiGraph.colCountIdx];
     },
     segments() {
-      return this.$store.state.bluetooth.apiData.segments;
+      return this.$store.state.bluetooth.apiData.segments || []
     },
     ...mapState(['currentDate']),
   },
