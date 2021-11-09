@@ -20,8 +20,6 @@ export const RouterNames = {
   VISION_DASHBOARD: 'Traffic Cameras',
   VISION_REID: 'Vehicle Re-ID',
 
-  BLUETOOTH_DASHBOARD: 'Bluetooth',
-
   BLUETOOTH_DASHBOARD: 'Dashboard',
   BLUETOOTH_MULTIGRAPH: 'Multigraph',
   BLUETOOTH_BREAKDOWNPROB: 'Breakdown Probability',

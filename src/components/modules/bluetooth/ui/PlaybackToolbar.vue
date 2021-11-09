@@ -75,7 +75,7 @@
     <v-scroll-x-reverse-transition>
       <v-toolbar dense floating height="40" style="position: absolute; top: 10px; right: 10px" loading>
         <div>
-          Timeline Data availability:
+          Playback Data availability:
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon color="green" class="px-1" v-bind="attrs" v-on="on" :disabled="!wazeFull">mdi-waze</v-icon>
