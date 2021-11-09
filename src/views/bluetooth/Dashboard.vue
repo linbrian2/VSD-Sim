@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { mapState } from 'vuex';
 // Pages
 import TrafficRouting from '@/views/bluetooth/TrafficRouting';
@@ -773,16 +774,38 @@ export default {
       else return 0;
     },
     addWazeClusters() {
+      let map = this.$store.state.bluetooth.map
       if (this.filteredWazeMarkers) {
-        this.$store.state.bluetooth.wazeClusters = new MarkerClusterer(
-          this.$store.state.bluetooth.map,
-          this.filteredWazeMarkers,
+        let markers = this.filteredWazeMarkers
+        let options = {
+          styles: [{
+            height: 53,
+            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png",
+            width: 53
+          },
           {
-            imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-            gridSize: 30,
-            maxZoom: 13
+            height: 56,
+            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m2.png",
+            width: 56
+          },
+          {
+            height: 66,
+            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m3.png",
+            width: 66
+          },
+          {
+            height: 78,
+            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m4.png",
+            width: 78
+          },
+          {
+            height: 90,
+            url: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m5.png",
+            width: 90
           }
-        );
+        ]}
+        
+        this.$store.state.bluetooth.wazeClusters = new MarkerClusterer({ markers, map, options }); 
       }
     },
     removeWazeClusters(clusters = null) {

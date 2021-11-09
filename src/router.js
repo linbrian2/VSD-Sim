@@ -165,7 +165,6 @@ const router = new Router({
     },
     {
       path: RouterPaths.BLUETOOTH_DASHBOARD,
-      name: RouterNames.BLUETOOTH_DASHBOARD,
       component: Bluetooth,
       children: [
         {
