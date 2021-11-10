@@ -122,7 +122,7 @@ export default {
       { text: 'Start Time', value: 'startTime' },
       { text: 'Duration', value: 'duration' },
       { text: 'Distance', value: 'distance' },
-      { text: 'Status', value: 'status' },
+      { text: 'Status', value: 'status' }
     ],
     items: [],
     speed_menu_items: [
@@ -131,8 +131,8 @@ export default {
       { title: '15x', value: 15 },
       { title: '10x', value: 10 },
       { title: '5x', value: 5 },
-      { title: '1x', value: 1 },
-    ],
+      { title: '1x', value: 1 }
+    ]
   }),
   beforeDestroy() {
     clearInterval(this.playbackInterval);
@@ -169,7 +169,7 @@ export default {
       this.setPlayStop();
     });
 
-    this.$bus.$on('FETCH_HISTORICAL', (dt) => {
+    this.$bus.$on('FETCH_HISTORICAL', dt => {
       setTimeout(() => {
         this.progress = dt.hour * 60 + dt.minute;
       }, 1000);
@@ -201,7 +201,7 @@ export default {
       this.playButtonIcon = 'mdi-play';
       this.$store.commit('bluetooth/SET_PLAY_STATE', 'stop');
       this.$bus.$emit('RESET_TO_SELECTED_TIME', this.$store.state.currentDate);
-    },
+    }
   },
   computed: {
     wazeFull() {
@@ -252,7 +252,7 @@ export default {
           day: selectedDT.getDate(),
           hour: hours,
           minute: mins,
-          zone: 'America/New_York',
+          zone: 'America/New_York'
         });
         return dt;
       } else {
@@ -278,12 +278,14 @@ export default {
 
     isToday() {
       if (this.currentDate) {
-        const today = new Date()
-        return this.currentDate.getDate() == today.getDate() &&
-               this.currentDate.getMonth() == today.getMonth() &&
-               this.currentDate.getFullYear() == today.getFullYear()
+        const today = new Date();
+        return (
+          this.currentDate.getDate() == today.getDate() &&
+          this.currentDate.getMonth() == today.getMonth() &&
+          this.currentDate.getFullYear() == today.getFullYear()
+        );
       } else {
-        return true
+        return true;
       }
     },
 
@@ -294,11 +296,11 @@ export default {
       set(value) {
         this.$store.commit('bluetooth/SET_CURRENT_PROGRESS', value);
         this.$bus.$emit('PLAYBACK_PROGRESS_CHANGED', value);
-      },
+      }
     },
     ...mapState(['currentDate']),
-    ...mapState('bluetooth', ['playState', 'currentState', 'currentProgress', 'playbackSpeed']),
-  },
+    ...mapState('bluetooth', ['playState', 'currentState', 'currentProgress', 'playbackSpeed'])
+  }
 };
 </script>
 

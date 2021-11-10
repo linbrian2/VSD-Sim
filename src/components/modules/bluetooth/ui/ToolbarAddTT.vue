@@ -36,9 +36,9 @@ export default {
       this.$bus.$emit('SUBMIT_SEGMENTS', this.multigraphSegs.slice());
       this.$store.state.bluetooth.modes.addFromMap = false;
       setTimeout(() => {
-        let path = RouterPaths.BLUETOOTH_MULTIGRAPH
+        let path = RouterPaths.BLUETOOTH_MULTIGRAPH;
         this.$router.push({ path }).catch(() => {});
-      }, 1)
+      }, 1);
     }
   },
   computed: {

@@ -48,7 +48,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDate']),
+    ...mapState(['currentDate'])
   },
   methods: {
     init() {
@@ -182,9 +182,9 @@ export default {
         },
 
         legend: {
-          align: "center",
-          verticalAlign: "bottom",
-          y: 0,
+          align: 'center',
+          verticalAlign: 'bottom',
+          y: 0
         },
 
         exporting: {

@@ -40,13 +40,13 @@ export default {
       scrollwheel: true,
       disableDefaultUI: true,
       zoom: 9,
-      mapTypeId: "roadmap",
-    },
+      mapTypeId: 'roadmap'
+    }
   }),
   computed: {
     position() {
       return this.$store.state.position;
-    },
+    }
   },
   watch: {
     position() {
@@ -54,7 +54,7 @@ export default {
         map.panTo(this.position);
         map.setZoom(12);
       });
-    },
+    }
   },
 
   mounted() {
@@ -86,7 +86,7 @@ export default {
 
     getMap() {
       return this.$refs.mapRef;
-    },
+    }
   }
 };
 </script>
@@ -94,5 +94,5 @@ export default {
 .my-map {
   width: 101.5%;
   height: calc(100vh - 48px);
-} 
+}
 </style>

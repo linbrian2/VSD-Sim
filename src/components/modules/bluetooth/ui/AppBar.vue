@@ -40,14 +40,14 @@ import { RouterNames, RouterPaths } from '@/utils/constants/router';
 
 export default {
   components: {
-    Header,
+    Header
   },
   data: () => ({
     title: AppConstants.BLUETOOTH_APP_TITLE,
     action_menu_items: [
       { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD },
       { title: RouterNames.BLUETOOTH_MULTIGRAPH, url: RouterPaths.BLUETOOTH_MULTIGRAPH },
-      { title: RouterNames.BLUETOOTH_BREAKDOWNPROB, url: RouterPaths.BLUETOOTH_BREAKDOWNPROB },
+      { title: RouterNames.BLUETOOTH_BREAKDOWNPROB, url: RouterPaths.BLUETOOTH_BREAKDOWNPROB }
     ],
     menu_items: [
       { title: 'Dashboard', action: 0 },
@@ -55,39 +55,46 @@ export default {
       { title: 'Breakdown Probability', action: 2 },
       { title: 'Reset Map', action: 3 },
       { title: 'Reset Date/Time', action: 4 },
-      { title: 'Toggle Auto-update', action: 5 },
-    ],
+      { title: 'Toggle Auto-update', action: 5 }
+    ]
   }),
   computed: {
-    ...mapState(['currentDate']),
+    ...mapState(['currentDate'])
   },
   methods: {
     menuItemClicked(i) {
       console.log(`Item ${i} clicked`);
       switch (i) {
         case 0:
-          this.showDashboard()
+          this.showDashboard();
           break;
         case 1:
-          this.showMultigraph()
+          this.showMultigraph();
           break;
         case 2:
-          this.showBreakdownProb()
+          this.showBreakdownProb();
           break;
         case 3:
           this.$store.state.bluetooth.map.setCenter({ lat: 39.14, lng: -75.5 });
           this.$store.state.bluetooth.map.setZoom(9);
           break;
         case 4:
-          this.$store.state.currentDate = new Date()
+          this.$store.state.currentDate = new Date();
           break;
         case 5:
-          let notifText = "Auto-update enabled."
-          if (this.$store.state.bluetooth.autoUpdate) {
-            notifText = "Auto-update disabled."
+          {
+            let notifText = 'Auto-update enabled.';
+            if (this.$store.state.bluetooth.autoUpdate) {
+              notifText = 'Auto-update disabled.';
+            }
+            this.$store.commit('bluetooth/SET_NOTIFICATION', {
+              show: true,
+              text: notifText,
+              timeout: 2500,
+              color: 'info'
+            });
+            this.$store.state.bluetooth.autoUpdate = !this.$store.state.bluetooth.autoUpdate;
           }
-          this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
-          this.$store.state.bluetooth.autoUpdate = !this.$store.state.bluetooth.autoUpdate
           break;
         default:
           alert(`Item ${i}: Not implemented.`);
@@ -119,7 +126,7 @@ export default {
 
     showBreakdownProb() {
       this.switchTo(RouterPaths.BLUETOOTH_BREAKDOWNPROB);
-    },
-  },
+    }
+  }
 };
 </script>
