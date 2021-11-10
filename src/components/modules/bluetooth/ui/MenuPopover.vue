@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-x>
-      <template v-slot:activator="{ on, attrs }">
+      <!-- <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
@@ -12,14 +12,14 @@
             <span>Filter Add</span>
           </v-tooltip>
         </div>
-      </template>
+      </template> -->
 
       <v-card>
         <v-list>
           <v-list-item>
             <h3>Severity Levels:</h3>
           </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="severity">
             <v-tooltip bottom v-for="s in severity" :key="s.id">
               <template v-slot:activator="{ on, attrs }">
                 <div v-bind="attrs" v-on="on">
@@ -59,13 +59,14 @@ export default {
   },
   methods: {
     init() {
-      /* console.log("Segments: %o", this.segments) */
-      this.segments.forEach(s => {
-        if (s.travelTime.level == 1 || s.travelTime.level == 2) this.severity[0].count++;
-        else if (s.travelTime.level == 3 || s.travelTime.level == 4) this.severity[1].count++;
-        else if (s.travelTime.level == 5) this.severity[2].count++;
-        else if (s.travelTime.level == 6) this.severity[3].count++;
-      });
+      if (this.segments) {
+        this.segments.forEach(s => {
+          if (s.travelTime.level == 1 || s.travelTime.level == 2) this.severity[0].count++;
+          else if (s.travelTime.level == 3 || s.travelTime.level == 4) this.severity[1].count++;
+          else if (s.travelTime.level == 5) this.severity[2].count++;
+          else if (s.travelTime.level == 6) this.severity[3].count++;
+        });
+      }
     },
     clear() {
       this.menu = false;
