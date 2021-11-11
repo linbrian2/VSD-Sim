@@ -159,7 +159,7 @@ export default {
     }, 1000);
     this.timeInterval = setInterval(() => {
       if (!this.$store.state.bluetooth.modes.historical) {
-        this.endDT = DateTime.local().setZone('America/New_York');
+        this.endDT = DateTime.local();
       } else {
         this.endDT = null;
       }
@@ -251,8 +251,7 @@ export default {
           month: selectedDT.getMonth() + 1,
           day: selectedDT.getDate(),
           hour: hours,
-          minute: mins,
-          zone: 'America/New_York'
+          minute: mins
         });
         return dt;
       } else {

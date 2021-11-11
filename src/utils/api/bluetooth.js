@@ -121,8 +121,8 @@ export default {
         console.log(err.message);
       });
   },
-  fetchBP(apiReqName, start, end) {
-    return AxiosClient.get(`bluetooth/breakdown-prob/${apiReqName}-${start}-${end}`)
+  fetchBP(id, dir, endTS) {
+    return AxiosClient.get(`bluetooth/breakdown-prob/${id}/${dir}/${endTS}`)
       .then(res => {
         return res.data;
       })

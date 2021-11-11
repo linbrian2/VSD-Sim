@@ -63,7 +63,6 @@ export default {
   },
   methods: {
     menuItemClicked(i) {
-      console.log(`Item ${i} clicked`);
       switch (i) {
         case 0:
           this.showDashboard();

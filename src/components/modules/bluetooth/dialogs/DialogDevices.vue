@@ -100,17 +100,17 @@ export default {
     menuItemClicked(idx) {
       if (idx == 0) {
         console.log('this.devices\n%o', this.devices);
+        console.log('this.devices\n%o', this.devicesFull);
         let notifText = 'Check console for info.';
         this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
       } else if (idx == 1) {
-        let dt = DateTime.now().setZone('America/New_York');
+        let dt = DateTime.now();
         let dtStr = dt
           .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
           .replaceAll('/', '-')
           .replaceAll(',', '');
         let fileName = `Devices (${dtStr})`;
-        console.log(fileName);
-        Utils.downloadJSON(fileName, this.devices);
+        Utils.downloadJSON(fileName, this.devicesFull);
       }
     },
     viewItem(item) {
@@ -121,6 +121,11 @@ export default {
   computed: {
     devices() {
       let devices = this.$store.state.bluetooth.apiData.devices;
+      if (devices) return devices;
+      else return [];
+    },
+    devicesFull() {
+      let devices = this.$store.state.bluetooth.apiData.devicesFull;
       if (devices) return devices;
       else return [];
     },
