@@ -1,7 +1,7 @@
 <template>
   <div class="traffic">
     <AppBar />
-    <v-main class="mt-6">
+    <v-main>
       <router-view></router-view>
     </v-main>
   </div>

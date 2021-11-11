@@ -65,9 +65,6 @@ export default {
       twoHoursBefore.setHours(twoHoursBefore.getHours() - 6);
       var oneHourAfter = new Date(selectedDT.toISOString());
       oneHourAfter.setHours(oneHourAfter.getHours() - 3);
-      console.log('selectedDT: %o', selectedDT);
-      console.log('twoHoursBefore: %o', twoHoursBefore);
-      console.log('oneHourAfter: %o', oneHourAfter);
 
       var time = new Date(selectedDT.toISOString());
       var index = 0;
@@ -109,9 +106,7 @@ export default {
     },
     addData() {
       let selectedDT = this.currentDate;
-      console.log(this.currentDate);
       var time = new Date(selectedDT.toISOString());
-      console.log(time);
       var index = 0;
       if (this.historicData) {
         for (var i = 0; i < this.historicData.length; i++) {

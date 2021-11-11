@@ -85,13 +85,12 @@ export default {
         let notifText = 'Check console for info.';
         this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
       } else if (idx == 1) {
-        let dt = DateTime.now().setZone('America/New_York');
+        let dt = DateTime.now();
         let dtStr = dt
           .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
           .replaceAll('/', '-')
           .replaceAll(',', '');
         let fileName = `Sensors (${dtStr})`;
-        console.log(fileName);
         Utils.downloadJSON(fileName, this.sensors);
       }
     },

@@ -9,7 +9,7 @@ export default {
   props: ['title', 'bpInfo', 'options'],
   data: () => ({
     volume: [],
-    bp: []
+    bp: [],
   }),
   mounted() {
     if (this.bpInfo) {
@@ -24,7 +24,7 @@ export default {
     },
     '$vuetify.theme.dark'() {
       this.addGraph();
-    }
+    },
   },
   methods: {
     addData() {
@@ -51,44 +51,47 @@ export default {
           marginRight: this.options.marginRight ? this.options.marginRight : undefined,
           scrollablePlotArea: {
             minWidth: 600,
-            scrollPositionX: 1
-          }
+            scrollPositionX: 1,
+          },
+        },
+        time: {
+          timezoneOffset: 0,
         },
         title: {
           text: this.title,
           align: 'center',
-          x: this.options.titleOffset ? this.options.titleOffset : 0
+          x: this.options.titleOffset ? this.options.titleOffset : 0,
         },
         yAxis: [
           {
             title: {
-              text: 'Breakdown Probability'
+              text: 'Breakdown Probability',
             },
             max: 1,
             min: 0,
-            tickPixelInterval: 40
+            tickPixelInterval: 40,
           },
           {
             title: {
-              text: 'Volume'
+              text: 'Volume',
             },
             tickPixelInterval: 40,
-            opposite: true
-          }
+            opposite: true,
+          },
         ],
         tooltip: {
           crosshairs: true,
-          shared: true
+          shared: true,
         },
         xAxis: {
           title: {
-            text: 'Time'
+            text: 'Time',
           },
           type: 'datetime',
           crosshair: true,
           accessibility: {
-            rangeDescription: 'Range: 12:00AM to 11:59PM'
-          }
+            rangeDescription: 'Range: 12:00AM to 11:59PM',
+          },
         },
         series: [
           {
@@ -96,19 +99,19 @@ export default {
             yAxis: 0,
             data: this.bp,
             color: Highcharts.getOptions().colors[2],
-            lineWidth: 3
+            lineWidth: 3,
           },
           {
             name: 'Volume',
             yAxis: 1,
             data: this.volume,
             color: Highcharts.getOptions().colors[4],
-            lineWidth: 3
-          }
+            lineWidth: 3,
+          },
         ],
         credits: {
-          enabled: false
-        }
+          enabled: false,
+        },
       });
     },
     addTheme() {
@@ -118,8 +121,8 @@ export default {
         Highcharts.theme = ChartStyles.getLightTheme();
       }
       Highcharts.setOptions(Highcharts.theme);
-    }
-  }
+    },
+  },
 };
 </script>
 
