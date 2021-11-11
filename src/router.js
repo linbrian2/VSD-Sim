@@ -181,7 +181,7 @@ const router = new Router({
           path: RouterPaths.BLUETOOTH_BREAKDOWNPROB,
           name: RouterNames.BLUETOOTH_BREAKDOWNPROB,
           component: BluetoothBreakdownProb
-        },
+        }
       ]
     },
     {

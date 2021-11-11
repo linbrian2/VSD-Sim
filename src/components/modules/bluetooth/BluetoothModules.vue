@@ -204,18 +204,15 @@ export default {
           Api.fetchDevices(dt).then(
             dataDev => {
               this.$store.state.bluetooth.apiData.devices = dataDev;
-              dataBP.forEach((bpData, i) => {
-                let added = false;
+              dataBP.forEach(bpData => {
                 this.$store.state.bluetooth.apiData.devices.forEach((d, j) => {
                   if (parseInt(bpData.deviceId) == d.deviceId) {
                     if (bpData.direction == 'NB') {
                       bpData.fullName = `${d.title} - NB`;
                       this.$set(d, 'bpInfoNB', bpData);
-                      added = true;
                     } else if (bpData.direction == 'SB') {
                       bpData.fullName = `${d.title} - SB`;
                       this.$set(d, 'bpInfoSB', bpData);
-                      added = true;
                     }
                   }
                 });

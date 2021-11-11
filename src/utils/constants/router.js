@@ -21,7 +21,7 @@ export const RouterNames = {
   VISION_REID: 'Vehicle Re-ID',
 
   BLUETOOTH_DASHBOARD: 'Dashboard ',
-  BLUETOOTH_MULTIGRAPH: 'Multigraph',
+  BLUETOOTH_MULTIGRAPH: 'Multi-graph',
   BLUETOOTH_BREAKDOWNPROB: 'Breakdown Probability',
 
   CAV_DASHBOARD: 'Trip Data',
@@ -61,7 +61,7 @@ export const RouterPaths = {
   VISION_ROOT: '/vision',
   VISION_DASHBOARD: '/vision/camera',
   VISION_REID: '/vision/re-id',
-  
+
   BLUETOOTH_ROOT: '/bluetooth',
   BLUETOOTH_DASHBOARD: '/bluetooth/dash',
   BLUETOOTH_MULTIGRAPH: '/bluetooth/multigraph',

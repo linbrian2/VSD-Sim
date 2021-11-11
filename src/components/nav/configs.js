@@ -222,7 +222,7 @@ const protectedRoute = [
               title: RouterNames.BLUETOOTH_BREAKDOWNPROB,
               icon: 'mdi-dice-6'
             }
-          },
+          }
         ]
       },
       //CAV

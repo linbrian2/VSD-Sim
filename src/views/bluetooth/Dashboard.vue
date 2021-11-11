@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { mapState } from 'vuex';
 // Pages
 import TrafficRouting from '@/views/bluetooth/TrafficRouting';
@@ -104,23 +104,23 @@ export default {
       selectionMode: false,
       bbox: null,
       bbox1: [39.74, -75.79],
-      bbox2: [39.6, -75.525],
+      bbox2: [39.6, -75.525]
     };
   },
   beforeDestroy() {
     if (this.updateInterval) {
-      clearInterval(this.updateInterval)
+      clearInterval(this.updateInterval);
     }
   },
   mounted() {
-    this.refreshMapObjects()
+    this.refreshMapObjects();
     /* Update every 5 minutes*/
     this.updateInterval = setInterval(() => {
       if (this.fetchDone && this.$store.state.bluetooth.autoUpdate) {
         this.$store.state.bluetooth.timeSinceUpdate++;
         if (this.$store.state.bluetooth.timeSinceUpdate == 300) {
-          this.$store.state.bluetooth.timeSinceUpdate = 0
-          this.$store.state.currentDate = new Date()
+          this.$store.state.bluetooth.timeSinceUpdate = 0;
+          this.$store.state.currentDate = new Date();
         }
       }
     }, 1000);
@@ -134,30 +134,53 @@ export default {
       vm.getAdditionalDeviceInfo(data);
     };
 
-    this.$bus.$on('RESET_TO_SELECTED_TIME', date => { this.resetSegmentsAndWaze(date) });
-    this.$bus.$on('UPDATE_TIMELINE', date => { this.updateTimeline(date) });
-    this.$bus.$on('DISPLAY_MARKER_DETAILS', item => { this.handleMarkerClick(item) });
-    this.$bus.$on('SHOW_SELECTION_POPUP', id => { this.showSelectionDialog(id) });
-    this.$bus.$on('GO_TO_SEGMENT_LOCATION', seg => { this.goToSegmentLocation(seg.info.coordinates, seg.info.name) });
-    this.$bus.$on('GO_TO_MARKER_LOCATION', (obj, markerType) => { this.goToMarkerLocation(obj, markerType) });
-    this.$bus.$on('CREATE_SEGMENTS', () => { this.createSegments() });
-    this.$bus.$on('CREATE_DEVICES', () => { this.createDevices() });
-    this.$bus.$on('CREATE_WAZE_ALERTS', () => { this.createWazeAlerts() });
-    this.$bus.$on('ADD_SEGMENTS', () => { this.addSegments(); });
-    this.$bus.$on('ADD_MARKERS', markers => { this.addMarkers(markers) });
-    this.$bus.$on('ADD_WAZE_CLUSTERS', () => { this.addWazeClusters() });
+    this.$bus.$on('RESET_TO_SELECTED_TIME', date => {
+      this.resetSegmentsAndWaze(date);
+    });
+    this.$bus.$on('UPDATE_TIMELINE', date => {
+      this.updateTimeline(date);
+    });
+    this.$bus.$on('DISPLAY_MARKER_DETAILS', item => {
+      this.handleMarkerClick(item);
+    });
+    this.$bus.$on('SHOW_SELECTION_POPUP', id => {
+      this.showSelectionDialog(id);
+    });
+    this.$bus.$on('GO_TO_SEGMENT_LOCATION', seg => {
+      this.goToSegmentLocation(seg.info.coordinates, seg.info.name);
+    });
+    this.$bus.$on('GO_TO_MARKER_LOCATION', (obj, markerType) => {
+      this.goToMarkerLocation(obj, markerType);
+    });
+    this.$bus.$on('CREATE_SEGMENTS', () => {
+      this.createSegments();
+    });
+    this.$bus.$on('CREATE_DEVICES', () => {
+      this.createDevices();
+    });
+    this.$bus.$on('CREATE_WAZE_ALERTS', () => {
+      this.createWazeAlerts();
+    });
+    this.$bus.$on('ADD_SEGMENTS', () => {
+      this.addSegments();
+    });
+    this.$bus.$on('ADD_MARKERS', markers => {
+      this.addMarkers(markers);
+    });
+    this.$bus.$on('ADD_WAZE_CLUSTERS', () => {
+      this.addWazeClusters();
+    });
   },
   methods: {
     resetSegmentsAndWaze(time) {
       console.log('Reset to selected time:\n %o', time);
       this.createSegments();
       if (this.mapLayerSelection.includes(0)) this.addSegments();
-        this.createWazeAlerts();
+      this.createWazeAlerts();
       if (this.isWazeMarkers) {
         this.addMarkers(this.filteredWazeMarkers);
       }
-      if (this.isWazeClusters) 
-        this.addWazeClusters();
+      if (this.isWazeClusters) this.addWazeClusters();
     },
     updateTimeline(date) {
       this.changeDeviceLevels(date);
@@ -166,8 +189,7 @@ export default {
       if (this.isWazeMarkers) {
         this.addMarkers(this.filteredWazeMarkers);
       }
-      if (this.isWazeClusters)
-        this.addWazeClusters();
+      if (this.isWazeClusters) this.addWazeClusters();
 
       this.changeSegmentLevels(date);
     },
@@ -370,15 +392,17 @@ export default {
       google.maps.event.addListener(path, 'click', event => {
         if (this.$store.state.bluetooth.modes.addFromMap) {
           if (!this.$store.state.bluetooth.multigraphSegs) {
-            this.$store.state.bluetooth.multigraphSegs = []
-          } 
+            this.$store.state.bluetooth.multigraphSegs = [];
+          }
           if (path.strokeColor != 'purple') {
             path.setOptions({ strokeWeight: 10, strokeOpacity: 1, strokeColor: 'purple' });
             this.$store.state.bluetooth.multigraphSegs.push(data);
           } else {
             let strokeColor = Utils.getStrokeColor(data.travelTime.level);
             path.setOptions({ strokeWeight: map.getZoom() / 3, strokeOpacity: 0.8, strokeColor: strokeColor });
-            this.$store.state.bluetooth.multigraphSegs = this.$store.state.bluetooth.multigraphSegs.filter(s => s.info.description != data.info.description);
+            this.$store.state.bluetooth.multigraphSegs = this.$store.state.bluetooth.multigraphSegs.filter(
+              s => s.info.description != data.info.description
+            );
           }
         } else {
           path.clickWindow.setOptions({ position: event.latLng });
@@ -620,10 +644,10 @@ export default {
       else return 0;
     },
     addWazeClusters() {
-      let map = this.$store.state.bluetooth.map
+      let map = this.$store.state.bluetooth.map;
       if (this.filteredWazeMarkers) {
-        let markers = this.filteredWazeMarkers        
-        this.$store.state.bluetooth.wazeClusters = new MarkerClusterer({ markers, map }); 
+        let markers = this.filteredWazeMarkers;
+        this.$store.state.bluetooth.wazeClusters = new MarkerClusterer({ markers, map });
       }
     },
     removeWazeClusters(clusters = null) {
@@ -687,7 +711,7 @@ export default {
         }
       });
       this.$store.state.bluetooth.dialog.tt = true;
-    },
+    }
   },
   watch: {
     '$store.state.bluetooth.modes.addFromMap': {
@@ -764,7 +788,7 @@ export default {
         this.removeMarkers(this.$store.state.bluetooth.deviceMarkers);
         this.addMarkers(this.filteredDeviceMarkers);
       }
-    },
+    }
   },
   computed: {
     position() {
@@ -815,12 +839,12 @@ export default {
       );
     },
     isWazeMarkers() {
-      return this.mapLayerSelection.includes(3) && !this.mapLayerSelection.includes(4)
+      return this.mapLayerSelection.includes(3) && !this.mapLayerSelection.includes(4);
     },
     isWazeClusters() {
-      return this.mapLayerSelection.includes(3) && this.mapLayerSelection.includes(4)
+      return this.mapLayerSelection.includes(3) && this.mapLayerSelection.includes(4);
     },
-    ...mapState(['currentDate']),
+    ...mapState(['currentDate'])
   }
 };
 </script>
