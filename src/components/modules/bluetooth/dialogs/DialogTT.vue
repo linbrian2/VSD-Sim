@@ -97,7 +97,6 @@ export default {
   },
   methods: {
     init() {
-      console.log('Initialize Dialog Travel Time');
       this.fetchSegmentData(this.$store.state.bluetooth.selectedSeg.data);
     },
     fetchSegmentData(selectedSeg) {

@@ -204,7 +204,6 @@ export default {
       this.$bus.$emit('SHOW_SELECTION_POPUP', type);
     },
     layerItemClicked(e, id) {
-      console.log(`Layer ${id} Clicked`);
       if (e) {
         e.cancelBubble = true;
       }

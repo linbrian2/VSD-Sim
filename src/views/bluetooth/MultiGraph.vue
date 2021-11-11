@@ -145,7 +145,6 @@ export default {
       this.$store.commit('bluetooth/SET_SELECTED_PAGE', 0);
     },
     viewAdditionalInfo(segment) {
-      console.log('viewAdditionalInfo:\n%o', segment);
       this.$store.state.bluetooth.selectedSeg.data = segment;
       this.$store.state.bluetooth.dialog.tt = true;
     },
@@ -164,7 +163,6 @@ export default {
       }, 1);
     },
     processFilters(filters) {
-      console.log('processFilters: %o', filters);
       let segmentsFilt = this.segments.filter((s) => {
         let isValid = false;
         filters.levels.forEach((level) => {
@@ -234,7 +232,6 @@ export default {
         if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
           let newSegs = newVal.map((x) => x.info.description);
           let oldSegs = oldVal.map((x) => x.info.description);
-          console.log('segGraph - oldSegs: %o, newSegs: %o', oldSegs, newSegs);
           let segsToAdd = [];
           newSegs.forEach((segName, i) => {
             if (!oldSegs.includes(segName)) {

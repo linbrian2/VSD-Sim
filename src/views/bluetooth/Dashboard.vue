@@ -130,9 +130,6 @@ export default {
     window.getAdditionalInfo = function(data) {
       vm.getAdditionalInfoMain(data);
     };
-    window.getAdditionalDeviceInfo = function(data) {
-      vm.getAdditionalDeviceInfo(data);
-    };
 
     this.$bus.$on('RESET_TO_SELECTED_TIME', date => { this.resetSegmentsAndWaze(date) });
     this.$bus.$on('UPDATE_TIMELINE', date => { this.updateTimeline(date) });
@@ -149,7 +146,6 @@ export default {
   },
   methods: {
     resetSegmentsAndWaze(time) {
-      console.log('Reset to selected time:\n %o', time);
       this.createSegments();
       if (this.mapLayerSelection.includes(0)) this.addSegments();
         this.createWazeAlerts();
@@ -296,13 +292,9 @@ export default {
         }
       });
       google.maps.event.addListener(this.bbox, 'click', event => {
-        console.log(event.latLng);
         let Lat = event.latLng.lat();
         let Lng = event.latLng.lng();
-        console.log(Lat);
-        console.log(Lng);
         let LatLngStr = `${Lat},${Lng}`;
-        console.log(LatLngStr);
         if (this.clickIndex == 0) {
           this.clickIndex = 1;
           this.updateSourceMarker(event.latLng);
@@ -676,9 +668,6 @@ export default {
         p.clickWindow.close();
       });
     },
-    getAdditionalDeviceInfo(data) {
-      console.log('Open Device Dialog: %o', data);
-    },
     getAdditionalInfoMain(name) {
       this.$store.state.bluetooth.apiData.segments.forEach(s => {
         if (s.info && s.info.name == name) {
@@ -711,11 +700,9 @@ export default {
     '$store.state.bluetooth.mapLayerSelection': {
       deep: true,
       handler: function(newVal, oldVal) {
-        /* console.log('Old\n%o\nNew\n%o', oldVal, newVal); */
         /* Add */
         let addDiff = newVal.filter(x => !oldVal.includes(x));
         if (addDiff.length > 0) {
-          /* console.log('Add: %o', addDiff[0]); */
           if (addDiff[0] == 0) this.addSegments();
           else if (addDiff[0] == 1) this.addMarkers(this.$store.state.bluetooth.sensorMarkers);
           else if (addDiff[0] == 2) this.addMarkers(this.filteredDeviceMarkers);
@@ -736,7 +723,6 @@ export default {
         /* Delete */
         let delDiff = oldVal.filter(x => !newVal.includes(x));
         if (delDiff.length > 0) {
-          /* console.log('Delete: %o', delDiff[0]); */
           if (delDiff[0] == 0) this.removeSegments();
           else if (delDiff[0] == 1) this.removeMarkers(this.$store.state.bluetooth.sensorMarkers);
           else if (delDiff[0] == 2) this.removeMarkers(this.$store.state.bluetooth.deviceMarkers);

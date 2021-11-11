@@ -32,11 +32,8 @@
 
 <script>
 import { mapState } from 'vuex';
-import Utils from '@/utils/Utils';
 import BPGraph from '@/components/modules/bluetooth/graphs/BPGraph';
 import Api from '@/utils/api/bluetooth.js';
-
-import { DateTime } from 'luxon';
 
 export default {
   components: {
@@ -69,36 +66,12 @@ export default {
     },
     fetchBPInfo(bp) {
       if (bp) {
-        let date = this.currentDate
-        let s = DateTime.fromObject({
-          year: date.getFullYear(),
-          month: date.getMonth() + 1,
-          day: date.getDate(),
-          hour: 0,
-          minute: 0
-        })
-        let e = DateTime.fromObject({
-          year: date.getFullYear(),
-          month: date.getMonth() + 1,
-          day: date.getDate(),
-          hour: 23,
-          minute: 59
-        })
-        console.log(s);
-        console.log(e);
-        let startStr = `${s.year}${Utils.formatXX(s.month)}${Utils.formatXX(s.day)}${Utils.formatXX(
-          s.hour
-        )}${Utils.formatXX(s.minute)}00`;
-        let endStr = `${e.year}${Utils.formatXX(e.month)}${Utils.formatXX(e.day)}${Utils.formatXX(
-          e.hour
-        )}${Utils.formatXX(e.minute)}00`;
-        let apiReqName = `${bp.deviceId}-${bp.direction}`;
-        console.log(`Sending bp API request to /api/breakdown-prob/${apiReqName}-${startStr}-${endStr}`);
-        this.fetchBP(apiReqName, startStr, endStr);
+        let dt = this.currentDate.getTime();
+        this.fetchBP(bp.deviceId, bp.direction, dt);
       }
     },
-    fetchBP(apiReqName, start, end) {
-      Api.fetchBP(apiReqName, start, end).then(
+    fetchBP(id, dir, endTS) {
+      Api.fetchBP(id, dir, endTS).then(
         (data) => {
           this.bpInfo = data;
         },
@@ -109,7 +82,6 @@ export default {
     },
     changeSelectedDevice() {
       if (this.$store.state.bluetooth.selectedDevice) {
-        console.log('Device Info: %o', this.devicesBP);
         this.devicesBP.forEach((d) => {
           if (this.$store.state.bluetooth.selectedDevice == d.deviceId) {
             this.selectedDevice = d.apiReqName;
@@ -125,9 +97,6 @@ export default {
     },
     selectedDevice(data) {
       this.fetchBPInfo(data);
-    },
-    currentDate() {
-      this.fetchBPInfo(this.selectedDevice);
     },
     bpInfo() {
       this.$emit('bluetooth/SET_SELECTED_DEVICE', this.selectedDevice);

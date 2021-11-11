@@ -87,17 +87,17 @@ export default {
     menuItemClicked(idx) {
       if (idx == 0) {
         console.log('this.wazeAlerts\n%o', this.wazeAlerts);
+        console.log('this.wazeAlertsFull\n%o', this.wazeAlertsFull);
         let notifText = 'Check console for info.';
         this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
       } else if (idx == 1) {
-        let dt = DateTime.now().setZone('America/New_York');
+        let dt = DateTime.now();
         let dtStr = dt
           .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
           .replaceAll('/', '-')
           .replaceAll(',', '');
         let fileName = `Waze Alerts (${dtStr})`;
-        console.log(fileName);
-        Utils.downloadJSON(fileName, this.wazeAlerts);
+        Utils.downloadJSON(fileName, this.wazeAlertsFull);
       } else if (idx == 2) {
         this.fullDayToggle = !this.fullDayToggle;
       }
@@ -145,7 +145,6 @@ export default {
       if (wazeData) {
         let items = [];
         wazeData.forEach((w, i) => {
-          /* console.log(w.address); */
           items.push({
             id: i + 1,
             time: w.alertTime.slice(0, w.alertTime.length - 2),

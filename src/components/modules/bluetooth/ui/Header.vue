@@ -164,7 +164,6 @@ export default {
     },
 
     menuItemClicked(action) {
-      console.log(action);
       this.$emit('menuItemclick', action);
     }
   }

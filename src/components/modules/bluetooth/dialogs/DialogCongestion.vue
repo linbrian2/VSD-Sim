@@ -98,24 +98,23 @@ export default {
   },
   methods: {
     viewGraph(item) {
-      /* console.log(item.data); */
       this.$store.state.bluetooth.selectedSeg.data = item.data;
       this.$store.state.bluetooth.dialog.tt = true;
     },
     menuItemClicked(idx) {
       if (idx == 0) {
         console.log('this.segments\n%o', this.segments);
+        console.log('this.segmentsFull\n%o', this.segmentsFull);
         let notifText = 'Check console for info.';
         this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
       } else if (idx == 1) {
-        let dt = DateTime.now().setZone('America/New_York');
+        let dt = DateTime.now();
         let dtStr = dt
           .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
           .replaceAll('/', '-')
           .replaceAll(',', '');
         let fileName = `Segments (${dtStr})`;
-        console.log(fileName);
-        Utils.downloadJSON(fileName, this.segments);
+        Utils.downloadJSON(fileName, this.segmentsFull);
       }
     },
     viewItem(item) {
@@ -139,6 +138,11 @@ export default {
   computed: {
     segments() {
       let segments = this.$store.state.bluetooth.apiData.segments;
+      if (segments) return segments;
+      else return [];
+    },
+    segmentsFull() {
+      let segments = this.$store.state.bluetooth.apiData.segmentsFull;
       if (segments) return segments;
       else return [];
     },
