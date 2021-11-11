@@ -8,7 +8,7 @@
         </v-btn>
       </template>
       <v-list nav dense>
-        <v-list-item-group color="primary">
+        <v-list-item-group color="primary" v-if="mapMenuItems">
           <v-list-item class="my-2" v-for="item in mapMenuItems" :key="item.id" @click="menuItemClicked(item.id)">
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
@@ -22,6 +22,7 @@
     </v-menu>
     <!-- Search Bar -->
     <v-autocomplete
+      v-if="searchItems"
       dense
       flat
       solo
@@ -56,7 +57,7 @@
 
       <template>
         <v-row>
-          <v-expansion-panels accordion>
+          <v-expansion-panels accordion v-if="layerItems">
             <v-expansion-panel v-for="(item, i) in layerItems" :key="i">
               <v-list-item v-if="!(item.id == 3 || item.id == 2 || item.id == 4)" class="pl-6 py-1">
                 <v-checkbox

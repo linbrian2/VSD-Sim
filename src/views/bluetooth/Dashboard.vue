@@ -411,7 +411,6 @@ export default {
     },
     /* Marker Methods */
     addMarkers(markers) {
-      console.log("Add Markers");
       if (markers) {
         markers.forEach(m => {
           m.setMap(this.$store.state.bluetooth.map);
@@ -621,7 +620,6 @@ export default {
       else return 0;
     },
     addWazeClusters() {
-      console.log("Add Waze Cluster");
       let map = this.$store.state.bluetooth.map
       if (this.filteredWazeMarkers) {
         let markers = this.filteredWazeMarkers        
