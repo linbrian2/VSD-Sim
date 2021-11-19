@@ -7,7 +7,7 @@
           v-bind="attrs"
           v-on="on"
           @click="playbackToggle = !playbackToggle"
-          style="position: absolute; top: 10px; left: 422px; height: 40px"
+          style="position: absolute; top: 10px; left: 438px; height: 40px"
         >
           <v-icon>mdi-map-clock-outline</v-icon>
         </v-btn>
@@ -19,16 +19,10 @@
         dense
         floating
         height="40"
-        style="position: absolute; top: 10px; left: 494px; height: 40px"
+        style="position: absolute; top: 10px; left: 496px; height: 40px"
         v-if="playbackToggle"
       >
-        <v-chip
-          @click="menu2 = !menu2"
-          :disabled="playState == 'play' || playState == 'resume'"
-          small
-          outlined
-          class="ma-2 overline"
-        >
+        <v-chip :disabled="playState == 'play' || playState == 'resume'" small outlined class="ma-2 overline">
           {{ timeStr }}
         </v-chip>
         <v-slider
@@ -72,45 +66,74 @@
         </v-btn>
       </v-toolbar>
     </v-scroll-x-reverse-transition>
-    <v-scroll-x-reverse-transition>
-      <v-toolbar dense floating height="40" style="position: absolute; top: 10px; right: 10px" loading>
-        <div>
-          Playback Data availability:
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon color="green" class="px-1" v-bind="attrs" v-on="on" :disabled="!wazeFull">mdi-waze</v-icon>
-            </template>
-            <span>Waze Data - Full Day</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon color="green" class="pr-1" v-bind="attrs" v-on="on" :disabled="!segmentsFull"
-                >mdi-vector-line</v-icon
-              >
-            </template>
-            <span>Segment Data - Full Day</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon color="green" class="pr-1" v-bind="attrs" v-on="on" :disabled="!devicesFull">mdi-leak</v-icon>
-            </template>
-            <span>Traffic Flow Detector Data - Full Day</span>
-          </v-tooltip>
-        </div>
-      </v-toolbar>
-    </v-scroll-x-reverse-transition>
+
+    <div style="position: absolute; top: 10px; right: 16px" v-if="!wazeFull">
+      <v-card loading class="transparent-card" height="30px" v-if="showFullDayAvail && apiLoading.wazeFull">
+        <template slot="progress">
+          <v-progress-linear color="grey" indeterminate></v-progress-linear>
+        </template>
+        <h5 style="color: rgba(255, 255, 255, 0)">____</h5>
+      </v-card>
+    </div>
+    <div style="position: absolute; top: 10px; right: 10px" v-show="showFullDayAvail">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon color="green" v-bind="attrs" v-on="on" :disabled="!wazeFull">
+            <v-icon>mdi-waze</v-icon>
+          </v-btn>
+        </template>
+        <span>Waze Data - Full Day</span>
+      </v-tooltip>
+    </div>
+
+    <div style="position: absolute; top: 50px; right: 16px" v-if="!segmentsFull">
+      <v-card loading class="transparent-card" height="30px" v-if="showFullDayAvail && apiLoading.segmentsFull">
+        <template slot="progress">
+          <v-progress-linear color="grey" indeterminate></v-progress-linear>
+        </template>
+        <h5 style="color: rgba(255, 255, 255, 0)">____</h5>
+      </v-card>
+    </div>
+    <div style="position: absolute; top: 50px; right: 10px" v-show="showFullDayAvail">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon color="green" v-bind="attrs" v-on="on" :disabled="!segmentsFull">
+            <v-icon>mdi-vector-line</v-icon>
+          </v-btn>
+        </template>
+        <span>Segment Data - Full Day</span>
+      </v-tooltip>
+    </div>
+
+    <div style="position: absolute; top: 90px; right: 16px" v-if="!devicesFull">
+      <v-card loading class="transparent-card" height="30px" v-if="showFullDayAvail && apiLoading.devicesFull">
+        <template slot="progress">
+          <v-progress-linear color="grey" indeterminate></v-progress-linear>
+        </template>
+        <h5 style="color: rgba(255, 255, 255, 0)">____</h5>
+      </v-card>
+    </div>
+    <div style="position: absolute; top: 90px; right: 10px" v-show="showFullDayAvail">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon color="green" v-bind="attrs" v-on="on" :disabled="!devicesFull">
+            <v-icon>mdi-leak</v-icon>
+          </v-btn>
+        </template>
+        <span>Traffic Flow Detector Data - Full Day</span>
+      </v-tooltip>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import { DateTime } from 'luxon';
 import Utils from '@/utils/Utils';
 
 export default {
   props: ['entities'],
   data: () => ({
-    playbackToggle: false,
     playbackOpen: false,
     endDT: null,
     playbackInterval: null,
@@ -137,28 +160,28 @@ export default {
   beforeDestroy() {
     clearInterval(this.playbackInterval);
     clearInterval(this.timeInterval);
-    if (this.$store.state.bluetooth.playState == 'play' || this.$store.state.bluetooth.playState == 'resume') {
+    if (this.playState == 'play' || this.playState == 'resume') {
       this.playButtonIcon = 'mdi-play';
       this.$store.commit('bluetooth/SET_PLAY_STATE', 'pause');
     }
   },
   mounted() {
     this.playbackInterval = setInterval(() => {
-      if (this.$store.state.bluetooth.playState == 'play' || this.$store.state.bluetooth.playState == 'resume') {
-        if (this.progress >= this.max - this.$store.state.bluetooth.playbackSpeed) {
+      if (this.playState == 'play' || this.playState == 'resume') {
+        if (this.progress >= this.max - this.playbackSpeed) {
           /* If End reached */
           this.progress = this.max;
           this.$bus.$emit('UPDATE_TIMELINE', this.time);
           this.setPlayStart();
         } else {
           /* If in progress */
-          this.progress += this.$store.state.bluetooth.playbackSpeed;
+          this.progress += this.playbackSpeed;
           this.$bus.$emit('UPDATE_TIMELINE', this.time);
         }
       }
     }, 1000);
     this.timeInterval = setInterval(() => {
-      if (!this.$store.state.bluetooth.modes.historical) {
+      if (!this.modes.historical) {
         this.endDT = DateTime.local();
       } else {
         this.endDT = null;
@@ -181,7 +204,6 @@ export default {
       this.$store.commit('bluetooth/SET_PLAYBACK_SPEED', value);
     },
     setPlayStart() {
-      this.menu2 = false;
       if (this.playState === 'stop') {
         this.playButtonIcon = 'mdi-pause';
         this.$store.commit('bluetooth/SET_PLAY_STATE', 'play');
@@ -200,30 +222,27 @@ export default {
     setPlayStop() {
       this.playButtonIcon = 'mdi-play';
       this.$store.commit('bluetooth/SET_PLAY_STATE', 'stop');
-      this.$bus.$emit('RESET_TO_SELECTED_TIME', this.$store.state.currentDate);
+      this.$bus.$emit('RESET_TO_SELECTED_TIME');
     }
   },
   computed: {
     wazeFull() {
-      let apiData = this.$store.state.bluetooth.apiData;
-      if (apiData && apiData.wazeFull && apiData.wazeFull.length > 0) {
-        return apiData.wazeFull;
+      if (this.apiData && this.apiData.wazeFull && this.apiData.wazeFull.length > 0) {
+        return this.apiData.wazeFull;
       } else {
         return null;
       }
     },
     segmentsFull() {
-      let apiData = this.$store.state.bluetooth.apiData;
-      if (apiData && apiData.segmentsFull && apiData.segmentsFull.length > 0) {
-        return apiData.segmentsFull;
+      if (this.apiData && this.apiData.segmentsFull && this.apiData.segmentsFull.length > 0) {
+        return this.apiData.segmentsFull;
       } else {
         return null;
       }
     },
     devicesFull() {
-      let apiData = this.$store.state.bluetooth.apiData;
-      if (apiData && apiData.devicesFull && apiData.devicesFull.length > 0) {
-        return apiData.devicesFull;
+      if (this.apiData && this.apiData.devicesFull && this.apiData.devicesFull.length > 0) {
+        return this.apiData.devicesFull;
       } else {
         return null;
       }
@@ -290,15 +309,32 @@ export default {
 
     progress: {
       get() {
-        return this.currentProgress;
+        return this.$store.state.bluetooth.currentProgress;
       },
       set(value) {
         this.$store.commit('bluetooth/SET_CURRENT_PROGRESS', value);
         this.$bus.$emit('PLAYBACK_PROGRESS_CHANGED', value);
       }
     },
+    playbackToggle: {
+      get() {
+        return this.$store.state.bluetooth.playbackToggle;
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_PLAYBACK_TOGGLE', val);
+      }
+    },
+    ...mapGetters('bluetooth', ['fetchDone']),
     ...mapState(['currentDate']),
-    ...mapState('bluetooth', ['playState', 'currentState', 'currentProgress', 'playbackSpeed'])
+    ...mapState('bluetooth', [
+      'playState',
+      'currentState',
+      'playbackSpeed',
+      'showFullDayAvail',
+      'apiLoading',
+      'apiData',
+      'modes'
+    ])
   }
 };
 </script>
@@ -318,5 +354,10 @@ export default {
   animation-name: metronome-example;
   animation-iteration-count: infinite;
   animation-direction: alternate;
+}
+
+.transparent-card {
+  background-color: rgba(255, 255, 255, 0) !important;
+  border-color: white !important;
 }
 </style>

@@ -22,7 +22,7 @@
     </v-menu>
     <!-- Search Bar -->
     <v-autocomplete
-      v-if="searchItems"
+      :disabled="!searchItems || searchItems.length == 0"
       dense
       flat
       solo
@@ -40,7 +40,6 @@
       :item-text="getFieldText"
       item-value="id"
       @change="onSearchChange"
-      :disabled="!fetchDone"
     />
     <!-- Map Layer Selection -->
     <v-menu bottom left offset-y max-width="250" :close-on-content-click="false">
@@ -59,7 +58,7 @@
         <v-row>
           <v-expansion-panels accordion v-if="layerItems">
             <v-expansion-panel v-for="(item, i) in layerItems" :key="i">
-              <v-list-item v-if="!(item.id == 3 || item.id == 2 || item.id == 4)" class="pl-6 py-1">
+              <v-list-item v-if="!(item.id == 1 || item.id == 3 || item.id == 2)" class="pl-6 py-1">
                 <v-checkbox
                   @click.native="layerItemClicked($event, item.id)"
                   hide-details
@@ -69,7 +68,7 @@
                   v-model="mapLayers"
                 />
               </v-list-item>
-              <v-expansion-panel-header v-if="item.id == 3 || item.id == 2">
+              <v-expansion-panel-header v-if="item.id == 1 || item.id == 3">
                 <v-checkbox
                   @click.native="layerItemClicked($event, item.id)"
                   hide-details
@@ -79,16 +78,16 @@
                   v-model="mapLayers"
                 />
               </v-expansion-panel-header>
-              <v-expansion-panel-content v-if="item.id == 3 || item.id == 2">
-                <template v-if="item.id == 3">
+              <v-expansion-panel-content v-if="item.id == 1 || item.id == 3">
+                <template v-if="item.id == 1">
                   <v-switch
                     dense
                     label="Grouped"
                     v-model="mapLayers"
                     class="px-3 py-0 my-1"
-                    @click.native="layerItemClicked($event, 4)"
+                    @click.native="layerItemClicked($event, 2)"
                     hide-details
-                    :value="4"
+                    :value="2"
                   ></v-switch>
                   <div v-for="subtoggle in wazeSubtoggles" :key="subtoggle.id">
                     <v-checkbox
@@ -102,7 +101,7 @@
                     />
                   </div>
                 </template>
-                <template v-if="item.id == 2">
+                <template v-if="item.id == 3">
                   <v-checkbox
                     v-for="subtoggle in deviceSubtoggles"
                     :key="subtoggle.id"
@@ -125,6 +124,9 @@
 </template>
 
 <script>
+import Constants from '@/utils/constants/bluetooth';
+import { mapState } from 'vuex';
+
 export default {
   props: ['searchItems', 'fetchDone'],
   data: () => ({
@@ -135,30 +137,29 @@ export default {
     deviceLayers: [],
     maxWidth: 40,
     mapMenuItems: [
-      { title: 'Congestion', icon: 'mdi-car-multiple', id: 0 },
-      { title: 'Traffic Flow Detectors', icon: 'mdi-leak', id: 2 },
-      { title: 'Bluetooth Sensors', icon: 'mdi-bluetooth-connect', id: 1 },
-      { title: 'Waze Alerts', icon: 'mdi-waze', id: 3 }
+      { title: 'Congestion', icon: 'mdi-car-multiple', id: Constants.DIALOG_CONGESTION },
+      { title: 'Waze Alerts', icon: 'mdi-waze', id: Constants.DIALOG_WAZE },
+      { title: 'Traffic Flow Detectors', icon: 'mdi-leak', id: Constants.DIALOG_DEVICES },
+      { title: 'Bluetooth Sensors', icon: 'mdi-bluetooth-connect', id: Constants.DIALOG_BLUETOOTH_SENSORS }
     ],
     layerItems: [
-      { title: 'Congestion', id: 0 },
-      { title: 'Waze Alerts', id: 3 },
-      { title: 'Grouped Waze Alerts', id: 4 },
-      { title: 'Traffic Flow Detectors', id: 2 },
-      { title: 'Bluetooth Sensors', id: 1 },
-      { title: 'Labels', id: 6 }
+      { title: 'Congestion', id: Constants.LAYER_CONGESTION },
+      { title: 'Waze Alerts', id: Constants.LAYER_WAZE },
+      { title: 'Grouped Waze Alerts', id: Constants.LAYER_GROUPED_WAZE },
+      { title: 'Traffic Flow Detectors', id: Constants.LAYER_DEVICES },
+      { title: 'Bluetooth Sensors', id: Constants.LAYER_BLUETOOTH_SENSORS },
+      { title: 'Labels', id: Constants.LAYER_LABELS }
     ],
     wazeSubtoggles: [
-      { title: 'Hazard', id: 0 },
-      { title: 'Traffic Jam', id: 1 },
-      { title: 'Road Closed', id: 2 },
-      { title: 'Accident', id: 3 }
-      /* {title: "Grouped", id: 4}, */
+      { title: 'Hazard', id: Constants.WAZE_HAZARD },
+      { title: 'Traffic Jam', id: Constants.WAZE_TRAFFIC_JAM },
+      { title: 'Road Closed', id: Constants.WAZE_ROAD_CLOSED },
+      { title: 'Accident', id: Constants.WAZE_ACCIDENT }
     ],
     deviceSubtoggles: [
-      { title: 'Low Traffic', id: 0 },
-      { title: 'Medium Traffic', id: 1 },
-      { title: 'High Traffic', id: 2 }
+      { title: 'Low Traffic', id: Constants.DEVICES_LOW_TRAFFIC },
+      { title: 'Medium Traffic', id: Constants.DEVICES_MEDIUM_TRAFFIC },
+      { title: 'High Traffic', id: Constants.DEVICES_HIGH_TRAFFIC }
     ]
   }),
   watch: {
@@ -169,12 +170,15 @@ export default {
     }
   },
   mounted() {
-    this.mapLayers = this.$store.state.bluetooth.mapLayerSelection;
-    this.wazeLayers = this.$store.state.bluetooth.wazeLayerSelection;
-    this.deviceLayers = this.$store.state.bluetooth.deviceLayerSelection;
+    this.mapLayers = this.mapLayerSelection;
+    this.wazeLayers = this.wazeLayerSelection;
+    this.deviceLayers = this.deviceLayerSelection;
     this.$bus.$on('CHANGE_LAYER', (id, op) => {
       this.changeLayer(id, op);
     });
+  },
+  computed: {
+    ...mapState('bluetooth', ['mapLayerSelection', 'wazeLayerSelection', 'deviceLayerSelection'])
   },
   methods: {
     changeLayer(id, op) {
@@ -201,9 +205,10 @@ export default {
       }
     },
     menuItemClicked(type) {
-      this.$bus.$emit('SHOW_SELECTION_POPUP', type);
+      this.$store.commit('bluetooth/SET_DIALOG', type);
     },
     layerItemClicked(e, id) {
+      console.log(`Layer clicked (ID: ${id})`);
       if (e) {
         e.cancelBubble = true;
       }

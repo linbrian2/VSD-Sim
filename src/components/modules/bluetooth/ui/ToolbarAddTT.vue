@@ -13,11 +13,11 @@
     </div>
     <div v-for="(item, i) in multigraphSegs" :key="item.id">
       <v-list-item v-if="selectionMade && i < 6">{{ item.info.description }}</v-list-item>
-      <v-list-item v-if="selectionMade && i == 6">And {{ multigraphSegs.length - 8 }} more...</v-list-item>
+      <v-list-item v-if="selectionMade && i == 6">And {{ multigraphSegs.length - 6 }} more...</v-list-item>
     </div>
     <v-row>
       <v-col class="grid-right" cols="6">
-        <v-btn @click="$store.state.bluetooth.modes.addFromMap = false">Cancel</v-btn>
+        <v-btn @click="cancelAdd()">Cancel</v-btn>
       </v-col>
       <v-col class="grid-left" cols="6">
         <v-btn @click="submit()">Submit</v-btn>
@@ -32,9 +32,15 @@ import { RouterPaths } from '@/utils/constants/router';
 
 export default {
   methods: {
+    cancelAdd() {
+      this.setMode('addFromMap', false);
+    },
+    setMode(key, val) {
+      this.$store.commit('bluetooth/SET_MODE', { key: key, val: val });
+    },
     submit() {
       this.$bus.$emit('SUBMIT_SEGMENTS', this.multigraphSegs.slice());
-      this.$store.state.bluetooth.modes.addFromMap = false;
+      this.setMode('addFromMap', false);
       setTimeout(() => {
         let path = RouterPaths.BLUETOOTH_MULTIGRAPH;
         this.$router.push({ path }).catch(() => {});

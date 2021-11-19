@@ -34,7 +34,6 @@ import ReID from '@/views/vision/ReID.vue';
 
 import BluetoothDashboard from '@/views/bluetooth/Dashboard.vue';
 import BluetoothMultigraph from '@/views/bluetooth/MultiGraph.vue';
-import BluetoothBreakdownProb from '@/views/bluetooth/BreakdownProbability.vue';
 
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
@@ -176,11 +175,6 @@ const router = new Router({
           path: RouterPaths.BLUETOOTH_MULTIGRAPH,
           name: RouterNames.BLUETOOTH_MULTIGRAPH,
           component: BluetoothMultigraph
-        },
-        {
-          path: RouterPaths.BLUETOOTH_BREAKDOWNPROB,
-          name: RouterNames.BLUETOOTH_BREAKDOWNPROB,
-          component: BluetoothBreakdownProb
         }
       ]
     },

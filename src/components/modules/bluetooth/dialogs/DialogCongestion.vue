@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="$store.state.bluetooth.dialog.congestion"
-    width="unset"
-    transition="scroll-x-transition"
-    scrollable
-  >
+  <v-dialog v-model="openDialog" width="unset" transition="scroll-x-transition" scrollable>
     <v-card>
       <v-card-title>
         Congestion
@@ -37,7 +32,7 @@
             </template>
           </v-text-field>
         </div>
-        <v-btn icon class="close-button mr-4" @click="$store.state.bluetooth.dialog.congestion = false">
+        <v-btn icon class="close-button mr-4" @click="closeDialog">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -81,9 +76,11 @@
 </template>
 
 <script>
+import Constants from '@/utils/constants/bluetooth';
 import Utils from '@/utils/Utils';
 import { DateTime } from 'luxon';
 import RouteMenuPopover from '@/components/modules/bluetooth/ui/RouteMenuPopover.vue';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -91,22 +88,26 @@ export default {
   },
   data() {
     return {
+      openDialog: false,
       segmentsSearch: '',
-      selectedRoutes: [],
       menuItems: [{ title: 'Print JSON' }, { title: 'Download JSON' }]
     };
   },
   methods: {
+    closeDialog() {
+      this.openDialog = false;
+      this.dialog = Constants.DIALOG_NONE;
+    },
     viewGraph(item) {
-      this.$store.state.bluetooth.selectedSeg.data = item.data;
-      this.$store.state.bluetooth.dialog.tt = true;
+      this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'data', data: item.data });
+      this.$store.commit('bluetooth/SET_TT_DIALOG', true);
     },
     menuItemClicked(idx) {
       if (idx == 0) {
         console.log('this.segments\n%o', this.segments);
         console.log('this.segmentsFull\n%o', this.segmentsFull);
         let notifText = 'Check console for info.';
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
+        this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
       } else if (idx == 1) {
         let dt = DateTime.now();
         let dtStr = dt
@@ -119,10 +120,10 @@ export default {
     },
     viewItem(item) {
       this.$bus.$emit('GO_TO_SEGMENT_LOCATION', item.data);
-      this.$store.state.bluetooth.dialog.congestion = false;
+      this.closeDialog();
     },
     filterByRoute(segments) {
-      let selectedRoutes = this.$store.state.bluetooth.selectedRoutes;
+      let selectedRoutes = this.selectedRoutes;
       segments = segments.filter(s => {
         let validSegment = false;
         selectedRoutes.forEach(x => {
@@ -133,6 +134,13 @@ export default {
         return validSegment;
       });
       return segments;
+    }
+  },
+  watch: {
+    dialog(val) {
+      if (val == Constants.DIALOG_CONGESTION) {
+        this.openDialog = true;
+      }
     }
   },
   computed: {
@@ -165,7 +173,7 @@ export default {
       if (this.segments) {
         let segments = this.segments.slice();
         let items = [];
-        if (this.$store.state.bluetooth.selectedRoutes.length > 0) {
+        if (this.selectedRoutes.length > 0) {
           segments = this.filterByRoute(segments);
         }
         segments.forEach(s => {
@@ -182,7 +190,16 @@ export default {
       } else {
         return null;
       }
-    }
+    },
+    dialog: {
+      get() {
+        return this.$store.state.bluetooth.dialog;
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_DIALOG', val);
+      }
+    },
+    ...mapState('bluetooth', ['selectedRoutes'])
   }
 };
 </script>

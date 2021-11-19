@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="$store.state.bluetooth.dialog.wazeAlerts"
-    scrollable
-    width="unset"
-    transition="scroll-x-transition"
-  >
+  <v-dialog v-model="openDialog" width="unset" transition="scroll-x-transition" scrollable>
     <v-card>
       <v-card-title>
         Waze Alerts
@@ -36,7 +31,7 @@
             </template>
           </v-text-field>
         </div>
-        <v-btn icon class="close-button mr-4" @click="$store.state.bluetooth.dialog.wazeAlerts = false">
+        <v-btn icon class="close-button mr-4" @click="closeDialog">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -72,24 +67,30 @@
 </template>
 
 <script>
+import Constants from '@/utils/constants/bluetooth';
 import Utils from '@/utils/Utils';
 import { DateTime } from 'luxon';
 
 export default {
   data() {
     return {
+      openDialog: false,
       wazeSearch: '',
       fullDayToggle: false,
       menuItems: [{ title: 'Print JSON' }, { title: 'Download JSON' }, { title: 'Toggle Full Day Data' }]
     };
   },
   methods: {
+    closeDialog() {
+      this.openDialog = false;
+      this.dialog = Constants.DIALOG_NONE;
+    },
     menuItemClicked(idx) {
       if (idx == 0) {
         console.log('this.wazeAlerts\n%o', this.wazeAlerts);
         console.log('this.wazeAlertsFull\n%o', this.wazeAlertsFull);
         let notifText = 'Check console for info.';
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
+        this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
       } else if (idx == 1) {
         let dt = DateTime.now();
         let dtStr = dt
@@ -104,7 +105,14 @@ export default {
     },
     viewItem(item) {
       this.$bus.$emit('GO_TO_MARKER_LOCATION', item.data, 'waze');
-      this.$store.state.bluetooth.dialog.wazeAlerts = false;
+      this.closeDialog();
+    }
+  },
+  watch: {
+    dialog(val) {
+      if (val == Constants.DIALOG_WAZE) {
+        this.openDialog = true;
+      }
     }
   },
   computed: {
@@ -159,6 +167,14 @@ export default {
         return items;
       } else {
         return null;
+      }
+    },
+    dialog: {
+      get() {
+        return this.$store.state.bluetooth.dialog;
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_DIALOG', val);
       }
     }
   }

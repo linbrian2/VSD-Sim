@@ -6,8 +6,8 @@ export default {
   /* Init Today Full */
   initFullDay() {
     return AxiosClient.get(`bluetooth/init/full`)
-      .then(() => {
-        return
+      .then(res => {
+        return res.data;
       })
       .catch(err => {
         console.log(err.message);
@@ -124,6 +124,7 @@ export default {
   fetchBP(id, dir, endTS) {
     return AxiosClient.get(`bluetooth/breakdown-prob/${id}/${dir}/${endTS}`)
       .then(res => {
+        console.log(res.data);
         return res.data;
       })
       .catch(err => {

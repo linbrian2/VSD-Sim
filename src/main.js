@@ -5,7 +5,8 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import axios from 'axios';
 import VueNativeSock from 'vue-native-websocket';
-import { trafficSocketUrl } from './utils/websocketUrl';
+import { trafficWebsocketUrl } from './utils/websocketUrl';
+
 
 import HighchartsVue from 'highcharts-vue';
 /* import 'material-design-icons-iconfont/dist/material-design-icons.css' */
@@ -18,7 +19,7 @@ Vue.config.productionTip = false;
 
 // WebSocket
 // https://stackoverflow.com/questions/57451148/receive-websockets-data-from-vuex-and-vue-native-websocket-plugin
-Vue.use(VueNativeSock, trafficSocketUrl, {
+Vue.use(VueNativeSock, trafficWebsocketUrl, {
   store: store,
   format: 'json',
   connectManually: true

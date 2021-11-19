@@ -139,7 +139,7 @@ export default {
     yesterday.setDate(yesterday.getDate() - 1);
     return yesterday;
   },
-  geSameTimeAsToday(currentDate) {
+  getSameTimeAsToday(currentDate) {
     const today = new Date();
     const Y = currentDate.getFullYear();
     const M = currentDate.getMonth();
@@ -302,11 +302,6 @@ export default {
     }
   },
   /* Vision / Status? */
-  /* formatDateAndTime(d) {
-    let date = this.formatDate(d);
-    let time = this.formatTime(d);
-    return date + ' ' + time;
-  }, */
   formatDateAndTime(d) {
     if (this.isToday(d)) {
       return this.formatTime(d);

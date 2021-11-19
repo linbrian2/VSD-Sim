@@ -8,7 +8,7 @@
           v-bind="attrs"
           v-on="on"
           @click="toggleTrafficRouting()"
-          style="position: absolute; top: 10px; left: 362px; height: 40px"
+          style="position: absolute; top: 10px; left: 382px; height: 40px"
         >
           <v-icon>mdi-vector-radius</v-icon>
         </v-btn>
@@ -20,12 +20,7 @@
       <v-card
         style="position: absolute; top: 60px; left: 10px"
         class="pa-2"
-        v-show="
-          mapLayerSelection &&
-          $store.state.bluetooth.map &&
-          $store.state.bluetooth.modes.trafficRouting &&
-          !$store.state.bluetooth.modes.addFromMap
-        "
+        v-show="map && showTrafficRouting && !modes.addFromMap"
       >
         <v-card-title> Traffic Routing </v-card-title>
         <v-col>
@@ -89,8 +84,10 @@
 </template>
 
 <script>
-import { eventBus } from '@/utils/EventBusBT.js';
 import axios from 'axios';
+import { mapState } from 'vuex';
+
+/* eslint-disable no-undef */
 
 export default {
   name: 'RouteDetour',
@@ -109,55 +106,102 @@ export default {
       ett: null,
       /* Map Data */
       textbubble: require('@/assets/textbubble.png'),
-      clickIndex: 0,
       detourPoly: null,
       traveltimePopup: null,
       endLatLng: null,
       sourceMarker: null,
       destMarker: null,
+      /* Dash */
+      bbox: null,
+      bbox1: [39.74, -75.79],
+      bbox2: [39.6, -75.525],
+      clickIndex: 0
     };
   },
 
-  mounted: function () {
-    eventBus.$on('newSource', (sourceCoordinate) => {
+  mounted: function() {
+    this.$bus.$on('newSource', sourceCoordinate => {
       this.updateSource(sourceCoordinate);
     });
-    eventBus.$on('newDest', (destCoordinate) => {
+    this.$bus.$on('newDest', destCoordinate => {
       this.updateDest(destCoordinate);
       this.getShortestPath();
     });
-    this.$bus.$on('UPDATE_ETT_STR', (ett) => {
-      this.ett = ett;
-    });
-    eventBus.$on('launchShortestPath', (payload) => {
+    this.$bus.$on('launchShortestPath', payload => {
       this.plotShortestPath(payload);
     });
-    eventBus.$on('clearRouting', () => {
+    this.$bus.$on('clearRouting', () => {
       this.clearRoutingComponent();
     });
   },
 
   methods: {
     toggleTrafficRouting() {
-      if (this.$store.state.bluetooth.modes.trafficRouting) {
-        this.$bus.$emit('CHANGE_LAYER', 5, 'remove');
-      } else {
-        this.$bus.$emit('CHANGE_LAYER', 5, 'add');
-      }
-      this.$store.state.bluetooth.modes.trafficRouting = !this.$store.state.bluetooth.modes.trafficRouting;
+      this.showTrafficRouting = !this.showTrafficRouting;
     },
     clearData() {
-      eventBus.$emit('clearRouting');
+      this.$bus.$emit('clearRouting');
       this.sourceString = '';
       this.destString = '';
     },
+    initMapBB() {
+      this.geocoder = new google.maps.Geocoder();
+      this.bbox = new google.maps.Rectangle({
+        strokeColor: 'orange',
+        strokeOpacity: 1,
+        strokeWeight: 4,
+        fillColor: 'orange',
+        fillOpacity: 0,
+        zIndex: 99,
+        bounds: {
+          north: this.bbox2[0],
+          south: this.bbox1[0],
+          east: this.bbox2[1],
+          west: this.bbox1[1]
+        }
+      });
+      google.maps.event.addListener(this.bbox, 'click', event => {
+        let Lat = event.latLng.lat();
+        let Lng = event.latLng.lng();
+        let LatLngStr = `${Lat},${Lng}`;
+        if (this.clickIndex == 0) {
+          this.clickIndex = 1;
+          this.updateSourceMarker(event.latLng);
+          this.$bus.$emit('newSource', LatLngStr);
+        } else if (this.clickIndex == 1) {
+          this.clickIndex = 0;
+          this.endLatLng = [Lat + 0.004, Lng];
+          this.updateDestMarker(event.latLng);
+          this.$bus.$emit('newDest', LatLngStr);
+        }
+      });
+    },
+    addBB() {
+      this.initMapBB();
+      if (this.bbox) {
+        this.showTrafficRouting = true;
+        let poi = this.bbox.bounds.getCenter().toJSON();
+        poi.lat -= 0.002;
+        poi.lng -= 0.055;
+        this.map.setCenter(poi);
+        this.map.setZoom(12);
+        this.bbox.setMap(this.map);
+      }
+    },
+    removeBB() {
+      if (this.bbox) {
+        this.showTrafficRouting = false;
+        this.bbox.setMap(null);
+      }
+      this.$bus.$emit('clearRouting');
+    },
     updateSource(sourceString) {
-      let coordsArr = sourceString.split(',').map((x) => parseFloat(x).toFixed(5));
+      let coordsArr = sourceString.split(',').map(x => parseFloat(x).toFixed(5));
       this.sourceString = `${coordsArr[0]}°, ${coordsArr[1]}°`;
       this.sourceCoordinate = this.parseCoordinateString(this.sourceString);
     },
     updateDest(destString) {
-      let coordsArr = destString.split(',').map((x) => parseFloat(x).toFixed(5));
+      let coordsArr = destString.split(',').map(x => parseFloat(x).toFixed(5));
       this.destString = `${coordsArr[0]}°, ${coordsArr[1]}°`;
       this.destCoordinate = this.parseCoordinateString(this.destString);
     },
@@ -169,18 +213,22 @@ export default {
       let params = {
         coords1: startCoordinate,
         coords2: endCoordinate,
-        id: 'test',
+        id: 'test'
       };
-      axios.post(this.RoutingUrl, params).then((response) => {
-        this.coords = response.data.paths;
-        this.travelTime = response.data.traveltime;
-        eventBus.$emit('launchShortestPath', {
-          coords: this.coords,
-          travelTime: this.travelTime,
+      axios
+        .post(this.RoutingUrl, params)
+        .then(response => {
+          this.coords = response.data.paths;
+          this.travelTime = response.data.traveltime;
+          this.$bus.$emit('launchShortestPath', { coords: this.coords, travelTime: this.travelTime });
+          let notifText = 'Successfully computed shortest path.';
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
+        })
+        .catch(err => {
+          let notifText = 'Unable to compute shortest path.';
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'error', timeout: 2500 });
+          console.log(err.message);
         });
-        let notifText = 'Successfully computed shortest path.';
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
-      });
       this.loading = false;
     },
     parseCoordinateString(string) {
@@ -215,29 +263,29 @@ export default {
         strokeColor: '#9BE1FF',
         strokeOpacity: 1.0,
         strokeWeight: 7,
-        zIndex: 15,
+        zIndex: 15
       });
       this.traveltimePopup = this.createPopup(`Estimate travel time: ${payload.travelTime} hours`);
-      this.detourPoly.setMap(this.$store.state.bluetooth.map);
+      this.detourPoly.setMap(this.map);
       let recenter = payload.coords[Math.round((payload.coords.length - 1) / 2)];
 
       this.updateETT(payload.travelTime);
       this.updateDestMarker(payload.coords.slice(-1)[0]);
       this.updateSourceMarker(payload.coords.slice(0)[0]);
-      this.$store.state.bluetooth.map.panTo(recenter);
-      this.$store.state.bluetooth.map.setZoom(12);
+      this.map.panTo(recenter);
+      this.map.setZoom(12);
     },
     createPopup(contentString) {
       let infowindow = new google.maps.InfoWindow({
-        content: contentString,
+        content: contentString
       });
       return infowindow;
     },
     createMarker(position) {
       let marker = new google.maps.Marker({
         position: position,
-        map: this.$store.state.bluetooth.map,
-        title: `Estimated travel time: ${this.travelTime} hours`,
+        map: this.map,
+        title: `Estimated travel time: ${this.travelTime} hours`
       });
       return marker;
     },
@@ -246,7 +294,7 @@ export default {
         hours: traveltime.toFixed(0),
         minutes: ((traveltime * 60) % 60).toFixed(0),
         seconds: ((traveltime * 3600) % 60).toFixed(0),
-        str: 'N/A',
+        str: 'N/A'
       };
       if (ett.hours > 0) {
         ett.str = `ETT: ${ett.hours} hr ${ett.minutes} min`;
@@ -255,21 +303,22 @@ export default {
       } else {
         ett.str = `ETT: ${ett.seconds} sec`;
       }
-      this.$bus.$emit('UPDATE_ETT_STR', ett);
+      this.ett = ett;
+      this.clickIndex = 0;
     },
     updateSourceMarker(latLng) {
       if (this.sourceMarker != null) {
         this.sourceMarker.setMap(null);
       }
       this.sourceMarker = new google.maps.Marker({
-        map: this.$store.state.bluetooth.map,
+        map: this.map,
         icon: this.textbubble,
         label: {
           color: 'blue',
           fontWeight: 'bold',
           fontSize: '13px',
-          text: 'Source',
-        },
+          text: 'Source'
+        }
       });
       this.sourceMarker.setPosition(latLng);
     },
@@ -278,14 +327,14 @@ export default {
         this.destMarker.setMap(null);
       }
       this.destMarker = new google.maps.Marker({
-        map: this.$store.state.bluetooth.map,
+        map: this.map,
         icon: this.textbubble,
         label: {
           color: 'blue',
           fontWeight: 'bold',
           fontSize: '13px',
-          text: 'Destination',
-        },
+          text: 'Destination'
+        }
       });
       this.destMarker.setPosition(latLng);
     },
@@ -305,16 +354,32 @@ export default {
       if (this.destMarker != null) {
         this.destMarker.setMap(null);
       }
-      this.$bus.$emit('UPDATE_ETT_STR', null);
+      this.ett = null;
       this.clickIndex = 0;
-    },
+    }
+  },
+
+  watch: {
+    showTrafficRouting(show) {
+      if (show) {
+        this.addBB();
+      } else {
+        this.removeBB();
+      }
+    }
   },
 
   computed: {
-    mapLayerSelection() {
-      return this.$store.state.bluetooth.mapLayerSelection;
+    showTrafficRouting: {
+      get() {
+        return this.$store.state.bluetooth.showTrafficRouting;
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_TRAFFIC_ROUTING', val);
+      }
     },
-  },
+    ...mapState('bluetooth', ['map', 'modes'])
+  }
 };
 </script>
 <style scoped>
