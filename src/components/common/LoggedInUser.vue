@@ -78,25 +78,23 @@ export default {
 
     color() {
       const colors = [
-        '#F44336',
-        '#E91E63',
-        '#9C27B0',
-        '#673AB7',
-        '#3F51B5',
-        '#2196F3',
-        '#03A9F4',
-        '#00BCD4',
+        '#9c27b0',
+        '#673ab7',
+        '#3f51b5',
+        '#2196f3',
+        '#03a9f4',
+        '#00bcd4',
         '#009688',
-        '#4CAF50',
-        '#8BC34A',
-        '#CDDC39',
-        '#FFEB3B',
-        '#FFC107',
-        '#FF9800',
-        '#FF5722',
+        '#4caf50',
+        '#8bc34a',
+        '#cddc39',
+        '#ffeb3b',
+        '#ffc107',
+        '#ff9800',
         '#795548',
-        '#9E9E9E',
-        '#b91d47'
+        '#9e9e9e',
+        '#607d8b',
+        '#101010'
       ];
       const s = this.firstLetter;
       const index = s ? (s.charCodeAt(0) - 65) % colors.length : 0;
