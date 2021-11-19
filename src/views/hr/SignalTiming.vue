@@ -113,7 +113,7 @@ export default {
   },
   watch: {
     currentDate(value) {
-      this.simulationStartTime = Utils.geSameTimeAsToday(value);
+      this.simulationStartTime = Utils.getSameTimeAsToday(value);
       let start = this.getStartTime();
       this.loadAndUpdate(this.activeMarker, start);
     },
@@ -124,7 +124,7 @@ export default {
     }
   },
   mounted() {
-    this.simulationStartTime = Utils.geSameTimeAsToday(this.currentDate);
+    this.simulationStartTime = Utils.getSameTimeAsToday(this.currentDate);
 
     this.$bus.$on('GET_SIGNALS', ({ marker }) => {
       let start = this.getStartTime();

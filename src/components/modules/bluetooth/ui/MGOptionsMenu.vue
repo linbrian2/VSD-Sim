@@ -1,8 +1,6 @@
 <template>
   <div>
-    <!-- {{options}}<br/>
-    {{this.$store.state.bluetooth.prefs}} -->
-    <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-x>
+    <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-x left>
       <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <v-tooltip top>
@@ -75,22 +73,7 @@ export default {
       graphHeight: 250,
       showButtons: true
     }
-    /* options: {
-      colCount: null,
-      graphHeight: null,
-      showButtons: null,
-    } */
   }),
-  mounted() {
-    /* if (this.options) {
-      if (!this.options.colCount || !this.options.graphHeight || !this.options.showButtons) {
-        let mgOps = this.$store.state.bluetooth.prefs.multiGraph
-        this.colCount = mgOps.colCountIdx
-        this.graphHeight = mgOps.graphHeight
-        this.showButtons = mgOps.showButtons
-      }
-    } */
-  },
   methods: {
     clear() {
       this.menu = false;

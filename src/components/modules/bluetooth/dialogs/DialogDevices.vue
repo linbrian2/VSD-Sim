@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="$store.state.bluetooth.dialog.devices" width="unset" transition="scroll-x-transition" scrollable>
+  <v-dialog v-model="openDialog" width="unset" transition="scroll-x-transition" scrollable>
     <v-card>
       <v-card-title>
         Traffic Flow Detectors
@@ -31,7 +31,7 @@
             </template>
           </v-text-field>
         </div>
-        <v-btn icon class="close-button mr-4" @click="$store.state.bluetooth.dialog.devices = false">
+        <v-btn icon class="close-button mr-4" @click="closeDialog">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -81,12 +81,14 @@
 </template>
 
 <script>
+import Constants from '@/utils/constants/bluetooth';
 import Utils from '@/utils/Utils';
 import { DateTime } from 'luxon';
 
 export default {
   data() {
     return {
+      openDialog: false,
       sortCol: 'actions',
       sortDesc: true,
       deviceSearch: '',
@@ -94,6 +96,10 @@ export default {
     };
   },
   methods: {
+    closeDialog() {
+      this.openDialog = false;
+      this.dialog = Constants.DIALOG_NONE;
+    },
     viewBP(item) {
       console.log(item);
     },
@@ -102,7 +108,7 @@ export default {
         console.log('this.devices\n%o', this.devices);
         console.log('this.devices\n%o', this.devicesFull);
         let notifText = 'Check console for info.';
-        this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'info' });
+        this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
       } else if (idx == 1) {
         let dt = DateTime.now();
         let dtStr = dt
@@ -115,7 +121,14 @@ export default {
     },
     viewItem(item) {
       this.$bus.$emit('GO_TO_MARKER_LOCATION', item.data, 'devices');
-      this.$store.state.bluetooth.dialog.devices = false;
+      this.closeDialog();
+    }
+  },
+  watch: {
+    dialog(val) {
+      if (val == Constants.DIALOG_DEVICES) {
+        this.openDialog = true;
+      }
     }
   },
   computed: {
@@ -168,6 +181,14 @@ export default {
         return items;
       } else {
         return null;
+      }
+    },
+    dialog: {
+      get() {
+        return this.$store.state.bluetooth.dialog;
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_DIALOG', val);
       }
     }
   }

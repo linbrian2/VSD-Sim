@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="$store.state.bluetooth.dialog.tt" max-width="100%" transition="scroll-x-transition">
+  <v-dialog v-model="ttDialog" max-width="100%" transition="scroll-x-transition">
     <v-card>
       <v-card-actions>
         <v-card-title class="segment-title"> {{ segName }} </v-card-title>
@@ -38,15 +38,15 @@
             class="px-1"
           ></v-slider>
         </div>
-        <v-btn icon class="close-button mr-4" @click="$store.state.bluetooth.dialog.tt = false">
+        <v-btn icon class="close-button mr-4" @click="closeDialog">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-actions>
       <div v-for="i in graphInterval.length" :key="'A' + i" class="px-3">
         <AreaRangeChart
           v-if="showAnom && i - 1 == graphIntervalInd"
-          :historicData="$store.state.bluetooth.selectedSeg.histWInc"
-          :currData="$store.state.bluetooth.selectedSeg.curr"
+          :historicData="selectedSeg.histWInc"
+          :currData="selectedSeg.curr"
           :interval="graphInterval[i - 1]"
           :title="'Historical Travel Time'"
           :containerName="'container'"
@@ -57,8 +57,8 @@
       <div v-for="i in graphInterval.length" :key="'B' + i" class="px-3">
         <AreaRangeChart
           v-if="!showAnom && i - 1 == graphIntervalInd"
-          :historicData="$store.state.bluetooth.selectedSeg.histWoInc"
-          :currData="$store.state.bluetooth.selectedSeg.curr"
+          :historicData="selectedSeg.histWoInc"
+          :currData="selectedSeg.curr"
           :interval="graphInterval[i - 1]"
           :title="'Historical Travel Time'"
           :containerName="'container'"
@@ -73,6 +73,7 @@
 import AreaRangeChart from '@/components/modules/bluetooth/graphs/AreaRangeChart';
 
 import Api from '@/utils/api/bluetooth.js';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -87,58 +88,50 @@ export default {
     };
   },
   watch: {
-    '$store.state.bluetooth.dialog.tt': {
-      handler: function(val, oldVal) {
-        if (val == true && oldVal == false) {
-          this.init();
-        }
+    ttDialog(val, oldVal) {
+      if (val == true && oldVal == false) {
+        this.init();
       }
     }
   },
   methods: {
     init() {
-      this.fetchSegmentData(this.$store.state.bluetooth.selectedSeg.data);
+      this.fetchSegmentData(this.selectedSeg.data);
+    },
+    closeDialog() {
+      this.$store.commit('bluetooth/SET_TT_DIALOG', false);
     },
     fetchSegmentData(selectedSeg) {
-      this.$store.state.bluetooth.selectedSeg.curr = null;
+      this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'curr', data: null });
       let linkId = selectedSeg.info.linkId;
       /* Fetch Historical Data w/ Incidents */
       Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(
         dataW => {
-          this.$store.state.bluetooth.selectedSeg.histWInc = dataW;
+          this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'histWInc', data: dataW });
           let notifText = 'Successfully fetched Travel Time Data';
-          this.$store.commit('bluetooth/SET_NOTIFICATION', {
-            show: true,
-            text: notifText,
-            timeout: 3000,
-            color: 'info'
-          });
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
         },
         error => {
           console.log(error);
           let notifText = 'Failed to fetch Travel Time Data';
-          this.$store.commit('bluetooth/SET_NOTIFICATION', {
-            show: true,
-            text: notifText,
-            timeout: 3000,
-            color: 'error'
-          });
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'error', timeout: 2500 });
         }
       );
       /* Fetch Historical Data w/o Incidents */
       Api.fetchHistoricalTTWoIncidentsByLinkID(linkId).then(
         dataWo => {
-          this.$store.state.bluetooth.selectedSeg.histWoInc = dataWo;
+          this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'histWoInc', data: dataWo });
         },
         error => {
           console.log(error);
         }
       );
       /* Fetch Current Day Data */
-      let dt = this.$store.state.currentDate;
-      Api.fetchCurrTTByLinkId(linkId, dt.valueOf()).then(
+      console.log(this.currentDate);
+      let dt = this.currentDate.valueOf();
+      Api.fetchCurrTTByLinkId(linkId, dt).then(
         dataC => {
-          this.$store.state.bluetooth.selectedSeg.curr = dataC;
+          this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'curr', data: dataC });
         },
         error => {
           console.log(error);
@@ -148,13 +141,22 @@ export default {
   },
   computed: {
     segName() {
-      let selectedSeg = this.$store.state.bluetooth.selectedSeg;
-      if (selectedSeg && selectedSeg.data && selectedSeg.data.info) {
-        return this.$store.state.bluetooth.selectedSeg.data.info.description;
+      if (this.selectedSeg && this.selectedSeg.data && this.selectedSeg.data.info) {
+        return this.selectedSeg.data.info.description;
       } else {
         return 'N/A';
       }
-    }
+    },
+    ttDialog: {
+      get() {
+        return this.$store.state.bluetooth.ttDialog;
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_TT_DIALOG', val);
+      }
+    },
+    ...mapState(['currentDate']),
+    ...mapState('bluetooth', ['selectedSeg'])
   }
 };
 </script>

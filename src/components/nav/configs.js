@@ -214,14 +214,6 @@ const protectedRoute = [
               title: RouterNames.BLUETOOTH_MULTIGRAPH,
               icon: 'mdi-chart-areaspline'
             }
-          },
-          {
-            path: RouterPaths.BLUETOOTH_BREAKDOWNPROB,
-            name: RouterNames.BLUETOOTH_BREAKDOWNPROB,
-            meta: {
-              title: RouterNames.BLUETOOTH_BREAKDOWNPROB,
-              icon: 'mdi-dice-6'
-            }
           }
         ]
       },

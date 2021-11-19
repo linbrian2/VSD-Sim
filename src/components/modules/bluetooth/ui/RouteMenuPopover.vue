@@ -4,8 +4,8 @@
       <template v-slot:activator="{ on, attrs }">
         <v-badge
           color="grey"
-          :content="$store.state.bluetooth.selectedRoutes.length"
-          :value="$store.state.bluetooth.selectedRoutes.length > 0"
+          :content="selectedRoutes.length"
+          :value="selectedRoutes.length > 0"
         >
           <v-btn icon v-bind="attrs" v-on="on" class="ml-2" small>
             <v-icon>mdi-filter</v-icon>
@@ -17,10 +17,10 @@
         <v-list>
           <v-list-item>
             <v-autocomplete
-              v-model="$store.state.bluetooth.selectedRoutes"
+              v-model="selectedRoutes"
               dense
               outlined
-              :items="$store.state.bluetooth.apiData.routes"
+              :items="apiData.routes"
               :search-input.sync="search"
               color="white"
               hide-no-data
@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   data: () => ({
     search: null,
@@ -58,9 +60,20 @@ export default {
   }),
   methods: {
     clearAll() {
-      this.$store.state.bluetooth.selectedRoutes = [];
+      this.selectedRoutes = []
     }
-  }
+  },
+  computed: {
+    selectedRoutes: {
+      get () {
+        return this.$store.state.bluetooth.selectedRoutes
+      },
+      set (routes) {
+        this.$store.commit('bluetooth/SET_SELECTED_ROUTES', routes)
+      }
+    },
+    ...mapState('bluetooth', ['apiData'])
+  },
 };
 </script>
 

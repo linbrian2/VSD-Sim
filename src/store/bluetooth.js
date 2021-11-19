@@ -1,27 +1,13 @@
 const state = {
-  appTitle: 'Bluetooth and Waze Data',
-  appMenuItems: [
-    { title: 'Traffic Flow Data', url: '/flow' },
-    { title: 'High Resolution Data', url: '/hr' },
-    { title: 'Machine Vision on Traffic Cameras', url: '/vision' },
-    { title: 'Bluetooth and Waze Data', url: '/bluetooth' },
-    { title: 'Health Monitoring', url: '/status' }
-  ],
+  playbackToggle: false,
   map: null,
-  selectedDatetime: null,
   segmentPolylines: null,
   sensorMarkers: null,
   deviceMarkers: null,
   wazeMarkers: null,
   wazeClusters: null,
-  dialog: {
-    tt: false,
-    bp: false,
-    congestion: false,
-    btSensors: false,
-    devices: false,
-    wazeAlerts: false
-  },
+  dialog: -1,
+  ttDialog: false,
   apiData: {
     segments: null,
     routes: null,
@@ -32,20 +18,18 @@ const state = {
     wazeFull: null,
     devicesFull: null
   },
-  selectedRoutes: [],
-  notification: {
-    show: false,
-    text: 'Default message.',
-    timeout: 2000,
-    color: 'info'
+  apiLoading: {
+    segmentsFull: false,
+    wazeFull: false,
+    devicesFull: false
   },
+  selectedRoutes: [],
   segGraph: [],
-  selectedPage: 0,
   modes: {
     addFromMap: false,
-    historical: false,
-    trafficRouting: false
+    historical: false
   },
+  showTrafficRouting: false,
   subtoggles: ['Hazard', 'Traffic Jam', 'Road Closed', 'Accident'],
   bpInfo: null,
   selectedDevice: null,
@@ -62,17 +46,57 @@ const state = {
   playState: 'stop',
   playbackSpeed: 10,
   currentProgress: 0,
-  currentTime: new Date(),
   timePickerMenu: false,
   autoUpdate: true,
   timeSinceUpdate: 0,
   multigraphSegs: null,
+  showFullDayAvail: true
+};
+
+const getters = {
+  fetchDone: state => {
+    return Object.values(state.apiData).filter(x => !x).length == 0;
+  }
 };
 
 const mutations = {
+  SET_API_DATA: (state, payload) => {
+    if (payload.prop == 'allFull') {
+      state.apiData.segmentsFull = payload.data;
+      state.apiData.wazeFull = payload.data;
+      state.apiData.devicesFull = payload.data;
+    } else if (payload.prop == 'allCurr') {
+      state.apiData.segments = payload.data;
+      state.apiData.waze = payload.data;
+      state.apiData.devices = payload.data;
+    } else {
+      state.apiData[payload.prop] = payload.data;
+    }
+  },
+  SET_API_LOADING: (state, payload) => {
+    if (payload.prop == 'all') {
+      state.apiLoading.segmentsFull = payload.data;
+      state.apiLoading.wazeFull = payload.data;
+      state.apiLoading.devicesFull = payload.data;
+    } else {
+      state.apiLoading[payload.prop] = payload.data;
+    }
+  },
+  SET_TRAFFIC_ROUTING: (state, flag) => (state.showTrafficRouting = flag),
+  SET_SEG_GRAPH: (state, val) => (state.segGraph = val),
+  SET_MODE: (state, payload) => (state.modes[payload.key] = payload.val),
+  SET_MAP: (state, map) => (state.map = map),
+  SET_AUTO_UPDATE: (state, toggle) => (state.autoUpdate = toggle),
+  SET_FULL_DAY_AVAIL: (state, toggle) => (state.showFullDayAvail = toggle),
+  SET_SELECTED_SEG: (state, payload) => (state.selectedSeg[payload.prop] = payload.data),
+  SET_TT_DIALOG: (state, dialog) => (state.ttDialog = dialog),
+  SET_DIALOG: (state, dialog) => (state.dialog = dialog),
+  SET_PLAYBACK_TOGGLE: (state, toggle) => (state.playbackToggle = toggle),
+  SET_TIME_SINCE_UPDATE: (state, time) => (state.timeSinceUpdate = time),
+  SET_TIMEPICKER_MENU: (state, menu) => (state.timePickerMenu = menu),
+  SET_SELECTED_ROUTES: (state, routes) => (state.selectedRoutes = routes),
   SET_SELECTED_PAGE: (state, page) => (state.selectedPage = page),
   SET_SELECTED_DEVICE: (state, device) => (state.selectedDevice = device),
-  SET_NOTIFICATION: (state, notification) => (state.notification = notification),
   SET_MAP_LAYER: (state, layer) => (state.mapLayerSelection = layer),
   SET_WAZE_LAYER: (state, layer) => (state.wazeLayerSelection = layer),
   SET_DEVICE_LAYER: (state, layer) => (state.deviceLayerSelection = layer),
@@ -119,6 +143,7 @@ const actions = {
 export default {
   namespaced: true,
   state: state,
+  getters: getters,
   mutations: mutations,
   actions: actions
 };
