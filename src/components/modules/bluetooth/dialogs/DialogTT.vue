@@ -99,15 +99,15 @@ export default {
       this.fetchSegmentData(this.selectedSeg.data);
     },
     closeDialog() {
-      this.$store.commit('bluetooth/SET_TT_DIALOG', false)
+      this.$store.commit('bluetooth/SET_TT_DIALOG', false);
     },
     fetchSegmentData(selectedSeg) {
-      this.$store.commit('bluetooth/SET_SELECTED_SEG', {prop: 'curr', data: null})
+      this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'curr', data: null });
       let linkId = selectedSeg.info.linkId;
       /* Fetch Historical Data w/ Incidents */
       Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(
         dataW => {
-          this.$store.commit('bluetooth/SET_SELECTED_SEG', {prop: 'histWInc', data: dataW})
+          this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'histWInc', data: dataW });
           let notifText = 'Successfully fetched Travel Time Data';
           this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
         },
@@ -120,7 +120,7 @@ export default {
       /* Fetch Historical Data w/o Incidents */
       Api.fetchHistoricalTTWoIncidentsByLinkID(linkId).then(
         dataWo => {
-          this.$store.commit('bluetooth/SET_SELECTED_SEG', {prop: 'histWoInc', data: dataWo})
+          this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'histWoInc', data: dataWo });
         },
         error => {
           console.log(error);
@@ -131,7 +131,7 @@ export default {
       let dt = this.currentDate.valueOf();
       Api.fetchCurrTTByLinkId(linkId, dt).then(
         dataC => {
-          this.$store.commit('bluetooth/SET_SELECTED_SEG', {prop: 'curr', data: dataC})
+          this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'curr', data: dataC });
         },
         error => {
           console.log(error);
@@ -149,10 +149,10 @@ export default {
     },
     ttDialog: {
       get() {
-        return this.$store.state.bluetooth.ttDialog
+        return this.$store.state.bluetooth.ttDialog;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_TT_DIALOG', val)
+        this.$store.commit('bluetooth/SET_TT_DIALOG', val);
       }
     },
     ...mapState(['currentDate']),

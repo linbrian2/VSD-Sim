@@ -82,8 +82,8 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.openDialog = false
-      this.dialog = Constants.DIALOG_NONE
+      this.openDialog = false;
+      this.dialog = Constants.DIALOG_NONE;
     },
     menuItemClicked(idx) {
       if (idx == 0) {
@@ -105,13 +105,13 @@ export default {
     },
     viewItem(item) {
       this.$bus.$emit('GO_TO_MARKER_LOCATION', item.data, 'waze');
-      this.closeDialog()
+      this.closeDialog();
     }
   },
   watch: {
     dialog(val) {
       if (val == Constants.DIALOG_WAZE) {
-        this.openDialog = true
+        this.openDialog = true;
       }
     }
   },
@@ -171,10 +171,10 @@ export default {
     },
     dialog: {
       get() {
-        return this.$store.state.bluetooth.dialog
+        return this.$store.state.bluetooth.dialog;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_DIALOG', val)
+        this.$store.commit('bluetooth/SET_DIALOG', val);
       }
     }
   }

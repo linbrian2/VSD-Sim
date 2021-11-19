@@ -49,7 +49,7 @@ export default {
   props: {
     date: {
       type: Date,
-      default: new Date(),
+      default: new Date()
     },
     disable: Boolean
   },
@@ -64,7 +64,7 @@ export default {
       return this.fromDateVal ? Utils.formatDateLong2(Utils.dateFromString(this.fromDateVal)) : '';
     },
     disablePicker() {
-      return this.disable ? true : false
+      return this.disable ? true : false;
     }
   },
 

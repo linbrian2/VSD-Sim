@@ -60,7 +60,7 @@ export const RouterPaths = {
   VISION_ROOT: '/vision',
   VISION_DASHBOARD: '/vision/camera',
   VISION_REID: '/vision/re-id',
-  
+
   BLUETOOTH_ROOT: '/bluetooth',
   BLUETOOTH_DASHBOARD: '/bluetooth/dash',
   BLUETOOTH_MULTIGRAPH: '/bluetooth/multigraph',

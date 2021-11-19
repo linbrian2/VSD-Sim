@@ -1,11 +1,7 @@
 <template>
   <div class="bluetooth-dashboard">
     <BluetoothMap />
-    <Toolbar
-      :searchItems="apiData.segments"
-      :fetchDone="fetchDone"
-      v-show="mapLayerSelection && map"
-    />
+    <Toolbar :searchItems="apiData.segments" :fetchDone="fetchDone" v-show="mapLayerSelection && map" />
     <TrafficRouting />
     <PlaybackToolbar />
     <v-scale-transition>
@@ -300,9 +296,6 @@ export default {
         let zoom = map.getZoom();
         path.setOptions({ strokeWeight: zoom / 3 });
       });
-      google.maps.event.addListener(map, 'dragend', () => {
-        let center = map.getCenter();
-      });
     },
     addSegments() {
       if (this.segmentPolylines) {
@@ -589,7 +582,7 @@ export default {
           return;
         }
       });
-      this.$store.commit('bluetooth/SET_TT_DIALOG', true)
+      this.$store.commit('bluetooth/SET_TT_DIALOG', true);
     }
   },
   watch: {
@@ -620,8 +613,7 @@ export default {
         /* Add */
         let addDiff = newVal.filter(x => !oldVal.includes(x));
         if (addDiff.length > 0) {
-          if (addDiff[0] == Constants.LAYER_CONGESTION) 
-            this.addSegments();
+          if (addDiff[0] == Constants.LAYER_CONGESTION) this.addSegments();
           else if (addDiff[0] == Constants.LAYER_WAZE) {
             this.removeWazeClusters();
             if (this.isWazeMarkers) {
@@ -630,32 +622,23 @@ export default {
             if (this.mapLayerSelection.includes(2)) {
               this.addWazeClusters();
             }
-          }
-          else if (addDiff[0] == Constants.LAYER_GROUPED_WAZE) {
+          } else if (addDiff[0] == Constants.LAYER_GROUPED_WAZE) {
             this.removeMarkers(this.$store.state.bluetooth.wazeMarkers);
             this.addWazeClusters();
-          }
-          else if (addDiff[0] == Constants.LAYER_DEVICES)
-            this.addMarkers(this.filteredDeviceMarkers);
-          else if (addDiff[0] == Constants.LAYER_BLUETOOTH_SENSORS)
-            this.addMarkers(this.sensorMarkers);
+          } else if (addDiff[0] == Constants.LAYER_DEVICES) this.addMarkers(this.filteredDeviceMarkers);
+          else if (addDiff[0] == Constants.LAYER_BLUETOOTH_SENSORS) this.addMarkers(this.sensorMarkers);
         }
         /* Delete */
         let delDiff = oldVal.filter(x => !newVal.includes(x));
         if (delDiff.length > 0) {
-          if (delDiff[0] == Constants.LAYER_CONGESTION)
-            this.removeSegments();
+          if (delDiff[0] == Constants.LAYER_CONGESTION) this.removeSegments();
           else if (delDiff[0] == Constants.LAYER_WAZE) {
             this.removeMarkers(this.$store.state.bluetooth.wazeMarkers);
             this.removeWazeClusters();
-          }
-          else if (delDiff[0] == Constants.LAYER_GROUPED_WAZE) {
+          } else if (delDiff[0] == Constants.LAYER_GROUPED_WAZE) {
             this.removeWazeClusters();
-          }
-          else if (delDiff[0] == Constants.LAYER_DEVICES)
-            this.removeMarkers(this.deviceMarkers);
-          else if (delDiff[0] == Constants.LAYER_BLUETOOTH_SENSORS)
-            this.removeMarkers(this.sensorMarkers);
+          } else if (delDiff[0] == Constants.LAYER_DEVICES) this.removeMarkers(this.deviceMarkers);
+          else if (delDiff[0] == Constants.LAYER_BLUETOOTH_SENSORS) this.removeMarkers(this.sensorMarkers);
         }
       }
     },
@@ -678,9 +661,7 @@ export default {
   computed: {
     filteredWazeMarkers() {
       if (this.wazeLayerSelection && this.wazeMarkers) {
-        let filteredWazeMarkers = this.wazeMarkers.filter(w =>
-          this.wazeLayerSelection.includes(w.wazeTypeId)
-        );
+        let filteredWazeMarkers = this.wazeMarkers.filter(w => this.wazeLayerSelection.includes(w.wazeTypeId));
         return filteredWazeMarkers;
       } else {
         return this.wazeMarkers;
@@ -698,9 +679,7 @@ export default {
         if (this.deviceLayerSelection.includes(2)) {
           filterLevels.push(5, 6);
         }
-        let filteredDeviceMarkers = this.deviceMarkers.filter(w =>
-          filterLevels.includes(w.level)
-        );
+        let filteredDeviceMarkers = this.deviceMarkers.filter(w => filterLevels.includes(w.level));
         return filteredDeviceMarkers;
       } else {
         return this.wazeMarkers;

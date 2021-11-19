@@ -156,7 +156,7 @@ export default {
 
   methods: {
     toggleTimePickerMenu() {
-      this.$store.commit('bluetooth/SET_TIMEPICKER_MENU', !this.timePickerMenu)
+      this.$store.commit('bluetooth/SET_TIMEPICKER_MENU', !this.timePickerMenu);
     },
 
     showDrawer() {

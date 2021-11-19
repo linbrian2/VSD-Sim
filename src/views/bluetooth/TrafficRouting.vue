@@ -86,7 +86,6 @@
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
-import Constants from '@/utils/constants/bluetooth';
 
 /* eslint-disable no-undef */
 
@@ -116,17 +115,15 @@ export default {
       bbox: null,
       bbox1: [39.74, -75.79],
       bbox2: [39.6, -75.525],
-      clickIndex: 0,
+      clickIndex: 0
     };
   },
 
   mounted: function() {
     this.$bus.$on('newSource', sourceCoordinate => {
-      console.log("New Source: %o", sourceCoordinate);
       this.updateSource(sourceCoordinate);
     });
     this.$bus.$on('newDest', destCoordinate => {
-      console.log("New Destination: %o", destCoordinate);
       this.updateDest(destCoordinate);
       this.getShortestPath();
     });
@@ -140,7 +137,7 @@ export default {
 
   methods: {
     toggleTrafficRouting() {
-      this.showTrafficRouting = !this.showTrafficRouting
+      this.showTrafficRouting = !this.showTrafficRouting;
     },
     clearData() {
       this.$bus.$emit('clearRouting');
@@ -180,7 +177,7 @@ export default {
       });
     },
     addBB() {
-      this.initMapBB()
+      this.initMapBB();
       if (this.bbox) {
         this.showTrafficRouting = true;
         let poi = this.bbox.bounds.getCenter().toJSON();
@@ -196,7 +193,7 @@ export default {
         this.showTrafficRouting = false;
         this.bbox.setMap(null);
       }
-      this.$bus.$emit('clearRouting')
+      this.$bus.$emit('clearRouting');
     },
     updateSource(sourceString) {
       let coordsArr = sourceString.split(',').map(x => parseFloat(x).toFixed(5));
@@ -218,17 +215,20 @@ export default {
         coords2: endCoordinate,
         id: 'test'
       };
-      axios.post(this.RoutingUrl, params).then(response => {
-        this.coords = response.data.paths;
-        this.travelTime = response.data.traveltime;
-        this.$bus.$emit('launchShortestPath', { coords: this.coords, travelTime: this.travelTime });
-        let notifText = 'Successfully computed shortest path.';
-        this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
-      }).catch(err => {
-        let notifText = 'Unable to compute shortest path.';
-        this.$store.dispatch('setSystemStatus', { text: notifText, color: 'error', timeout: 2500 });
-        console.log(err.message);
-      });;
+      axios
+        .post(this.RoutingUrl, params)
+        .then(response => {
+          this.coords = response.data.paths;
+          this.travelTime = response.data.traveltime;
+          this.$bus.$emit('launchShortestPath', { coords: this.coords, travelTime: this.travelTime });
+          let notifText = 'Successfully computed shortest path.';
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
+        })
+        .catch(err => {
+          let notifText = 'Unable to compute shortest path.';
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'error', timeout: 2500 });
+          console.log(err.message);
+        });
       this.loading = false;
     },
     parseCoordinateString(string) {
@@ -303,8 +303,8 @@ export default {
       } else {
         ett.str = `ETT: ${ett.seconds} sec`;
       }
-      this.ett = ett
-      this.clickIndex = 0
+      this.ett = ett;
+      this.clickIndex = 0;
     },
     updateSourceMarker(latLng) {
       if (this.sourceMarker != null) {
@@ -354,8 +354,8 @@ export default {
       if (this.destMarker != null) {
         this.destMarker.setMap(null);
       }
-      this.ett = null
-      this.clickIndex = 0
+      this.ett = null;
+      this.clickIndex = 0;
     }
   },
 
@@ -366,16 +366,16 @@ export default {
       } else {
         this.removeBB();
       }
-    },
+    }
   },
 
   computed: {
     showTrafficRouting: {
       get() {
-        return this.$store.state.bluetooth.showTrafficRouting
+        return this.$store.state.bluetooth.showTrafficRouting;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_TRAFFIC_ROUTING', val)
+        this.$store.commit('bluetooth/SET_TRAFFIC_ROUTING', val);
       }
     },
     ...mapState('bluetooth', ['map', 'modes'])

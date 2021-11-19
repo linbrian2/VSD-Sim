@@ -33,14 +33,14 @@ import { RouterPaths } from '@/utils/constants/router';
 export default {
   methods: {
     cancelAdd() {
-      this.setMode('addFromMap', false)
+      this.setMode('addFromMap', false);
     },
     setMode(key, val) {
-      this.$store.commit('bluetooth/SET_MODE', {key: key, val: val})
+      this.$store.commit('bluetooth/SET_MODE', { key: key, val: val });
     },
     submit() {
       this.$bus.$emit('SUBMIT_SEGMENTS', this.multigraphSegs.slice());
-      this.setMode('addFromMap', false)
+      this.setMode('addFromMap', false);
       setTimeout(() => {
         let path = RouterPaths.BLUETOOTH_MULTIGRAPH;
         this.$router.push({ path }).catch(() => {});

@@ -51,13 +51,7 @@
           </v-container>
           <v-container v-if="segGraph" fluid>
             <v-row>
-              <v-col
-                :cols="col[0]"
-                :lg="col[1]"
-                :xl="col[2]"
-                v-for="(s, i) in segGraph"
-                :key="s.id"
-              >
+              <v-col :cols="col[0]" :lg="col[1]" :xl="col[2]" v-for="(s, i) in segGraph" :key="s.id">
                 <!-- Current & Baseline travel time found -->
                 <v-card v-if="s.data && !reload">
                   <AreaRangeChart
@@ -108,7 +102,7 @@ export default {
   components: {
     AreaRangeChart,
     MGFilterMenu,
-    MGOptionsMenu,
+    MGOptionsMenu
   },
   data: () => ({
     reload: false,
@@ -119,11 +113,11 @@ export default {
       [12, 12, 12] /* 1 */,
       [6, 6, 6] /* 2 */,
       [4, 4, 4] /* 3 */,
-      [3, 3, 3] /* 4 */,
-    ],
+      [3, 3, 3] /* 4 */
+    ]
   }),
   mounted() {
-    let newSegs = this.segGraph
+    let newSegs = this.segGraph;
     let segsToAdd = [];
     newSegs.forEach(seg => {
       segsToAdd.push(seg);
@@ -132,13 +126,13 @@ export default {
       this.fetchTTData(segsToAdd);
     }
 
-    this.$bus.$on('SUBMIT_MULTIGRAPH_FILTERS', (filters) => {
+    this.$bus.$on('SUBMIT_MULTIGRAPH_FILTERS', filters => {
       this.processFilters(filters);
     });
-    this.$bus.$on('SUBMIT_MULTIGRAPH_OPTIONS', (ops) => {
+    this.$bus.$on('SUBMIT_MULTIGRAPH_OPTIONS', ops => {
       this.processOptions(ops);
     });
-    this.$bus.$on('SUBMIT_SEGMENTS', (segsList) => {
+    this.$bus.$on('SUBMIT_SEGMENTS', segsList => {
       this.processSegments(segsList);
     });
     this.$bus.$on('SEGMENTS_UPDATE', () => {
@@ -155,7 +149,7 @@ export default {
     },
     viewAdditionalInfo(segment) {
       this.$store.state.bluetooth.selectedSeg.data = segment;
-      this.$store.commit('bluetooth/SET_TT_DIALOG', true)
+      this.$store.commit('bluetooth/SET_TT_DIALOG', true);
     },
     processSegments(segsList) {
       setTimeout(() => {
@@ -176,21 +170,21 @@ export default {
         let arr = segments.filter(x => {
           for (let i = 0; i < filterRoutes.length; i++) {
             if (filterRoutes[i] == x.info.route) {
-              return true
+              return true;
             }
           }
-          return false
+          return false;
         });
-        return arr
+        return arr;
       } else {
-        return segments
+        return segments;
       }
     },
     processFilters(filters) {
-      let filteredRouteSegments = this.filterByRoute(this.segments, filters.routes)
-      let filteredSegments = filteredRouteSegments.filter((s) => {
+      let filteredRouteSegments = this.filterByRoute(this.segments, filters.routes);
+      let filteredSegments = filteredRouteSegments.filter(s => {
         let isValid = false;
-        filters.levels.forEach((level) => {
+        filters.levels.forEach(level => {
           if (s.travelTime.level == level) {
             isValid = true;
             return;
@@ -199,7 +193,7 @@ export default {
         return isValid;
       });
       let segments = [];
-      filteredSegments.forEach((s) => {
+      filteredSegments.forEach(s => {
         segments.push(s);
       });
       this.segGraph = segments;
@@ -209,50 +203,54 @@ export default {
     },
     addFromMap() {
       this.$store.state.bluetooth.modes.addFromMap = true;
-      let path = RouterPaths.BLUETOOTH_DASHBOARD
+      let path = RouterPaths.BLUETOOTH_DASHBOARD;
       this.$router.push({ path }).catch(() => {});
     },
     fetchTTData(segsToAdd) {
       let seg = segsToAdd.shift();
       let linkId = seg.info.linkId;
       let dt = this.currentDate;
-      Api.fetchCurrTTByLinkId(linkId, dt.valueOf()).then(currData => {
-          Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(histData => {
+      Api.fetchCurrTTByLinkId(linkId, dt.valueOf()).then(
+        currData => {
+          Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(
+            histData => {
               if (seg) {
                 this.$set(seg, 'data', {
                   currTT: currData,
-                  histTT: histData,
+                  histTT: histData
                 });
               }
               if (segsToAdd.length > 0 && this.segGraph.length > 0) {
                 this.fetchTTData(segsToAdd);
               }
-            }, error => {
+            },
+            error => {
               console.log(error);
             }
           );
-        }, error => {
+        },
+        error => {
           console.log(error);
         }
       );
-    },
+    }
   },
   computed: {
     loadingData() {
-      return this.segments.length == 0
+      return this.segments.length == 0;
     },
     col() {
       return this.colCount[this.prefs.multiGraph.colCountIdx];
     },
     segments() {
-      return this.$store.state.bluetooth.apiData.segments || []
+      return this.$store.state.bluetooth.apiData.segments || [];
     },
     segGraph: {
       get() {
-        return this.$store.state.bluetooth.segGraph
+        return this.$store.state.bluetooth.segGraph;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_SEG_GRAPH', val)
+        this.$store.commit('bluetooth/SET_SEG_GRAPH', val);
       }
     },
     ...mapState(['currentDate']),
@@ -269,10 +267,10 @@ export default {
     },
     segGraph: {
       deep: true,
-      handler: function (newVal, oldVal) {
+      handler: function(newVal, oldVal) {
         if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
-          let newSegs = newVal.map((x) => x.info.description);
-          let oldSegs = oldVal.map((x) => x.info.description);
+          let newSegs = newVal.map(x => x.info.description);
+          let oldSegs = oldVal.map(x => x.info.description);
           let segsToAdd = [];
           newSegs.forEach((segName, i) => {
             if (!oldSegs.includes(segName)) {
@@ -283,9 +281,9 @@ export default {
             this.fetchTTData(segsToAdd);
           }
         }
-      },
-    },
-  },
+      }
+    }
+  }
 };
 </script>
 

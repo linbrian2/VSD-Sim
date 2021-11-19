@@ -7,7 +7,7 @@ export default {
   initFullDay() {
     return AxiosClient.get(`bluetooth/init/full`)
       .then(res => {
-        return res.data
+        return res.data;
       })
       .catch(err => {
         console.log(err.message);

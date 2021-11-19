@@ -23,14 +23,7 @@
             <v-tooltip bottom v-for="s in severity" :key="s.id">
               <template v-slot:activator="{ on, attrs }">
                 <div v-bind="attrs" v-on="on">
-                  <v-badge
-                    top
-                    class="pl-5"
-                    overlap
-                    :color="s.color"
-                    :content="s.count"
-                    :value="true"
-                  >
+                  <v-badge top class="pl-5" overlap :color="s.color" :content="s.count" :value="true">
                     <v-checkbox dense :label="s.name" v-model="s.flag" value="value" class="pr-5"></v-checkbox>
                   </v-badge>
                 </div>
@@ -105,23 +98,23 @@ export default {
         let arr = segments.filter(x => {
           for (let i = 0; i < filterRoutes.length; i++) {
             if (filterRoutes[i] == x.info.route) {
-              return true
+              return true;
             }
           }
-          return false
+          return false;
         });
-        return arr
+        return arr;
       } else {
-        return segments
+        return segments;
       }
     },
     init() {
       if (this.segments) {
-        let filteredSegments = this.filterByRoute(this.segments, this.selectedRoutes)
-        this.severity[0].count = 0
-        this.severity[1].count = 0
-        this.severity[2].count = 0
-        this.severity[3].count = 0
+        let filteredSegments = this.filterByRoute(this.segments, this.selectedRoutes);
+        this.severity[0].count = 0;
+        this.severity[1].count = 0;
+        this.severity[2].count = 0;
+        this.severity[3].count = 0;
         filteredSegments.forEach(s => {
           if (s.travelTime.level == 1 || s.travelTime.level == 2) this.severity[0].count++;
           else if (s.travelTime.level == 3 || s.travelTime.level == 4) this.severity[1].count++;
@@ -138,12 +131,12 @@ export default {
       this.menu = false;
       let filters = {
         levels: this.selectedLevels,
-        routes: this.selectedRoutes,
+        routes: this.selectedRoutes
       };
       this.$bus.$emit('SUBMIT_MULTIGRAPH_FILTERS', filters);
     },
     clearAll() {
-      this.selectedRoutes = []
+      this.selectedRoutes = [];
     }
   },
   watch: {
@@ -153,10 +146,10 @@ export default {
       }
     },
     selectedRoutes() {
-      this.init()
+      this.init();
     },
     segments() {
-      this.init()
+      this.init();
     }
   },
   computed: {
@@ -182,15 +175,15 @@ export default {
       return levels;
     },
     selectedRoutes: {
-      get () {
-        return this.$store.state.bluetooth.selectedRoutes
+      get() {
+        return this.$store.state.bluetooth.selectedRoutes;
       },
-      set (routes) {
-        this.$store.commit('bluetooth/SET_SELECTED_ROUTES', routes)
+      set(routes) {
+        this.$store.commit('bluetooth/SET_SELECTED_ROUTES', routes);
       }
     },
     ...mapState('bluetooth', ['apiData'])
-  },
+  }
 };
 </script>
 

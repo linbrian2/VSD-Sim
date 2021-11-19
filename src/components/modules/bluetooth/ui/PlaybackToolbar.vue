@@ -145,7 +145,7 @@ export default {
       { text: 'Start Time', value: 'startTime' },
       { text: 'Duration', value: 'duration' },
       { text: 'Distance', value: 'distance' },
-      { text: 'Status', value: 'status' },
+      { text: 'Status', value: 'status' }
     ],
     items: [],
     speed_menu_items: [
@@ -154,8 +154,8 @@ export default {
       { title: '15x', value: 15 },
       { title: '10x', value: 10 },
       { title: '5x', value: 5 },
-      { title: '1x', value: 1 },
-    ],
+      { title: '1x', value: 1 }
+    ]
   }),
   beforeDestroy() {
     clearInterval(this.playbackInterval);
@@ -192,7 +192,7 @@ export default {
       this.setPlayStop();
     });
 
-    this.$bus.$on('FETCH_HISTORICAL', (dt) => {
+    this.$bus.$on('FETCH_HISTORICAL', dt => {
       setTimeout(() => {
         this.progress = dt.hour * 60 + dt.minute;
       }, 1000);
@@ -223,7 +223,7 @@ export default {
       this.playButtonIcon = 'mdi-play';
       this.$store.commit('bluetooth/SET_PLAY_STATE', 'stop');
       this.$bus.$emit('RESET_TO_SELECTED_TIME');
-    },
+    }
   },
   computed: {
     wazeFull() {
@@ -270,7 +270,7 @@ export default {
           month: selectedDT.getMonth() + 1,
           day: selectedDT.getDate(),
           hour: hours,
-          minute: mins,
+          minute: mins
         });
         return dt;
       } else {
@@ -314,7 +314,7 @@ export default {
       set(value) {
         this.$store.commit('bluetooth/SET_CURRENT_PROGRESS', value);
         this.$bus.$emit('PLAYBACK_PROGRESS_CHANGED', value);
-      },
+      }
     },
     playbackToggle: {
       get() {
@@ -322,7 +322,7 @@ export default {
       },
       set(val) {
         this.$store.commit('bluetooth/SET_PLAYBACK_TOGGLE', val);
-      },
+      }
     },
     ...mapGetters('bluetooth', ['fetchDone']),
     ...mapState(['currentDate']),
@@ -333,9 +333,9 @@ export default {
       'showFullDayAvail',
       'apiLoading',
       'apiData',
-      'modes',
-    ]),
-  },
+      'modes'
+    ])
+  }
 };
 </script>
 

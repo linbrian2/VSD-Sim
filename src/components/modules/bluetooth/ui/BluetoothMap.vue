@@ -48,14 +48,14 @@ export default {
         return this.$store.state.bluetooth.map;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_MAP', val)
+        this.$store.commit('bluetooth/SET_MAP', val);
       }
     },
     position() {
       return this.$store.state.position;
     },
     showLabel() {
-      return this.mapLayerSelection.includes(Constants.LAYER_LABELS)
+      return this.mapLayerSelection.includes(Constants.LAYER_LABELS);
     },
     ...mapState('bluetooth', ['mapLayerSelection'])
   },
@@ -67,8 +67,7 @@ export default {
       });
     },
     showLabel() {
-      console.log("asdf");
-      this.loadPage()
+      this.loadPage();
     }
   },
 
@@ -85,13 +84,13 @@ export default {
 
   methods: {
     loadPage() {
-      let darkMode = this.$vuetify.theme.dark
+      let darkMode = this.$vuetify.theme.dark;
       if (this.$refs.mapRef == null) {
         return;
       }
       if (darkMode && this.$refs.mapRef) {
-        let style = DarkMapStyle
-        if (style.length > 16) style.splice(16)
+        let style = DarkMapStyle;
+        if (style.length > 16) style.splice(16);
 
         if (!this.showLabel) Constants.MAP_DISABLED_LABELS.forEach(x => style.push(x));
         else Constants.MAP_ENABLED_LABELS.forEach(x => style.push(x));
@@ -99,12 +98,12 @@ export default {
           map.setOptions({ styles: style });
         });
       } else {
-        let style = []
-        if (style.length > 16) style.splice(16)
-        
+        let style = [];
+        if (style.length > 16) style.splice(16);
+
         if (!this.showLabel) Constants.MAP_DISABLED_LABELS.forEach(x => style.push(x));
         else Constants.MAP_ENABLED_LABELS.forEach(x => style.push(x));
-        if (style.length > 16) style.splice(16)
+        if (style.length > 16) style.splice(16);
         this.$refs.mapRef.$mapPromise.then(map => {
           map.setOptions({ styles: style });
         });

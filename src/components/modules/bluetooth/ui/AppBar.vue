@@ -50,23 +50,23 @@ export default {
   }),
   computed: {
     map() {
-      return this.$store.state.bluetooth.map
+      return this.$store.state.bluetooth.map;
     },
     autoUpdate: {
       get() {
-        return this.$store.state.bluetooth.autoUpdate
+        return this.$store.state.bluetooth.autoUpdate;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_AUTO_UPDATE', val)
-      },
+        this.$store.commit('bluetooth/SET_AUTO_UPDATE', val);
+      }
     },
     showFullDayAvail: {
       get() {
-        return this.$store.state.bluetooth.showFullDayAvail
+        return this.$store.state.bluetooth.showFullDayAvail;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_FULL_DAY_AVAIL', val)
-      },
+        this.$store.commit('bluetooth/SET_FULL_DAY_AVAIL', val);
+      }
     },
     ...mapState(['currentDate'])
   },
@@ -84,7 +84,7 @@ export default {
           this.map.setZoom(9);
           break;
         case 3:
-          this.$store.commit('SET_CURRENT_DATE', new Date())
+          this.$store.commit('SET_CURRENT_DATE', new Date());
           break;
         case 4:
           {

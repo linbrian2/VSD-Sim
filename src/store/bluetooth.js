@@ -56,7 +56,7 @@ const state = {
 const getters = {
   fetchDone: state => {
     return Object.values(state.apiData).filter(x => !x).length == 0;
-  },
+  }
 };
 
 const mutations = {

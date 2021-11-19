@@ -28,8 +28,8 @@ export default {
     };
   },
   mounted() {
-    if (this.$route.name != "Dashboard ") {
-      this.fetchData(true, true)
+    if (this.$route.name != 'Dashboard ') {
+      this.fetchData(true, true);
     }
     this.time = new Date();
     if (this.currentDate) {
@@ -79,12 +79,16 @@ export default {
       }
     },
     isWazeMarkers() {
-      return this.mapLayerSelection.includes(Constants.LAYER_WAZE) && 
-        !this.mapLayerSelection.includes(Constants.LAYER_GROUPED_WAZE);
+      return (
+        this.mapLayerSelection.includes(Constants.LAYER_WAZE) &&
+        !this.mapLayerSelection.includes(Constants.LAYER_GROUPED_WAZE)
+      );
     },
     isWazeClusters() {
-      return this.mapLayerSelection.includes(Constants.LAYER_WAZE) && 
-        this.mapLayerSelection.includes(Constants.LAYER_GROUPED_WAZE);
+      return (
+        this.mapLayerSelection.includes(Constants.LAYER_WAZE) &&
+        this.mapLayerSelection.includes(Constants.LAYER_GROUPED_WAZE)
+      );
     },
     filteredDeviceMarkers() {
       if (this.deviceLayerSelection && this.deviceMarkers) {
@@ -156,7 +160,7 @@ export default {
       if (this.firstFullDayAPICall) {
         this.$store.commit('bluetooth/SET_API_DATA', { prop: 'allFull', data: null });
         if (this.isToday) {
-          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'all', data: true})
+          this.$store.commit('bluetooth/SET_API_LOADING', { prop: 'all', data: true });
           Api.initFullDay().then(
             res => {
               if (res) {
@@ -176,7 +180,7 @@ export default {
             }
           );
         } else if (!this.isToday && this.playbackToggle) {
-          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'all', data: true})
+          this.$store.commit('bluetooth/SET_API_LOADING', { prop: 'all', data: true });
           this.getFullDaySegment(dt);
           this.getFullDayWaze(dt);
           this.getFullDayDevice(dt);
@@ -198,7 +202,7 @@ export default {
       Api.fetchSegmentsFull(dt).then(
         data => {
           this.$store.commit('bluetooth/SET_API_DATA', { prop: 'segmentsFull', data: data });
-          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'segmentsFull', data: false})
+          this.$store.commit('bluetooth/SET_API_LOADING', { prop: 'segmentsFull', data: false });
         },
         error => {
           console.log(error);
@@ -209,7 +213,7 @@ export default {
       Api.fetchWazeDataFull(dt).then(
         data => {
           this.$store.commit('bluetooth/SET_API_DATA', { prop: 'wazeFull', data: data });
-          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'wazeFull', data: false})
+          this.$store.commit('bluetooth/SET_API_LOADING', { prop: 'wazeFull', data: false });
         },
         error => {
           console.log(error);
@@ -220,7 +224,7 @@ export default {
       Api.fetchDevicesFull(dt).then(
         data => {
           this.$store.commit('bluetooth/SET_API_DATA', { prop: 'devicesFull', data: data });
-          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'devicesFull', data: false})
+          this.$store.commit('bluetooth/SET_API_LOADING', { prop: 'devicesFull', data: false });
         },
         error => {
           console.log(error);
@@ -340,7 +344,6 @@ export default {
           parseInt(timeSplit[1])
         );
         this.$store.commit('SET_CURRENT_DATE', newDate);
-        console.log(`New Time Selected: ${this.time}`);
         this.time = this.currentDate;
         this.timePickerMenu = false;
       }

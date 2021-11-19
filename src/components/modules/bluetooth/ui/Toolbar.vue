@@ -140,7 +140,7 @@ export default {
       { title: 'Congestion', icon: 'mdi-car-multiple', id: Constants.DIALOG_CONGESTION },
       { title: 'Waze Alerts', icon: 'mdi-waze', id: Constants.DIALOG_WAZE },
       { title: 'Traffic Flow Detectors', icon: 'mdi-leak', id: Constants.DIALOG_DEVICES },
-      { title: 'Bluetooth Sensors', icon: 'mdi-bluetooth-connect', id: Constants.DIALOG_BLUETOOTH_SENSORS },
+      { title: 'Bluetooth Sensors', icon: 'mdi-bluetooth-connect', id: Constants.DIALOG_BLUETOOTH_SENSORS }
     ],
     layerItems: [
       { title: 'Congestion', id: Constants.LAYER_CONGESTION },
@@ -205,7 +205,7 @@ export default {
       }
     },
     menuItemClicked(type) {
-      this.$store.commit('bluetooth/SET_DIALOG', type)
+      this.$store.commit('bluetooth/SET_DIALOG', type);
     },
     layerItemClicked(e, id) {
       console.log(`Layer clicked (ID: ${id})`);

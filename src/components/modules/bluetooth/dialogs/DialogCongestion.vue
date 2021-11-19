@@ -95,12 +95,12 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.openDialog = false
-      this.dialog = Constants.DIALOG_NONE
+      this.openDialog = false;
+      this.dialog = Constants.DIALOG_NONE;
     },
     viewGraph(item) {
-      this.$store.commit('bluetooth/SET_SELECTED_SEG', {prop: 'data', data:item.data})
-      this.$store.commit('bluetooth/SET_TT_DIALOG', true)
+      this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'data', data: item.data });
+      this.$store.commit('bluetooth/SET_TT_DIALOG', true);
     },
     menuItemClicked(idx) {
       if (idx == 0) {
@@ -120,7 +120,7 @@ export default {
     },
     viewItem(item) {
       this.$bus.$emit('GO_TO_SEGMENT_LOCATION', item.data);
-      this.closeDialog()
+      this.closeDialog();
     },
     filterByRoute(segments) {
       let selectedRoutes = this.selectedRoutes;
@@ -139,7 +139,7 @@ export default {
   watch: {
     dialog(val) {
       if (val == Constants.DIALOG_CONGESTION) {
-        this.openDialog = true
+        this.openDialog = true;
       }
     }
   },
@@ -193,10 +193,10 @@ export default {
     },
     dialog: {
       get() {
-        return this.$store.state.bluetooth.dialog
+        return this.$store.state.bluetooth.dialog;
       },
       set(val) {
-        this.$store.commit('bluetooth/SET_DIALOG', val)
+        this.$store.commit('bluetooth/SET_DIALOG', val);
       }
     },
     ...mapState('bluetooth', ['selectedRoutes'])
