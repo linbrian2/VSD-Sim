@@ -22,7 +22,6 @@ export const RouterNames = {
 
   BLUETOOTH_DASHBOARD: 'Dashboard ',
   BLUETOOTH_MULTIGRAPH: 'Multigraph',
-  BLUETOOTH_BREAKDOWNPROB: 'Breakdown Probability',
 
   CAV_DASHBOARD: 'Trip Data',
   CAV_STATUS: 'Trip Status',
@@ -65,7 +64,6 @@ export const RouterPaths = {
   BLUETOOTH_ROOT: '/bluetooth',
   BLUETOOTH_DASHBOARD: '/bluetooth/dash',
   BLUETOOTH_MULTIGRAPH: '/bluetooth/multigraph',
-  BLUETOOTH_BREAKDOWNPROB: '/bluetooth/breakdown',
 
   CAV_ROOT: '/cav',
   CAV_DASHBOARD: '/cav/trip',

@@ -18,15 +18,6 @@
         </template>
         <span>Multigraph</span>
       </v-tooltip>
-
-      <v-tooltip left>
-        <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(2)" icon v-on="on" @click.stop="showBreakdownProb()">
-            <v-icon>mdi-dice-6</v-icon>
-          </v-btn>
-        </template>
-        <span>Breakdown Probability</span>
-      </v-tooltip>
     </div>
     <v-divider vertical />
   </Header>
@@ -46,17 +37,15 @@ export default {
     title: AppConstants.BLUETOOTH_APP_TITLE,
     action_menu_items: [
       { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD },
-      { title: RouterNames.BLUETOOTH_MULTIGRAPH, url: RouterPaths.BLUETOOTH_MULTIGRAPH },
-      { title: RouterNames.BLUETOOTH_BREAKDOWNPROB, url: RouterPaths.BLUETOOTH_BREAKDOWNPROB }
+      { title: RouterNames.BLUETOOTH_MULTIGRAPH, url: RouterPaths.BLUETOOTH_MULTIGRAPH }
     ],
     menu_items: [
       { title: 'Dashboard', action: 0 },
       { title: 'Multi-graph', action: 1 },
-      { title: 'Breakdown Probability', action: 2 },
-      { title: 'Reset Map', action: 3 },
-      { title: 'Reset Date/Time', action: 4 },
-      { title: 'Toggle Auto-update', action: 5 },
-      { title: 'Toggle Full Day Availability Icons', action: 6 }
+      { title: 'Reset Map', action: 2 },
+      { title: 'Reset Date/Time', action: 3 },
+      { title: 'Toggle Auto-update', action: 4 },
+      { title: 'Toggle Full Day Availability Icons', action: 5 }
     ]
   }),
   computed: {
@@ -91,16 +80,13 @@ export default {
           this.showMultigraph();
           break;
         case 2:
-          this.showBreakdownProb();
-          break;
-        case 3:
           this.map.setCenter({ lat: 39.14, lng: -75.5 });
           this.map.setZoom(9);
           break;
-        case 4:
+        case 3:
           this.$store.commit('SET_CURRENT_DATE', new Date())
           break;
-        case 5:
+        case 4:
           {
             let notifText = 'Auto-update enabled.';
             if (this.autoUpdate) {
@@ -110,7 +96,7 @@ export default {
             this.autoUpdate = !this.autoUpdate;
           }
           break;
-        case 6:
+        case 5:
           this.showFullDayAvail = !this.showFullDayAvail;
           break;
         default:
@@ -124,8 +110,6 @@ export default {
           return this.$route.name === RouterNames.BLUETOOTH_DASHBOARD ? 'orange' : 'teal';
         case 1:
           return this.$route.name === RouterNames.BLUETOOTH_MULTIGRAPH ? 'orange' : 'teal';
-        case 2:
-          return this.$route.name === RouterNames.BLUETOOTH_BREAKDOWNPROB ? 'orange' : 'teal';
       }
     },
 
@@ -139,10 +123,6 @@ export default {
 
     showMultigraph() {
       this.switchTo(RouterPaths.BLUETOOTH_MULTIGRAPH);
-    },
-
-    showBreakdownProb() {
-      this.switchTo(RouterPaths.BLUETOOTH_BREAKDOWNPROB);
     }
   }
 };
