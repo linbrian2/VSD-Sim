@@ -26,6 +26,18 @@
       </v-col>
     </v-row>
 
+    <v-row v-if="isVisible('timeline')" id="timeline">
+      <v-col cols="12">
+        <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Timeline</h3></v-subheader>
+        <v-divider />
+      </v-col>
+      <v-col cols="12">
+        <div class="mx-4">
+          <IncidentTimeline :items="incidentTimelineSeries" ref="incidentTimeline" />
+        </div>
+      </v-col>
+    </v-row>
+
     <v-row v-if="isVisible('flow')" id="flow">
       <v-col cols="12">
         <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Traffic Flow</h3></v-subheader>
@@ -158,6 +170,7 @@ import WazeInfo from '@/components/modules/traffic/common/WazeInfo';
 import RestrictionInfo from '@/components/modules/traffic/common/RestrictionInfo';
 import SegmentHeader from '@/components/modules/traffic/incident/SegmentHeader';
 import TrafficAlertInfo from '@/components/modules/traffic/incident/TrafficAlertInfo';
+import IncidentTimeline from '@/components/modules/traffic/incident/IncidentTimeline';
 import TrafficFlowData from '@/components/modules/traffic/incident/TrafficFlowData';
 import TravelTimeData from '@/components/modules/traffic/incident/TravelTimeData';
 import IncidentVideoList from '@/components/modules/traffic/incident/IncidentVideoList';
@@ -177,6 +190,7 @@ export default {
     RestrictionInfo,
     TrafficAlertInfo,
     SegmentHeader,
+    IncidentTimeline,
     IncidentVideoList
   },
   data: () => ({
@@ -187,11 +201,14 @@ export default {
       { key: 'restrictions', value: 'Restrictions', id: 4 },
       { key: 'alerts', value: 'Traffic Alerts', id: 5 },
       { key: 'video', value: 'Traffic Videos', id: 6 },
-      { key: 'weather', value: 'Weather', id: 7 }
+      { key: 'weather', value: 'Weather', id: 7 },
+      { key: 'timeline', value: 'Timeline', id: 8 }
     ],
     items: [],
 
     tab: null,
+
+    incidentTimelineSeries: [],
 
     flowInfoList: [],
     travelTimeInfoList: [],
@@ -317,6 +334,8 @@ export default {
       }
 
       switch (name) {
+        case 'timeline':
+          return this.incidentTimelineSeries.length > 0;
         case 'flow':
           return this.filteredDevices.length > 0;
         case 'travelTime':
@@ -336,7 +355,7 @@ export default {
       return true;
     },
 
-    removeTabByName(name) {
+    removeSectionByName(name) {
       const e = this.items.findIndex(item => item.key === name);
       if (e >= 0) {
         this.items.splice(e, 1);
@@ -442,10 +461,11 @@ export default {
 
       this.incidentScore = incident.severity;
       this.severityColor = incident.severityColor;
+      this.incidentTimelineSeries = incident.timeline;
 
       // Update tab visibility
       if (this.flowInfoList.length === 0) {
-        this.removeTabByName('flow');
+        this.removeSectionByName('flow');
       } else {
         // Update chart display
         this.time = new Date(this.incident.startTime);
@@ -453,7 +473,7 @@ export default {
       }
 
       if (this.travelTimeInfoList.length === 0) {
-        this.removeTabByName('travelTime');
+        this.removeSectionByName('travelTime');
       } else {
         // Update chart display
         const i = travelTimes[0].data;
@@ -462,26 +482,26 @@ export default {
       }
 
       if (this.wazeAlerts.length === 0) {
-        this.removeTabByName('waze');
+        this.removeSectionByName('waze');
       }
 
       if (this.restrictions.length === 0) {
-        this.removeTabByName('restrictions');
+        this.removeSectionByName('restrictions');
       }
 
       if (this.alerts.length === 0) {
-        this.removeTabByName('alerts');
+        this.removeSectionByName('alerts');
       }
 
       if (this.videos.length === 0) {
-        this.removeTabByName('video');
+        this.removeSectionByName('video');
       }
 
       // Setup weather tab
       if (weather) {
         this.weatherInfo = this.formWeatherInfoData(weather.data);
       } else {
-        this.removeTabByName('weather');
+        this.removeSectionByName('weather');
       }
 
       if (this.items.length > 0) {

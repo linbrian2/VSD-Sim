@@ -13,26 +13,42 @@
 
     <TitleBar title="INCIDENT LIST" :loading="loading" :refresh="refreshData">
       <div class="d-flex justify-space-between">
-        <div class="d-flex justify-space-between ml-15 mt-2 mr-6">
+        <div class="d-flex justify-space-between ml-15 mt-2 mr-15">
           <div class="font-weight-bold overline ml-3">totally {{ totalIncidents }} incidents</div>
           <v-btn small icon @click.stop="showIncidentTable = !showIncidentTable">
             <v-icon color="green" v-if="showIncidentTable">mdi-chevron-up</v-icon>
             <v-icon color="green" v-else>mdi-chevron-down</v-icon>
           </v-btn>
         </div>
-        <v-btn small outlined class="mt-2" color="white" @click.stop="showIncidentTimeline = !showIncidentTimeline">
-          <v-icon left color="light-green accent-3">mdi-timetable</v-icon>
-          <span>Timeline</span>
-        </v-btn>
 
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn class="mt-1" icon v-on="on" @click.stop="showSettings = !showSettings">
-              <v-icon medium color="white">mdi-cog-outline</v-icon>
-            </v-btn>
-          </template>
-          <span>Settings</span>
-        </v-tooltip>
+        <div class="d-flex justify-space-between" style="width: 150px;">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn class="mt-1" icon v-on="on" @click.stop="displaySearchSettings">
+                <v-icon medium color="white">mdi-magnify</v-icon>
+              </v-btn>
+            </template>
+            <span>Global Search</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn class="mt-1" icon v-on="on" @click.stop="showIncidentTimeline = !showIncidentTimeline">
+                <v-icon medium>mdi-timetable</v-icon>
+              </v-btn>
+            </template>
+            <span>Timeline</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn class="mt-1" icon v-on="on" @click.stop="showSettings = !showSettings">
+                <v-icon medium color="white">mdi-cog-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Settings</span>
+          </v-tooltip>
+        </div>
       </div>
     </TitleBar>
 
@@ -63,6 +79,7 @@
       </div>
     </v-container>
     <IncidentSettings v-model="showSettings" ref="settings" />
+    <GlobalSearchDialog v-model="showSearch" ref="search" @handler="searchStarted" />
   </div>
 </template>
 
@@ -76,6 +93,7 @@ import MapSegment from '@/components/modules/traffic/incident/MapSegment';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import IncidentTable from '@/components/modules/traffic/incident/IncidentTable';
 import IncidentSettings from '@/components/modules/traffic/incident/IncidentSettings';
+import GlobalSearchDialog from '@/components/modules/traffic/incident/GlobalSearchDialog';
 import IncidentHeatMapChart from '@/components/modules/traffic/incident/IncidentHeatMapChart';
 import EvidenceListDisplay from '@/components/modules/traffic/incident/EvidenceListDisplay';
 
@@ -86,6 +104,7 @@ export default {
     SelectionPanel,
     IncidentTable,
     IncidentSettings,
+    GlobalSearchDialog,
     IncidentHeatMapChart,
     EvidenceListDisplay
   },
@@ -96,6 +115,7 @@ export default {
     showIncidentTable: true,
     showIncidentTimeline: false,
     showSettings: false,
+    showSearch: false,
 
     segments: [],
     markers: [],
@@ -160,6 +180,16 @@ export default {
           this.$refs.anomalySegmentDisplay.selectEvidenceItem(type, item);
         }
       }
+    },
+
+    displaySearchSettings() {
+      this.$refs.search.init();
+      this.showSearch = true;
+    },
+
+    searchStarted(data) {
+      const { startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit } = data;
+      this.searchIncidentData(startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit);
     },
 
     singleSegmentSelected(linkId) {
@@ -246,6 +276,37 @@ export default {
       try {
         const start = startTime.getTime();
         const response = await Api.fetchIncidentData(start, 1, severity, duration);
+        const data = this.getResponseData(response);
+        if (data) {
+          this.incidents = data;
+          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.segments = this.createTotalSegments();
+        } else {
+          this.incidents = [];
+          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.segments = [];
+        }
+        this.incidentItem = null;
+      } catch (error) {
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+      }
+      this.loading = false;
+    },
+
+    async searchIncidentData(startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit) {
+      this.loading = true;
+      try {
+        const response = await Api.searchIncidentData(
+          startDate,
+          endDate,
+          route,
+          region,
+          severity,
+          duration,
+          blockage,
+          detourNeeded,
+          limit
+        );
         const data = this.getResponseData(response);
         if (data) {
           this.incidents = data;

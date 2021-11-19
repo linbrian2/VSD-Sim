@@ -71,8 +71,12 @@ export default {
           }
 
           const offset = this.barHeight;
-          const P2 = this.composeCycleSeries(h, item.P2, -offset);
-          const P6 = this.composeCycleSeries(h, item.P6, offset);
+
+          // North bound
+          const P2 = this.composeCycleSeries(h, item.P2, -offset, 'rgba(0,118,230,0.9)');
+
+          // South bound
+          const P6 = this.composeCycleSeries(h, item.P6, offset, '#76FF03');
 
           P2s.push(P2);
           P6s.push(P6);
@@ -84,19 +88,20 @@ export default {
         const startIdx = 0;
         const SPEED = this.speed / 2.237; // (m/s)
 
-        // P6 - South Bound
+        // P6 - South Bound (green-ish)
         for (let i = startIdx + 1; i < P6s.length; i++) {
           const t = Math.round((dists[i] * 1000) / SPEED);
-          const B = this.findThroughputBand(P6s[i - 1], P6s[i], t, 'SB');
+          const B = this.findThroughputBand(P6s[i - 1], P6s[i], t, 'SB', 'rgba(0,230,118,0.5)');
           if (B.length > 0) {
             series = series.concat(B);
           }
         }
 
-        // P2 - North Bound
+        // P2 - North Bound (blue-ish)
         for (let i = P2s.length - 1; i > startIdx; i--) {
+          // Calculate the time used to travel from one intersection to another intersection in milliseconds
           const t = Math.round((dists[i] * 1000) / SPEED);
-          const B = this.findThroughputBand(P2s[i], P2s[i - 1], t, 'NB');
+          const B = this.findThroughputBand(P2s[i], P2s[i - 1], t, 'NB', 'rgba(0,118,230,0.5)');
           if (B.length > 0) {
             series = series.concat(B);
           }
@@ -108,12 +113,10 @@ export default {
       return { series, categories, ticks, start };
     },
 
-    findThroughputBand(startPolygonList, endPolygonList, dt, direction) {
+    findThroughputBand(startPolygonList, endPolygonList, dt, direction, color) {
       const result = [];
 
       if (startPolygonList.length > 0 && endPolygonList.length > 0) {
-        const color = direction === 'NB' ? 'rgba(0,118,230,0.5)' : 'rgba(0,230,118,0.5)';
-
         // For all green bands in the polygon list
         const v0 = startPolygonList.filter(polygon => polygon.name.startsWith('G')).map(polygon => polygon.data);
         const v1 = endPolygonList.filter(polygon => polygon.name.startsWith('G')).map(polygon => polygon.data);
@@ -128,92 +131,117 @@ export default {
           let startT = v0[i][0][0];
           let endT = v0[i][1][0];
 
-          const band = this.createBand(startT, endT, dt, segments);
-          if (band.length === 4) {
-            result.push(
-              this.createPolygon('B' + i, color, 1, [
-                [band[0], h0],
-                [band[1], h1],
-                [band[3], h3],
-                [band[2], h2]
-              ])
-            );
-          }
+          const bands = this.createBands(startT, endT, dt, segments);
+          bands.forEach(band => {
+            if (band.length === 4) {
+              result.push(
+                this.createPolygon('B' + i, color, 1, [
+                  { x: band[0], y: h0, id: '1' },
+                  { x: band[1], y: h1, id: '2' },
+                  { x: band[3], y: h3, id: '3' },
+                  { x: band[2], y: h2, id: '4' }
+                ])
+              );
+            }
+          });
         }
       }
 
       return result;
     },
 
-    createBand(startT, endT, dt, segments) {
+    createBands(startT, endT, dt, segments) {
       // Compose band
       // ---- t0 ----- t1 -----
       //       |        |
       //       |        |
       //------t2 ----- t3 -----
       //
-      let t0 = startT;
-      let t1 = endT;
-      let t2 = t0 + dt;
-      let t3 = t1 + dt;
-
-      // Initially set all number to be valid
-      const values = [1, 1, 1, 1];
-
-      // Find segment index from the green band segments for t2
-      let segmentIdx = this.getSegmentIndex(t2, segments);
-      if (segmentIdx < 0) {
-        // No direct green band found, we need go to next consecutive band
-        const { idx, t } = this.closestSegmentPoint(t2, segments, 1);
-        if (t === null) {
-          // No any band found, set the number to be invalid
-          values[2] = 0;
-        } else {
-          segmentIdx = idx;
-
-          // Modify the t0 and t2 accordingly
-          t0 = t - dt;
-          t2 = t;
-
-          // Make sure the modified t0 should be within the original band [startT, endT]
-          if (t0 > endT) {
-            values[0] = 0;
-          }
-        }
-      }
-
-      // Find segment index from the green band segments for t3
-      const segmentIdx1 = this.getSegmentIndex(t3, segments);
-      if (segmentIdx1 < 0) {
-        const point = this.closestSegmentPoint(t3, segments, 0);
-        const t = point.t;
-        if (t === null) {
-          // No any band found, set the number to be invalid
-          values[3] = 0;
-        } else {
-          // Modify the t1 and t3 accordingly
-          t1 = t - dt;
-          t3 = t;
-
-          // Make sure the modified t1 should be within the original band [startT, endT]
-          if (t1 > endT) {
-            values[1] = 0;
-          }
-        }
-      } else if (segmentIdx1 != segmentIdx && segmentIdx >= 0) {
-        // Make sure we use the same band
-        t3 = segments[segmentIdx][1];
-        t1 = t3 - dt;
-        if (t1 > endT || t1 < startT) {
-          values[1] = 0;
-        }
-      }
-
-      if (values.every(value => value > 0)) {
-        return [t0, t1, t2, t3];
-      } else {
+      const affectedSegments = this.getSegments(startT + dt, endT + dt, segments);
+      if (affectedSegments.length === 0) {
         return [];
       }
+
+      if (affectedSegments.length === 1) {
+        const band = this.createSingleBand(startT, endT, dt, affectedSegments[0]);
+        if (band.length === 4) {
+          return [band];
+        } else {
+          return [];
+        }
+      }
+
+      return this.createMultipleBands(startT, endT, dt, affectedSegments);
+    },
+
+    createSingleBand(startT, endT, dt, segment) {
+      // Compose band
+      // ---- t0 ----- t1 -----
+      //       |        |
+      //       |        |
+      //------t2 ----- t3 -----
+      //
+      let t2 = segment[0];
+      let t3 = segment[1];
+      let t0 = t2 - dt;
+      let t1 = t3 - dt;
+
+      if (t0 < startT) {
+        t0 = startT;
+        t2 = t0 + dt;
+      }
+
+      if (t1 > endT) {
+        t1 = endT;
+        t3 = t1 + dt;
+      }
+
+      return t1 - t0 > 3000 ? [t0, t1, t2, t3] : [];
+    },
+
+    createMultipleBands(startT, endT, dt, affectedSegments) {
+      // Compose band
+      // ---- t0 ----- t1 -----
+      //       |        |
+      //       |        |
+      //------t2 ----- t3 -----
+      //
+      const result = [];
+      for (let i = 0; i < affectedSegments.length; i++) {
+        let t2 = affectedSegments[i][0];
+        let t3 = affectedSegments[i][1];
+        let t0 = t2 - dt;
+        let t1 = t3 - dt;
+        if (t0 < startT) {
+          t0 = startT;
+          t2 = t0 + dt;
+        }
+        if (t1 > endT) {
+          t1 = endT;
+          t3 = t1 + dt;
+        }
+
+        if (t1 - t0 > 3000) {
+          result.push([t0, t1, t2, t3]);
+        }
+      }
+
+      return result;
+    },
+
+    getSegments(t0, t1, segments) {
+      const result = [];
+      for (let i = 0; i < segments.length; i++) {
+        const s0 = segments[i][0];
+        const s1 = segments[i][1];
+
+        // Check if two ranges [t0, t1] and [s0, s1] overlap
+        if (t0 <= s1 && s0 <= t1) {
+          result.push(segments[i]);
+        }
+      }
+
+      return result;
     },
 
     getSegmentIndex(x, segments) {
@@ -240,7 +268,7 @@ export default {
       return { idx, t };
     },
 
-    composeCycleSeries(h, cycles, offset) {
+    composeCycleSeries(h, cycles, offset, greenColor) {
       let series = [];
       if (cycles) {
         let h1 = h + offset - this.barHeight;
@@ -271,7 +299,7 @@ export default {
           // Green
           if (t1 > 0 && t2 > 0) {
             series.push(
-              this.createPolygon('G' + i, '#00dd00', 10, [
+              this.createPolygon('G' + i, greenColor, 10, [
                 [t1, h1],
                 [t2, h1],
                 [t2, h2],
@@ -303,6 +331,14 @@ export default {
         name,
         color,
         zIndex,
+        data
+      };
+    },
+
+    createArrow(color, data) {
+      return {
+        type: 'line',
+        color,
         data
       };
     },

@@ -9,7 +9,7 @@
 
 <script>
 import AppBar from '@/components/modules/traffic/app/AppBar';
-import { trafficWebsocketUrl } from '@/utils/websocketUrl';
+import { trafficSocketUrl } from '@/utils/websocketUrl';
 
 export default {
   name: 'App',
@@ -33,7 +33,7 @@ export default {
 
   methods: {
     startWebSocket() {
-      this.$store.dispatch('WSConnect', trafficWebsocketUrl);
+      this.$store.dispatch('WSConnect', trafficSocketUrl);
     },
 
     stopWebSocket() {

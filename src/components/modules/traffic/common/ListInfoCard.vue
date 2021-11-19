@@ -1,6 +1,6 @@
 <template>
   <v-card tile min-width="100%" min-height="120px">
-    <v-card-title class="d-flex justify-space-between my-n2 pa-1">
+    <v-card-title class="d-flex justify-space-between my-n2 pa-1 teal darken-2">
       <h5 class="text-center ml-5">{{ info.title }}</h5>
       <div v-if="info.value !== undefined">
         <v-chip small outlined>{{ info.value }}</v-chip>

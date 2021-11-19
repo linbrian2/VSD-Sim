@@ -11,7 +11,7 @@
                 <div>{{ formatTemperature(weather.airTemp, true) }}<sup>°F</sup></div>
               </div>
             </div>
-            <div class="mt-1 updated-text font-italic">Updated: {{ formatDate(weather.dataReceived) }}</div>
+            <div class="mt-n2 updated-text font-italic">Updated: {{ formatDate(weather.dataReceived) }}</div>
           </div>
         </v-card>
       </div>
@@ -176,9 +176,9 @@ export default {
 }
 
 .condition-text {
-  font-size: 23px;
+  font-size: 28px;
   font-weight: bold;
-  text-transform: capitalize;
+  text-transform: uppercase;
   margin-top: 5px;
 }
 

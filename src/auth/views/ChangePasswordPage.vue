@@ -140,9 +140,9 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-.page-login
-  &__card
-  max-width: 600px
-  margin: 0 auto
+<style lang="scss" scoped>
+.page-login__card {
+  max-width: 600px;
+  margin: 0 auto;
+}
 </style>

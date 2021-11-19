@@ -22,7 +22,7 @@
               <v-tab-item v-for="(infoItem, direction, i) in info" :key="10 + i">
                 <v-row>
                   <v-col cols="6" v-for="(item, j) in infoItem" :key="j">
-                    <ListInfoCard :info="item" :extra="direction" />
+                    <ListInfoCard :info="item" :extra="direction" class="mt-1" />
                   </v-col>
                 </v-row>
               </v-tab-item>

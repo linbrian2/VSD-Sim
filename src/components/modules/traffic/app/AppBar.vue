@@ -121,7 +121,7 @@ export default {
     anomaly_menu_items: [
       { title: 'Traffic Flow Map', name: RouterNames.TRAFFIC_ANOMALY },
       { title: 'Travel Time Map', name: RouterNames.TRAVEL_TIME_MAP },
-      { title: 'Historical Incidents', name: RouterNames.TRAFFIC_INCIDENT }
+      { title: 'Traffic Incidents', name: RouterNames.TRAFFIC_INCIDENT }
     ],
 
     action_menu_items: [

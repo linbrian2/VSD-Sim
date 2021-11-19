@@ -4,9 +4,9 @@
       <v-dialog v-model="show" hide-overlay max-width="1000px">
         <v-card>
           <v-toolbar dense flat fixed overflow extension-height="0">
-            <v-toolbar-title>Video Player</v-toolbar-title>
+            <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-toolbar-items>
+            <v-toolbar-items class="ml-6">
               <v-btn icon @click="show = false"><v-icon>mdi-close</v-icon></v-btn>
             </v-toolbar-items>
           </v-toolbar>
@@ -35,7 +35,8 @@ export default {
     }
   },
   data: () => ({
-    url: ''
+    url: '',
+    title: 'Video Player'
   }),
   computed: {
     show: {

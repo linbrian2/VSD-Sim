@@ -111,9 +111,9 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-.page
-  &__card
-  max-width: 700px
-  margin: 0 auto
+<style lang="scss" scoped>
+.page__card {
+  max-width: 700px;
+  margin: 0 auto;
+}
 </style>

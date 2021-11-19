@@ -174,6 +174,20 @@ export default {
     return AxiosClient.post('api/incidents', { start, type, video, severity, duration });
   },
 
+  searchIncidentData(startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit) {
+    return AxiosClient.post('api/searchIncidents', {
+      startDate,
+      endDate,
+      route,
+      region,
+      severity,
+      duration,
+      blockage,
+      detourNeeded,
+      limit
+    });
+  },
+
   fetchMdistParameters(deviceId, direction, time) {
     return AxiosClient.post('api/mdistParameters', { deviceId, direction, time });
   },
