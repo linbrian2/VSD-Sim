@@ -25,15 +25,16 @@
 
       <v-spacer></v-spacer>
       <div v-if="showDate">
-        <MenuDatePicker :date="currentDate" />
+        <MenuDatePicker :date="currentDate" :disable="playbackToggle" />
       </div>
       <div>
         <v-tooltip right>
           <template v-slot:activator="{ on, attrs }">
             <v-chip
+              :disabled="playbackToggle"
               v-bind="attrs"
               v-on="on"
-              @click="$store.state.bluetooth.timePickerMenu = !$store.state.bluetooth.timePickerMenu"
+              @click="toggleTimePickerMenu"
               small
               outlined
               class="overline"
@@ -127,7 +128,7 @@ export default {
     },
 
     timeRemaining() {
-      if (this.$store.state.bluetooth.autoUpdate) {
+      if (this.autoUpdate) {
         let min = 5 - Math.ceil(this.timeSinceUpdate / 60);
         let sec = 60 - (this.timeSinceUpdate % 60);
         if (sec == 60) sec = 0;
@@ -137,23 +138,27 @@ export default {
       }
     },
     ...mapState(['currentDate', 'darkMode']),
-    ...mapState('bluetooth', ['timeSinceUpdate'])
+    ...mapState('bluetooth', ['timeSinceUpdate', 'playbackToggle', 'timePickerMenu', 'autoUpdate'])
   },
 
   watch: {
     darkMode(value) {
       this.$vuetify.theme.dark = value;
       this.setHighChartsTheme(value);
-      this.$bus.$emit('UPDATE_DARK_MODE', value);
+      this.$bus.$emit('UPDATE_DARK_MODE');
     }
   },
 
   mounted() {
-    this.$vuetify.theme.dark = this.$store.state.darkMode;
-    this.setHighChartsTheme(this.$store.state.darkMode);
+    this.$vuetify.theme.dark = this.darkMode;
+    this.setHighChartsTheme(this.darkMode);
   },
 
   methods: {
+    toggleTimePickerMenu() {
+      this.$store.commit('bluetooth/SET_TIMEPICKER_MENU', !this.timePickerMenu)
+    },
+
     showDrawer() {
       this.$store.commit('SHOW_DRAWER', true);
     },

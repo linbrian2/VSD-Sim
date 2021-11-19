@@ -1,13 +1,13 @@
 <template>
   <div class="multigraph">
     <v-container fluid style="max-width: 85%">
-      <v-card class="rounded-0 elevation-5" :loading="segments.length == 0" style="height: 90vh; overflow-y: auto;">
+      <v-card class="rounded-0 elevation-5" :loading="loadingData" style="height: 90vh; overflow-y: auto;">
         <v-card-title>Multigraph</v-card-title>
         <v-card-text class="mb-10">
           <v-container fluid>
             <div style="display: flex">
               <v-autocomplete
-                v-model="$store.state.bluetooth.segGraph"
+                v-model="segGraph"
                 dense
                 :items="segments"
                 :loading="isLoading"
@@ -35,9 +35,9 @@
                 <span>Map Add</span>
               </v-tooltip>
               <!-- Add Using Filters -->
-              <MenuPopover />
+              <MGFilterMenu />
               <!-- Options Button -->
-              <OptionsMenu />
+              <MGOptionsMenu />
               <!-- Clear Button -->
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
@@ -49,13 +49,13 @@
               </v-tooltip>
             </div>
           </v-container>
-          <v-container v-if="$store.state.bluetooth.segGraph" fluid>
+          <v-container v-if="segGraph" fluid>
             <v-row>
               <v-col
                 :cols="col[0]"
                 :lg="col[1]"
                 :xl="col[2]"
-                v-for="(s, i) in $store.state.bluetooth.segGraph"
+                v-for="(s, i) in segGraph"
                 :key="s.id"
               >
                 <!-- Current & Baseline travel time found -->
@@ -65,7 +65,7 @@
                     :currData="s.data.currTT"
                     :interval="5"
                     :minWidth="320"
-                    :height="$store.state.bluetooth.prefs.multiGraph.graphHeight"
+                    :height="prefs.multiGraph.graphHeight"
                     :title="s.info.description"
                     :subtitle="null"
                     :containerName="`container-${i}`"
@@ -76,7 +76,7 @@
                     :visibility="[false, false, true, true, false, false, false]"
                   />
                   <div id="buttons">
-                    <v-row v-if="$store.state.bluetooth.prefs.multiGraph.showButtons">
+                    <v-row v-if="prefs.multiGraph.showButtons">
                       <v-col cols="6" class="pt-1 pr-1 pb-0">
                         <v-btn @click="viewAdditionalInfo(s)" block dense>Additional Info</v-btn>
                       </v-col>
@@ -86,7 +86,7 @@
                     </v-row>
                   </div>
                 </v-card>
-                <v-card :height="$store.state.bluetooth.prefs.multiGraph.graphHeight + 40" loading v-else> </v-card>
+                <v-card :height="prefs.multiGraph.graphHeight + 40" loading v-else> </v-card>
               </v-col>
             </v-row>
           </v-container>
@@ -101,14 +101,14 @@ import { mapState } from 'vuex';
 import { RouterPaths } from '@/utils/constants/router';
 import Api from '@/utils/api/bluetooth.js';
 import AreaRangeChart from '@/components/modules/bluetooth/graphs/AreaRangeChart';
-import MenuPopover from '@/components/modules/bluetooth/ui/MenuPopover.vue';
-import OptionsMenu from '@/components/modules/bluetooth/ui/OptionsMenu.vue';
+import MGFilterMenu from '@/components/modules/bluetooth/ui/MGFilterMenu.vue';
+import MGOptionsMenu from '@/components/modules/bluetooth/ui/MGOptionsMenu.vue';
 
 export default {
   components: {
     AreaRangeChart,
-    MenuPopover,
-    OptionsMenu,
+    MGFilterMenu,
+    MGOptionsMenu,
   },
   data: () => ({
     reload: false,
@@ -123,6 +123,15 @@ export default {
     ],
   }),
   mounted() {
+    let newSegs = this.segGraph
+    let segsToAdd = [];
+    newSegs.forEach(seg => {
+      segsToAdd.push(seg);
+    });
+    if (segsToAdd.length > 0) {
+      this.fetchTTData(segsToAdd);
+    }
+
     this.$bus.$on('SUBMIT_MULTIGRAPH_FILTERS', (filters) => {
       this.processFilters(filters);
     });
@@ -133,24 +142,24 @@ export default {
       this.processSegments(segsList);
     });
     this.$bus.$on('SEGMENTS_UPDATE', () => {
-      let segGraphCopy = JSON.parse(JSON.stringify(this.$store.state.bluetooth.segGraph));
+      let segGraphCopy = JSON.parse(JSON.stringify(this.segGraph));
       this.clearAll();
-      this.$store.state.bluetooth.segGraph = segGraphCopy;
+      this.segGraph = segGraphCopy;
     });
   },
   methods: {
     goToMapLocation(segment) {
       this.$bus.$emit('GO_TO_SEGMENT_LOCATION', segment);
-      this.$store.state.bluetooth.map.setZoom(14);
+      this.map.setZoom(14);
       this.$store.commit('bluetooth/SET_SELECTED_PAGE', 0);
     },
     viewAdditionalInfo(segment) {
       this.$store.state.bluetooth.selectedSeg.data = segment;
-      this.$store.state.bluetooth.dialog.tt = true;
+      this.$store.commit('bluetooth/SET_TT_DIALOG', true)
     },
     processSegments(segsList) {
       setTimeout(() => {
-        this.$store.state.bluetooth.segGraph = segsList;
+        this.segGraph = segsList;
       }, 1);
     },
     processOptions(ops) {
@@ -162,8 +171,24 @@ export default {
         this.reload = false;
       }, 1);
     },
+    filterByRoute(segments, filterRoutes) {
+      if (filterRoutes && filterRoutes.length > 0) {
+        let arr = segments.filter(x => {
+          for (let i = 0; i < filterRoutes.length; i++) {
+            if (filterRoutes[i] == x.info.route) {
+              return true
+            }
+          }
+          return false
+        });
+        return arr
+      } else {
+        return segments
+      }
+    },
     processFilters(filters) {
-      let segmentsFilt = this.segments.filter((s) => {
+      let filteredRouteSegments = this.filterByRoute(this.segments, filters.routes)
+      let filteredSegments = filteredRouteSegments.filter((s) => {
         let isValid = false;
         filters.levels.forEach((level) => {
           if (s.travelTime.level == level) {
@@ -174,13 +199,13 @@ export default {
         return isValid;
       });
       let segments = [];
-      segmentsFilt.forEach((s) => {
+      filteredSegments.forEach((s) => {
         segments.push(s);
       });
-      this.$store.state.bluetooth.segGraph = segments;
+      this.segGraph = segments;
     },
     clearAll() {
-      this.$store.state.bluetooth.segGraph = [];
+      this.segGraph = [];
     },
     addFromMap() {
       this.$store.state.bluetooth.modes.addFromMap = true;
@@ -191,42 +216,58 @@ export default {
       let seg = segsToAdd.shift();
       let linkId = seg.info.linkId;
       let dt = this.currentDate;
-      Api.fetchCurrTTByLinkId(linkId, dt.valueOf()).then(
-        (currData) => {
-          Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(
-            (histData) => {
+      Api.fetchCurrTTByLinkId(linkId, dt.valueOf()).then(currData => {
+          Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(histData => {
               if (seg) {
                 this.$set(seg, 'data', {
                   currTT: currData,
                   histTT: histData,
                 });
               }
-              if (segsToAdd.length > 0 && this.$store.state.bluetooth.segGraph.length > 0) {
+              if (segsToAdd.length > 0 && this.segGraph.length > 0) {
                 this.fetchTTData(segsToAdd);
               }
-            },
-            (error) => {
+            }, error => {
               console.log(error);
             }
           );
-        },
-        (error) => {
+        }, error => {
           console.log(error);
         }
       );
     },
   },
   computed: {
+    loadingData() {
+      return this.segments.length == 0
+    },
     col() {
-      return this.colCount[this.$store.state.bluetooth.prefs.multiGraph.colCountIdx];
+      return this.colCount[this.prefs.multiGraph.colCountIdx];
     },
     segments() {
       return this.$store.state.bluetooth.apiData.segments || []
     },
+    segGraph: {
+      get() {
+        return this.$store.state.bluetooth.segGraph
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_SEG_GRAPH', val)
+      }
+    },
     ...mapState(['currentDate']),
+    ...mapState('bluetooth', ['map', 'prefs'])
   },
   watch: {
-    '$store.state.bluetooth.segGraph': {
+    loadingData(val, oldVal) {
+      if (oldVal == true && val == false) {
+        this.reload = true;
+        setTimeout(() => {
+          this.reload = false;
+        }, 1);
+      }
+    },
+    segGraph: {
       deep: true,
       handler: function (newVal, oldVal) {
         if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {

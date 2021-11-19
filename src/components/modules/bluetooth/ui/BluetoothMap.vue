@@ -9,15 +9,14 @@
       class="my-map"
       style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
     >
-      <!-- <GmapPolyline :path.sync="segment" :options="segmentOptions" />
-      <GmapMarker :position="startPoint" :clickable="false" :draggable="false" :icon="startIcon" />
-      <GmapMarker :position="endPoint" :clickable="false" :draggable="false" :icon="endIcon" /> -->
     </GmapMap>
   </div>
 </template>
 
 <script>
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
+import Constants from '@/utils/constants/bluetooth';
+import { mapState } from 'vuex';
 
 export default {
   data: () => ({
@@ -44,9 +43,21 @@ export default {
     }
   }),
   computed: {
+    map: {
+      get() {
+        return this.$store.state.bluetooth.map;
+      },
+      set(val) {
+        this.$store.commit('bluetooth/SET_MAP', val)
+      }
+    },
     position() {
       return this.$store.state.position;
-    }
+    },
+    showLabel() {
+      return this.mapLayerSelection.includes(Constants.LAYER_LABELS)
+    },
+    ...mapState('bluetooth', ['mapLayerSelection'])
   },
   watch: {
     position() {
@@ -54,32 +65,48 @@ export default {
         map.panTo(this.position);
         map.setZoom(12);
       });
+    },
+    showLabel() {
+      console.log("asdf");
+      this.loadPage()
     }
   },
 
   mounted() {
     this.$refs.mapRef.$mapPromise.then(map => {
-      this.$store.state.bluetooth.map = map;
+      this.map = map;
     });
 
-    this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
-      this.loadPage(darkMode);
+    this.$bus.$on('UPDATE_DARK_MODE', () => {
+      this.loadPage();
     });
     this.loadPage(this.$vuetify.theme.dark);
   },
 
   methods: {
-    loadPage(darkMode) {
+    loadPage() {
+      let darkMode = this.$vuetify.theme.dark
       if (this.$refs.mapRef == null) {
         return;
       }
       if (darkMode && this.$refs.mapRef) {
+        let style = DarkMapStyle
+        if (style.length > 16) style.splice(16)
+
+        if (!this.showLabel) Constants.MAP_DISABLED_LABELS.forEach(x => style.push(x));
+        else Constants.MAP_ENABLED_LABELS.forEach(x => style.push(x));
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({ styles: DarkMapStyle });
+          map.setOptions({ styles: style });
         });
       } else {
+        let style = []
+        if (style.length > 16) style.splice(16)
+        
+        if (!this.showLabel) Constants.MAP_DISABLED_LABELS.forEach(x => style.push(x));
+        else Constants.MAP_ENABLED_LABELS.forEach(x => style.push(x));
+        if (style.length > 16) style.splice(16)
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({ styles: null });
+          map.setOptions({ styles: style });
         });
       }
     },

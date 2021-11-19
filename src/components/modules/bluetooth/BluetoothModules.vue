@@ -2,7 +2,7 @@
   <div>
     <!-- Time Picker -->
     <v-scroll-x-reverse-transition>
-      <v-card style="position: absolute; top: 0px; left: 61.1%" v-show="$store.state.bluetooth.timePickerMenu">
+      <v-card style="position: absolute; top: 0px; left: 61.1%" v-show="timePickerMenu">
         <v-time-picker v-model="time" scrollable color="green lighten-1">
           <v-spacer></v-spacer>
           <v-btn text color="primary" @click="cancelTimePicker"> Cancel </v-btn>
@@ -14,38 +14,56 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
+import Constants from '@/utils/constants/bluetooth';
 import Api from '@/utils/api/bluetooth.js';
+import Utils from '@/utils/Utils';
 
 export default {
   data() {
     return {
-      time: null
+      time: null,
+      updateInterval: null,
+      firstFullDayAPICall: true
     };
   },
   mounted() {
+    if (this.$route.name != "Dashboard ") {
+      this.fetchData(true, true)
+    }
     this.time = new Date();
     if (this.currentDate) {
       this.time = this.currentDate;
-    }
-    console.log(this.$route.name);
-    if (!this.fetchDone && this.$route.name != 'Dashboard') {
-      this.fetchData(true, true);
     }
 
     this.$bus.$on('CHANGE_BLUETOOTH_TIME', date => {
       this.setTime(date);
     });
+
+    /* Update every 5 minutes*/
+    if (!this.updateInterval) {
+      this.updateInterval = setInterval(() => {
+        if (this.fetchDone && this.autoUpdate) {
+          this.timeSinceUpdate++;
+          if (this.timeSinceUpdate == 300) {
+            this.$store.commit('SET_CURRENT_DATE', new Date());
+          }
+        }
+      }, 1000);
+    }
+  },
+  beforeDestroy() {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
   },
   computed: {
     filteredWazeMarkers() {
-      if (this.$store.state.bluetooth.wazeLayerSelection && this.$store.state.bluetooth.wazeMarkers) {
-        let filteredWazeMarkers = this.$store.state.bluetooth.wazeMarkers.filter(w =>
-          this.$store.state.bluetooth.wazeLayerSelection.includes(w.wazeTypeId)
-        );
+      if (this.wazeLayerSelection && this.wazeMarkers) {
+        let filteredWazeMarkers = this.wazeMarkers.filter(w => this.wazeLayerSelection.includes(w.wazeTypeId));
         return filteredWazeMarkers;
       } else {
-        return this.$store.state.bluetooth.wazeMarkers;
+        return this.wazeMarkers;
       }
     },
     isToday() {
@@ -61,19 +79,68 @@ export default {
       }
     },
     isWazeMarkers() {
-      return this.mapLayerSelection.includes(3) && !this.mapLayerSelection.includes(4);
+      return this.mapLayerSelection.includes(Constants.LAYER_WAZE) && 
+        !this.mapLayerSelection.includes(Constants.LAYER_GROUPED_WAZE);
     },
     isWazeClusters() {
-      return this.mapLayerSelection.includes(3) && this.mapLayerSelection.includes(4);
+      return this.mapLayerSelection.includes(Constants.LAYER_WAZE) && 
+        this.mapLayerSelection.includes(Constants.LAYER_GROUPED_WAZE);
     },
+    filteredDeviceMarkers() {
+      if (this.deviceLayerSelection && this.deviceMarkers) {
+        let filterLevels = [];
+        if (this.deviceLayerSelection.includes(Constants.DEVICES_LOW_TRAFFIC)) {
+          filterLevels.push(-1, 0, 1);
+        }
+        if (this.deviceLayerSelection.includes(Constants.DEVICES_MEDIUM_TRAFFIC)) {
+          filterLevels.push(2, 3, 4);
+        }
+        if (this.deviceLayerSelection.includes(Constants.DEVICES_HIGH_TRAFFIC)) {
+          filterLevels.push(5, 6);
+        }
+        let filteredDeviceMarkers = this.deviceMarkers.filter(w => filterLevels.includes(w.level));
+        return filteredDeviceMarkers;
+      } else {
+        return this.wazeMarkers;
+      }
+    },
+    timePickerMenu: {
+      get() {
+        return this.$store.state.bluetooth.timePickerMenu;
+      },
+      set(menu) {
+        this.$store.commit('bluetooth/SET_TIMEPICKER_MENU', menu);
+      }
+    },
+    timeSinceUpdate: {
+      get() {
+        return this.$store.state.bluetooth.timeSinceUpdate;
+      },
+      set(value) {
+        this.$store.commit('bluetooth/SET_TIME_SINCE_UPDATE', value);
+      }
+    },
+    ...mapGetters('bluetooth', ['fetchDone']),
     ...mapState(['currentDate']),
-    ...mapState('bluetooth', ['mapLayerSelection'])
+    ...mapState('bluetooth', [
+      'map',
+      'mapLayerSelection',
+      'apiData',
+      'wazeLayerSelection',
+      'wazeMarkers',
+      'sensorMarkers',
+      'deviceLayerSelection',
+      'deviceMarkers',
+      'autoUpdate',
+      'playbackToggle',
+      'apiLoading'
+    ])
   },
   methods: {
     /* API Invocation */
     displayAPIFail() {
       let notifText = 'Failed to fetch map data';
-      this.$store.commit('bluetooth/SET_NOTIFICATION', { show: true, text: notifText, timeout: 2500, color: 'error' });
+      this.$store.dispatch('setSystemStatus', { text: notifText, color: 'error', timeout: 2500 });
     },
     fetchData(dateChanged, timeChanged) {
       this.$bus.$emit('CHANGE_BLUETOOTH_TIME', this.currentDate);
@@ -86,45 +153,52 @@ export default {
     },
     getFullDayData(currDate) {
       let dt = this.isToday ? null : currDate.getTime();
-      this.$store.state.bluetooth.apiData.segmentsFull = null;
-      this.$store.state.bluetooth.apiData.wazeFull = null;
-      this.$store.state.bluetooth.apiData.devicesFull = null;
-      if (this.isToday) {
-        Api.initFullDay().then(
-          () => {
-            this.getFullDaySegment(dt);
-            this.getFullDayWaze(dt);
-            this.getFullDayDevice(dt);
-            if (!this.$store.state.bluetooth.apiData.sensors) {
-              this.fetchSensors();
+      if (this.firstFullDayAPICall) {
+        this.$store.commit('bluetooth/SET_API_DATA', { prop: 'allFull', data: null });
+        if (this.isToday) {
+          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'all', data: true})
+          Api.initFullDay().then(
+            res => {
+              if (res) {
+                this.getFullDaySegment(dt);
+                this.getFullDayWaze(dt);
+                this.getFullDayDevice(dt);
+              } else {
+                setTimeout(() => {
+                  this.getFullDayData(currDate);
+                }, 5000);
+              }
+              this.timeSinceUpdate = 0;
+              this.firstFullDayAPICall = false;
+            },
+            error => {
+              console.log(error);
             }
-            this.$store.state.bluetooth.timeSinceUpdate = 0;
-          },
-          error => {
-            console.log(error);
-          }
-        );
-      } else {
-        this.getFullDaySegment(dt);
-        this.getFullDayWaze(dt);
-        this.getFullDayDevice(dt);
-        this.$store.state.bluetooth.timeSinceUpdate = 0;
+          );
+        } else if (!this.isToday && this.playbackToggle) {
+          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'all', data: true})
+          this.getFullDaySegment(dt);
+          this.getFullDayWaze(dt);
+          this.getFullDayDevice(dt);
+          this.timeSinceUpdate = 0;
+          this.firstFullDayAPICall = false;
+        }
       }
     },
     getCurrTimeData(currDate) {
       let dt = currDate.getTime();
-      this.$store.state.bluetooth.apiData.segments = null;
-      this.$store.state.bluetooth.apiData.waze = null;
-      this.$store.state.bluetooth.apiData.devices = null;
+      this.$store.commit('bluetooth/SET_API_DATA', { prop: 'allCurr', data: null });
       this.getCurrTimeSegment(dt);
       this.getCurrTimeWaze(dt);
       this.getCurrTimeDevice(dt);
-      this.$store.state.bluetooth.timeSinceUpdate = 0;
+      this.fetchSensors();
+      this.timeSinceUpdate = 0;
     },
     getFullDaySegment(dt) {
       Api.fetchSegmentsFull(dt).then(
         data => {
-          this.$store.state.bluetooth.apiData.segmentsFull = data;
+          this.$store.commit('bluetooth/SET_API_DATA', { prop: 'segmentsFull', data: data });
+          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'segmentsFull', data: false})
         },
         error => {
           console.log(error);
@@ -134,7 +208,8 @@ export default {
     getFullDayWaze(dt) {
       Api.fetchWazeDataFull(dt).then(
         data => {
-          this.$store.state.bluetooth.apiData.wazeFull = data;
+          this.$store.commit('bluetooth/SET_API_DATA', { prop: 'wazeFull', data: data });
+          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'wazeFull', data: false})
         },
         error => {
           console.log(error);
@@ -144,7 +219,8 @@ export default {
     getFullDayDevice(dt) {
       Api.fetchDevicesFull(dt).then(
         data => {
-          this.$store.state.bluetooth.apiData.devicesFull = data;
+          this.$store.commit('bluetooth/SET_API_DATA', { prop: 'devicesFull', data: data });
+          this.$store.commit('bluetooth/SET_API_LOADING', {prop: 'devicesFull', data: false})
         },
         error => {
           console.log(error);
@@ -154,18 +230,20 @@ export default {
     getCurrTimeSegment(dt) {
       Api.fetchSegments(dt).then(
         data => {
-          this.$store.state.bluetooth.apiData.segments = data;
+          this.$store.commit('bluetooth/SET_API_DATA', { prop: 'segments', data: data });
           this.$bus.$emit('CREATE_SEGMENTS');
-          if (this.mapLayerSelection.includes(0)) {
+          if (this.mapLayerSelection.includes(Constants.LAYER_CONGESTION)) {
             this.$bus.$emit('ADD_SEGMENTS');
           }
+          let routes = data
+            .slice()
+            .map(x => x.info.route)
+            .filter(Utils.onlyUnique)
+            .filter(x => !!x)
+            .sort();
+          this.$store.commit('bluetooth/SET_API_DATA', { prop: 'routes', data: routes });
           let notifText = 'Successfully fetched segment data';
-          this.$store.commit('bluetooth/SET_NOTIFICATION', {
-            show: true,
-            text: notifText,
-            timeout: 2500,
-            color: 'info'
-          });
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
         },
         error => {
           console.log(error);
@@ -176,7 +254,7 @@ export default {
     getCurrTimeWaze(dt) {
       Api.fetchWazeData(60, dt).then(
         data => {
-          this.$store.state.bluetooth.apiData.waze = data;
+          this.$store.commit('bluetooth/SET_API_DATA', { prop: 'waze', data: data });
           this.$bus.$emit('CREATE_WAZE_ALERTS');
           if (this.isWazeMarkers) {
             this.$bus.$emit('ADD_MARKERS', this.filteredWazeMarkers);
@@ -185,12 +263,7 @@ export default {
             this.$bus.$emit('ADD_WAZE_CLUSTERS');
           }
           let notifText = 'Successfully fetched waze data';
-          this.$store.commit('bluetooth/SET_NOTIFICATION', {
-            show: true,
-            text: notifText,
-            timeout: 2500,
-            color: 'info'
-          });
+          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
         },
         error => {
           console.log(error);
@@ -203,34 +276,26 @@ export default {
         dataBP => {
           Api.fetchDevices(dt).then(
             dataDev => {
-              this.$store.state.bluetooth.apiData.devices = dataDev;
-              dataBP.forEach((bpData, i) => {
-                let added = false;
-                this.$store.state.bluetooth.apiData.devices.forEach((d, j) => {
+              this.$store.commit('bluetooth/SET_API_DATA', { prop: 'devices', data: dataDev });
+              dataBP.forEach(bpData => {
+                this.apiData.devices.forEach(d => {
                   if (parseInt(bpData.deviceId) == d.deviceId) {
                     if (bpData.direction == 'NB') {
                       bpData.fullName = `${d.title} - NB`;
                       this.$set(d, 'bpInfoNB', bpData);
-                      added = true;
                     } else if (bpData.direction == 'SB') {
                       bpData.fullName = `${d.title} - SB`;
                       this.$set(d, 'bpInfoSB', bpData);
-                      added = true;
                     }
                   }
                 });
               });
               this.$bus.$emit('CREATE_DEVICES');
-              if (this.mapLayerSelection.includes(2)) {
-                this.$bus.$emit('ADD_MARKERS', this.filteredWazeMarkers);
+              if (this.mapLayerSelection.includes(Constants.LAYER_DEVICES)) {
+                this.$bus.$emit('ADD_MARKERS', this.filteredDeviceMarkers);
               }
               let notifText = 'Successfully fetched Device data';
-              this.$store.commit('bluetooth/SET_NOTIFICATION', {
-                show: true,
-                text: notifText,
-                timeout: 2500,
-                color: 'info'
-              });
+              this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
             },
             error => {
               console.log(error);
@@ -245,10 +310,10 @@ export default {
     fetchSensors() {
       Api.fetchSensors().then(
         data => {
-          this.$store.state.bluetooth.apiData.sensors = data;
+          this.$store.commit('bluetooth/SET_API_DATA', { prop: 'sensors', data: data });
           this.$bus.$emit('CREATE_SENSORS');
-          if (this.mapLayerSelection.includes(1)) {
-            this.$bus.$emit('ADD_MARKERS', this.$store.state.bluetooth.sensorMarkers);
+          if (this.mapLayerSelection.includes(Constants.LAYER_BLUETOOTH_SENSORS)) {
+            this.$bus.$emit('ADD_MARKERS', this.sensorMarkers);
           }
         },
         error => {
@@ -262,27 +327,34 @@ export default {
     },
     cancelTimePicker() {
       this.time = this.currentDate;
-      this.$store.state.bluetooth.timePickerMenu = false;
+      this.timePickerMenu = false;
     },
     timeSelected() {
       if (typeof this.time == 'string') {
         let timeSplit = this.time.split(':');
-        let cd = this.currentDate;
-        this.$store.state.currentDate = new Date(
-          cd.getFullYear(),
-          cd.getMonth(),
-          cd.getDate(),
+        let newDate = new Date(
+          this.currentDate.getFullYear(),
+          this.currentDate.getMonth(),
+          this.currentDate.getDate(),
           parseInt(timeSplit[0]),
           parseInt(timeSplit[1])
         );
+        this.$store.commit('SET_CURRENT_DATE', newDate);
         console.log(`New Time Selected: ${this.time}`);
         this.time = this.currentDate;
-        this.$store.state.bluetooth.timePickerMenu = false;
+        this.timePickerMenu = false;
       }
     }
   },
   watch: {
-    '$store.state.bluetooth.map'(data) {
+    playbackToggle(newVal, oldVal) {
+      if (oldVal == false && newVal == true) {
+        if (this.firstFullDayAPICall) {
+          this.getFullDayData(this.currentDate);
+        }
+      }
+    },
+    map(data) {
       if (data && !this.fetchDone) {
         this.fetchData(true, true);
       }
@@ -291,6 +363,9 @@ export default {
       let dateChanged =
         n.getFullYear() == o.getFullYear() && n.getMonth() == o.getMonth() && n.getDate() == o.getDate() ? false : true;
       let timeChanged = n.getHours() == o.getHours() && n.getMinutes() == o.getMinutes() ? false : true;
+      if (dateChanged) {
+        this.firstFullDayAPICall = true;
+      }
       this.fetchData(dateChanged, timeChanged);
     }
   }

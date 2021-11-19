@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex justify-space-between align-center">
-    <v-btn small icon @click.stop="prevDate" class="mr-2 material-bubble">
+    <v-btn small icon @click.stop="prevDate" class="mr-2 material-bubble" :disabled="disablePicker">
       <v-icon color="white">mdi-arrow-left-bold</v-icon>
     </v-btn>
     <v-menu
@@ -23,6 +23,7 @@
           readonly
           v-on="on"
           style="width: 190px; color:grey;"
+          :disabled="disablePicker"
         >
           <template v-slot:prepend>
             <v-icon class="mt-0 mr-n2" color="grey lighten-1">mdi-calendar-month</v-icon>
@@ -36,7 +37,7 @@
       </v-date-picker>
     </v-menu>
 
-    <v-btn small icon @click.stop="nextDate" class="ml-2 material-bubble">
+    <v-btn small icon @click.stop="nextDate" class="ml-2 material-bubble" :disabled="disablePicker">
       <v-icon color="white">mdi-arrow-right-bold</v-icon>
     </v-btn>
   </div>
@@ -48,8 +49,9 @@ export default {
   props: {
     date: {
       type: Date,
-      default: new Date()
-    }
+      default: new Date(),
+    },
+    disable: Boolean
   },
 
   data: () => ({
@@ -60,6 +62,9 @@ export default {
   computed: {
     dateFormatted() {
       return this.fromDateVal ? Utils.formatDateLong2(Utils.dateFromString(this.fromDateVal)) : '';
+    },
+    disablePicker() {
+      return this.disable ? true : false
     }
   },
 
