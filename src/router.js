@@ -12,9 +12,11 @@ import Status from '@/components/layouts/Status.vue';
 import Bluetooth from '@/components/layouts/Bluetooth.vue';
 
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
+import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
 import TrafficFlow from '@/views/traffic/TrafficFlow.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
 import TravelTimeData from '@/views/traffic/TravelTimeData.vue';
+import Multigraph from '@/views/traffic/Multigraph.vue';
 import WeatherData from '@/views/traffic/WeatherData.vue';
 import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
@@ -64,6 +66,11 @@ const router = new Router({
           component: TrafficDashboard
         },
         {
+          path: RouterPaths.TRAFFIC_BT_DASHBOARD,
+          name: RouterNames.TRAFFIC_BT_DASHBOARD,
+          component: TrafficBTDashboard
+        },
+        {
           path: RouterPaths.TRAFFIC_FLOW,
           name: RouterNames.TRAFFIC_FLOW,
           component: TrafficFlow
@@ -87,6 +94,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_WEATHER,
           name: RouterNames.TRAFFIC_WEATHER,
           component: WeatherData
+        },
+        {
+          path: RouterPaths.TRAFFIC_MULTIGRAPH,
+          name: RouterNames.TRAFFIC_MULTIGRAPH,
+          component: Multigraph
         },
         {
           path: RouterPaths.TRAVEL_TIME_DATA,

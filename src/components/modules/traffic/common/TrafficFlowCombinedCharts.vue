@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-card class="mb-8" ref="spdCard" v-if="isSpeed">
+    <v-card class="mb-8" ref="spdCard" v-if="isSpeed && (!limitGraph || limitGraph == 'Speed')">
       <BasicChart :data="speed" :height="height" />
       <div v-if="name" class="text-name">{{ name }}</div>
     </v-card>
 
-    <v-card class="mb-8" v-if="isVolume">
+    <v-card class="mb-8" v-if="isVolume && (!limitGraph || limitGraph == 'Volume')">
       <BasicChart :data="volume" :height="height" />
       <div v-if="name" class="text-name">{{ name }}</div>
     </v-card>
 
-    <v-card class="mb-8" v-if="isOccupancy">
+    <v-card class="mb-8" v-if="isOccupancy && (!limitGraph || limitGraph == 'Occupancy')">
       <BasicChart :data="occupancy" :height="height" />
       <div v-if="name" class="text-name">{{ name }}</div>
     </v-card>
@@ -21,6 +21,11 @@
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 export default {
   props: {
+    limitGraph: {
+      type: String,
+      default: ''
+    },
+
     height: {
       type: Number,
       default: 480
@@ -76,33 +81,36 @@ export default {
 
   methods: {
     formSpeedData(flowList, direction) {
-      const title = 'Speed';
+      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
+      const subtitle = 'Speed';
       const xAxis = 'Time of day';
       const yAxis = 'Speed (mph)';
       const data = this.filterByDirection(flowList.speed, direction);
-      const result = { data, xAxis, yAxis, title, ymin: 0, ymax: 100 };
+      const result = { data, xAxis, yAxis, title, subtitle, ymin: 0, ymax: 100 };
       this.addTimeSlots(result);
       this.addXAxisStart(result, flowList, direction);
       return result;
     },
 
     formVolumeData(flowList, direction) {
-      const title = 'Volume';
+      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
+      const subtitle = 'Volume';
       const xAxis = 'Time of day';
       const yAxis = 'Volume (vehicles/interval)';
       const data = this.filterByDirection(flowList.volume, direction);
-      const result = { data, xAxis, yAxis, title };
+      const result = { data, xAxis, yAxis, title, subtitle };
       this.addTimeSlots(result);
       this.addXAxisStart(result, flowList, direction);
       return result;
     },
 
     formOccupancyData(flowList, direction) {
-      const title = 'Occupancy';
+      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
+      const subtitle = 'Occupancy';
       const xAxis = 'Time of day';
       const yAxis = 'Occupancy (%)';
       const data = this.filterByDirection(flowList.occupancy, direction);
-      const result = { data, xAxis, yAxis, title };
+      const result = { data, xAxis, yAxis, title, subtitle };
       this.addTimeSlots(result);
       this.addXAxisStart(result, flowList, direction);
       return result;

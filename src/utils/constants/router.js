@@ -1,10 +1,12 @@
 export const RouterNames = {
   TRAFFIC_DASHBOARD: 'Dashboard',
+  TRAFFIC_BT_DASHBOARD: 'Bluetooth Dashboard',
   TRAFFIC_FLOW: 'Flow Charts',
   TRAFFIC_LCM: 'Traffic LCM',
   TRAFFIC_PREDICT: 'Flow Prediction',
   TRAFFIC_ANOMALY: 'Anomaly Map',
   TRAFFIC_WEATHER: 'Weather Data',
+  TRAFFIC_MULTIGRAPH: 'Multigraph',
   TRAVEL_TIME_DATA: 'Travel Time Data',
   TRAVEL_TIME_MAP: 'Travel Time Map',
   TRAFFIC_INCIDENT: 'Traffic Incidents',
@@ -21,7 +23,7 @@ export const RouterNames = {
   VISION_REID: 'Vehicle Re-ID',
 
   BLUETOOTH_DASHBOARD: 'Dashboard ',
-  BLUETOOTH_MULTIGRAPH: 'Multigraph',
+  BLUETOOTH_MULTIGRAPH: 'Bluetooth Multigraph',
 
   CAV_DASHBOARD: 'Trip Data',
   CAV_STATUS: 'Trip Status',
@@ -39,11 +41,13 @@ export const RouterNames = {
 export const RouterPaths = {
   TRAFFIC_ROOT: '/flow',
   TRAFFIC_DASHBOARD: '/flow/dash',
+  TRAFFIC_BT_DASHBOARD: '/flow/bt-dash',
   TRAFFIC_FLOW: '/flow/data',
   TRAFFIC_LCM: '/flow/lcm',
   TRAFFIC_PREDICT: '/flow/predict',
   TRAFFIC_ANOMALY: '/flow/anomaly',
   TRAFFIC_WEATHER: '/flow/weather',
+  TRAFFIC_MULTIGRAPH: '/flow/multigraph',
   TRAVEL_TIME_DATA: '/flow/travel-time-data',
   TRAVEL_TIME_MAP: '/flow/travel-time-map',
   TRAFFIC_INCIDENT: '/flow/incidents',

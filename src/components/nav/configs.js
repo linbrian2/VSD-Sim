@@ -34,6 +34,14 @@ const protectedRoute = [
             }
           },
           {
+            path: RouterPaths.TRAFFIC_BT_DASHBOARD,
+            name: RouterNames.TRAFFIC_BT_DASHBOARD,
+            meta: {
+              title: RouterNames.TRAFFIC_BT_DASHBOARD,
+              icon: 'mdi-view-dashboard'
+            }
+          },
+          {
             path: RouterPaths.TRAFFIC_FLOW,
             name: RouterNames.TRAFFIC_FLOW,
             meta: {
@@ -54,6 +62,14 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_WEATHER,
             meta: {
               title: RouterNames.TRAFFIC_WEATHER,
+              icon: 'mdi-chart-line'
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_MULTIGRAPH,
+            name: RouterNames.TRAFFIC_MULTIGRAPH,
+            meta: {
+              title: RouterNames.TRAFFIC_MULTIGRAPH,
               icon: 'mdi-chart-line'
             }
           },
