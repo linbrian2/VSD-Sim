@@ -7,7 +7,7 @@
           v-bind="attrs"
           v-on="on"
           @click="playbackToggle = !playbackToggle"
-          style="position: absolute; top: 10px; left: 438px; height: 40px"
+          style="position: absolute; top: 10px; left: 384px; height: 40px"
         >
           <v-icon>mdi-map-clock-outline</v-icon>
         </v-btn>
@@ -19,7 +19,7 @@
         dense
         floating
         height="40"
-        style="position: absolute; top: 10px; left: 496px; height: 40px"
+        style="position: absolute; top: 10px; left: 442px; height: 40px"
         v-if="playbackToggle"
       >
         <v-chip :disabled="playState == 'play' || playState == 'resume'" small outlined class="ma-2 overline">

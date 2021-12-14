@@ -2,7 +2,6 @@
   <div class="bluetooth-dashboard">
     <BluetoothMap />
     <Toolbar :searchItems="apiData.segments" :fetchDone="fetchDone" v-show="mapLayerSelection && map" />
-    <TrafficRouting />
     <PlaybackToolbar />
     <v-scale-transition>
       <ToolbarAddTT v-show="modes.addFromMap" />
@@ -60,8 +59,6 @@
 <script>
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { mapState } from 'vuex';
-// Pages
-import TrafficRouting from '@/views/bluetooth/TrafficRouting';
 // UI
 import BluetoothMap from '@/components/modules/bluetooth/ui/BluetoothMap';
 import Toolbar from '@/components/modules/bluetooth/ui/Toolbar.vue';
@@ -83,9 +80,7 @@ export default {
     Dialogs,
     Toolbar,
     ToolbarAddTT,
-    PlaybackToolbar,
-    /* Pages */
-    TrafficRouting
+    PlaybackToolbar
   },
   mounted() {
     if (this.map) {

@@ -9,6 +9,7 @@ import HR from '@/components/layouts/HR.vue';
 import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
+import TrafficRouting from '@/components/layouts/TrafficRouting.vue';
 import Bluetooth from '@/components/layouts/Bluetooth.vue';
 
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
@@ -33,6 +34,8 @@ import MultiOcc from '@/views/hr/MultiOcc.vue';
 
 import VisionDashboard from '@/views/vision/Dashboard.vue';
 import ReID from '@/views/vision/ReID.vue';
+
+import TrafficRoutingDashboard from '@/views/trafficRouting/Dashboard.vue';
 
 import BluetoothDashboard from '@/views/bluetooth/Dashboard.vue';
 import BluetoothMultigraph from '@/views/bluetooth/MultiGraph.vue';
@@ -171,6 +174,17 @@ const router = new Router({
           path: RouterPaths.VISION_REID,
           name: RouterNames.VISION_REID,
           component: ReID
+        }
+      ]
+    },
+    {
+      path: RouterPaths.TRAFFIC_ROUTING_DASHBOARD,
+      component: TrafficRouting,
+      children: [
+        {
+          path: RouterPaths.TRAFFIC_ROUTING_DASHBOARD,
+          name: RouterNames.TRAFFIC_ROUTING_DASHBOARD,
+          component: TrafficRoutingDashboard
         }
       ]
     },

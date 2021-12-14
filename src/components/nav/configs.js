@@ -207,6 +207,14 @@ const protectedRoute = [
           }
         ]
       },
+      // Traffic Routing
+      {
+        path: RouterPaths.TRAFFIC_ROUTING_DASHBOARD,
+        meta: {
+          title: 'Traffic Routing',
+          icon: 'mdi-vector-radius'
+        }
+      },
       //Bluetooth
       {
         path: RouterPaths.BLUETOOTH_DASHBOARD,

@@ -29,7 +29,6 @@ const state = {
     addFromMap: false,
     historical: false
   },
-  showTrafficRouting: false,
   subtoggles: ['Hazard', 'Traffic Jam', 'Road Closed', 'Accident'],
   bpInfo: null,
   selectedDevice: null,
@@ -82,7 +81,6 @@ const mutations = {
       state.apiLoading[payload.prop] = payload.data;
     }
   },
-  SET_TRAFFIC_ROUTING: (state, flag) => (state.showTrafficRouting = flag),
   SET_SEG_GRAPH: (state, val) => (state.segGraph = val),
   SET_MODE: (state, payload) => (state.modes[payload.key] = payload.val),
   SET_MAP: (state, map) => (state.map = map),
