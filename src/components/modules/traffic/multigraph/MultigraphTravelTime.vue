@@ -280,24 +280,24 @@ export default {
     },
 
     valueSelectHandler(value) {
-      let marker = this.markers.find(m => m.name === value[value.length - 1].name);
-      const time = this.currentDate.getTime();
-      this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
-      this.$bus.$emit('NAME_SELECTED', value);
+      if (value && value.length > 0 && value[value.length - 1]) {
+        let marker = this.markers.find(m => m.name === value[value.length - 1].name);
+        const time = this.currentDate.getTime();
+        this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
+        this.$bus.$emit('NAME_SELECTED', value);
+      }
     },
 
     markerClicked(marker, action, fromMap = true) {
-      /* console.log("Before: %o", this.valuesSelected); */
       if (fromMap) {
         if (action == "remove") {
           this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name)
         } else {
           this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
+          const time = this.currentDate.getTime();
+          this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
         }
       }
-      /* console.log("After: %o", this.valuesSelected); */
-      const time = this.currentDate.getTime();
-      this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
     },
 
     routeMenuIcon(item) {
@@ -332,7 +332,6 @@ export default {
       
       this.valuesSelected.forEach(x => {
         let marker = this.markers.find(m => m.name === x.name);
-        console.log(marker);
         this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
       });
     },
@@ -345,7 +344,6 @@ export default {
         const response = await Api.fetchTravelTimeData(id, interval, time);
 
         let travelTimeList = this.getResponseData(response);
-        console.log(travelTimeList);
         let data = -1
         if (travelTimeList) {
           data = {
