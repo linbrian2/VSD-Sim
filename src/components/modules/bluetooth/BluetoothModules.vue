@@ -195,7 +195,9 @@ export default {
       this.getCurrTimeSegment(dt);
       this.getCurrTimeWaze(dt);
       this.getCurrTimeDevice(dt);
-      this.fetchSensors();
+      setTimeout(() => {
+        this.fetchSensors();
+      }, 1000);
       this.timeSinceUpdate = 0;
     },
     getFullDaySegment(dt) {

@@ -3,6 +3,7 @@ export const RouterNames = {
   TRAFFIC_BT_DASHBOARD: 'Bluetooth Dashboard',
   TRAFFIC_FLOW: 'Flow Charts',
   TRAFFIC_LCM: 'Traffic LCM',
+  TRAFFIC_ROUTING: 'Traffic Routing',
   TRAFFIC_PREDICT: 'Flow Prediction',
   TRAFFIC_ANOMALY: 'Anomaly Map',
   TRAFFIC_WEATHER: 'Weather Data',
@@ -21,9 +22,6 @@ export const RouterNames = {
 
   VISION_DASHBOARD: 'Traffic Cameras',
   VISION_REID: 'Vehicle Re-ID',
-
-  TRAFFIC_ROUTING: 'Traffic Routing',
-  TRAFFIC_ROUTING_DASHBOARD: 'Dashboard  ',
 
   BLUETOOTH_DASHBOARD: 'Dashboard ',
   BLUETOOTH_MULTIGRAPH: 'Bluetooth Multigraph',
@@ -47,6 +45,7 @@ export const RouterPaths = {
   TRAFFIC_BT_DASHBOARD: '/flow/bt-dash',
   TRAFFIC_FLOW: '/flow/data',
   TRAFFIC_LCM: '/flow/lcm',
+  TRAFFIC_ROUTING: '/flow/routing',
   TRAFFIC_PREDICT: '/flow/predict',
   TRAFFIC_ANOMALY: '/flow/anomaly',
   TRAFFIC_WEATHER: '/flow/weather',
@@ -67,9 +66,6 @@ export const RouterPaths = {
   VISION_ROOT: '/vision',
   VISION_DASHBOARD: '/vision/camera',
   VISION_REID: '/vision/re-id',
-
-  TRAFFIC_ROUTING_ROOT: '/traffic-routing',
-  TRAFFIC_ROUTING_DASHBOARD: '/traffic-routing/dash',
 
   BLUETOOTH_ROOT: '/bluetooth',
   BLUETOOTH_DASHBOARD: '/bluetooth/dash',

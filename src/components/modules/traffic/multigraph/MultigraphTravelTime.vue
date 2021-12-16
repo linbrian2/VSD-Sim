@@ -87,7 +87,6 @@
 
     <!-- Charts -->
     <v-container>
-      <!-- {{valuesSelected}} -->
       <v-card class="mb-8" v-if="selectedVal == valItems[0]">
         <v-row>
           <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">

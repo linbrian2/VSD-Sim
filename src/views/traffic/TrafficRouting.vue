@@ -340,14 +340,6 @@ export default {
   },
 
   computed: {
-    showTrafficRouting: {
-      get() {
-        return this.$store.state.bluetooth.showTrafficRouting;
-      },
-      set(val) {
-        this.$store.commit('bluetooth/SET_TRAFFIC_ROUTING', val);
-      }
-    },
     ...mapState('bluetooth', ['map'])
   }
 };

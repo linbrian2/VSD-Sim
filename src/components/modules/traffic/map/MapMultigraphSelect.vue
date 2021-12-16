@@ -97,10 +97,6 @@ export default {
       }
     });
 
-    this.$bus.$on('SELECT_FIRST', () => {
-      this.triggerFirstMarkerClick();
-    });
-
     this.$bus.$on('CENTER_MAP', () => {
       this.centerMap(this.map, this.markers);
     });
@@ -188,14 +184,6 @@ export default {
         },
       };
       MapUtils.addControl(map, options);
-    },
-
-    triggerFirstMarkerClick() {
-      if (this.markers && this.markers.length > 0) {
-        const selectedMarker = this.markers[0];
-        this.selectedMarkerId = selectedMarker.id;
-        this.markerClicked(selectedMarker);
-      }
     },
 
     getSelectedMarker() {

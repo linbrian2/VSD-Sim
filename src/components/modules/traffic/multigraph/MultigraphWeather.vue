@@ -1,13 +1,28 @@
 <template>
   <div>
-    <MapMultigraphSelectionPanel
-      ref="mapSelectPanel"
-      :markers="markers"
-      :items="stationItems"
-      :icons="icons"
-      name="weatherSideBarWidth"
-      :onMarkerClick="markerClicked"
-    />
+    <SelectionPanel name="weatherDataBarWidth">
+      <v-combobox
+        multiple
+        small-chips
+        class="mx-2"
+        dense
+        hide-details
+        single-line
+        :items="items"
+        item-text="name"
+        v-model="valuesSelected"
+        @input="valueSelectHandler"
+        label="SELECT WEATHER LOCATIONS"
+        return-object
+      >
+        <template v-slot:append-outer>
+          <v-btn icon @click="clear">
+            <v-icon>mdi-backspace</v-icon>
+          </v-btn>
+        </template>
+      </v-combobox>
+      <MapMultigraphSelect ref="mapSelect" :markers="markers" :icons="markerIcons" @click="markerClicked" />
+    </SelectionPanel>
     <TitleBar :isMultigraph="true" :showId="false" :loading="loading" :refresh="refreshData">
       <div class="d-flex align-items justify-space-between align-center">
         <div class="d-flex justify-space-between">
@@ -43,42 +58,133 @@
       </div>
     </TitleBar>
     <v-container ref="myDiv">
-      <v-card class="mb-8" v-if="availability.temp && selectedVal == valItems[0]">
+      <v-card class="mb-8" v-if="selectedVal == valItems[0]">
         <v-row>
-          <v-col cols="12" xl="6" v-for="i in 7" :key="i.id">
-            <BasicChart :data="weather.temp" :height="height" />
+          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
+            <div v-if="i.data && i.data.temp" class="graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <BasicChart :data="i.data.temp" :height="height" />
+            </div>
+            <div v-else-if="i.data == -1" class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Data is Unavailable.</h3>
+            </div>
+            <div v-else class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Loading Data...</h3>
+            </div>
           </v-col>
         </v-row>
       </v-card>
-
-      <v-card class="mb-8" v-if="availability.relHumidity && selectedVal == valItems[1]">
+      <v-card class="mb-8" v-if="selectedVal == valItems[1]">
         <v-row>
-          <v-col cols="12" xl="6" v-for="i in 7" :key="i.id">
-            <BasicChart :data="weather.relHumidity" :height="height" />
+          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
+            <div v-if="i.data && i.data.relHumidity" class="graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <BasicChart :data="i.data.relHumidity" :height="height" />
+            </div>
+            <div v-else-if="i.data == -1" class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Data is Unavailable.</h3>
+            </div>
+            <div v-else class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Loading Data...</h3>
+            </div>
           </v-col>
         </v-row>
       </v-card>
-
-      <v-card class="mb-8" v-if="availability.windAvg && selectedVal == valItems[2]">
+      <v-card class="mb-8" v-if="selectedVal == valItems[2]">
         <v-row>
-          <v-col cols="12" xl="6" v-for="i in 7" :key="i.id">
-            <BasicChart :data="weather.windAvg" :height="height" />
+          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
+            <div v-if="i.data && i.data.windAvg" class="graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <BasicChart :data="i.data.windAvg" :height="height" />
+            </div>
+            <div v-else-if="i.data == -1" class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Data is Unavailable.</h3>
+            </div>
+            <div v-else class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Loading Data...</h3>
+            </div>
           </v-col>
         </v-row>
       </v-card>
-
-      <v-card class="mb-8" v-if="availability.visibility && selectedVal == valItems[3]">
+      <v-card class="mb-8" v-if="selectedVal == valItems[3]">
         <v-row>
-          <v-col cols="12" xl="6" v-for="i in 7" :key="i.id">
-            <BasicChart :data="weather.visibility" :height="height" />
+          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
+            <div v-if="i.data && i.data.visibility" class="graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <BasicChart :data="i.data.visibility" :height="height" />
+            </div>
+            <div v-else-if="i.data == -1" class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Data is Unavailable.</h3>
+            </div>
+            <div v-else class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Loading Data...</h3>
+            </div>
           </v-col>
         </v-row>
       </v-card>
-
-      <v-card class="mb-8" v-if="availability.precip && selectedVal == valItems[4]">
+      <v-card class="mb-8" v-if="selectedVal == valItems[4]">
         <v-row>
-          <v-col cols="12" xl="6" v-for="i in 7" :key="i.id">
-            <BasicChart :data="weather.precip" :height="height" />
+          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
+            <div v-if="i.data && i.data.precip" class="graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <BasicChart :data="i.data.precip" :height="height" />
+            </div>
+            <div v-else-if="i.data == -1" class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Data is Unavailable.</h3>
+            </div>
+            <div v-else class="grid-center graph-container">
+              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <h2>{{ i.name }}</h2>
+              <h3>Loading Data...</h3>
+            </div>
           </v-col>
         </v-row>
       </v-card>
@@ -89,17 +195,37 @@
 <script>
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
-import MapMultigraphSelectionPanel from '@/components/modules/traffic/map/MapMultigraphSelectionPanel';
+import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
 export default {
   components: {
-    MapMultigraphSelectionPanel,
+    SelectionPanel,
+    MapMultigraphSelect,
     TitleBar,
     BasicChart,
   },
   data: () => ({
+    valuesSelected: [],
+    defaultIcons: [
+      {
+        path: 0,
+        scale: 10.0,
+        fillColor: '#05FF00',
+        fillOpacity: 0.8,
+        strokeWeight: 0.4,
+      },
+      {
+        path: 0,
+        scale: 10.0,
+        fillColor: '#FF7F00',
+        fillOpacity: 0.8,
+        strokeWeight: 0.4,
+      },
+    ],
+
     selectedVal: 'Air Temperature',
     valItems: ['Air Temperature', 'Humidity Percentage', 'Average Wind Speed', 'Visibility', 'Precipitation'],
 
@@ -124,26 +250,21 @@ export default {
       },
     ],
     weather: {},
-    availability: {
-      temp: false,
-      relHumidity: false,
-      windAvg: false,
-      visibility: false,
-      precip: false,
-    },
   }),
 
   computed: {
+    markerIcons() {
+      return this.icons ? this.icons : this.defaultIcons;
+    },
+
     markers() {
       return this.weatherStations;
     },
 
-    stationItems() {
-      let names = [];
-      this.weatherStations.forEach((location) => {
-        names.push(location.name.trimRight());
+    items() {
+      return this.weatherStations.map((location) => {
+        return { id: location.id, name: location.name.trimRight(), data: null };
       });
-      return names;
     },
 
     multigraphModeSelect: {
@@ -181,9 +302,58 @@ export default {
   },
 
   methods: {
-    markerClicked(marker) {
-      const time = this.currentDate.getTime();
-      this.fetchWeatherData(marker.id, this.interval, time);
+    clear() {
+      this.valuesSelected = [];
+      this.$bus.$emit('NAME_SELECTED', []);
+    },
+
+    removeItem(id) {
+      this.valuesSelected = this.valuesSelected.filter((x) => x.id && x.id != id);
+      this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
+    },
+
+    triggerFirstMarkerClick() {
+      this.$refs.mapSelect.triggerFirstMarkerClick();
+    },
+
+    getSelectedMarker() {
+      return this.$refs.mapSelect.getSelectedMarker();
+    },
+
+    valueSelectHandler(value) {
+      console.log(value);
+      if (value && value.length > 0 && value[value.length - 1]) {
+        let marker = this.markers.find((m) => m.id === value[value.length - 1].id);
+        const time = this.currentDate.getTime();
+        this.fetchWeatherData(marker.id, this.interval, time, marker.name);
+        this.$bus.$emit('NAME_SELECTED', value);
+      }
+    },
+
+    selectDeviceById(deviceId) {
+      this.$bus.$emit('ID_SELECTED', deviceId);
+      if (!this.showPanel) {
+        this.$store.commit('traffic/SHOW_PANEL', true);
+      }
+    },
+
+    selectDevicesByIds(ids) {
+      this.$refs.mapSelect.selectByIds(ids);
+      if (!this.showPanel) {
+        this.$store.commit('traffic/SHOW_PANEL', true);
+      }
+    },
+
+    markerClicked(marker, action, fromMap = true) {
+      if (fromMap) {
+        if (action == 'remove') {
+          this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != marker.name);
+        } else {
+          this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
+          const time = this.currentDate.getTime();
+          this.fetchWeatherData(marker.id, this.interval, time, marker.name);
+        }
+      }
     },
 
     intervalSelected() {
@@ -203,33 +373,40 @@ export default {
     },
 
     fetchData() {
-      const marker = this.$refs.mapSelectPanel.getSelectedMarker();
       const time = this.currentDate.getTime();
-      if (marker != null) {
-        this.fetchWeatherData(marker.id, this.interval, time);
-      }
+      this.valuesSelected.forEach(x => {
+        let marker = this.markers.find(m => m.id === x.id);
+        this.fetchWeatherData(marker.id, this.interval, time, marker.name);
+      });
     },
 
-    async fetchWeatherData(id, interval, time) {
+    async fetchWeatherData(id, interval, time, name) {
       this.loading = true;
 
       try {
         const response = await Api.fetchWeatherData(id, interval, time);
-        const data = this.getResponseData(response);
-        if (data != null) {
-          this.availability.temp = data.airTemp ? true : false;
-          this.availability.relHumidity = data.relHumidity ? true : false;
-          this.availability.windAvg = data.windAvg ? true : false;
-          this.availability.visibility = data.visibility ? true : false;
-          this.availability.precip = data.precip ? true : false;
-
-          this.weather.temp = this.formTempData(data);
-          this.weather.relHumidity = this.formHumidityData(data);
-          this.weather.windAvg = this.formWindData(data);
-          this.weather.visibility = this.formVisibilityData(data);
-          this.weather.precip = this.formPrecipData(data);
+        const dataList = this.getResponseData(response);
+        let data = -1;
+        if (dataList) {
+          data = {
+            temp: this.formTempData(dataList, name),
+            relHumidity: this.formHumidityData(dataList, name),
+            windAvg: this.formWindData(dataList, name),
+            visibility: this.formVisibilityData(dataList, name),
+            precip: this.formPrecipData(dataList, name),
+          };
         }
+        this.valuesSelected.forEach((val) => {
+          if (val.id == id) {
+            val.data = data;
+          }
+        });
       } catch (error) {
+        this.valuesSelected.forEach((val) => {
+          if (val.id == id) {
+            val.data = -1;
+          }
+        });
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
 
@@ -251,8 +428,7 @@ export default {
       return result;
     },
 
-    formTempData(resData) {
-      const title = 'NWMS07 - DE 7 @ VALLEY RD';
+    formTempData(resData, title = null) {
       const subtitle = 'Air Temperature';
       const xAxis = 'Time of day';
       const yAxis = 'Temperature (\u00B0F)';
@@ -263,8 +439,7 @@ export default {
       return { data, xAxis, yAxis, title, subtitle };
     },
 
-    formHumidityData(resData) {
-      const title = 'NWMS07 - DE 7 @ VALLEY RD';
+    formHumidityData(resData, title = null) {
       const subtitle = 'Humidity Percentage';
       const xAxis = 'Time of day';
       const yAxis = 'Humidity Percentage (%)';
@@ -275,8 +450,7 @@ export default {
       return { data, xAxis, yAxis, title, subtitle };
     },
 
-    formWindData(resData) {
-      const title = 'NWMS07 - DE 7 @ VALLEY RD';
+    formWindData(resData, title = null) {
       const subtitle = 'Average Wind Speed';
       const xAxis = 'Time of day';
       const yAxis = 'Wind Speed (km/h)';
@@ -287,8 +461,7 @@ export default {
       return { data, xAxis, yAxis, title, subtitle };
     },
 
-    formVisibilityData(resData) {
-      const title = 'NWMS07 - DE 7 @ VALLEY RD';
+    formVisibilityData(resData, title = null) {
       const subtitle = 'Visibility';
       const xAxis = 'Time of day';
       const yAxis = 'Visibility';
@@ -299,8 +472,7 @@ export default {
       return { data, xAxis, yAxis, title, subtitle };
     },
 
-    formPrecipData(resData) {
-      const title = 'NWMS07 - DE 7 @ VALLEY RD';
+    formPrecipData(resData, title = null) {
       const subtitle = 'Precipitation';
       const xAxis = 'Time of day';
       const yAxis = 'Precipitation (%)';
@@ -317,6 +489,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.graph-container {
+  position: relative;
+}
+.graph-close-button {
+  position: absolute; 
+  right: 0px;
+  z-index: 99;
+}
+.basic-chart {
+  height: 500px;
+}
 .active-select {
   background-color: red;
   color: white;

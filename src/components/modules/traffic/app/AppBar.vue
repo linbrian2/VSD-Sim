@@ -134,7 +134,9 @@ export default {
       { divider: true },
       { title: 'Multigraph', name: RouterNames.TRAFFIC_MULTIGRAPH },
       { divider: true },
-      { title: 'Traffic LCM', name: RouterNames.TRAFFIC_LCM }
+      { title: 'Traffic LCM', name: RouterNames.TRAFFIC_LCM },
+      { divider: true },
+      { title: 'Traffic Routing', name: RouterNames.TRAFFIC_ROUTING }
     ],
 
     anomaly_menu_items: [
@@ -151,6 +153,7 @@ export default {
       { title: RouterNames.TRAVEL_TIME_DATA, url: RouterPaths.TRAVEL_TIME_DATA },
       { title: RouterNames.TRAFFIC_WEATHER, url: RouterPaths.TRAFFIC_WEATHER },
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
+      { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING },
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
@@ -237,6 +240,10 @@ export default {
       this.switchTo(RouterPaths.TRAFFIC_INCIDENT);
     },
 
+    showTrafficRouting() {
+      this.switchTo(RouterPaths.TRAFFIC_ROUTING);
+    },
+
     performTask(name) {
       switch (name) {
         case RouterNames.TRAFFIC_FLOW:
@@ -254,6 +261,10 @@ export default {
         case RouterNames.TRAFFIC_LCM:
           this.showTrafficLCM();
           break;
+
+        case RouterNames.TRAFFIC_ROUTING:
+          this.showTrafficRouting();
+          break
 
         case RouterNames.TRAFFIC_WEATHER:
           this.showWeatherData();
