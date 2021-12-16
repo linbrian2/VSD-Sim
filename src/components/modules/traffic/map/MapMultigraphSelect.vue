@@ -74,12 +74,14 @@ export default {
       });
     },
     markers(markers) {
+      console.log("watch - markers:\n %o", this.$refs);
       this.$refs.mapRef.$mapPromise.then((map) => {
         this.centerMap(map, markers);
       });
     },
   },
   mounted() {
+    console.log("mounted:\n %o", this.$refs.mapRef);
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$bus.$on('NAME_SELECTED', (selectedMarkers) => {
@@ -197,6 +199,7 @@ export default {
       }
     },
     centerMap(map, markers) {
+      console.log('centerMap');
       if (markers.length > 0) {
         const outlierRemoval = new OutlierRemoval(4.0);
         const points = outlierRemoval.remove(markers.map((item) => item.position));

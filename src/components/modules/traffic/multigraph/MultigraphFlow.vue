@@ -41,9 +41,9 @@
                   :key="item.value"
                   @click="regionMenuItemClicked(item.value)"
                 >
-                  <v-list-item-title :class="{ 'font-weight-bold': item.value === slectedRegionId }">
-                    <v-icon class="mr-1" v-if="item.value === slectedRegionId">mdi-check</v-icon>
-                    <span :class="{ 'ml-8': item.value !== slectedRegionId }"> {{ item.title }} </span>
+                  <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
+                    <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
+                    <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -216,6 +216,7 @@ export default {
     TrafficFlowMultigraphCombinedCharts,
   },
   data: () => ({
+    startDelay: true,
     selectedVal: 'Volume',
     valItems: ['Speed', 'Volume', 'Occupancy'],
 
@@ -267,17 +268,23 @@ export default {
       { title: 'Outside study area', value: 7 },
     ],
 
-    slectedRegionId: -1,
+    selectedRegionId: -1,
 
     devices: [],
   }),
 
   computed: {
     markers() {
-      if (this.slectedRegionId < 0) {
-        return this.devices;
+      console.log(`markers - ${this.devices ? this.devices.length : 'N/A'}`);
+      if (!this.startDelay) {
+        console.log(`markers (After Delay) - ${this.devices ? this.devices.length : 'N/A'}`);
+        if (this.selectedRegionId < 0) {
+          return this.devices;
+        } else {
+          return this.devices.filter((location) => location.flags === this.selectedRegionId);
+        }
       } else {
-        return this.devices.filter((location) => location.flags === this.slectedRegionId);
+        return []
       }
     },
 
@@ -306,6 +313,9 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
+      this.startDelay = false
+    }, 100);
     this.fetchDevices();
   },
 
@@ -335,7 +345,6 @@ export default {
     },
 
     valueSelectHandler(value) {
-      console.log(value);
       if (value && value.length > 0 && value[value.length - 1]) {
         let marker = this.markers.find((m) => m.name === value[value.length - 1].name);
         const time = this.currentDate.getTime();
@@ -346,7 +355,7 @@ export default {
 
     regionMenuItemClicked(value) {
       setTimeout(() => {
-        this.slectedRegionId = value;
+        this.selectedRegionId = value;
         this.valuesSelected = [];
       }, 100);
     },

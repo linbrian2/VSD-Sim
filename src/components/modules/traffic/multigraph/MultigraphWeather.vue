@@ -208,6 +208,7 @@ export default {
     BasicChart,
   },
   data: () => ({
+    startDelay: true,
     valuesSelected: [],
     defaultIcons: [
       {
@@ -258,7 +259,13 @@ export default {
     },
 
     markers() {
-      return this.weatherStations;
+      console.log(`markers - ${this.weatherStations ? this.weatherStations.length : 'N/A'}`);
+      if (!this.startDelay) {
+        console.log(`markers (After Delay) - ${this.weatherStations ? this.weatherStations.length : 'N/A'}`);
+        return this.weatherStations;
+      } else {
+        return [];
+      }
     },
 
     items() {
@@ -281,14 +288,12 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
+      this.startDelay = false;
+    }, 100);
     if (this.weatherStations.length === 0) {
       this.fetchWeatherStations();
     }
-
-    // Load first selected data in case of no data showing
-    setTimeout(() => {
-      this.showDataIfEmpty();
-    }, 500);
   },
 
   watch: {
@@ -321,7 +326,6 @@ export default {
     },
 
     valueSelectHandler(value) {
-      console.log(value);
       if (value && value.length > 0 && value[value.length - 1]) {
         let marker = this.markers.find((m) => m.id === value[value.length - 1].id);
         const time = this.currentDate.getTime();
@@ -364,18 +368,10 @@ export default {
       this.fetchData();
     },
 
-    showDataIfEmpty() {
-      const any = Object.values(this.availability).some((item) => item);
-      if (!any) {
-        this.$bus.$emit('CENTER_MAP');
-        this.$refs.mapSelectPanel.triggerFirstMarkerClick();
-      }
-    },
-
     fetchData() {
       const time = this.currentDate.getTime();
-      this.valuesSelected.forEach(x => {
-        let marker = this.markers.find(m => m.id === x.id);
+      this.valuesSelected.forEach((x) => {
+        let marker = this.markers.find((m) => m.id === x.id);
         this.fetchWeatherData(marker.id, this.interval, time, marker.name);
       });
     },
@@ -493,7 +489,7 @@ export default {
   position: relative;
 }
 .graph-close-button {
-  position: absolute; 
+  position: absolute;
   right: 0px;
   z-index: 99;
 }

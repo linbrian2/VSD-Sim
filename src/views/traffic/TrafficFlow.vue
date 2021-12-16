@@ -28,9 +28,9 @@
 
           <v-list>
             <v-list-item v-for="item in region_menu_items" :key="item.value" @click="regionMenuItemClicked(item.value)">
-              <v-list-item-title :class="{ 'font-weight-bold': item.value === slectedRegionId }">
-                <v-icon class="mr-1" v-if="item.value === slectedRegionId">mdi-check</v-icon>
-                <span :class="{ 'ml-8': item.value !== slectedRegionId }"> {{ item.title }} </span>
+              <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
+                <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
+                <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -169,7 +169,7 @@ export default {
       { title: 'Outside study area', value: 7 }
     ],
 
-    slectedRegionId: -1,
+    selectedRegionId: -1,
 
     devices: [],
     boundData: {},
@@ -179,10 +179,10 @@ export default {
 
   computed: {
     markers() {
-      if (this.slectedRegionId < 0) {
+      if (this.selectedRegionId < 0) {
         return this.devices;
       } else {
-        return this.devices.filter(location => location.flags === this.slectedRegionId);
+        return this.devices.filter(location => location.flags === this.selectedRegionId);
       }
     },
 
@@ -250,7 +250,7 @@ export default {
 
     regionMenuItemClicked(value) {
       setTimeout(() => {
-        this.slectedRegionId = value;
+        this.selectedRegionId = value;
         this.valueSelected = '';
       }, 100);
     },

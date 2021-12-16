@@ -100,14 +100,14 @@
               <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
-              <h2>{{i.name}}</h2>
+              <h2>{{ i.name }}</h2>
               <h3>Data is Unavailable.</h3>
             </div>
             <div v-else class="grid-center graph-container">
               <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
-              <h2>{{i.name}}</h2>
+              <h2>{{ i.name }}</h2>
               <h3>Loading Data...</h3>
             </div>
           </v-col>
@@ -127,14 +127,14 @@
               <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
-              <h2>{{i.name}}</h2>
+              <h2>{{ i.name }}</h2>
               <h3>Data is Unavailable.</h3>
             </div>
             <div v-else class="grid-center graph-container">
               <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
-              <h2>{{i.name}}</h2>
+              <h2>{{ i.name }}</h2>
               <h3>Loading Data...</h3>
             </div>
           </v-col>
@@ -160,6 +160,7 @@ export default {
     BasicChart,
   },
   data: () => ({
+    startDelay: true,
     category: null,
     selectedVal: 'Travel Time',
     valItems: ['Travel Time', 'Travel Speed'],
@@ -221,10 +222,16 @@ export default {
   }),
   computed: {
     markers() {
-      if (!this.selectedRoute) {
-        return this.bluetoothSegments;
+      console.log(`markers - ${this.bluetoothSegments ? this.bluetoothSegments.length : 'N/A'}`);
+      if (!this.startDelay) {
+        console.log(`markers (After Delay) - ${this.bluetoothSegments ? this.bluetoothSegments.length : 'N/A'}`);
+        if (!this.selectedRoute) {
+          return this.bluetoothSegments;
+        } else {
+          return this.bluetoothSegments.filter((segment) => segment.route === this.selectedRoute);
+        }
       } else {
-        return this.bluetoothSegments.filter((segment) => segment.route === this.selectedRoute);
+        return []
       }
     },
 
@@ -247,14 +254,12 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
+      this.startDelay = false;
+    }, 100);
     if (this.bluetoothSegments.length === 0) {
       this.fetchBluetoothSegments();
     }
-
-    // Load first selected data in case of no data showing
-    /* setTimeout(() => {
-      this.showDataIfEmpty();
-    }, 500); */
   },
 
   watch: {
@@ -274,13 +279,13 @@ export default {
     },
 
     removeItem(name) {
-      this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != name)
+      this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != name);
       this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
     },
 
     valueSelectHandler(value) {
       if (value && value.length > 0 && value[value.length - 1]) {
-        let marker = this.markers.find(m => m.name === value[value.length - 1].name);
+        let marker = this.markers.find((m) => m.name === value[value.length - 1].name);
         const time = this.currentDate.getTime();
         this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
         this.$bus.$emit('NAME_SELECTED', value);
@@ -289,8 +294,8 @@ export default {
 
     markerClicked(marker, action, fromMap = true) {
       if (fromMap) {
-        if (action == "remove") {
-          this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name)
+        if (action == 'remove') {
+          this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != marker.name);
         } else {
           this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
           const time = this.currentDate.getTime();
@@ -318,19 +323,11 @@ export default {
       this.fetchData();
     },
 
-    showDataIfEmpty() {
-      const any = Object.values(this.availability).some((item) => item);
-      if (!any) {
-        this.$bus.$emit('CENTER_MAP');
-        this.$bus.$emit('SELECT_FIRST');
-      }
-    },
-
     fetchData() {
       const time = this.currentDate.getTime();
-      
-      this.valuesSelected.forEach(x => {
-        let marker = this.markers.find(m => m.name === x.name);
+
+      this.valuesSelected.forEach((x) => {
+        let marker = this.markers.find((m) => m.name === x.name);
         this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
       });
     },
@@ -343,22 +340,22 @@ export default {
         const response = await Api.fetchTravelTimeData(id, interval, time);
 
         let travelTimeList = this.getResponseData(response);
-        let data = -1
+        let data = -1;
         if (travelTimeList) {
           data = {
             travelTime: this.formTravelTimeData(travelTimeList, title),
-            travelSpeed: this.formSpeedData(travelTimeList, title)
-          }
+            travelSpeed: this.formSpeedData(travelTimeList, title),
+          };
         }
-        this.valuesSelected.forEach(val => {
+        this.valuesSelected.forEach((val) => {
           if (val.id == id) {
-            val.data = data
+            val.data = data;
           }
         });
       } catch (error) {
-        this.valuesSelected.forEach(val => {
+        this.valuesSelected.forEach((val) => {
           if (val.id == id) {
-            val.data = -1
+            val.data = -1;
           }
         });
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
@@ -413,7 +410,7 @@ export default {
   position: relative;
 }
 .graph-close-button {
-  position: absolute; 
+  position: absolute;
   right: 0px;
   z-index: 99;
 }
