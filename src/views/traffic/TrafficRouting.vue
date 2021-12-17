@@ -1,26 +1,10 @@
 <template>
   <div id="historical-mode">
-    <!-- Toggle Button -->
-    <v-tooltip bottom>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          small
-          v-bind="attrs"
-          v-on="on"
-          @click="toggleTrafficRouting()"
-          style="position: absolute; top: 10px; left: 382px; height: 40px"
-        >
-          <v-icon>mdi-vector-radius</v-icon>
-        </v-btn>
-      </template>
-      <span>Toggle Traffic Routing</span>
-    </v-tooltip>
     <!-- Card -->
     <v-scale-transition>
       <v-card
-        style="position: absolute; top: 60px; left: 10px"
+        style="position: absolute; top: 10px; left: 10px"
         class="pa-2"
-        v-show="map && showTrafficRouting && !modes.addFromMap"
       >
         <v-card-title> Traffic Routing </v-card-title>
         <v-col>
@@ -120,6 +104,9 @@ export default {
   },
 
   mounted: function() {
+    setTimeout(() => {
+      this.addBB();
+    }, 1000);
     this.$bus.$on('newSource', sourceCoordinate => {
       this.updateSource(sourceCoordinate);
     });
@@ -136,9 +123,6 @@ export default {
   },
 
   methods: {
-    toggleTrafficRouting() {
-      this.showTrafficRouting = !this.showTrafficRouting;
-    },
     clearData() {
       this.$bus.$emit('clearRouting');
       this.sourceString = '';
@@ -179,10 +163,7 @@ export default {
     addBB() {
       this.initMapBB();
       if (this.bbox) {
-        this.showTrafficRouting = true;
         let poi = this.bbox.bounds.getCenter().toJSON();
-        poi.lat -= 0.002;
-        poi.lng -= 0.055;
         this.map.setCenter(poi);
         this.map.setZoom(12);
         this.bbox.setMap(this.map);
@@ -190,7 +171,6 @@ export default {
     },
     removeBB() {
       if (this.bbox) {
-        this.showTrafficRouting = false;
         this.bbox.setMap(null);
       }
       this.$bus.$emit('clearRouting');
@@ -359,26 +339,8 @@ export default {
     }
   },
 
-  watch: {
-    showTrafficRouting(show) {
-      if (show) {
-        this.addBB();
-      } else {
-        this.removeBB();
-      }
-    }
-  },
-
   computed: {
-    showTrafficRouting: {
-      get() {
-        return this.$store.state.bluetooth.showTrafficRouting;
-      },
-      set(val) {
-        this.$store.commit('bluetooth/SET_TRAFFIC_ROUTING', val);
-      }
-    },
-    ...mapState('bluetooth', ['map', 'modes'])
+    ...mapState('bluetooth', ['map'])
   }
 };
 </script>

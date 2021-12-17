@@ -34,6 +34,14 @@ const protectedRoute = [
             }
           },
           {
+            path: RouterPaths.TRAFFIC_BT_DASHBOARD,
+            name: RouterNames.TRAFFIC_BT_DASHBOARD,
+            meta: {
+              title: RouterNames.TRAFFIC_BT_DASHBOARD,
+              icon: 'mdi-view-dashboard'
+            }
+          },
+          {
             path: RouterPaths.TRAFFIC_FLOW,
             name: RouterNames.TRAFFIC_FLOW,
             meta: {
@@ -58,6 +66,30 @@ const protectedRoute = [
             }
           },
           {
+            path: RouterPaths.TRAFFIC_MULTIGRAPH,
+            name: RouterNames.TRAFFIC_MULTIGRAPH,
+            meta: {
+              title: RouterNames.TRAFFIC_MULTIGRAPH,
+              icon: 'mdi-chart-line'
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_LCM,
+            name: RouterNames.TRAFFIC_LCM,
+            meta: {
+              title: RouterNames.TRAFFIC_LCM,
+              icon: 'mdi-chart-bell-curve'
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_ROUTING,
+            name: RouterNames.TRAFFIC_ROUTING,
+            meta: {
+              title: RouterNames.TRAFFIC_ROUTING,
+              icon: 'mdi-vector-radius'
+            }
+          },
+          {
             path: RouterPaths.TRAFFIC_ANOMALY,
             name: RouterNames.TRAFFIC_ANOMALY,
             meta: {
@@ -78,7 +110,7 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_INCIDENT,
             meta: {
               title: RouterNames.TRAFFIC_INCIDENT,
-              icon: 'mdi-format-list-bulleted '
+              icon: 'mdi-format-list-bulleted'
             }
           },
           {
@@ -87,14 +119,6 @@ const protectedRoute = [
             meta: {
               title: RouterNames.TRAFFIC_PREDICT,
               icon: 'mdi-waveform'
-            }
-          },
-          {
-            path: RouterPaths.TRAFFIC_LCM,
-            name: RouterNames.TRAFFIC_LCM,
-            meta: {
-              title: RouterNames.TRAFFIC_LCM,
-              icon: 'mdi-chart-bell-curve '
             }
           }
         ]
@@ -192,7 +216,7 @@ const protectedRoute = [
         ]
       },
       //Bluetooth
-      {
+      /* {
         path: RouterPaths.BLUETOOTH_DASHBOARD,
         meta: {
           title: 'Bluetooth and Waze Data',
@@ -216,7 +240,7 @@ const protectedRoute = [
             }
           }
         ]
-      },
+      }, */
       //CAV
       {
         path: RouterPaths.CAV_DASHBOARD,

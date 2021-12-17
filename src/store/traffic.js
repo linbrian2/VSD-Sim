@@ -26,7 +26,11 @@ const state = {
     duration: 30
   },
 
-  notifications: []
+  notifications: [],
+
+  multigraphModes: ["Traffic Flow Data", "Travel Time Data", "Weather Data"],
+  multigraphModeSelect: "Traffic Flow Data",
+  activeMultigraphMarkers: [],
 };
 
 const mutations = {
@@ -71,6 +75,13 @@ const mutations = {
   SET_ACTIVE_MARKER(state, marker) {
     state.activeMarker = marker;
   },
+  ADD_ACTIVE_MULTIGRAPH_MARKER(state, marker) {
+    state.activeMultigraphMarkers = state.activeMultigraphMarkers.filter(x => x!= marker)
+    state.activeMultigraphMarkers.push(marker)
+  },
+  REMOVE_ACTIVE_MULTIGRAPH_MARKER(state, marker) {
+    state.activeMultigraphMarkers = state.activeMultigraphMarkers.filter(x => x!= marker)
+  },
   SET_DEVICES(state, devices) {
     state.devices = devices;
   },
@@ -103,6 +114,9 @@ const mutations = {
   },
   SET_VISION_RESULT(state, result) {
     state.visionResult = result;
+  },
+  SET_MULTIGRAPH_MODE_SELECT(state, mode) {
+    state.multigraphModeSelect = mode;
   }
 };
 

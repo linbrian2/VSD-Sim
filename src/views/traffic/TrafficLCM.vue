@@ -22,9 +22,9 @@
 
         <v-list>
           <v-list-item v-for="item in region_menu_items" :key="item.value" @click="regionMenuItemClicked(item.value)">
-            <v-list-item-title :class="{ 'font-weight-bold': item.value === slectedRegionId }">
-              <v-icon class="mr-1" v-if="item.value === slectedRegionId">mdi-check</v-icon>
-              <span :class="{ 'ml-8': item.value !== slectedRegionId }"> {{ item.title }} </span>
+            <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
+              <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
+              <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -84,15 +84,15 @@ export default {
       { title: 'Urban Freeway Detectors', value: 1 },
       { title: 'CAV Area Freeway Detectors', value: 3 }
     ],
-    slectedRegionId: -1
+    selectedRegionId: -1
   }),
 
   computed: {
     markers() {
-      if (this.slectedRegionId < 0) {
+      if (this.selectedRegionId < 0) {
         return this.anomalyDevices.filter(item => this.isLCMAvialble(item));
       } else {
-        return this.anomalyDevices.filter(item => item.zone === this.slectedRegionId && this.isLCMAvialble(item));
+        return this.anomalyDevices.filter(item => item.zone === this.selectedRegionId && this.isLCMAvialble(item));
       }
     },
 
@@ -161,7 +161,7 @@ export default {
 
     regionMenuItemClicked(value) {
       setTimeout(() => {
-        this.slectedRegionId = value;
+        this.selectedRegionId = value;
         this.valueSelected = '';
       }, 100);
     },

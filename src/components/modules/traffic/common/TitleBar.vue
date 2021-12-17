@@ -14,7 +14,20 @@
             </v-tooltip>
           </span>
 
-          <div class="mt-2">
+          <div class="mb-1" style="width: 240px" v-if="isMultigraph">
+            <v-select
+              filled
+              dense
+              v-model="multigraphModeSelect"
+              :items="multigraphModes"
+              item-text="text"
+              item-value="value"
+              hide-details
+              single-line
+            />
+          </div>
+
+          <div class="mt-2" v-if="!isMultigraph">
             <span>{{ loading ? 'Loading ...' : title }}</span>
             <span class="ml-2 mt-0" v-if="!loading">
               <v-chip color="green" outlined small v-if="showId || showUid">
@@ -50,22 +63,26 @@ export default {
     title: String,
     loading: Boolean,
     refresh: Function,
+    isMultigraph: {
+      type: Boolean,
+      default: false,
+    },
     showId: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showUid: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showMap: {
       type: Boolean,
-      default: true
+      default: true,
     },
     showRefresh: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
 
   computed: {
@@ -73,7 +90,7 @@ export default {
       return (
         this.activeMarker || {
           id: 6,
-          name: 'No Signal'
+          name: 'No Signal',
         }
       );
     },
@@ -90,7 +107,15 @@ export default {
 
       return result;
     },
-    ...mapState('traffic', ['activeMarker'])
+    multigraphModeSelect: {
+      get() {
+        return this.$store.state.traffic.multigraphModeSelect;
+      },
+      set(val) {
+        this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
+      },
+    },
+    ...mapState('traffic', ['activeMarker', 'multigraphModes']),
   },
   methods: {
     refreshData() {
@@ -99,8 +124,8 @@ export default {
 
     showPanel() {
       this.$store.commit('traffic/TOGGLE_SHOW_PANEL');
-    }
-  }
+    },
+  },
 };
 </script>
 

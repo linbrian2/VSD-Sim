@@ -9,12 +9,15 @@ import HR from '@/components/layouts/HR.vue';
 import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
-import Bluetooth from '@/components/layouts/Bluetooth.vue';
+/* import Bluetooth from '@/components/layouts/Bluetooth.vue'; */
 
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
+import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
 import TrafficFlow from '@/views/traffic/TrafficFlow.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
 import TravelTimeData from '@/views/traffic/TravelTimeData.vue';
+import Multigraph from '@/views/traffic/Multigraph.vue';
+import TrafficRoutingDashboard from '@/views/traffic/TrafficRoutingDashboard';
 import WeatherData from '@/views/traffic/WeatherData.vue';
 import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
@@ -32,8 +35,8 @@ import MultiOcc from '@/views/hr/MultiOcc.vue';
 import VisionDashboard from '@/views/vision/Dashboard.vue';
 import ReID from '@/views/vision/ReID.vue';
 
-import BluetoothDashboard from '@/views/bluetooth/Dashboard.vue';
-import BluetoothMultigraph from '@/views/bluetooth/MultiGraph.vue';
+/* import BluetoothDashboard from '@/views/bluetooth/Dashboard.vue';
+import BluetoothMultigraph from '@/views/bluetooth/MultiGraph.vue'; */
 
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
@@ -64,6 +67,11 @@ const router = new Router({
           component: TrafficDashboard
         },
         {
+          path: RouterPaths.TRAFFIC_BT_DASHBOARD,
+          name: RouterNames.TRAFFIC_BT_DASHBOARD,
+          component: TrafficBTDashboard
+        },
+        {
           path: RouterPaths.TRAFFIC_FLOW,
           name: RouterNames.TRAFFIC_FLOW,
           component: TrafficFlow
@@ -72,6 +80,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_LCM,
           name: RouterNames.TRAFFIC_LCM,
           component: TrafficLCM
+        },
+        {
+          path: RouterPaths.TRAFFIC_ROUTING,
+          name: RouterNames.TRAFFIC_ROUTING,
+          component: TrafficRoutingDashboard
         },
         {
           path: RouterPaths.TRAFFIC_PREDICT,
@@ -87,6 +100,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_WEATHER,
           name: RouterNames.TRAFFIC_WEATHER,
           component: WeatherData
+        },
+        {
+          path: RouterPaths.TRAFFIC_MULTIGRAPH,
+          name: RouterNames.TRAFFIC_MULTIGRAPH,
+          component: Multigraph
         },
         {
           path: RouterPaths.TRAVEL_TIME_DATA,
@@ -162,7 +180,7 @@ const router = new Router({
         }
       ]
     },
-    {
+    /* {
       path: RouterPaths.BLUETOOTH_DASHBOARD,
       component: Bluetooth,
       children: [
@@ -177,7 +195,7 @@ const router = new Router({
           component: BluetoothMultigraph
         }
       ]
-    },
+    }, */
     {
       path: RouterPaths.CAV_DASHBOARD,
       component: CAV,

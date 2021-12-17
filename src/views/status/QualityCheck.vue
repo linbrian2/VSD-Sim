@@ -44,7 +44,7 @@
             <v-select
               dark
               dense
-              v-model="slectedRegionId"
+              v-model="selectedRegionId"
               :items="region_items"
               item-text="title"
               item-value="value"
@@ -164,7 +164,7 @@ export default {
       { title: 'Outside study area', value: 7 }
     ],
 
-    slectedRegionId: -1
+    selectedRegionId: -1
   }),
 
   computed: {
@@ -173,10 +173,10 @@ export default {
     },
 
     items() {
-      if (this.slectedRegionId < 0) {
+      if (this.selectedRegionId < 0) {
         return this.allItems;
       } else {
-        return this.allItems.filter(item => item.flags === this.slectedRegionId);
+        return this.allItems.filter(item => item.flags === this.selectedRegionId);
       }
     },
     ...mapState(['darkMode', 'currentDate'])
