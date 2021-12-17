@@ -150,6 +150,8 @@ export default {
           if (response.data.status === 'OK') {
             const data = response.data.data;
 
+            console.log(data);
+
             // Group the data by group
             const groups = data.reduce((r, item) => {
               r[item.group] = r[item.group] || [];

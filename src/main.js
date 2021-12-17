@@ -7,7 +7,6 @@ import axios from 'axios';
 import VueNativeSock from 'vue-native-websocket';
 import { trafficWebsocketUrl } from './utils/websocketUrl';
 
-
 import HighchartsVue from 'highcharts-vue';
 /* import 'material-design-icons-iconfont/dist/material-design-icons.css' */
 Vue.use(HighchartsVue);

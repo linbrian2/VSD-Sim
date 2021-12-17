@@ -31,7 +31,6 @@ import Toolbar from '@/components/modules/cav/Toolbar';
 import CarMarker from '@/components/modules/cav/CarMarker';
 import useMapGeometry from '@/utils/MapGeometry';
 import MapUtils from '@/utils/MapUtils.js';
-//import { websocketUrl } from '@/utils/websocketUrl';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 
 export default {
@@ -263,14 +262,7 @@ export default {
 
       this.$store.commit('cav/SET_CURRENT_PROGRESS', 0);
 
-      if (this.currentTrip.status === 0) {
-        // const url = `${websocketUrl}/${this.currentTrip.id}`;
-        // this.$store.dispatch('WSConnect',url);
-        // this.$store.dispatch('WSSendMessage', JSON.stringify({ data: 'Hello from frontend ...' }));
-        // this.$store.commit('cav/SET_PLAYBACK_SPEED', 1);
-        // // Move th start time to the five minutes before
-        // this.fastForward(300);
-      } else {
+      if (this.currentTrip.status > 0) {
         this.$store.commit('cav/SET_PLAYBACK_SPEED', 10);
       }
     },
@@ -430,5 +422,5 @@ export default {
   margin-top: -12px;
   margin-left: -12px;
   margin-right: 0px;
-} 
+}
 </style>

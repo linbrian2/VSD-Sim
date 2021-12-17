@@ -103,7 +103,7 @@ export default {
     this.$bus.$on('UPDATE_TIMELINE', date => {
       this.updateTimeline(date);
     });
-    this.$bus.$on('DISPLAY_MARKER_DETAILS', item => {
+    this.$bus.$on('BT_DISPLAY_MARKER_DETAILS', item => {
       this.handleMarkerClick(item);
     });
     this.$bus.$on('GO_TO_SEGMENT_LOCATION', seg => {

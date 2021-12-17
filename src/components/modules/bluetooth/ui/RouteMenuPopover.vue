@@ -2,11 +2,7 @@
   <div>
     <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-x>
       <template v-slot:activator="{ on, attrs }">
-        <v-badge
-          color="grey"
-          :content="selectedRoutes.length"
-          :value="selectedRoutes.length > 0"
-        >
+        <v-badge color="grey" :content="selectedRoutes.length" :value="selectedRoutes.length > 0">
           <v-btn icon v-bind="attrs" v-on="on" class="ml-2" small>
             <v-icon>mdi-filter</v-icon>
           </v-btn>
@@ -60,20 +56,20 @@ export default {
   }),
   methods: {
     clearAll() {
-      this.selectedRoutes = []
+      this.selectedRoutes = [];
     }
   },
   computed: {
     selectedRoutes: {
-      get () {
-        return this.$store.state.bluetooth.selectedRoutes
+      get() {
+        return this.$store.state.bluetooth.selectedRoutes;
       },
-      set (routes) {
-        this.$store.commit('bluetooth/SET_SELECTED_ROUTES', routes)
+      set(routes) {
+        this.$store.commit('bluetooth/SET_SELECTED_ROUTES', routes);
       }
     },
     ...mapState('bluetooth', ['apiData'])
-  },
+  }
 };
 </script>
 
