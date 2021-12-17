@@ -9,7 +9,7 @@ import HR from '@/components/layouts/HR.vue';
 import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
-import Bluetooth from '@/components/layouts/Bluetooth.vue';
+/* import Bluetooth from '@/components/layouts/Bluetooth.vue'; */
 
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
@@ -35,8 +35,8 @@ import MultiOcc from '@/views/hr/MultiOcc.vue';
 import VisionDashboard from '@/views/vision/Dashboard.vue';
 import ReID from '@/views/vision/ReID.vue';
 
-import BluetoothDashboard from '@/views/bluetooth/Dashboard.vue';
-import BluetoothMultigraph from '@/views/bluetooth/MultiGraph.vue';
+/* import BluetoothDashboard from '@/views/bluetooth/Dashboard.vue';
+import BluetoothMultigraph from '@/views/bluetooth/MultiGraph.vue'; */
 
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
@@ -180,7 +180,7 @@ const router = new Router({
         }
       ]
     },
-    {
+    /* {
       path: RouterPaths.BLUETOOTH_DASHBOARD,
       component: Bluetooth,
       children: [
@@ -195,7 +195,7 @@ const router = new Router({
           component: BluetoothMultigraph
         }
       ]
-    },
+    }, */
     {
       path: RouterPaths.CAV_DASHBOARD,
       component: CAV,

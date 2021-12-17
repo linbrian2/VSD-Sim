@@ -39,7 +39,7 @@
             />
           </div>
 
-          <div class="mt-1 mr-6" style="width: 120px">
+          <div class="mt-1 mr-6" style="width: 128px">
             <v-select
               dark
               style="width: 140px; font-size: 14px"
@@ -84,15 +84,13 @@ import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
-import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
 export default {
   components: {
     SelectionPanel,
     MapMultigraphSelect,
     MultigraphDataEntries,
-    TitleBar,
-    BasicChart,
+    TitleBar
   },
   data: () => ({
     startDelay: true,
@@ -103,15 +101,15 @@ export default {
         scale: 10.0,
         fillColor: '#05FF00',
         fillOpacity: 0.8,
-        strokeWeight: 0.4,
+        strokeWeight: 0.4
       },
       {
         path: 0,
         scale: 10.0,
         fillColor: '#FF7F00',
         fillOpacity: 0.8,
-        strokeWeight: 0.4,
-      },
+        strokeWeight: 0.4
+      }
     ],
 
     selectedVal: 'Air Temperature',
@@ -125,19 +123,19 @@ export default {
       { text: '1 Hour', value: 3600000 },
       { text: '30 mins', value: 1800000 },
       { text: '15 mins', value: 900000 },
-      { text: '5 mins', value: 300000 },
+      { text: '5 mins', value: 300000 }
     ],
     icons: [
       {
         url: require('@/assets/icon30.png'),
-        size: { width: 32, height: 32, f: 'px', b: 'px' },
+        size: { width: 32, height: 32, f: 'px', b: 'px' }
       },
       {
         url: require('@/assets/icon30-select.png'),
-        size: { width: 32, height: 32, f: 'px', b: 'px' },
-      },
+        size: { width: 32, height: 32, f: 'px', b: 'px' }
+      }
     ],
-    weather: {},
+    weather: {}
   }),
 
   computed: {
@@ -146,9 +144,7 @@ export default {
     },
 
     markers() {
-      console.log(`markers - ${this.weatherStations ? this.weatherStations.length : 'N/A'}`);
       if (!this.startDelay) {
-        console.log(`markers (After Delay) - ${this.weatherStations ? this.weatherStations.length : 'N/A'}`);
         return this.weatherStations;
       } else {
         return [];
@@ -156,7 +152,7 @@ export default {
     },
 
     items() {
-      return this.weatherStations.map((location) => {
+      return this.weatherStations.map(location => {
         return { id: location.id, name: location.name.trimRight(), data: null };
       });
     },
@@ -167,11 +163,11 @@ export default {
       },
       set(val) {
         this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
-      },
+      }
     },
 
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['weatherStations', 'multigraphModes']),
+    ...mapState('traffic', ['weatherStations', 'multigraphModes'])
   },
 
   mounted() {
@@ -186,7 +182,7 @@ export default {
   watch: {
     currentDate() {
       this.refreshData();
-    },
+    }
   },
 
   created() {
@@ -200,7 +196,7 @@ export default {
     },
 
     removeItem(item) {
-      this.valuesSelected = this.valuesSelected.filter((x) => x.id && x.id != item.id);
+      this.valuesSelected = this.valuesSelected.filter(x => x.id && x.id != item.id);
       this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
     },
 
@@ -214,7 +210,7 @@ export default {
 
     valueSelectHandler(value) {
       if (value && value.length > 0 && value[value.length - 1]) {
-        let marker = this.markers.find((m) => m.id === value[value.length - 1].id);
+        let marker = this.markers.find(m => m.id === value[value.length - 1].id);
         const time = this.currentDate.getTime();
         this.fetchWeatherData(marker.id, this.interval, time, marker.name);
         this.$bus.$emit('NAME_SELECTED', value);
@@ -238,7 +234,7 @@ export default {
     markerClicked(marker, action, fromMap = true) {
       if (fromMap) {
         if (action == 'remove') {
-          this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != marker.name);
+          this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name);
         } else {
           this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
           const time = this.currentDate.getTime();
@@ -257,8 +253,8 @@ export default {
 
     fetchData() {
       const time = this.currentDate.getTime();
-      this.valuesSelected.forEach((x) => {
-        let marker = this.markers.find((m) => m.id === x.id);
+      this.valuesSelected.forEach(x => {
+        let marker = this.markers.find(m => m.id === x.id);
         this.fetchWeatherData(marker.id, this.interval, time, marker.name);
       });
     },
@@ -276,16 +272,16 @@ export default {
             relHumidity: this.formHumidityData(dataList, name),
             windAvg: this.formWindData(dataList, name),
             visibility: this.formVisibilityData(dataList, name),
-            precip: this.formPrecipData(dataList, name),
+            precip: this.formPrecipData(dataList, name)
           };
         }
-        this.valuesSelected.forEach((val) => {
+        this.valuesSelected.forEach(val => {
           if (val.id == id) {
             val.data = data;
           }
         });
       } catch (error) {
-        this.valuesSelected.forEach((val) => {
+        this.valuesSelected.forEach(val => {
           if (val.id == id) {
             val.data = -1;
           }
@@ -366,8 +362,8 @@ export default {
       return { data, xAxis, yAxis, title, subtitle };
     },
 
-    ...mapActions('traffic', ['fetchWeatherStations']),
-  },
+    ...mapActions('traffic', ['fetchWeatherStations'])
+  }
 };
 </script>
 

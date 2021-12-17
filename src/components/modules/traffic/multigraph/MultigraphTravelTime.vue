@@ -68,7 +68,7 @@
             single-line
           />
         </div>
-        <div style="width: 120px; margin-top: 5px">
+        <div style="width: 128px; margin-top: 5px">
           <v-select
             dark
             dense
@@ -104,7 +104,6 @@ import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
-import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
 
 export default {
@@ -112,7 +111,6 @@ export default {
     SelectionPanel,
     MapMultigraphSelect,
     TitleBar,
-    BasicChart,
     MultigraphDataEntries
   },
   data: () => ({
@@ -131,7 +129,7 @@ export default {
       { text: '5 mins', value: 300000 },
       { text: '15 mins', value: 900000 },
       { text: '30 mins', value: 1800000 },
-      { text: '1 Hour', value: 3600000 },
+      { text: '1 Hour', value: 3600000 }
     ],
 
     icons: [
@@ -141,7 +139,7 @@ export default {
         fillColor: '#0580FF',
         fillOpacity: 0.8,
         strokeWeight: 1.0,
-        strokeColor: 'white',
+        strokeColor: 'white'
       },
       {
         path: 0,
@@ -149,8 +147,8 @@ export default {
         fillColor: '#FF7F00',
         fillOpacity: 0.8,
         strokeWeight: 1.0,
-        strokeColor: 'white',
-      },
+        strokeColor: 'white'
+      }
     ],
     valuesSelected: [],
 
@@ -170,28 +168,26 @@ export default {
       { text: 'DE-141: BARLEY MILL RD', value: 'DE141', directions: ['NB', 'SB'] },
       { text: 'US-202: CONCORD PIKE', value: 'US202', directions: ['NB', 'SB'] },
       { text: 'US-9: MARKET ST', value: 'US9', directions: ['WB', 'EB'] },
-      { text: 'DE-8: LITTLE CREEK RD', value: 'DE8', directions: ['WB', 'EB'] },
+      { text: 'DE-8: LITTLE CREEK RD', value: 'DE8', directions: ['WB', 'EB'] }
     ],
 
-    selectedRoute: '',
+    selectedRoute: ''
   }),
   computed: {
     markers() {
-      console.log(`markers - ${this.bluetoothSegments ? this.bluetoothSegments.length : 'N/A'}`);
       if (!this.startDelay) {
-        console.log(`markers (After Delay) - ${this.bluetoothSegments ? this.bluetoothSegments.length : 'N/A'}`);
         if (!this.selectedRoute) {
           return this.bluetoothSegments;
         } else {
-          return this.bluetoothSegments.filter((segment) => segment.route === this.selectedRoute);
+          return this.bluetoothSegments.filter(segment => segment.route === this.selectedRoute);
         }
       } else {
-        return []
+        return [];
       }
     },
 
     items() {
-      return this.markers.map((item) => {
+      return this.markers.map(item => {
         return { id: item.id, name: item.name, data: null };
       });
     },
@@ -202,10 +198,10 @@ export default {
       },
       set(val) {
         this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
-      },
+      }
     },
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['bluetoothSegments', 'multigraphModes']),
+    ...mapState('traffic', ['bluetoothSegments', 'multigraphModes'])
   },
 
   mounted() {
@@ -220,7 +216,7 @@ export default {
   watch: {
     currentDate() {
       this.refreshData();
-    },
+    }
   },
 
   created() {
@@ -234,13 +230,13 @@ export default {
     },
 
     removeItem(item) {
-      this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != item.name);
+      this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != item.name);
       this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
     },
 
     valueSelectHandler(value) {
       if (value && value.length > 0 && value[value.length - 1]) {
-        let marker = this.markers.find((m) => m.name === value[value.length - 1].name);
+        let marker = this.markers.find(m => m.name === value[value.length - 1].name);
         const time = this.currentDate.getTime();
         this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
         this.$bus.$emit('NAME_SELECTED', value);
@@ -250,7 +246,7 @@ export default {
     markerClicked(marker, action, fromMap = true) {
       if (fromMap) {
         if (action == 'remove') {
-          this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != marker.name);
+          this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name);
         } else {
           this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
           const time = this.currentDate.getTime();
@@ -281,8 +277,8 @@ export default {
     fetchData() {
       const time = this.currentDate.getTime();
 
-      this.valuesSelected.forEach((x) => {
-        let marker = this.markers.find((m) => m.name === x.name);
+      this.valuesSelected.forEach(x => {
+        let marker = this.markers.find(m => m.name === x.name);
         this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
       });
     },
@@ -299,16 +295,16 @@ export default {
         if (travelTimeList) {
           data = {
             travelTime: this.formTravelTimeData(travelTimeList, title),
-            travelSpeed: this.formSpeedData(travelTimeList, title),
+            travelSpeed: this.formSpeedData(travelTimeList, title)
           };
         }
-        this.valuesSelected.forEach((val) => {
+        this.valuesSelected.forEach(val => {
           if (val.id == id) {
             val.data = data;
           }
         });
       } catch (error) {
-        this.valuesSelected.forEach((val) => {
+        this.valuesSelected.forEach(val => {
           if (val.id == id) {
             val.data = -1;
           }
@@ -355,8 +351,8 @@ export default {
       return { data, xAxis, yAxis, title, subtitle };
     },
 
-    ...mapActions('traffic', ['fetchBluetoothSegments']),
-  },
+    ...mapActions('traffic', ['fetchBluetoothSegments'])
+  }
 };
 </script>
 

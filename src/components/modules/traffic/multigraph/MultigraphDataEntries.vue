@@ -7,8 +7,10 @@
         </div>
         <BasicChart :data="i.data[param]" :height="height" />
       </template>
-      <template v-else-if="i.data && i.data[param] && flowParams.isFlow && !isEmpty(i.data[param]) &&
-          objContainsKey(i.data[param])"
+      <template
+        v-else-if="
+          i.data && i.data[param] && flowParams.isFlow && !isEmpty(i.data[param]) && objContainsKey(i.data[param])
+        "
       >
         <!-- {{ i.data[param] }} -->
         <div class="graph-container">
@@ -22,8 +24,12 @@
         />
       </template>
       <template
-        v-else-if="i.data == -1 || (i.data && i.data[param] 
-        && (i.data[param].length == 0 || isEmpty(i.data[param]) || !objContainsKey(i.data[param])))"
+        v-else-if="
+          i.data == -1 ||
+            (i.data &&
+              i.data[param] &&
+              (i.data[param].length == 0 || isEmpty(i.data[param]) || !objContainsKey(i.data[param])))
+        "
       >
         <div class="graph-container">
           <v-btn icon @click="removeItem(i)" class="graph-close-button"><v-icon>mdi-close</v-icon></v-btn>
@@ -62,18 +68,18 @@ export default {
       type: Object,
       default() {
         return {
-          isFlow: false,
+          isFlow: false
         };
-      },
-    },
+      }
+    }
   },
   components: {
     BasicChart,
-    TrafficFlowMultigraphCombinedCharts,
+    TrafficFlowMultigraphCombinedCharts
   },
   data() {
     return {
-      height: 480,
+      height: 480
     };
   },
   methods: {
@@ -90,8 +96,8 @@ export default {
     objContainsKey(obj) {
       let key = this.flowParams.limitGraph;
       return key.toLowerCase() in obj;
-    },
-  },
+    }
+  }
 };
 </script>
 

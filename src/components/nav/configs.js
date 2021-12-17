@@ -216,7 +216,7 @@ const protectedRoute = [
         ]
       },
       //Bluetooth
-      {
+      /* {
         path: RouterPaths.BLUETOOTH_DASHBOARD,
         meta: {
           title: 'Bluetooth and Waze Data',
@@ -240,7 +240,7 @@ const protectedRoute = [
             }
           }
         ]
-      },
+      }, */
       //CAV
       {
         path: RouterPaths.CAV_DASHBOARD,

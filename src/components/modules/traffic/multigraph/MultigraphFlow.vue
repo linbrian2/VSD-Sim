@@ -71,7 +71,7 @@
             />
           </div>
 
-          <div class="mt-1 mr-6" style="width: 120px">
+          <div class="mt-1 mr-6" style="width: 128px">
             <v-select
               dark
               dense
@@ -138,15 +138,13 @@ import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
-import TrafficFlowMultigraphCombinedCharts from '@/components/modules/traffic/multigraph/TrafficFlowMultigraphCombinedCharts';
 
 export default {
   components: {
     SelectionPanel,
     MapMultigraphSelect,
     TitleBar,
-    MultigraphDataEntries,
-    TrafficFlowMultigraphCombinedCharts,
+    MultigraphDataEntries
   },
   data: () => ({
     startDelay: true,
@@ -162,21 +160,21 @@ export default {
         scale: 10.0,
         fillColor: '#05FF00',
         fillOpacity: 0.8,
-        strokeWeight: 0.4,
+        strokeWeight: 0.4
       },
       {
         path: 0,
         scale: 10.0,
         fillColor: '#FF7F00',
         fillOpacity: 0.8,
-        strokeWeight: 0.4,
-      },
+        strokeWeight: 0.4
+      }
     ],
 
     tabItems: [
       { key: 'bound', value: 'Per Bound' },
       { key: 'lane', value: 'Per Lane' },
-      { key: 'minute', value: 'Per Minute' },
+      { key: 'minute', value: 'Per Minute' }
     ],
     tab: null,
 
@@ -186,7 +184,7 @@ export default {
       { text: '30 mins', value: 1800000 },
       { text: '15 mins', value: 900000 },
       { text: '5 mins', value: 300000 },
-      { text: '1 min', value: 60000 },
+      { text: '1 min', value: 60000 }
     ],
     direction: '',
 
@@ -198,12 +196,12 @@ export default {
       { title: 'CAV Area System Detectors', value: 4 },
       { title: ' Rural Freeway Detectors', value: 5 },
       { title: 'Rural System Detectors', value: 6 },
-      { title: 'Outside study area', value: 7 },
+      { title: 'Outside study area', value: 7 }
     ],
 
     selectedRegionId: -1,
 
-    devices: [],
+    devices: []
   }),
 
   computed: {
@@ -211,18 +209,16 @@ export default {
       return {
         isFlow: true,
         direction: this.direction,
-        limitGraph: this.selectedVal,
+        limitGraph: this.selectedVal
       };
     },
 
     markers() {
-      console.log(`markers - ${this.devices ? this.devices.length : 'N/A'}`);
       if (!this.startDelay) {
-        console.log(`markers (After Delay) - ${this.devices ? this.devices.length : 'N/A'}`);
         if (this.selectedRegionId < 0) {
           return this.devices;
         } else {
-          return this.devices.filter((location) => location.flags === this.selectedRegionId);
+          return this.devices.filter(location => location.flags === this.selectedRegionId);
         }
       } else {
         return [];
@@ -230,7 +226,7 @@ export default {
     },
 
     items() {
-      return this.markers.map((location) => {
+      return this.markers.map(location => {
         return { id: location.id, name: location.name, data: null };
       });
     },
@@ -246,11 +242,11 @@ export default {
       },
       set(val) {
         this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
-      },
+      }
     },
 
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['activeMarker', 'multigraphModes']),
+    ...mapState('traffic', ['activeMarker', 'multigraphModes'])
   },
 
   mounted() {
@@ -263,7 +259,7 @@ export default {
   watch: {
     currentDate() {
       this.refreshData();
-    },
+    }
   },
 
   created() {
@@ -277,7 +273,7 @@ export default {
     },
 
     removeItem(item) {
-      this.valuesSelected = this.valuesSelected.filter((x) => x.id && x.id != item.id);
+      this.valuesSelected = this.valuesSelected.filter(x => x.id && x.id != item.id);
       this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
     },
 
@@ -287,7 +283,7 @@ export default {
 
     valueSelectHandler(value) {
       if (value && value.length > 0 && value[value.length - 1]) {
-        let marker = this.markers.find((m) => m.name === value[value.length - 1].name);
+        let marker = this.markers.find(m => m.name === value[value.length - 1].name);
         const time = this.currentDate.getTime();
         this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
         this.$bus.$emit('NAME_SELECTED', value);
@@ -302,13 +298,13 @@ export default {
     },
 
     isTabVisible(name) {
-      return this.tabItems.find((i) => i.key === name) !== undefined;
+      return this.tabItems.find(i => i.key === name) !== undefined;
     },
 
     markerClicked(marker, action, fromMap = true) {
       if (fromMap) {
         if (action == 'remove') {
-          this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != marker.name);
+          this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name);
         } else {
           this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
           const time = this.currentDate.getTime();
@@ -331,8 +327,8 @@ export default {
     fetchData() {
       const time = this.currentDate.getTime();
 
-      this.valuesSelected.forEach((x) => {
-        let marker = this.markers.find((m) => m.name === x.name);
+      this.valuesSelected.forEach(x => {
+        let marker = this.markers.find(m => m.name === x.name);
         this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
       });
     },
@@ -354,7 +350,7 @@ export default {
           Api.fetchTrafficFlowBaselineData(id, null, interval, time, null),
           Api.fetchTrafficFlowData(id, null, interval, time, null),
           Api.fetchTrafficFlowPerLaneData(id, uid, null, interval, time, null),
-          Api.fetchTrafficFlowPerMinuteData(id, null, interval, time, null),
+          Api.fetchTrafficFlowPerMinuteData(id, null, interval, time, null)
         ]);
 
         const dataList = [];
@@ -395,20 +391,20 @@ export default {
           data = {
             boundData: boundData,
             laneData: laneData,
-            minuteData: minuteData,
+            minuteData: minuteData
           };
         }
-        this.valuesSelected.forEach((val) => {
+        this.valuesSelected.forEach(val => {
           if (val.id == id) {
             val.data = data;
           }
         });
 
-        if (dataList.every((item) => item === null)) {
+        if (dataList.every(item => item === null)) {
           this.showWarningMessage('No data available');
         }
       } catch (error) {
-        this.valuesSelected.forEach((val) => {
+        this.valuesSelected.forEach(val => {
           if (val.id == id) {
             val.data = -1;
           }
@@ -437,8 +433,8 @@ export default {
 
     showWarningMessage(message) {
       this.$store.dispatch('setSystemStatus', { text: message, color: 'info', timeout: 1000 });
-    },
-  },
+    }
+  }
 };
 </script>
 

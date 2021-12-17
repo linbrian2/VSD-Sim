@@ -21,10 +21,9 @@ import MultigraphWeather from '../../components/modules/traffic/multigraph/Multi
 export default {
   components: { MultigraphFlow, MultigraphWeather, MultigraphTravelTime },
   computed: {
-    ...mapState('traffic', ['activeMarker', 'multigraphModeSelect']),
-  },
+    ...mapState('traffic', ['activeMarker', 'multigraphModeSelect'])
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>
