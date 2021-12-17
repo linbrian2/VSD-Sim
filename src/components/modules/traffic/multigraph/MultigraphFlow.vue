@@ -99,99 +99,30 @@
       <div>
         <v-tabs-items v-model="tab">
           <v-tab-item value="bound" v-if="isTabVisible('bound')">
-            <v-row>
-              <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-                <div v-if="i.data && i.data.boundData" class="graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <TrafficFlowMultigraphCombinedCharts
-                    :data="i.data.boundData"
-                    :name="i.name"
-                    :direction="direction"
-                    :limitGraph="selectedVal"
-                  />
-                </div>
-                <div v-else-if="i.data == -1" class="grid-center graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <h2>{{ i.name }}</h2>
-                  <h3>Data is Unavailable.</h3>
-                </div>
-                <div v-else class="grid-center graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <h2>{{ i.name }}</h2>
-                  <h3>Loading Data...</h3>
-                </div>
-              </v-col>
-            </v-row>
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'boundData'"
+              :flowParams="flowParams"
+              @removeItem="removeItem"
+            />
           </v-tab-item>
 
           <v-tab-item value="lane" v-if="isTabVisible('lane')">
-            <v-row>
-              <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-                <div v-if="i.data && i.data.laneData" class="graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <TrafficFlowMultigraphCombinedCharts
-                    :data="i.data.laneData"
-                    :name="i.name"
-                    :direction="direction"
-                    :limitGraph="selectedVal"
-                  />
-                </div>
-                <div v-else-if="i.data == -1" class="grid-center graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <h2>{{ i.name }}</h2>
-                  <h3>Data is Unavailable.</h3>
-                </div>
-                <div v-else class="grid-center graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <h2>{{ i.name }}</h2>
-                  <h3>Loading Data...</h3>
-                </div>
-              </v-col>
-            </v-row>
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'laneData'"
+              :flowParams="flowParams"
+              @removeItem="removeItem"
+            />
           </v-tab-item>
 
           <v-tab-item value="minute" v-if="isTabVisible('minute')">
-            <v-row>
-              <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-                <div v-if="i.data && i.data.minuteData" class="graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <TrafficFlowMultigraphCombinedCharts
-                    :data="i.data.minuteData"
-                    :name="i.name"
-                    :direction="direction"
-                    :limitGraph="selectedVal"
-                  />
-                </div>
-                <div v-else-if="i.data == -1" class="grid-center graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <h2>{{ i.name }}</h2>
-                  <h3>Data is Unavailable.</h3>
-                </div>
-                <div v-else class="grid-center graph-container">
-                  <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <h2>{{ i.name }}</h2>
-                  <h3>Loading Data...</h3>
-                </div>
-              </v-col>
-            </v-row>
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'minuteData'"
+              :flowParams="flowParams"
+              @removeItem="removeItem"
+            />
           </v-tab-item>
         </v-tabs-items>
       </div>
@@ -206,6 +137,7 @@ import { mapState } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import MultigraphDataEntries from './MultigraphDataEntries.vue';
 import TrafficFlowMultigraphCombinedCharts from '@/components/modules/traffic/multigraph/TrafficFlowMultigraphCombinedCharts';
 
 export default {
@@ -213,6 +145,7 @@ export default {
     SelectionPanel,
     MapMultigraphSelect,
     TitleBar,
+    MultigraphDataEntries,
     TrafficFlowMultigraphCombinedCharts,
   },
   data: () => ({
@@ -274,6 +207,14 @@ export default {
   }),
 
   computed: {
+    flowParams() {
+      return {
+        isFlow: true,
+        direction: this.direction,
+        limitGraph: this.selectedVal,
+      };
+    },
+
     markers() {
       console.log(`markers - ${this.devices ? this.devices.length : 'N/A'}`);
       if (!this.startDelay) {
@@ -284,7 +225,7 @@ export default {
           return this.devices.filter((location) => location.flags === this.selectedRegionId);
         }
       } else {
-        return []
+        return [];
       }
     },
 
@@ -314,7 +255,7 @@ export default {
 
   mounted() {
     setTimeout(() => {
-      this.startDelay = false
+      this.startDelay = false;
     }, 100);
     this.fetchDevices();
   },
@@ -335,8 +276,8 @@ export default {
       this.$bus.$emit('NAME_SELECTED', []);
     },
 
-    removeItem(id) {
-      this.valuesSelected = this.valuesSelected.filter((x) => x.id && x.id != id);
+    removeItem(item) {
+      this.valuesSelected = this.valuesSelected.filter((x) => x.id && x.id != item.id);
       this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
     },
 
@@ -388,11 +329,12 @@ export default {
     },
 
     fetchData() {
-      let marker = this.activeMarker;
-      let time = this.currentDate.getTime();
-      if (marker != null) {
+      const time = this.currentDate.getTime();
+
+      this.valuesSelected.forEach((x) => {
+        let marker = this.markers.find((m) => m.name === x.name);
         this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
-      }
+      });
     },
 
     async fetchDevices() {

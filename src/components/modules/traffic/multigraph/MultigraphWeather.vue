@@ -59,134 +59,19 @@
     </TitleBar>
     <v-container ref="myDiv">
       <v-card class="mb-8" v-if="selectedVal == valItems[0]">
-        <v-row>
-          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-            <div v-if="i.data && i.data.temp" class="graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <BasicChart :data="i.data.temp" :height="height" />
-            </div>
-            <div v-else-if="i.data == -1" class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Data is Unavailable.</h3>
-            </div>
-            <div v-else class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Loading Data...</h3>
-            </div>
-          </v-col>
-        </v-row>
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'temp'" @removeItem="removeItem" />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[1]">
-        <v-row>
-          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-            <div v-if="i.data && i.data.relHumidity" class="graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <BasicChart :data="i.data.relHumidity" :height="height" />
-            </div>
-            <div v-else-if="i.data == -1" class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Data is Unavailable.</h3>
-            </div>
-            <div v-else class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Loading Data...</h3>
-            </div>
-          </v-col>
-        </v-row>
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'relHumidity'" @removeItem="removeItem" />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[2]">
-        <v-row>
-          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-            <div v-if="i.data && i.data.windAvg" class="graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <BasicChart :data="i.data.windAvg" :height="height" />
-            </div>
-            <div v-else-if="i.data == -1" class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Data is Unavailable.</h3>
-            </div>
-            <div v-else class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Loading Data...</h3>
-            </div>
-          </v-col>
-        </v-row>
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'windAvg'" @removeItem="removeItem" />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[3]">
-        <v-row>
-          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-            <div v-if="i.data && i.data.visibility" class="graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <BasicChart :data="i.data.visibility" :height="height" />
-            </div>
-            <div v-else-if="i.data == -1" class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Data is Unavailable.</h3>
-            </div>
-            <div v-else class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Loading Data...</h3>
-            </div>
-          </v-col>
-        </v-row>
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'visibility'" @removeItem="removeItem" />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[4]">
-        <v-row>
-          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-            <div v-if="i.data && i.data.precip" class="graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <BasicChart :data="i.data.precip" :height="height" />
-            </div>
-            <div v-else-if="i.data == -1" class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Data is Unavailable.</h3>
-            </div>
-            <div v-else class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.id)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Loading Data...</h3>
-            </div>
-          </v-col>
-        </v-row>
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'precip'" @removeItem="removeItem" />
       </v-card>
     </v-container>
   </div>
@@ -197,6 +82,7 @@ import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
+import MultigraphDataEntries from './MultigraphDataEntries.vue';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
@@ -204,6 +90,7 @@ export default {
   components: {
     SelectionPanel,
     MapMultigraphSelect,
+    MultigraphDataEntries,
     TitleBar,
     BasicChart,
   },
@@ -312,8 +199,8 @@ export default {
       this.$bus.$emit('NAME_SELECTED', []);
     },
 
-    removeItem(id) {
-      this.valuesSelected = this.valuesSelected.filter((x) => x.id && x.id != id);
+    removeItem(item) {
+      this.valuesSelected = this.valuesSelected.filter((x) => x.id && x.id != item.id);
       this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
     },
 

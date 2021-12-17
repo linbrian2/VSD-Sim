@@ -88,57 +88,11 @@
     <!-- Charts -->
     <v-container>
       <v-card class="mb-8" v-if="selectedVal == valItems[0]">
-        <v-row>
-          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-            <div v-if="i.data && i.data.travelTime" class="graph-container">
-              <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <BasicChart :data="i.data.travelTime" :height="height" />
-            </div>
-            <div v-else-if="i.data == -1" class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Data is Unavailable.</h3>
-            </div>
-            <div v-else class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Loading Data...</h3>
-            </div>
-          </v-col>
-        </v-row>
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'travelTime'" @removeItem="removeItem" />
       </v-card>
 
       <v-card class="mb-8" v-if="selectedVal == valItems[1]">
-        <v-row>
-          <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
-            <div v-if="i.data && i.data.travelSpeed" class="graph-container">
-              <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <BasicChart :data="i.data.travelSpeed" :height="height" />
-            </div>
-            <div v-else-if="i.data == -1" class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Data is Unavailable.</h3>
-            </div>
-            <div v-else class="grid-center graph-container">
-              <v-btn icon @click="removeItem(i.name)" class="graph-close-button">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <h2>{{ i.name }}</h2>
-              <h3>Loading Data...</h3>
-            </div>
-          </v-col>
-        </v-row>
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'travelSpeed'" @removeItem="removeItem" />
       </v-card>
     </v-container>
   </div>
@@ -151,6 +105,7 @@ import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
+import MultigraphDataEntries from './MultigraphDataEntries.vue';
 
 export default {
   components: {
@@ -158,6 +113,7 @@ export default {
     MapMultigraphSelect,
     TitleBar,
     BasicChart,
+    MultigraphDataEntries
   },
   data: () => ({
     startDelay: true,
@@ -166,7 +122,6 @@ export default {
     valItems: ['Travel Time', 'Travel Speed'],
 
     loading: false,
-    height: 480,
     title: 'Travel Time Data',
 
     interval: 300000,
@@ -278,8 +233,8 @@ export default {
       this.$bus.$emit('NAME_SELECTED', []);
     },
 
-    removeItem(name) {
-      this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != name);
+    removeItem(item) {
+      this.valuesSelected = this.valuesSelected.filter((x) => x.name && x.name != item.name);
       this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
     },
 
@@ -406,14 +361,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.graph-container {
-  position: relative;
-}
-.graph-close-button {
-  position: absolute;
-  right: 0px;
-  z-index: 99;
-}
 .basic-chart {
   height: 500px;
 }
