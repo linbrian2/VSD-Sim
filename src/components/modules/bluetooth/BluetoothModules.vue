@@ -40,6 +40,10 @@ export default {
       this.setTime(date);
     });
 
+    this.$bus.$on('UPDATE_BLUETOOTH_DATA', () => {
+      this.fetchData(true, true);
+    });
+
     /* Update every 5 minutes*/
     if (!this.updateInterval) {
       this.updateInterval = setInterval(() => {
@@ -195,7 +199,9 @@ export default {
       this.getCurrTimeSegment(dt);
       this.getCurrTimeWaze(dt);
       this.getCurrTimeDevice(dt);
-      this.fetchSensors();
+      setTimeout(() => {
+        this.fetchSensors();
+      }, 1000);
       this.timeSinceUpdate = 0;
     },
     getFullDaySegment(dt) {
@@ -246,8 +252,6 @@ export default {
             .filter(x => !!x)
             .sort();
           this.$store.commit('bluetooth/SET_API_DATA', { prop: 'routes', data: routes });
-          let notifText = 'Successfully fetched segment data';
-          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
         },
         error => {
           console.log(error);
@@ -266,8 +270,6 @@ export default {
           if (this.isWazeClusters) {
             this.$bus.$emit('ADD_WAZE_CLUSTERS');
           }
-          let notifText = 'Successfully fetched waze data';
-          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
         },
         error => {
           console.log(error);
@@ -298,8 +300,6 @@ export default {
               if (this.mapLayerSelection.includes(Constants.LAYER_DEVICES)) {
                 this.$bus.$emit('ADD_MARKERS', this.filteredDeviceMarkers);
               }
-              let notifText = 'Successfully fetched Device data';
-              this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
             },
             error => {
               console.log(error);

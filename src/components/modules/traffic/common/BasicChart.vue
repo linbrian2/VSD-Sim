@@ -95,6 +95,7 @@ export default {
       // Add data to series
       let series = this.prepareSeries(data.data);
       let title = data.title || '';
+      let subtitle = data.subtitle || null;
       let xAxis = data.xAxis;
       let yAxis = data.yAxis;
       let ly = this.legendy || 45;
@@ -134,6 +135,9 @@ export default {
             fontWeight: 'bold'
           },
           text: title
+        },
+        subtitle: {
+          text: subtitle
         },
         xAxis: {
           type: 'datetime',

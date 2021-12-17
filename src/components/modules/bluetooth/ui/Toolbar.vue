@@ -201,7 +201,7 @@ export default {
     },
     onSearchChange(item) {
       if (item) {
-        this.$bus.$emit('DISPLAY_MARKER_DETAILS', item);
+        this.$bus.$emit('BT_DISPLAY_MARKER_DETAILS', item);
       }
     },
     menuItemClicked(type) {

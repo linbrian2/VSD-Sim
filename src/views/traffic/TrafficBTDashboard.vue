@@ -59,7 +59,6 @@
 <script>
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { mapState } from 'vuex';
-// Pages
 // UI
 import BluetoothMap from '@/components/modules/bluetooth/ui/BluetoothMap';
 import Toolbar from '@/components/modules/bluetooth/ui/Toolbar.vue';
@@ -81,11 +80,14 @@ export default {
     Dialogs,
     Toolbar,
     ToolbarAddTT,
-    PlaybackToolbar,
+    PlaybackToolbar
   },
   mounted() {
     if (this.map) {
-      this.refreshMapObjects();
+      setTimeout(() => {
+        this.$bus.$emit('UPDATE_BLUETOOTH_DATA');
+      }, 100);
+      /* this.refreshMapObjects(); */
     }
     /* Other */
     const vm = this;
@@ -583,7 +585,8 @@ export default {
   },
   watch: {
     map() {
-      this.refreshMapObjects();
+      this.$bus.$emit('UPDATE_BLUETOOTH_DATA');
+      /* this.refreshMapObjects(); */
     },
     'modes.addFromMap': {
       handler: function(newVal, oldVal) {

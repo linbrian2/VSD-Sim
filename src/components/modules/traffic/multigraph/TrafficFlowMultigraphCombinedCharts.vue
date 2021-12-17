@@ -1,18 +1,15 @@
 <template>
   <div>
-    <v-card class="mb-8" ref="spdCard" v-if="isSpeed && (!limitGraph || limitGraph == 'Speed')">
+    <v-card ref="spdCard" v-if="isSpeed && (!limitGraph || limitGraph == 'Speed')">
       <BasicChart :data="speed" :height="height" />
-      <div v-if="name" class="text-name">{{ name }}</div>
     </v-card>
 
-    <v-card class="mb-8" v-if="isVolume && (!limitGraph || limitGraph == 'Volume')">
+    <v-card v-if="isVolume && (!limitGraph || limitGraph == 'Volume')">
       <BasicChart :data="volume" :height="height" />
-      <div v-if="name" class="text-name">{{ name }}</div>
     </v-card>
 
-    <v-card class="mb-8" v-if="isOccupancy && (!limitGraph || limitGraph == 'Occupancy')">
+    <v-card v-if="isOccupancy && (!limitGraph || limitGraph == 'Occupancy')">
       <BasicChart :data="occupancy" :height="height" />
-      <div v-if="name" class="text-name">{{ name }}</div>
     </v-card>
   </div>
 </template>

@@ -8,14 +8,27 @@
       :actionItems="action_menu_items"
     >
       <div v-show="$vuetify.breakpoint.mdAndUp">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn class="mx-1" fab :color="color('dashboard')" icon v-on="on" @click.stop="showDashboard()">
-              <v-icon>mdi-view-dashboard</v-icon>
-            </v-btn>
+        <v-menu bottom right offset-y>
+          <template v-slot:activator="{ on: menu, attrs }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on: tooltip }">
+                <v-btn class="mx-1" fab :color="color('dashboard')" icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                  <v-icon>mdi-view-dashboard</v-icon>
+                </v-btn>
+              </template>
+              <span>Dashboard</span>
+            </v-tooltip>
           </template>
-          <span>Dashboard</span>
-        </v-tooltip>
+
+          <v-list>
+            <template v-for="(item, index) in dash_menu_items">
+              <v-divider v-if="item.divider" :key="index"></v-divider>
+              <v-list-item v-else :key="index" @click="dataMenuItemClicked(item.name)">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-list>
+        </v-menu>
 
         <v-menu bottom right offset-y>
           <template v-slot:activator="{ on: menu, attrs }">
@@ -109,13 +122,21 @@ export default {
   data: () => ({
     title: AppConstants.TRAFFIC_APP_TITLE,
 
+    dash_menu_items: [
+      { title: 'Dashboard', name: RouterNames.TRAFFIC_DASHBOARD },
+      { title: 'Bluetooth Dashboard', name: RouterNames.TRAFFIC_BT_DASHBOARD }
+    ],
+
     chart_menu_items: [
-      { title: 'Traffic Flow', name: RouterNames.TRAFFIC_FLOW },
-      { divider: true },
+      { title: 'Traffic Flow Data', name: RouterNames.TRAFFIC_FLOW },
       { title: 'Travel Time Data', name: RouterNames.TRAVEL_TIME_DATA },
       { title: 'Weather Data', name: RouterNames.TRAFFIC_WEATHER },
       { divider: true },
-      { title: 'Traffic LCM', name: RouterNames.TRAFFIC_LCM }
+      { title: 'Multigraph', name: RouterNames.TRAFFIC_MULTIGRAPH },
+      { divider: true },
+      { title: 'Traffic LCM', name: RouterNames.TRAFFIC_LCM },
+      { divider: true },
+      { title: 'Traffic Routing', name: RouterNames.TRAFFIC_ROUTING }
     ],
 
     anomaly_menu_items: [
@@ -126,10 +147,13 @@ export default {
 
     action_menu_items: [
       { title: RouterNames.TRAFFIC_DASHBOARD, url: RouterPaths.TRAFFIC_DASHBOARD },
+      { title: RouterNames.TRAFFIC_BT_DASHBOARD, url: RouterPaths.TRAFFIC_BT_DASHBOARD },
       { divider: true },
       { title: RouterNames.TRAFFIC_FLOW, url: RouterPaths.TRAFFIC_FLOW },
       { title: RouterNames.TRAVEL_TIME_DATA, url: RouterPaths.TRAVEL_TIME_DATA },
       { title: RouterNames.TRAFFIC_WEATHER, url: RouterPaths.TRAFFIC_WEATHER },
+      { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
+      { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING },
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
@@ -153,7 +177,8 @@ export default {
   methods: {
     color(name) {
       if (name === 'dashboard') {
-        return this.$route.name === RouterNames.TRAFFIC_DASHBOARD ? 'orange' : 'teal';
+        const item = this.dash_menu_items.find(item => item.name === this.$route.name);
+        return item ? 'orange' : 'teal';
       } else if (name === 'chart') {
         const item = this.chart_menu_items.find(item => item.name === this.$route.name);
         return item ? 'orange' : 'teal';
@@ -173,6 +198,10 @@ export default {
 
     showDashboard() {
       this.switchTo(RouterPaths.TRAFFIC_DASHBOARD);
+    },
+
+    showBTDashboard() {
+      this.switchTo(RouterPaths.TRAFFIC_BT_DASHBOARD);
     },
 
     showTrafficFlow() {
@@ -195,6 +224,10 @@ export default {
       this.switchTo(RouterPaths.TRAFFIC_WEATHER);
     },
 
+    showMultigraph() {
+      this.switchTo(RouterPaths.TRAFFIC_MULTIGRAPH);
+    },
+
     showTravelTimeData() {
       this.switchTo(RouterPaths.TRAVEL_TIME_DATA);
     },
@@ -207,18 +240,38 @@ export default {
       this.switchTo(RouterPaths.TRAFFIC_INCIDENT);
     },
 
+    showTrafficRouting() {
+      this.switchTo(RouterPaths.TRAFFIC_ROUTING);
+    },
+
     performTask(name) {
       switch (name) {
         case RouterNames.TRAFFIC_FLOW:
           this.showTrafficFlow();
           break;
 
+        case RouterNames.TRAFFIC_DASHBOARD:
+          this.showDashboard();
+          break;
+
+        case RouterNames.TRAFFIC_BT_DASHBOARD:
+          this.showBTDashboard();
+          break;
+
         case RouterNames.TRAFFIC_LCM:
           this.showTrafficLCM();
           break;
 
+        case RouterNames.TRAFFIC_ROUTING:
+          this.showTrafficRouting();
+          break
+
         case RouterNames.TRAFFIC_WEATHER:
           this.showWeatherData();
+          break;
+
+        case RouterNames.TRAFFIC_MULTIGRAPH:
+          this.showMultigraph();
           break;
 
         case RouterNames.TRAVEL_TIME_DATA:

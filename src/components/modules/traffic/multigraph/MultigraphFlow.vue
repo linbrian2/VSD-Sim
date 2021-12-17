@@ -4,46 +4,74 @@
     <SelectionPanel name="trafficFlowSideBarWidth" @navigation-width-changed="sideBarWidthChanged">
       <div class="d-flex justify-space-between">
         <v-combobox
+          multiple
+          small-chips
           class="mx-2"
           dense
           hide-details
           single-line
           :items="items"
-          :value="valueSelected"
+          item-text="name"
+          v-model="valuesSelected"
           @input="valueSelectHandler"
-          label="CHOOSE A DETECTOR TO SHOW"
-        />
-        <!-- Region selection menu -->
-        <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
-          <template v-slot:activator="{ on: menu, attrs }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                  <v-icon dark>mdi-dots-vertical</v-icon>
-                </v-btn>
+          label="SELECT DETECTORS TO SHOW"
+          return-object
+        >
+          <!-- Region selection menu -->
+          <template v-slot:append-outer>
+            <v-btn icon @click="clear">
+              <v-icon>mdi-backspace</v-icon>
+            </v-btn>
+            <!-- Region selection menu -->
+            <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
+              <template v-slot:activator="{ on: menu, attrs }">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on: tooltip }">
+                    <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                      <v-icon dark>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Region Selection</span>
+                </v-tooltip>
               </template>
-              <span>Region Selection</span>
-            </v-tooltip>
-          </template>
 
-          <v-list>
-            <v-list-item v-for="item in region_menu_items" :key="item.value" @click="regionMenuItemClicked(item.value)">
-              <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
-                <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
-                <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+              <v-list>
+                <v-list-item
+                  v-for="item in region_menu_items"
+                  :key="item.value"
+                  @click="regionMenuItemClicked(item.value)"
+                >
+                  <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
+                    <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
+                    <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
+        </v-combobox>
       </div>
-      <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
+      <MapMultigraphSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar :title="title" showId showUid :loading="loading" :refresh="refreshData">
+    <TitleBar :isMultigraph="true" :showId="false" :loading="loading" :refresh="refreshData">
       <div class="d-flex align-items justify-space-between align-center">
         <div class="d-flex justify-space-between">
-          <div class="mt-1 mr-15" style="width:140px;">
+          <div class="mt-1 ml-6 mr-6" style="width: 120px">
+            <v-select
+              dark
+              dense
+              v-model="selectedVal"
+              :items="valItems"
+              item-text="text"
+              item-value="value"
+              hide-details
+              single-line
+            />
+          </div>
+
+          <div class="mt-1 mr-6" style="width: 128px">
             <v-select
               dark
               dense
@@ -54,21 +82,6 @@
               @input="intervalSelected"
               hide-details
               prepend-icon="mdi-clock-outline"
-              single-line
-            />
-          </div>
-
-          <div class="mt-1 mr-10" style="width:100px;">
-            <v-select
-              dark
-              dense
-              v-model="direction"
-              :items="directions"
-              item-text="text"
-              item-value="value"
-              @input="directionSelected"
-              hide-details
-              prepend-icon="mdi-arrow-decision-outline"
               single-line
             />
           </div>
@@ -86,15 +99,30 @@
       <div>
         <v-tabs-items v-model="tab">
           <v-tab-item value="bound" v-if="isTabVisible('bound')">
-            <TrafficFlowCombinedCharts :data="boundData" :name="name" :direction="direction" />
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'boundData'"
+              :flowParams="flowParams"
+              @removeItem="removeItem"
+            />
           </v-tab-item>
 
           <v-tab-item value="lane" v-if="isTabVisible('lane')">
-            <TrafficFlowCombinedCharts :data="laneData" :name="name" :direction="direction" />
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'laneData'"
+              :flowParams="flowParams"
+              @removeItem="removeItem"
+            />
           </v-tab-item>
 
           <v-tab-item value="minute" v-if="isTabVisible('minute')">
-            <TrafficFlowCombinedCharts :data="minuteData" :name="name" :direction="direction" />
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'minuteData'"
+              :flowParams="flowParams"
+              @removeItem="removeItem"
+            />
           </v-tab-item>
         </v-tabs-items>
       </div>
@@ -107,22 +135,25 @@ import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
-import MapSelect from '@/components/modules/traffic/map/MapSelect';
+import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
-import TrafficFlowCombinedCharts from '@/components/modules/traffic/common/TrafficFlowCombinedCharts';
+import MultigraphDataEntries from './MultigraphDataEntries.vue';
 
 export default {
   components: {
     SelectionPanel,
-    MapSelect,
+    MapMultigraphSelect,
     TitleBar,
-    TrafficFlowCombinedCharts
+    MultigraphDataEntries
   },
   data: () => ({
+    startDelay: true,
+    selectedVal: 'Volume',
+    valItems: ['Speed', 'Volume', 'Occupancy'],
+
     loading: false,
     showBaseline: true,
     interval: 300000,
-    title: 'Traffic Flow Data',
     icons: [
       {
         path: 0,
@@ -140,15 +171,14 @@ export default {
       }
     ],
 
-    defaultTabItems: [
+    tabItems: [
       { key: 'bound', value: 'Per Bound' },
       { key: 'lane', value: 'Per Lane' },
       { key: 'minute', value: 'Per Minute' }
     ],
-    tabItems: [],
     tab: null,
 
-    valueSelected: '',
+    valuesSelected: [],
     intervalItems: [
       { text: '1 Hour', value: 3600000 },
       { text: '30 mins', value: 1800000 },
@@ -171,23 +201,34 @@ export default {
 
     selectedRegionId: -1,
 
-    devices: [],
-    boundData: {},
-    laneData: {},
-    minuteData: {}
+    devices: []
   }),
 
   computed: {
+    flowParams() {
+      return {
+        isFlow: true,
+        direction: this.direction,
+        limitGraph: this.selectedVal
+      };
+    },
+
     markers() {
-      if (this.selectedRegionId < 0) {
-        return this.devices;
+      if (!this.startDelay) {
+        if (this.selectedRegionId < 0) {
+          return this.devices;
+        } else {
+          return this.devices.filter(location => location.flags === this.selectedRegionId);
+        }
       } else {
-        return this.devices.filter(location => location.flags === this.selectedRegionId);
+        return [];
       }
     },
 
     items() {
-      return this.markers.map(location => location.name);
+      return this.markers.map(location => {
+        return { id: location.id, name: location.name, data: null };
+      });
     },
 
     name() {
@@ -195,33 +236,24 @@ export default {
       return marker && marker.uid;
     },
 
-    directions() {
-      const marker = this.activeMarker;
-      if (!marker || !marker.directions) {
-        return [];
+    multigraphModeSelect: {
+      get() {
+        return this.$store.state.traffic.multigraphModeSelect;
+      },
+      set(val) {
+        this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
       }
-
-      const result = [];
-      if (marker.directions.length > 1) {
-        result.push({ text: 'All', value: '' });
-      }
-      marker.directions.forEach(direction => {
-        result.push({ text: direction, value: direction });
-      });
-      return result;
     },
 
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['activeMarker'])
+    ...mapState('traffic', ['activeMarker', 'multigraphModes'])
   },
 
   mounted() {
-    this.fetchDevices();
-
-    // Load first selected data in case of no data showing
     setTimeout(() => {
-      this.showDataIfEmpty();
-    }, 500);
+      this.startDelay = false;
+    }, 100);
+    this.fetchDevices();
   },
 
   watch: {
@@ -235,23 +267,33 @@ export default {
   },
 
   methods: {
+    clear() {
+      this.valuesSelected = [];
+      this.$bus.$emit('NAME_SELECTED', []);
+    },
+
+    removeItem(item) {
+      this.valuesSelected = this.valuesSelected.filter(x => x.id && x.id != item.id);
+      this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
+    },
+
     sideBarWidthChanged() {
       this.$bus.$emit('CHART_RELOAD');
     },
 
-    showDataIfEmpty() {
-      this.$bus.$emit('CENTER_MAP');
-      this.$bus.$emit('SELECT_FIRST');
-    },
-
     valueSelectHandler(value) {
-      this.$bus.$emit('NAME_SELECTED', value);
+      if (value && value.length > 0 && value[value.length - 1]) {
+        let marker = this.markers.find(m => m.name === value[value.length - 1].name);
+        const time = this.currentDate.getTime();
+        this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
+        this.$bus.$emit('NAME_SELECTED', value);
+      }
     },
 
     regionMenuItemClicked(value) {
       setTimeout(() => {
         this.selectedRegionId = value;
-        this.valueSelected = '';
+        this.valuesSelected = [];
       }, 100);
     },
 
@@ -259,10 +301,16 @@ export default {
       return this.tabItems.find(i => i.key === name) !== undefined;
     },
 
-    markerClicked(marker) {
-      this.valueSelected = marker.name;
-      const time = this.currentDate.getTime();
-      this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
+    markerClicked(marker, action, fromMap = true) {
+      if (fromMap) {
+        if (action == 'remove') {
+          this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name);
+        } else {
+          this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
+          const time = this.currentDate.getTime();
+          this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
+        }
+      }
     },
 
     refreshData() {
@@ -277,11 +325,12 @@ export default {
     },
 
     fetchData() {
-      let marker = this.activeMarker;
-      let time = this.currentDate.getTime();
-      if (marker != null) {
+      const time = this.currentDate.getTime();
+
+      this.valuesSelected.forEach(x => {
+        let marker = this.markers.find(m => m.name === x.name);
         this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
-      }
+      });
     },
 
     async fetchDevices() {
@@ -309,9 +358,9 @@ export default {
         dataList.push(this.getResponseData(perLaneRes, false));
         dataList.push(this.getResponseData(perMinRes, false));
 
-        this.boundData = dataList[0] ? dataList[0] : {};
-        this.laneData = dataList[1] ? dataList[1] : {};
-        this.minuteData = dataList[2] ? dataList[2] : {};
+        let boundData = dataList[0] ? dataList[0] : {};
+        let laneData = dataList[1] ? dataList[1] : {};
+        let minuteData = dataList[2] ? dataList[2] : {};
 
         const baselineData = this.getResponseData(baselineRes, false);
         if (baselineData && !Utils.isEmpty(baselineData)) {
@@ -332,25 +381,34 @@ export default {
           });
 
           // Merge with bound data
-          this.boundData.speed.push(...baselineData.speed);
-          this.boundData.volume.push(...baselineData.volume);
-          this.boundData.occupancy.push(...baselineData.occupancy);
+          boundData.speed.push(...baselineData.speed);
+          boundData.volume.push(...baselineData.volume);
+          boundData.occupancy.push(...baselineData.occupancy);
         }
 
-        this.rangeTabItems(dataList);
-
-        // Reset direction selection if not present in the new direction list
-        // if (this.directions.find(item => item.value === this.direction) === undefined) {
-        //   this.direction = '';
-        // }
-
-        // Select the first one
-        this.direction = this.directions.length > 0 ? this.directions[0].value : '';
+        let data = -1;
+        if (dataList) {
+          data = {
+            boundData: boundData,
+            laneData: laneData,
+            minuteData: minuteData
+          };
+        }
+        this.valuesSelected.forEach(val => {
+          if (val.id == id) {
+            val.data = data;
+          }
+        });
 
         if (dataList.every(item => item === null)) {
           this.showWarningMessage('No data available');
         }
       } catch (error) {
+        this.valuesSelected.forEach(val => {
+          if (val.id == id) {
+            val.data = -1;
+          }
+        });
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
@@ -375,44 +433,31 @@ export default {
 
     showWarningMessage(message) {
       this.$store.dispatch('setSystemStatus', { text: message, color: 'info', timeout: 1000 });
-    },
-
-    rangeTabItems(dataList) {
-      const items = Object.assign([], this.defaultTabItems);
-      for (let i = 0; i < dataList.length; i++) {
-        if (dataList[i] === null) {
-          this.removeTabByName(items, this.defaultTabItems[i].key);
-        }
-      }
-
-      if (
-        !Utils.arraysEqual(
-          items.map(item => item.key),
-          this.tabItems.map(item => item.key)
-        )
-      ) {
-        if (items.length > 0) {
-          this.tab = items[0].key;
-        }
-        this.tabItems = items;
-      }
-    },
-
-    removeTabByName(items, name) {
-      const e = items.findIndex(item => item.key === name);
-      if (e >= 0) {
-        items.splice(e, 1);
-      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.graph-container {
+  position: relative;
+}
+.graph-close-button {
+  position: absolute;
+  right: 0px;
+  z-index: 99;
+}
+.basic-chart {
+  height: 500px;
+}
 .active-select {
   background-color: red;
   color: white;
   border-style: solid;
   border-width: 5px;
+}
+.option-left {
+  margin-left: 0;
+  margin-right: 0;
 }
 </style>
