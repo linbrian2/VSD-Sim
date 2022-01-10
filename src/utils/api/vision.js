@@ -29,7 +29,7 @@ export default {
   },
   /* Vehicle Re-ID */
   fetchSnippets() {
-    return AxiosClient.get('http://10.51.4.9:34556/getupdate').then(res => {
+    return AxiosClient.get('http://10.51.4.9:34557/getupdate').then(res => {
       return res.data;
     });
   }
