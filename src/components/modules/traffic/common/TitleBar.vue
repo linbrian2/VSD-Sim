@@ -27,8 +27,8 @@
             />
           </div>
 
-          <div class="mt-2" v-if="!isMultigraph">
-            <span>{{ loading ? 'Loading ...' : title }}</span>
+          <div class="mt-1" v-if="!isMultigraph">
+            <span class="font-weight-bold text-overline">{{ loading ? 'Loading ...' : title }}</span>
             <span class="ml-2 mt-0" v-if="!loading">
               <v-chip color="green" outlined small v-if="showId || showUid">
                 <span class="white--text">{{ label }}</span>
@@ -65,24 +65,24 @@ export default {
     refresh: Function,
     isMultigraph: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showId: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showUid: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showMap: {
       type: Boolean,
-      default: true,
+      default: true
     },
     showRefresh: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
 
   computed: {
@@ -90,7 +90,7 @@ export default {
       return (
         this.activeMarker || {
           id: 6,
-          name: 'No Signal',
+          name: 'No Signal'
         }
       );
     },
@@ -113,9 +113,9 @@ export default {
       },
       set(val) {
         this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
-      },
+      }
     },
-    ...mapState('traffic', ['activeMarker', 'multigraphModes']),
+    ...mapState('traffic', ['activeMarker', 'multigraphModes'])
   },
   methods: {
     refreshData() {
@@ -124,8 +124,8 @@ export default {
 
     showPanel() {
       this.$store.commit('traffic/TOGGLE_SHOW_PANEL');
-    },
-  },
+    }
+  }
 };
 </script>
 

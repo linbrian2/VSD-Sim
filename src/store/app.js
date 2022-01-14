@@ -92,7 +92,7 @@ const actions = {
   },
 
   setSystemStatus({ commit }, status) {
-    let snackbar = { showing: true, color: 'info', timeout: 2000, text: '' };
+    let snackbar = { showing: true, color: 'info', timeout: 4000, text: '' };
     Object.assign(snackbar, status);
     commit('SET_SNACKBAR', snackbar);
   },

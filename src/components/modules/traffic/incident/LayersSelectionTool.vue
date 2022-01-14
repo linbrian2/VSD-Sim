@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar dense floating height="40" style="position: absolute; top: 49px; left:10px; width: 55px ">
+  <v-toolbar dense floating color="green" height="40" style="position: absolute; top: 49px; left:190px; width: 55px; ">
     <v-menu bottom right offset-y min-width="250" :close-on-content-click="false">
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>

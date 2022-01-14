@@ -58,8 +58,8 @@ export default {
       zoomControl: true,
       zoomControlOptions: {
         position: google.maps.ControlPosition.RIGHT_CENTER
-      },
-    },
+      }
+    }
   }),
   computed: {
     position() {
@@ -121,16 +121,16 @@ export default {
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
-        return
+        return;
       }
       if (darkMode && this.$refs.mapRef) {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: DarkMapStyle})
-        })
+          map.setOptions({ styles: DarkMapStyle });
+        });
       } else {
         this.$refs.mapRef.$mapPromise.then(map => {
-          map.setOptions({styles: null})
-        })
+          map.setOptions({ styles: null });
+        });
       }
     },
 

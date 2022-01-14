@@ -81,36 +81,33 @@ export default {
 
   methods: {
     formSpeedData(flowList, direction) {
-      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
-      const subtitle = 'Speed';
+      const title = 'Speed';
       const xAxis = 'Time of day';
       const yAxis = 'Speed (mph)';
       const data = this.filterByDirection(flowList.speed, direction);
-      const result = { data, xAxis, yAxis, title, subtitle, ymin: 0, ymax: 100 };
+      const result = { data, xAxis, yAxis, title, ymin: 0, ymax: 100 };
       this.addTimeSlots(result);
       this.addXAxisStart(result, flowList, direction);
       return result;
     },
 
     formVolumeData(flowList, direction) {
-      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
-      const subtitle = 'Volume';
+      const title = 'Volume';
       const xAxis = 'Time of day';
       const yAxis = 'Volume (vehicles/interval)';
       const data = this.filterByDirection(flowList.volume, direction);
-      const result = { data, xAxis, yAxis, title, subtitle };
+      const result = { data, xAxis, yAxis, title };
       this.addTimeSlots(result);
       this.addXAxisStart(result, flowList, direction);
       return result;
     },
 
     formOccupancyData(flowList, direction) {
-      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
-      const subtitle = 'Occupancy';
+      const title = 'Occupancy';
       const xAxis = 'Time of day';
       const yAxis = 'Occupancy (%)';
       const data = this.filterByDirection(flowList.occupancy, direction);
-      const result = { data, xAxis, yAxis, title, subtitle };
+      const result = { data, xAxis, yAxis, title };
       this.addTimeSlots(result);
       this.addXAxisStart(result, flowList, direction);
       return result;

@@ -23,6 +23,7 @@ import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
 import TravelTimeMap from '@/views/traffic/TravelTimeMap.vue';
 import IncidentList from '@/views/traffic/IncidentList.vue';
+import IncidentMitigation from '@/views/traffic/IncidentMitigation.vue';
 
 import HRDashboard from '@/views/hr/Dashboard.vue';
 import PCD from '@/views/hr/PCD.vue';
@@ -120,6 +121,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_INCIDENT,
           name: RouterNames.TRAFFIC_INCIDENT,
           component: IncidentList
+        },
+        {
+          path: RouterPaths.TRAFFIC_MITIGATION_PATH,
+          name: RouterNames.TRAFFIC_MITIGATION,
+          component: IncidentMitigation
         }
       ]
     },

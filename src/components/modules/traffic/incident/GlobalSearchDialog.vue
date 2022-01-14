@@ -1,10 +1,10 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" persistent max-width="700px">
-      <v-card color="#263238">
-        <v-app-bar color="#607D8B" dark dense>
+    <v-dialog v-model="show" persistent max-width="760px">
+      <v-card tile color="#263238">
+        <v-app-bar color="#607D8B" dense>
           <v-icon class="mr-2">mdi-magnify</v-icon>
-          <v-toolbar-title>Global Search</v-toolbar-title>
+          <v-toolbar-title>Incident Search</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="hideDialog">
             <v-icon>mdi-close</v-icon>
@@ -79,7 +79,7 @@
                   item-value="value"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-select
                   label="Detour Needed"
                   style="font-size: 14px"
@@ -89,7 +89,7 @@
                   item-value="value"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-select
                   label="Lane Blockage"
                   style="font-size: 14px"
@@ -99,7 +99,17 @@
                   item-value="value"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="4">
+                <v-select
+                  label="Mitigation Solution"
+                  style="font-size: 14px"
+                  v-model="mitigation"
+                  :items="mitigationItems"
+                  item-text="text"
+                  item-value="value"
+                />
+              </v-col>
+              <v-col cols="4">
                 <v-subheader class="ml-n4 d-flex justify-space-between">
                   <div>Severity</div>
                   <v-chip color="green" outlined small>{{ severity[0] }} - {{ severity[1] }}</v-chip>
@@ -115,7 +125,7 @@
                   class="align-center"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-subheader class="ml-n4 d-flex justify-space-between">
                   <div>Duration</div>
                   <v-chip color="blue" outlined small>{{ duration[0] }} - {{ duration[1] }} minutes</v-chip>
@@ -130,9 +140,13 @@
                   class="align-center"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="4">
+                <v-subheader class="ml-n4">
+                  <div>Maximum Count</div>
+                </v-subheader>
                 <v-select
-                  label="Maximum Count"
+                  class="mt-n7"
+                  label=""
                   style="font-size: 14px"
                   v-model="count"
                   :items="countItems"
@@ -203,6 +217,12 @@ export default {
       { text: 'Yes', value: 1 },
       { text: 'No', value: 0 }
     ],
+    mitigation: -1,
+    mitigationItems: [
+      { text: "Don't care", value: -1 },
+      { text: 'Yes', value: 1 },
+      { text: 'No', value: 0 }
+    ],
     severity: [0, 100],
     duration: [0, 1200]
   }),
@@ -228,6 +248,7 @@ export default {
       this.region = -1;
       this.blockage = -1;
       this.detourNeeded = -1;
+      this.mitigation = -1;
       this.count = 100;
     },
 
@@ -253,6 +274,7 @@ export default {
         duration: this.duration,
         blockage: this.blockage,
         detourNeeded: this.detourNeeded,
+        mitigation: this.mitigation,
         limit: this.count
       };
       this.$emit('handler', data);

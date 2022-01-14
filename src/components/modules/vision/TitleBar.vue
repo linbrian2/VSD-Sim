@@ -68,7 +68,7 @@ export default {
 .title-name {
   background-color: hsl(200, 18%, 46%);
   padding: 5px 10px;
-  margin-top: -8px;
+  margin-top: 0px;
   color: white;
   font-size: large;
   font-weight: bold;

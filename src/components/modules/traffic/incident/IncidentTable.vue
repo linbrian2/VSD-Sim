@@ -15,8 +15,8 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <span v-on="on">
-              <v-icon v-if="item.status === 0" color="green">mdi-progress-check</v-icon>
-              <v-icon v-else color="grey">mdi-check-circle-outline</v-icon>
+              <v-icon v-if="item.status === 0" color="green" class="mr-2">mdi-progress-check</v-icon>
+              <v-icon v-else color="grey" class="mr-2">mdi-check-circle-outline</v-icon>
             </span>
           </template>
           <span>{{ item.status === 0 ? 'ONGOING' : 'COMPLETED' }}</span>
@@ -58,6 +58,18 @@
         <v-icon v-text="getEvidenceIcon(name)"></v-icon>
       </v-badge>
     </template>
+    <template v-slot:[`item.mitigation`]="{ item }">
+      <div v-if="item.mitigation">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon color="green" v-bind="attrs" v-on="on" @click="showMitigationSolutions(item)"
+              >mdi-traffic-light</v-icon
+            >
+          </template>
+          <span>Mitigation Solutions</span>
+        </v-tooltip>
+      </div>
+    </template>
     <template v-slot:[`item.duration`]="{ item }"> {{ item.duration }} min </template>
   </v-data-table>
 </template>
@@ -65,6 +77,7 @@
 <script>
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
+import { RouterPaths } from '@/utils/constants/router';
 export default {
   props: {
     height: { type: Number, default: 350 },
@@ -81,7 +94,8 @@ export default {
       { text: 'Start Time', value: 'startTime' },
       { text: 'End Time', value: 'endTime' },
       { text: 'Duration', value: 'duration' },
-      { text: 'Evidences', value: 'evidenceCounts' }
+      { text: 'Evidences', value: 'evidenceCounts' },
+      { text: 'Mitigation', value: 'mitigation' }
     ],
     selectedRowId: null
   }),
@@ -127,6 +141,12 @@ export default {
         alert: 'red'
       };
       return ICONS[name];
+    },
+
+    showMitigationSolutions(item) {
+      const id = item.id;
+      const path = RouterPaths.TRAFFIC_MITIGATION;
+      this.$router.push({ path: `${path}/${id}` }).catch(() => {});
     }
   }
 };

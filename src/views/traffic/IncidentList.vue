@@ -188,8 +188,7 @@ export default {
     },
 
     searchStarted(data) {
-      const { startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit } = data;
-      this.searchIncidentData(startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit);
+      this.searchIncidentData(data);
     },
 
     singleSegmentSelected(linkId) {
@@ -293,20 +292,10 @@ export default {
       this.loading = false;
     },
 
-    async searchIncidentData(startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit) {
+    async searchIncidentData(queryInput) {
       this.loading = true;
       try {
-        const response = await Api.searchIncidentData(
-          startDate,
-          endDate,
-          route,
-          region,
-          severity,
-          duration,
-          blockage,
-          detourNeeded,
-          limit
-        );
+        const response = await Api.searchIncidentData(queryInput);
         const data = this.getResponseData(response);
         if (data) {
           this.incidents = data;

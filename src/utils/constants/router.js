@@ -11,6 +11,7 @@ export const RouterNames = {
   TRAVEL_TIME_DATA: 'Travel Time Data',
   TRAVEL_TIME_MAP: 'Travel Time Map',
   TRAFFIC_INCIDENT: 'Traffic Incidents',
+  TRAFFIC_MITIGATION: 'Incident Mitigation',
 
   HR_DASHBOARD: "Today's Summary",
   HR_PCD: 'PCD',
@@ -53,6 +54,8 @@ export const RouterPaths = {
   TRAVEL_TIME_DATA: '/flow/travel-time-data',
   TRAVEL_TIME_MAP: '/flow/travel-time-map',
   TRAFFIC_INCIDENT: '/flow/incidents',
+  TRAFFIC_MITIGATION_PATH: '/flow/mitigation/:id',
+  TRAFFIC_MITIGATION: '/flow/mitigation',
 
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',

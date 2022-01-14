@@ -111,6 +111,8 @@ export default {
           dashStyle: 'Dot'
         }));
 
+      let plotBands = data.bands;
+
       // Create chart instance
       let chart = {
         credits: {
@@ -150,7 +152,8 @@ export default {
           },
           min: data.xmin,
           max: data.xmax,
-          plotLines: plotLines
+          plotLines: plotLines,
+          plotBands: plotBands
         },
         yAxis: {
           allowDecimals: false,

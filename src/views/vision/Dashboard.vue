@@ -1,30 +1,44 @@
 <template>
   <div>
     <TitleBar :loading="loading" :refresh="refreshData">
-      <v-row v-if="tab == 1">
-        <MenuTimePicker ref="timePicker" class="pa-0 ma-0 mt-n3" />
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <div v-on="on">
-              <v-btn outlined small dark icon class="ml-16 mt-2" @click="showTrafficHeatmap">
-                <v-icon>mdi-dots-grid</v-icon>
-              </v-btn>
-            </div>
-          </template>
-          <span>Show/Hide Traffic Volumes Heatmap</span>
-        </v-tooltip>
-      </v-row>
+      <v-btn-toggle class="mt-1" dense dark color="teal" v-model="selectedDirection" mandatory v-if="isJetsonCamera">
+        <v-btn flat>NB</v-btn>
+        <v-btn flat>SB</v-btn>
+        <v-btn flat>EB</v-btn>
+        <v-btn flat>WB</v-btn>
+      </v-btn-toggle>
     </TitleBar>
+
     <div>
-      <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
-        <v-tab key="0">Live Feed</v-tab>
-        <v-tab key="1">Historical Video</v-tab>
-        <v-tab key="2">Traffic Flow</v-tab>
-      </v-tabs>
+      <div class="d-flex justify-space-between">
+        <div>
+          <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
+            <v-tab key="0">Live Feed</v-tab>
+            <v-tab key="1">Historical Video</v-tab>
+            <v-tab key="2">Traffic Flow</v-tab>
+          </v-tabs>
+        </div>
+        <div class="time-display">
+          <v-row v-if="tab == 1">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <div v-on="on">
+                  <v-btn outlined small dark icon class="ml-16 mr-10 mt-n2" @click="showTrafficHeatmap">
+                    <v-icon>mdi-dots-grid</v-icon>
+                  </v-btn>
+                </div>
+              </template>
+              <span>Traffic Volumes Heatmap</span>
+            </v-tooltip>
+            <MenuTimePicker ref="timePicker" class="pa-0 ma-0 mt-n7 mr-10" />
+          </v-row>
+        </div>
+      </div>
+
       <div>
         <v-tabs-items v-model="tab">
           <v-tab-item key="0">
-            <v-card class="my-5 mx-5">
+            <v-card class="my-3 mx-5">
               <VideoPlayer ref="liveVideoPlayer" :options="livePlayerOptions" v-if="tab == 0" />
             </v-card>
           </v-tab-item>
@@ -80,6 +94,8 @@ export default {
     liveUrl: null,
     mp4Url: null,
     videoServer: process.env.VUE_APP_VIDEO_URL,
+    selectedDirection: 0,
+    cameraType: 'normal',
     Constants: {
       TAB_LIVE_FEED: 0,
       TAB_HISTORICAL: 1,
@@ -133,6 +149,10 @@ export default {
         ],
         poster: require('@/assets/loading.gif')
       };
+    },
+
+    isJetsonCamera() {
+      return this.cameraType === 'Jetson';
     },
 
     video() {
@@ -357,3 +377,12 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.time-display {
+  margin-top: 20px;
+  margin-right: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+</style>

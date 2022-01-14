@@ -66,6 +66,11 @@ export default {
     return AxiosClient.post('api/trafficFlowAndBaseline', params);
   },
 
+  fetchTrafficVolumeAndBaselineData(id, direction, interval, startDate) {
+    let params = { id, direction, interval, startDate };
+    return AxiosClient.post('api/trafficVolumeAndBaseline', params);
+  },
+
   fetchFlowData(deviceId, direction, start) {
     let id = `${deviceId}-${direction}`;
     return AxiosClient.post('vision/flowData', { id, start });
@@ -174,18 +179,8 @@ export default {
     return AxiosClient.post('api/incidents', { start, type, video, severity, duration });
   },
 
-  searchIncidentData(startDate, endDate, route, region, severity, duration, blockage, detourNeeded, limit) {
-    return AxiosClient.post('api/searchIncidents', {
-      startDate,
-      endDate,
-      route,
-      region,
-      severity,
-      duration,
-      blockage,
-      detourNeeded,
-      limit
-    });
+  searchIncidentData(queryInput) {
+    return AxiosClient.post('api/searchIncidents', queryInput);
   },
 
   fetchMdistParameters(deviceId, direction, time) {
@@ -218,5 +213,15 @@ export default {
 
   fetchSimulationScenarios(type) {
     return AxiosClient.get('api/simulationScenarios', { params: { type } });
+  },
+
+  fetchMitigationSolution(incidentId) {
+    const params = { incidentId };
+    return AxiosClient.post('solution/solutionData', params);
+  },
+
+  fetchMitigationRampVolumes(incidentId) {
+    const params = { incidentId };
+    return AxiosClient.post('solution/rampVolumes', params);
   }
 };

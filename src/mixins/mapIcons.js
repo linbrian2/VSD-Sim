@@ -56,6 +56,18 @@ export const mapIcons = {
         size: { width: 32, height: 32, f: 'px', b: 'px' }
       },
 
+      trafficLightIcon: {
+        url: require('@/assets/traffic_light_small.png'),
+        size: { width: 15, height: 36, f: 'px', b: 'px' },
+        anchor: { x: 8, y: 18 }
+      },
+
+      trafficLightIconActive: {
+        url: require('@/assets/traffic_light_active.png'),
+        size: { width: 15, height: 36, f: 'px', b: 'px' },
+        anchor: { x: 8, y: 18 }
+      },
+
       redDotIconActive: {
         url: require('@/assets/red-dot-select.png'),
         size: { width: 36, height: 36, f: 'px', b: 'px' }
