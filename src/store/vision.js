@@ -5,7 +5,7 @@ const state = {
   activeMarker: null,
   locations: [],
   currentTime: '09:00',
-  imageAPI: 'http://10.51.4.9:34556/images',
+  imageAPI: 'http://10.51.4.9:34557/images',
   showReIDVideos: true,
   snippetHistory: [],
   snippetInfo: null,
