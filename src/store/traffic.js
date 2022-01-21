@@ -28,9 +28,11 @@ const state = {
 
   notifications: [],
 
-  multigraphModes: ["Traffic Flow Data", "Travel Time Data", "Weather Data"],
-  multigraphModeSelect: "Traffic Flow Data",
+  multigraphModes: ['Traffic Flow Data', 'Travel Time Data', 'Weather Data'],
+  multigraphModeSelect: 'Traffic Flow Data',
   activeMultigraphMarkers: [],
+  mitigation: null,
+  simulation: null
 };
 
 const mutations = {
@@ -47,6 +49,14 @@ const mutations = {
     console.log('anomaly segment received.');
     const { severity, duration } = state.incidentSettings;
     state.currentAnomalySegments = message.data.filter(s => s.severity >= severity && s.duration >= duration);
+  },
+  SOCKET_MITIGATION(state, message) {
+    console.log('anomaly mitigation received.');
+    state.mitigation = message.data;
+  },
+  SOCKET_SIMULATION(state, message) {
+    console.log('anomaly simulation received.');
+    state.simulation = message.data;
   },
   SET_CURRENT_BLUETOOTH_ANOMALY_DATA(state, data) {
     state.currentBluetoothAnomaly = data;
@@ -76,11 +86,11 @@ const mutations = {
     state.activeMarker = marker;
   },
   ADD_ACTIVE_MULTIGRAPH_MARKER(state, marker) {
-    state.activeMultigraphMarkers = state.activeMultigraphMarkers.filter(x => x!= marker)
-    state.activeMultigraphMarkers.push(marker)
+    state.activeMultigraphMarkers = state.activeMultigraphMarkers.filter(x => x != marker);
+    state.activeMultigraphMarkers.push(marker);
   },
   REMOVE_ACTIVE_MULTIGRAPH_MARKER(state, marker) {
-    state.activeMultigraphMarkers = state.activeMultigraphMarkers.filter(x => x!= marker)
+    state.activeMultigraphMarkers = state.activeMultigraphMarkers.filter(x => x != marker);
   },
   SET_DEVICES(state, devices) {
     state.devices = devices;

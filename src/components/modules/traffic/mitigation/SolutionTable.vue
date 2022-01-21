@@ -88,15 +88,13 @@ export default {
     },
 
     expandRowByPermit(permit) {
-      const row = this.items.findIndex(item => item.permitNumber === permit);
-      console.log(row);
-      if (row !== -1) {
+      const row = this.items.find(item => item.permitNumber === permit);
+      if (row) {
         const currentIdx = this.expanded.findIndex(i => i === row);
-        console.log('is=' + currentIdx);
         if (currentIdx === -1) {
+          // not expanded
           this.expanded = [];
           this.expanded.push(row);
-          console.log(this.expanded);
         }
       }
     },

@@ -22,7 +22,7 @@
 
     <v-container>
       <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"
-        ><h3>Recommended Mitigation Solution</h3>
+        ><h3>Recommended Timing Plan</h3>
       </v-subheader>
       <v-divider />
 
@@ -36,54 +36,32 @@
             </v-tabs>
           </div>
 
-          <v-menu offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn small outlined color="grey lighten-2" dark v-bind="attrs" v-on="on" class="mt-3 mr-4">
-                &nbsp;&nbsp;Time Offset: {{ selectedTimeOffset }} min&nbsp;&nbsp;
-              </v-btn>
-            </template>
+          <MenuSelector
+            title="Time Offset"
+            unit="min"
+            :items="timeOffsetItems"
+            :selectedItem="selectedTimeOffset"
+            @click="timeOffsetSelected"
+          />
 
-            <v-list>
-              <v-list-item v-for="(timeOffset, i) in timeOffsetItems" :key="i" @click="timeOffsetSelected(timeOffset)">
-                <v-list-item-title :class="{ 'font-weight-bold': timeOffset === selectedTimeOffset }">
-                  <v-icon class="mr-1" v-if="timeOffset === selectedTimeOffset">mdi-check</v-icon>
-                  <span :class="{ 'ml-8': timeOffset !== selectedTimeOffset }"> {{ timeOffset }} min</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <v-menu offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn small outlined color="grey lighten-4" dark v-bind="attrs" v-on="on" class="mt-3 mr-4">
-                &nbsp;&nbsp;Cycle Length: {{ selectedCycleLength }} s&nbsp;&nbsp;
-              </v-btn>
-            </template>
-
-            <v-list>
-              <v-list-item
-                v-for="(cycleLength, i) in cycleLengthItems"
-                :key="i"
-                @click="cycleLengthSelected(cycleLength)"
-              >
-                <v-list-item-title :class="{ 'font-weight-bold': cycleLength === selectedCycleLength }">
-                  <v-icon class="mr-1" v-if="cycleLength === selectedCycleLength">mdi-check</v-icon>
-                  <span :class="{ 'ml-8': cycleLength !== selectedCycleLength }"> {{ cycleLength }} s</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <MenuSelector
+            title="Cycle Length"
+            unit="s"
+            :items="cycleLengthItems"
+            :selectedItem="selectedCycleLength"
+            @click="cycleLengthSelected"
+          />
         </div>
 
         <div>
           <div class="ma-4">
             <SolutionTable :items="currentSolution" ref="solutionTable" />
           </div>
-          <div class="ma-4">
+          <!-- <div class="ma-4">
             <div class="grey darken-2 text-center">
               <span class="text-overline white--text" v-html="hintText"></span>
             </div>
-          </div>
+          </div> -->
         </div>
       </v-card>
 
@@ -153,6 +131,7 @@ import MapSegment from '@/components/modules/traffic/mitigation/MapSegment';
 import SolutionTable from '@/components/modules/traffic/mitigation/SolutionTable';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
+import MenuSelector from '@/components/modules/traffic/common/MenuSelector';
 
 export default {
   components: {
@@ -160,6 +139,7 @@ export default {
     MapSegment,
     BasicChart,
     SolutionTable,
+    MenuSelector,
     SelectionPanel
   },
 
@@ -309,7 +289,6 @@ export default {
 
     onMarkerClicked(marker) {
       if (marker.id.startsWith('S')) {
-        console.log(marker);
         this.$refs.solutionTable.expandRowByPermit(marker.name);
       }
     },
