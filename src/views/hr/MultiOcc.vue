@@ -123,12 +123,12 @@ export default {
               this.occupancies.push(entry);
             });
           } else {
-            this.$store.dispatch('setSystemStatus', { text: response.data.message, timeout: 0, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }
           this.loading = false;
         },
         error => {
-          this.$store.dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
         }
       );
     },

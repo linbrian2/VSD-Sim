@@ -6,12 +6,25 @@
         :key="m.id"
         :position="m.position"
         :title="m.name"
-        :label="m.label"
         :clickable="true"
-        :icon="getMarker(m.id)"
+        :icon="getMarker(m)"
         @click="markerClicked(m)"
       />
+
+      <GmapCustomMarker
+        alignment="center"
+        v-for="m in markers"
+        :key="`LL-${m.id}`"
+        :offsetX="45"
+        :offsetY="0"
+        :marker="m.position"
+      >
+        <v-chip small :color="getChipColor(m.id)" @click="markerClicked(m)">
+          <span class="white--text font-weight-bold">{{ m.permit }}</span>
+        </v-chip>
+      </GmapCustomMarker>
     </GmapMap>
+    <PhaseSelectionTool @click="phaseSelected" v-if="showPhaseSel" />
   </div>
 </template>
 
@@ -20,18 +33,23 @@
 import { mapActions } from 'vuex';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
+import Utils from '@/utils/Utils.js';
+import { RouterNames } from '@/utils/constants/router';
+import { TrafficLightIcons } from '@/mixins/TrafficLightIcons.js';
+import GmapCustomMarker from 'vue2-gmap-custom-marker';
+import PhaseSelectionTool from '@/components/modules/hr/PhaseSelectionTool';
 
 export default {
+  mixins: [TrafficLightIcons],
+
+  components: {
+    GmapCustomMarker,
+    PhaseSelectionTool
+  },
+
   data: () => ({
-    mapMarker: {
-      url: require('@/assets/green-icon-48.png'),
-      size: { width: 30, height: 48, f: 'px', b: 'px' }
-    },
-    mapMarkerActive: {
-      url: require('@/assets/orange-icon-48.png'),
-      size: { width: 30, height: 48, f: 'px', b: 'px' }
-    },
     homeIcon: require('@/assets/home-24.png'),
+
     markerOptions: {
       url: '',
       size: { width: 60, height: 90, f: 'px', b: 'px' },
@@ -39,6 +57,8 @@ export default {
     },
     map: null,
     selectedKey: null,
+    signals: null,
+    curPhaseId: 2,
     options: {
       mapTypeControl: false,
       streetViewControl: false,
@@ -54,8 +74,12 @@ export default {
     },
     position() {
       return this.$store.state.position;
+    },
+    showPhaseSel() {
+      return this.$route.name === RouterNames.HR_SIGNAL_LIVE;
     }
   },
+
   watch: {
     position() {
       this.$refs.mapRef.$mapPromise.then(map => {
@@ -69,6 +93,7 @@ export default {
       });
     }
   },
+
   async mounted() {
     this.$bus.$on('NAME_SELECTED', name => {
       let marker = this.markers.find(m => m.name === name);
@@ -79,6 +104,10 @@ export default {
 
     this.$bus.$on('CENTER_MAP', () => {
       this.centerMap(this.map, this.markers);
+    });
+
+    this.$bus.$on('LIVE_UPDATE_SIGNALS', signals => {
+      this.signals = signals;
     });
 
     this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
@@ -97,6 +126,7 @@ export default {
     }
     this.loadPage(this.$vuetify.theme.dark);
   },
+
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
@@ -146,14 +176,55 @@ export default {
         map.fitBounds(bounds);
       }
     },
-    getMarker(key) {
-      return this.selectedKey === key ? this.mapMarkerActive : this.mapMarker;
+
+    getTrafficLightIcon(permit) {
+      let result = this.trafficLightIcon;
+      if (!Utils.isEmpty(this.signals)) {
+        const ICONS = {
+          G: this.trafficLightGIcon,
+          Y: this.trafficLightYIcon,
+          R: this.trafficLightRIcon,
+          F: this.trafficLightIcon
+        };
+        if (permit in this.signals) {
+          let idx = this.curPhaseId ? this.curPhaseId - 1 : 1;
+          if (idx < 0 || idx > 7) {
+            idx = 1;
+          }
+          const m = this.signals[permit];
+          const status = m.status[idx];
+          if (status !== 'X') {
+            result = ICONS[status];
+          }
+        }
+      }
+      return result;
     },
+
+    getMarker(marker) {
+      if (this.$route.name !== RouterNames.HR_SIGNAL_LIVE) {
+        return this.selectedKey === marker.id ? this.trafficLightIconActive : this.trafficLightIcon;
+      } else {
+        return this.getTrafficLightIcon(marker.permit);
+      }
+    },
+
+    getChipColor(key) {
+      return this.selectedKey === key ? 'orange' : 'gray';
+    },
+
     markerClicked(marker) {
       this.selectedKey = marker.id;
       this.$store.commit('hr/SET_ACTIVE_MARKER', marker);
       this.$emit('click', marker);
     },
+
+    phaseSelected(phaseId) {
+      if (this.$route.name === RouterNames.HR_SIGNAL_LIVE) {
+        this.curPhaseId = phaseId;
+      }
+    },
+
     ...mapActions('hr', ['fetchLocations', 'fetchTiming'])
   }
 };

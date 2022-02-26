@@ -261,7 +261,7 @@ export default {
         // Now we await for both results, whose async processes have already been started
         const [weatherDataRes, weatherInfoRes] = await Promise.all([
           Api.fetchWeatherDataOneDay(stationId, time),
-          Api.fetchLatestWeatherDataInfo(stationId, 1200)
+          Api.fetchLatestWeatherDataInfo(stationId, 1800)
         ]);
 
         let dataList = this.parseResponseData(weatherDataRes);

@@ -127,7 +127,7 @@ export default {
         this.summary = response.data;
         this.updatedTime = new Date();
       } catch (error) {
-        this.$store.dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
     },

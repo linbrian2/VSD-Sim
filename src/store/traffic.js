@@ -6,6 +6,7 @@ const state = {
   currentWeatherCode: null,
   currentRestrictions: [],
   currentAnomalySegments: [],
+  currentWaze: null,
 
   showFlowChart: false,
   showPanel: false,
@@ -49,6 +50,12 @@ const mutations = {
     console.log('anomaly segment received.');
     const { severity, duration } = state.incidentSettings;
     state.currentAnomalySegments = message.data.filter(s => s.severity >= severity && s.duration >= duration);
+  },
+  SOCKET_RESTRICTION(state, message) {
+    state.currentRestrictions = message.data;
+  },
+  SOCKET_WAZE(state, message) {
+    state.currentWaze = message.data;
   },
   SOCKET_MITIGATION(state, message) {
     console.log('anomaly mitigation received.');

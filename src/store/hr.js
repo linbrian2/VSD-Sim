@@ -10,10 +10,15 @@ const state = {
   currentSignal: null,
   multiSignals: [],
   mapProjection: null,
-  currentSignalTime: null
+  currentSignalTime: null,
+  realTimeSignal: null
 };
 
 const mutations = {
+  SOCKET_SIGNAL(state, message) {
+    //console.log('SOCKET_SIGNAL', message);
+    state.realTimeSignal = message.data;
+  },
   SHOW_PANEL(state, show) {
     state.showPanel = show;
   },

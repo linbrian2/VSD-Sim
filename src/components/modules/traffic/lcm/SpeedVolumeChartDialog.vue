@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog v-model="show" max-width="600px">
       <v-card>
-        <v-app-bar color="teal" dark dense>
+        <v-app-bar :color="color" dark dense>
           <v-icon class="mt-n1 mr-2">mdi-chart-bell-curve</v-icon>
           <v-toolbar-title>{{ title }} </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -10,9 +10,9 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-app-bar>
-        <v-container style="height:380px">
-          <SpeedVolumeChart ref="speedVolumeChart" :data="data" :height="355" />
-        </v-container>
+        <div style="height:380px">
+          <SpeedVolumeChart ref="speedVolumeChart" :data="data" :height="375" />
+        </div>
       </v-card>
     </v-dialog>
   </v-row>
@@ -46,6 +46,10 @@ export default {
       set(value) {
         this.$emit('input', value);
       }
+    },
+
+    color() {
+      return this.$store.state.darkMode ? '' : '#009688';
     }
   },
 

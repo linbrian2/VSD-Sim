@@ -46,7 +46,6 @@
 <script>
 import Api from '@/utils/api/vision';
 import TitleBarReID from '@/components/modules/vision/TitleBarReID';
-//import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import DetectionBoxes from '@/components/modules/vision/DetectionBoxes.vue';
 
 export default {

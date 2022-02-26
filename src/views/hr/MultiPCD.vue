@@ -123,13 +123,13 @@ export default {
           if (response.data.status === 'OK') {
             this.preparePCDData(response.data.data);
           } else {
-            this.$store.dispatch('setSystemStatus', { text: response.data.message, timeout: 0, color: 'error' });
+            this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }
           this.loading = false;
         },
         error => {
           //console.log(error);
-          this.$store.dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' });
+          this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
         }
       );
     },

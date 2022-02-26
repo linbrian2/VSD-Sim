@@ -29,11 +29,11 @@
     <!-- Display signal phase -->
     <gmap-custom-marker
       alignment="bottomright"
-      v-for="(signal, index) in signalPhases"
-      :key="index + 1000"
-      :offsetX="20"
-      :offsetY="10"
-      :marker="signal.center"
+      v-for="signal in signalPhases"
+      :key="`P-${signal.id}`"
+      :offsetX="10"
+      :offsetY="5"
+      :marker="signal.anchor"
     >
       <h3 style="color:white">{{ signal.value }}</h3>
     </gmap-custom-marker>
@@ -247,6 +247,7 @@ export default {
           zIndex: 30
         },
         center: center,
+        anchor: polygon[0],
         paths: polygon,
         light: 0,
         duration: 0,

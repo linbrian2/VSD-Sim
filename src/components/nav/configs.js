@@ -156,6 +156,14 @@ const protectedRoute = [
             }
           },
           {
+            path: RouterPaths.HR_SIGNAL_LIVE,
+            name: RouterNames.HR_SIGNAL_LIVE,
+            meta: {
+              title: RouterNames.HR_SIGNAL_LIVE,
+              icon: 'mdi-map-clock-outline'
+            }
+          },
+          {
             path: RouterPaths.HR_SIGNAL,
             name: RouterNames.HR_SIGNAL,
             meta: {

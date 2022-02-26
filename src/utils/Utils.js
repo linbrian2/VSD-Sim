@@ -1,4 +1,7 @@
 export default {
+  capitalize(s) {
+    return s && s[0].toUpperCase() + s.slice(1);
+  },
   addDay(date, days) {
     const result = new Date();
     result.setDate(date.getDate() + days);
@@ -218,6 +221,10 @@ export default {
     while (num.length < size) num = '0' + num;
     return num;
   },
+  randomInt(min, max) {
+    // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  },
   // Finds the insertion index for an item in an array.
   // Uses compareFn (similar to that provided to array.sort())
   getInsertionIndex(arr, item, compareFn) {
@@ -367,7 +374,7 @@ export default {
     return !isNaN(parseFloat(n)) && isFinite(n);
   },
   isEmpty(obj) {
-    return Object.keys(obj).length === 0;
+    return !obj || Object.keys(obj).length === 0;
   },
   isStringEmpty(str) {
     return !str || str.length === 0;

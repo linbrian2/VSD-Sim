@@ -102,6 +102,7 @@ export default {
       TAB_TRAFFIC_FLOW: 2
     }
   }),
+
   computed: {
     livePlayerOptions() {
       // videojs options
@@ -226,23 +227,23 @@ export default {
     },
 
     fetchData() {
-      let marker = this.activeMarker;
+      let camera = this.activeMarker;
       let time = this.currentDate.getTime();
-      if (marker != null) {
-        const id = marker.id;
-        this.fetchDeviceInfo(id);
-        this.loadVideoResultData(id, time);
+      if (camera != null) {
+        const { id, type } = camera;
+        this.fetchDeviceInfo(id, type);
+        this.loadVideoResultData(id, type, time);
       }
     },
 
-    async fetchDeviceInfo(id) {
+    async fetchDeviceInfo(id, type) {
       if (this.info && this.info.id === id) {
         return;
       }
 
       this.loading = true;
       try {
-        const response = await Api.fetchInfo(id);
+        const response = await Api.fetchInfo(id, type);
         if (response.data.status === 'OK') {
           this.info = response.data.data;
           if (this.tab == this.Constants.TAB_LIVE_FEED) {
@@ -257,10 +258,10 @@ export default {
       this.loading = false;
     },
 
-    async loadVideoResultData(id, time) {
+    async loadVideoResultData(id, type, time) {
       this.loading = true;
       try {
-        const response = await Api.fetchVideoResult(id, time);
+        const response = await Api.fetchVideoResult(id, type, time);
         if (response.data.status === 'OK') {
           this.visionResult = response.data.data;
 
@@ -318,7 +319,7 @@ export default {
       }
 
       let result = {};
-      result.title = `Traffic Volumes on ${this.info.desc} (${this.info.name})`;
+      result.title = `Traffic Volumes on (${this.info.name})`;
       result.xAxis = 'Time of Day (hour)';
       result.yAxis = 'Time of Hour (min)';
       result.xcategories = xcategories;
@@ -362,7 +363,8 @@ export default {
         }
 
         if (video) {
-          videoUrl = this.videoServer + video.split('\\').join('/');
+          const server = this.info.server ? this.info.server : this.videoServer;
+          videoUrl = server + video.split('\\').join('/');
         }
       }
       return videoUrl;

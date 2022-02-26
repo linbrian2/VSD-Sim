@@ -12,7 +12,7 @@
           </v-toolbar>
 
           <div class="mx-auto">
-            <VideoPlayer ref="videoPlayer" :options="playerOptions" />
+            <VideoPlayer ref="videoPlayer" :options="playerOptions" :caption="caption" />
           </div>
         </v-card>
       </v-dialog>
@@ -36,7 +36,8 @@ export default {
   },
   data: () => ({
     url: '',
-    title: 'Video Player'
+    title: 'Video Player',
+    caption: ''
   }),
   computed: {
     show: {
@@ -79,6 +80,12 @@ export default {
       if (this.$refs.videoPlayer) {
         this.$refs.videoPlayer.setUrl(url);
       }
+    },
+    changeTitle(title) {
+      this.title = title;
+    },
+    changeCaption(caption) {
+      this.caption = caption;
     }
   }
 };

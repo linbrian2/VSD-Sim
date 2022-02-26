@@ -34,7 +34,7 @@ export default {
 
   methods: {
     clicked() {
-      this.$emit('video-click', this.video.video);
+      this.$emit('video-click', this.video);
     }
   }
 };
