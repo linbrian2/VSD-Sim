@@ -1,4 +1,6 @@
 export const RouterNames = {
+  DASHBOARD: 'Main Dashboard',
+
   TRAFFIC_DASHBOARD: 'Dashboard',
   TRAFFIC_BT_DASHBOARD: 'Bluetooth Dashboard',
   TRAFFIC_FLOW: 'Flow Charts',
@@ -42,6 +44,7 @@ export const RouterNames = {
 };
 
 export const RouterPaths = {
+  DASHBOARD: '/dash',
   TRAFFIC_ROOT: '/flow',
   TRAFFIC_DASHBOARD: '/flow/dash',
   TRAFFIC_BT_DASHBOARD: '/flow/bt-dash',

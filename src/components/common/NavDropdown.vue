@@ -32,10 +32,10 @@ export default {
   data() {
     return {
       app_menu_items: [
+        { title: AppConstants.DASHBOARD_APP_TITLE, url: RouterPaths.DASHBOARD },
         { title: AppConstants.TRAFFIC_APP_TITLE, url: RouterPaths.TRAFFIC_DASHBOARD },
         { title: AppConstants.HR_APP_TITLE, url: RouterPaths.HR_DASHBOARD },
         { title: AppConstants.VISION_APP_TITLE, url: RouterPaths.VISION_DASHBOARD },
-        /* { title: AppConstants.BLUETOOTH_APP_TITLE, url: RouterPaths.BLUETOOTH_DASHBOARD }, */
         { title: AppConstants.CAV_APP_TITLE, url: RouterPaths.CAV_DASHBOARD },
         { title: AppConstants.STATUS_APP_TITLE, url: RouterPaths.STATUS_DASHBOARD }
       ]
