@@ -14,6 +14,11 @@
       <BasicChart :data="occupancy" :height="height" />
       <div v-if="name" class="text-name">{{ name }}</div>
     </v-card>
+
+    <v-card class="mb-8" v-if="isVPlusO && (!limitGraph || limitGraph == 'Vo')">
+      <BasicChart :data="vo" :height="height" />
+      <div v-if="name" class="text-name">{{ name }}</div>
+    </v-card>
   </div>
 </template>
 
@@ -66,6 +71,10 @@ export default {
       return this.formOccupancyData(this.data, this.direction);
     },
 
+    vo() {
+      return this.formVoData(this.data, this.direction);
+    },
+
     isSpeed() {
       return !!this.data.speed;
     },
@@ -76,6 +85,10 @@ export default {
 
     isOccupancy() {
       return !!this.data.occupancy;
+    },
+
+    isVPlusO() {
+      return !!this.data.vo;
     }
   },
 
@@ -113,6 +126,17 @@ export default {
       return result;
     },
 
+    formVoData(flowList, direction) {
+      const title = 'V + O';
+      const xAxis = 'Time of day';
+      const yAxis = 'V + O (%)';
+      const data = this.filterByDirection(flowList.vo, direction);
+      const result = { data, xAxis, yAxis, title };
+      this.addTimeSlots(result);
+      this.addXAxisStart(result, flowList, direction);
+      return result;
+    },
+
     addTimeSlots(data) {
       if (this.timeSlots && this.timeSlots.length > 0) {
         data.timeSlots = this.timeSlots;
@@ -138,6 +162,13 @@ export default {
 
       if (flowList.occupancy) {
         const list = this.filterByDirection(flowList.occupancy, direction);
+        list.forEach(item => {
+          data.xmin = data.xmin ? Math.min(data.xmin, item.data[0][0]) : item.data[0][0];
+        });
+      }
+
+      if (flowList.vo) {
+        const list = this.filterByDirection(flowList.vo, direction);
         list.forEach(item => {
           data.xmin = data.xmin ? Math.min(data.xmin, item.data[0][0]) : item.data[0][0];
         });

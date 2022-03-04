@@ -1,7 +1,7 @@
 <template>
   <div>
     <TitleBar title="Time Space Diagram" :loading="loading" :refresh="refreshData">
-      <div class="d-flex">
+      <div class="d-flex justify-space-between">
         <div style="width:160px">
           <ScrollableMenuTimePicker
             ref="timePicker"
@@ -11,7 +11,7 @@
             @next="timeChanged"
           />
         </div>
-        <div class="d-flex justify-center mt-n2" style="width:120px; margin-left:200px">
+        <div class="d-flex justify-center mt-n2" style="width:120px; margin-left:100px">
           <v-select
             dark
             style="font-size: 14px"
@@ -24,12 +24,26 @@
             prepend-icon="mdi-speedometer"
           />
         </div>
+        <div class="d-flex justify-center mt-n2" style="width:120px;; margin-left:100px">
+          <v-select
+            dark
+            style="font-size: 14px"
+            v-model="overlay"
+            :items="overlayItems"
+            item-text="text"
+            item-value="value"
+            hide-details
+            single-line
+            @input="overlaySelected"
+            prepend-icon="mdi-content-copy"
+          />
+        </div>
       </div>
     </TitleBar>
     <v-container>
       <div v-for="(data, group, index) in timeSpaceGroups" :key="index">
         <v-card class="mt-4">
-          <TimeSpaceChart :data="data" :speed="speed" :title="`Coordination Group ${group}`" />
+          <TimeSpaceChart :data="data" :speed="speed" :title="`Group ${group}`" />
         </v-card>
       </div>
     </v-container>
@@ -65,6 +79,12 @@ export default {
       { text: '40 MPH', value: 40 },
       { text: '35 MPH', value: 35 },
       { text: '30 MPH', value: 30 }
+    ],
+    overlay: 0,
+    overlayItems: [
+      { text: 'None', value: 0 },
+      { text: 'Transit', value: 1 },
+      { text: 'Cav', value: 2 }
     ]
   }),
 
@@ -95,22 +115,13 @@ export default {
   },
 
   methods: {
-    fetchData() {
-      const locations = this.$store.state.hr.locations;
-      if (locations.length == 0) {
-        this.fetchLocations().then(() => {
-          this.showTimeSpaceDiagram();
-        });
-      } else {
-        this.showTimeSpaceDiagram();
-      }
-    },
-
     refreshData() {
       this.fetchData();
     },
 
-    speedSelected() {},
+    overlaySelected() {
+      this.fetchData();
+    },
 
     timeChanged(time) {
       // Convert time string to date object
@@ -134,23 +145,32 @@ export default {
       this.fetchData();
     },
 
+    fetchData() {
+      const locations = this.$store.state.hr.locations;
+      if (locations.length == 0) {
+        this.fetchLocations().then(() => {
+          this.showTimeSpaceDiagram();
+        });
+      } else {
+        this.showTimeSpaceDiagram();
+      }
+    },
+
     showTimeSpaceDiagram() {
       const locations = this.$store.state.hr.locations;
       const ids = locations
         .filter(loc => loc.order)
         .sort((a, b) => a.order - b.order)
         .map(loc => loc.id);
-      this.fetchTimeSpaceData(ids, this.startTime, this.duration);
+      this.fetchTimeSpaceData(ids, this.startTime, this.duration, this.overlay);
     },
 
-    fetchTimeSpaceData(ids, start, duration) {
+    fetchTimeSpaceData(ids, start, duration, overlay) {
       try {
         this.loading = true;
-        Api.fetchTimeSpaceData(ids, start, duration).then(response => {
+        Api.fetchTimeSpaceData(ids, start, duration, overlay).then(response => {
           if (response.data.status === 'OK') {
             const data = response.data.data;
-
-            console.log(data);
 
             // Group the data by group
             const groups = data.reduce((r, item) => {
@@ -158,6 +178,7 @@ export default {
               r[item.group].push(item);
               return r;
             }, {});
+            //console.log(groups);
 
             this.timeSpaceGroups = groups;
           } else {

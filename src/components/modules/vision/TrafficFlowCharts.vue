@@ -61,6 +61,7 @@
 
 <script>
 import Api from '@/utils/api/vision';
+import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import BasicChart from '@/components/modules/vision/BasicChart';
 import StackBarChart from '@/components/modules/vision/StackBarChart';
@@ -102,6 +103,10 @@ export default {
   watch: {
     currentDate() {
       this.refreshData();
+    },
+
+    activeMarker() {
+      this.refreshData();
     }
   },
 
@@ -122,11 +127,11 @@ export default {
       this.fetchAllData(marker);
     },
 
-    fetchAllData(marker) {
-      if (marker != null) {
+    fetchAllData(item) {
+      if (item != null) {
         let time = this.currentDate.getTime();
-        this.fetchVisionData(marker.id, marker.detector, time);
-        this.fetchCounts(marker.id, time, this.interval);
+        this.fetchVisionData(item.id, item.type, item.detector, time);
+        this.fetchCounts(item.id, item.type, time, this.interval);
       }
     },
 
@@ -134,17 +139,28 @@ export default {
       let marker = this.activeMarker;
       let time = this.currentDate.getTime();
       if (marker != null) {
-        this.fetchCounts(marker.id, time, this.interval);
+        this.fetchCounts(marker.id, marker.type, time, this.interval);
       }
     },
 
-    async fetchVisionData(id, detectorId, time) {
+    async fetchVisionData(id, type, detectorId, time) {
       this.loading = true;
       try {
-        // Now we await for both results, whose async processes have already been started
-        const [vision, flow] = await Promise.all([Api.fetchVisionData(id, time), Api.fetchFlowData(detectorId, time)]);
-        let visionList = this.getResponseData(vision);
-        let flowList = this.getResponseData(flow);
+        let visionList = null;
+        let flowList = null;
+
+        if (detectorId) {
+          // Now we await for both results, whose async processes have already been started
+          const [vision, flow] = await Promise.all([
+            Api.fetchVisionData(id, type, time),
+            Api.fetchFlowData(detectorId, time)
+          ]);
+          visionList = this.getResponseData(vision);
+          flowList = this.getResponseData(flow);
+        } else {
+          const vision = await Api.fetchVisionData(id, type, time);
+          visionList = this.getResponseData(vision);
+        }
 
         if (visionList || flowList) {
           this.speed = this.formSpeedData(visionList, flowList);
@@ -167,10 +183,10 @@ export default {
       this.loading = false;
     },
 
-    async fetchCounts(id, time, interval) {
+    async fetchCounts(id, type, time, interval) {
       this.loading = true;
       try {
-        const response = await Api.fetchCounts(id, time, interval);
+        const response = await Api.fetchCounts(id, type, time, interval);
         if (response.data.status === 'OK') {
           if (response.data.data !== undefined) {
             let data = response.data.data;
@@ -178,8 +194,6 @@ export default {
               this.counts = this.formCountsData(data);
             }
           }
-        } else {
-          this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
         }
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
@@ -250,10 +264,10 @@ export default {
       let yAxis = 'Vehicle Counts';
 
       let data = [];
-      data.push({ name: 'Sedan', data: input.car });
-      data.push({ name: 'Truck', data: input.truck });
-      data.push({ name: 'Bus', data: input.bus });
-      data.push({ name: 'Motorcycle', data: input.motor });
+      Object.keys(input).forEach(name => {
+        let counts = input[name];
+        data.push({ name: Utils.capitalize(name), data: counts });
+      });
 
       return { data, xAxis, yAxis };
     },

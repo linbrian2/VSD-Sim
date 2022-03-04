@@ -1,6 +1,5 @@
 <template>
   <v-data-table
-    :height="height"
     fixed-header
     :headers="headers"
     :items="items"
@@ -46,7 +45,6 @@
 <script>
 export default {
   props: {
-    height: { type: Number, default: 500 },
     items: Array
   },
 
@@ -54,14 +52,14 @@ export default {
     itemsPerPage: 500,
     expanded: [],
     headers: [
-      { text: 'Group', value: 'signalGroup', sortable: false, class: 'green' },
-      { text: 'Permit', value: 'permitNumber', sortable: false, class: 'green' },
-      { text: 'Offset', value: 'offset', sortable: false, class: 'green' },
-      { text: 'LOS', value: 'los', sortable: false, class: 'green' },
-      { text: 'Delay', value: 'avgDelay', sortable: false, class: 'green' },
-      { text: 'Bottleneck Volume', value: 'bottleneckVolume', sortable: false, class: 'green' },
-      { text: 'Travel Time', value: 'totalDetourTravelTime', sortable: false, class: 'green', divider: true },
-      { text: '', value: 'data-table-expand', class: 'green' }
+      { text: 'Group', value: 'signalGroup', sortable: false },
+      { text: 'Permit', value: 'permitNumber', sortable: false },
+      { text: 'Offset', value: 'offset', sortable: false },
+      { text: 'LOS', value: 'los', sortable: false },
+      { text: 'Delay', value: 'avgDelay', sortable: false },
+      { text: 'Bottleneck Volume', value: 'bottleneckVolume', sortable: false },
+      { text: 'Travel Time', value: 'totalDetourTravelTime', sortable: false, divider: true },
+      { text: '', value: 'data-table-expand' }
     ],
     phaseShiftHeaders: [
       { text: 'Phase', value: 'phase', sortable: false, class: 'indigo darken-3', divider: true },
@@ -88,15 +86,13 @@ export default {
     },
 
     expandRowByPermit(permit) {
-      const row = this.items.findIndex(item => item.permitNumber === permit);
-      console.log(row);
-      if (row !== -1) {
+      const row = this.items.find(item => item.permitNumber === permit);
+      if (row) {
         const currentIdx = this.expanded.findIndex(i => i === row);
-        console.log('is=' + currentIdx);
         if (currentIdx === -1) {
+          // not expanded
           this.expanded = [];
           this.expanded.push(row);
-          console.log(this.expanded);
         }
       }
     },
@@ -122,7 +118,7 @@ export default {
         if (v0 === '/') {
           changes[key] = '/';
         } else {
-          const d = v0 - v1;
+          const d = v1 - v0;
           changes[key] = d > 0 ? '+' + d : d;
         }
       });
@@ -137,34 +133,15 @@ export default {
     },
 
     getColor(c) {
-      let color = 'green';
-      switch (c) {
-        case 'A':
-          color = this.getGreenToRed(100);
-          break;
-        case 'B':
-          color = this.getGreenToRed(80);
-          break;
-        case 'C':
-          color = this.getGreenToRed(60);
-          break;
-        case 'D':
-          color = this.getGreenToRed(40);
-          break;
-        case 'E':
-          color = this.getGreenToRed(20);
-          break;
-        case 'F':
-          color = this.getGreenToRed(0);
-          break;
-      }
-      return color;
-    },
-
-    getGreenToRed(percent) {
-      const r = percent < 50 ? 255 : Math.floor(255 - ((percent * 2 - 100) * 255) / 100);
-      const g = percent > 50 ? 255 : Math.floor((percent * 2 * 255) / 100);
-      return 'rgb(' + r + ',' + g + ',0)';
+      const colors = {
+        A: 'rgb(0,255,0)',
+        B: 'rgb(102,255,0)',
+        C: 'rgb(204,255,0)',
+        D: 'rgb(255,204,0)',
+        E: 'rgb(255,102,0)',
+        F: 'rgb(255,0,0)'
+      };
+      return c in colors ? colors[c] : 'green';
     }
   }
 };

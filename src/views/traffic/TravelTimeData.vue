@@ -36,11 +36,18 @@
           </v-list>
         </v-menu>
       </div>
-      <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
+      <MapBluetoothSegments ref="mapSegments" :segments="segments" @clicked="segmentClicked" />
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar :title="title" :showId="false" showUid :loading="loading" :refresh="refreshData">
+    <TitleBar
+      :title="title"
+      :showId="false"
+      :showUid="false"
+      :subtitle="subtitle"
+      :loading="loading"
+      :refresh="refreshData"
+    >
       <div class="d-flex justify-center align-center">
         <div style="width:140px; margin-top: 5px">
           <v-select
@@ -76,14 +83,14 @@
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
-import MapSelect from '@/components/modules/traffic/map/MapSelect';
+import MapBluetoothSegments from '@/components/modules/traffic/map/MapBluetoothSegments';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
 export default {
   components: {
     SelectionPanel,
-    MapSelect,
+    MapBluetoothSegments,
     TitleBar,
     BasicChart
   },
@@ -101,26 +108,8 @@ export default {
       { text: '30 mins', value: 1800000 },
       { text: '1 Hour', value: 3600000 }
     ],
-
-    icons: [
-      {
-        path: 0,
-        scale: 10.0,
-        fillColor: '#0580FF',
-        fillOpacity: 0.8,
-        strokeWeight: 1.0,
-        strokeColor: 'white'
-      },
-      {
-        path: 0,
-        scale: 10.0,
-        fillColor: '#FF7F00',
-        fillOpacity: 0.8,
-        strokeWeight: 1.0,
-        strokeColor: 'white'
-      }
-    ],
     valueSelected: '',
+    subtitle: '',
 
     route_menu_items: [
       { text: 'All Segments', value: '' },
@@ -142,7 +131,7 @@ export default {
     ],
 
     selectedRoute: '',
-
+    activeSegment: null,
     travelTimeData: {},
     travelSpeedData: {},
     availability: {
@@ -151,7 +140,7 @@ export default {
     }
   }),
   computed: {
-    markers() {
+    segments() {
       if (!this.selectedRoute) {
         return this.bluetoothSegments;
       } else {
@@ -160,11 +149,11 @@ export default {
     },
 
     items() {
-      return this.markers.map(item => item.name);
+      return this.segments.map(item => item.name);
     },
 
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['activeMarker', 'bluetoothSegments'])
+    ...mapState('traffic', ['bluetoothSegments'])
   },
 
   mounted() {
@@ -190,20 +179,19 @@ export default {
 
   methods: {
     valueSelectHandler(value) {
-      this.$bus.$emit('NAME_SELECTED', value);
+      this.$bus.$emit('SELECT_SEGMENT_BY_NAME', value);
     },
 
-    markerClicked(marker) {
-      this.valueSelected = marker.name;
+    segmentClicked(segment) {
+      this.activeSegment = segment;
+      this.subtitle = segment.short;
+      this.valueSelected = segment.name;
       const time = this.currentDate.getTime();
-      this.fetchTravelTimeData(marker.id, this.interval, time);
-    },
-
-    routeMenuIcon(item) {
-      return item.value === this.selectedRoute ? 'mdi-check' : '';
+      this.fetchTravelTimeData(segment.id, this.interval, time);
     },
 
     routeMenuItemClicked(value) {
+      this.$bus.$emit('CENTER_SEGMENT', value);
       setTimeout(() => {
         this.selectedRoute = value;
         this.valueSelected = '';
@@ -221,16 +209,15 @@ export default {
     showDataIfEmpty() {
       const any = Object.values(this.availability).some(item => item);
       if (!any) {
-        this.$bus.$emit('CENTER_MAP');
+        this.$bus.$emit('CENTER_SEGMENT');
         this.$bus.$emit('SELECT_FIRST');
       }
     },
 
     fetchData() {
-      let marker = this.activeMarker;
-      let time = this.currentDate.getTime();
-      if (marker != null) {
-        this.fetchTravelTimeData(marker.id, this.interval, time);
+      if (this.activeSegment) {
+        let time = this.currentDate.getTime();
+        this.fetchTravelTimeData(this.activeSegment.id, this.interval, time);
       }
     },
 
@@ -267,7 +254,7 @@ export default {
           }
         }
       } else {
-        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'warning' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'info' });
       }
       return result;
     },
@@ -298,9 +285,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.basic-chart {
-  height: 500px;
-}
-</style>

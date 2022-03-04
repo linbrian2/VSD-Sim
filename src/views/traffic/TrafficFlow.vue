@@ -86,15 +86,15 @@
       <div>
         <v-tabs-items v-model="tab">
           <v-tab-item value="bound" v-if="isTabVisible('bound')">
-            <TrafficFlowCombinedCharts :data="boundData" :name="name" :direction="direction" />
+            <TrafficFlowCombinedCharts :data="boundData" :direction="direction" />
           </v-tab-item>
 
           <v-tab-item value="lane" v-if="isTabVisible('lane')">
-            <TrafficFlowCombinedCharts :data="laneData" :name="name" :direction="direction" />
+            <TrafficFlowCombinedCharts :data="laneData" :direction="direction" />
           </v-tab-item>
 
           <v-tab-item value="minute" v-if="isTabVisible('minute')">
-            <TrafficFlowCombinedCharts :data="minuteData" :name="name" :direction="direction" />
+            <TrafficFlowCombinedCharts :data="minuteData" :direction="direction" />
           </v-tab-item>
         </v-tabs-items>
       </div>

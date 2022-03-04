@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import Utils from '@/utils/Utils';
 import SlideButtons from '@/components/modules/traffic/incident/SlideButtons';
 import TrafficVideo from '@/components/modules/traffic/incident/TrafficVideo';
 import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
@@ -97,10 +98,20 @@ export default {
       this.$bus.$emit('INCIDENT_ITEM_SELECTED', item);
     },
 
-    playVideo(url) {
+    dateAndTime(t) {
+      const d = new Date(t);
+      let dd = Utils.formatDate(d);
+      let tt = Utils.formatTimeAsMinute(d);
+      return dd + ' ' + tt;
+    },
+
+    playVideo(video) {
+      const url = video.video;
       if (url) {
         if (this.$refs.vpRef) {
           this.$refs.vpRef.changeVideoSource(url);
+          this.$refs.vpRef.changeTitle(video.camera);
+          this.$refs.vpRef.changeCaption(this.dateAndTime(video.time));
         }
         this.showVideoPlayer = true;
       }

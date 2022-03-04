@@ -89,6 +89,9 @@ export default {
         case RouterNames.HR_SIGNAL:
           this.$bus.$emit('GET_SIGNALS', { marker, time });
           break;
+        case RouterNames.HR_SIGNAL_LIVE:
+          this.$bus.$emit('GET_LIVE_SIGNALS', { marker, time });
+          break;
         case RouterNames.HR_PERFORMANCE_MEASURES:
           this.$bus.$emit('GET_PREF', { marker, time });
           break;

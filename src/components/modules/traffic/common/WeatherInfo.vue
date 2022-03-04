@@ -1,76 +1,72 @@
 <template>
-  <div>
+  <v-card tile :color="color" dark>
     <div class="row">
       <div class="col-4">
-        <v-card tile :color="color" dark>
-          <div class="d-flex flex-column align-center py-2">
-            <div class="condition-text">{{ weather.conditionText }}</div>
-            <div>
-              <v-img class="weather-icon" :src="weatherIcon(weather.conditionCode)" />
-              <div class="temperature">
-                <div>{{ formatTemperature(weather.airTemp, true) }}<sup>°F</sup></div>
-              </div>
+        <div class="d-flex flex-column align-center py-2 ml-4 mt-4">
+          <div class="condition-text">{{ weather.conditionText }}</div>
+          <div>
+            <v-img class="weather-icon" :src="weatherIcon(weather.conditionCode)" />
+            <div class="temperature">
+              <div>{{ formatTemperature(weather.airTemp, true) }}<sup>°F</sup></div>
             </div>
-            <div class="mt-n2 updated-text font-italic">Updated: {{ formatDate(weather.dataReceived) }}</div>
           </div>
-        </v-card>
+          <div class="mt-n2 updated-text font-italic">Updated: {{ formatDate(weather.dataReceived) }}</div>
+        </div>
       </div>
+      <v-divider class="mx-1" vertical dark></v-divider>
+      <div class="col">
+        <ul class="details">
+          <li>
+            <v-icon color="orange lighten-3" class="mr-1">mdi-thermometer</v-icon>
+            Temp: <strong>{{ formatTemperature(weather.minTemp) }} / {{ formatTemperature(weather.maxTemp) }}</strong>
+          </li>
+          <li>
+            <v-icon color="orange lighten-3" class="mr-1">mdi-weather-pouring</v-icon>
+            Precipitation: <strong v-if="weather.precip">{{ toPercentage(weather.precip) }}%</strong>
+          </li>
+          <li>
+            <v-icon color="orange lighten-3" class="mr-1">mdi-water</v-icon>
+            Humidity: <strong>{{ weather.relHumidity }}%</strong>
+          </li>
+          <li v-if="weather.roadSurface">
+            <v-icon color="orange lighten-3" class="mr-1">mdi-waves</v-icon>
+            Surface: <strong>{{ weather.roadSurface }}</strong>
+          </li>
+          <li>
+            <v-icon color="orange lighten-3" class="mr-1">mdi-weather-windy</v-icon>
+            Wind: <strong>{{ Math.round(weather.windAvg) }}mph {{ weather.windAvgHeading }}</strong>
+          </li>
+          <li>
+            <v-icon color="orange lighten-3" class="mr-1">mdi-eye-outline</v-icon>
+            Visibility: <strong v-if="weather.visibility">{{ weather.visibility }}m</strong>
+          </li>
+          <li>
+            <v-icon color="orange lighten-3" class="mr-1">mdi-weather-sunset-up</v-icon>
+            Sunrise:
+            <strong>{{ weather.sunrise }}</strong>
+          </li>
+          <li>
+            <v-icon color="orange lighten-3" class="mr-1">mdi-weather-sunset-down</v-icon>
+            Sunset:
+            <strong>{{ weather.sunset }}</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <v-divider class="mx-4" dark></v-divider>
 
+    <div class="row">
       <div class="col">
-        <v-card tile :color="color" dark>
-          <ul class="details">
-            <li>
-              <v-icon color="orange lighten-3" class="mr-1">mdi-thermometer</v-icon>
-              Temp: <strong>{{ formatTemperature(weather.minTemp) }} / {{ formatTemperature(weather.maxTemp) }}</strong>
-            </li>
-            <li>
-              <v-icon color="orange lighten-3" class="mr-1">mdi-weather-pouring</v-icon>
-              Precipitation: <strong v-if="weather.precip">{{ toPercentage(weather.precip) }}%</strong>
-            </li>
-            <li>
-              <v-icon color="orange lighten-3" class="mr-1">mdi-water</v-icon>
-              Humidity: <strong>{{ weather.relHumidity }}%</strong>
-            </li>
-            <li v-if="weather.roadSurface">
-              <v-icon color="orange lighten-3" class="mr-1">mdi-waves</v-icon>
-              Surface: <strong>{{ weather.roadSurface }}</strong>
-            </li>
-            <li>
-              <v-icon color="orange lighten-3" class="mr-1">mdi-weather-windy</v-icon>
-              Wind: <strong>{{ Math.round(weather.windAvg) }}mph {{ weather.windAvgHeading }}</strong>
-            </li>
-            <li>
-              <v-icon color="orange lighten-3" class="mr-1">mdi-eye-outline</v-icon>
-              Visibility: <strong v-if="weather.visibility">{{ weather.visibility }}m</strong>
-            </li>
-            <li>
-              <v-icon color="orange lighten-3" class="mr-1">mdi-weather-sunset-up</v-icon>
-              Sunrise:
-              <strong>{{ weather.sunrise }}</strong>
-            </li>
-            <li>
-              <v-icon color="orange lighten-3" class="mr-1">mdi-weather-sunset-down</v-icon>
-              Sunset:
-              <strong>{{ weather.sunset }}</strong>
-            </li>
-          </ul>
-        </v-card>
-      </div>
-    </div>
-    <div class="row mt-n2">
-      <div class="col">
-        <v-card tile :color="color" dark>
-          <div class="flex-view">
-            <div class="time-weather-record" v-for="w in weather.hourlyWeather" :key="w.time">
-              <span>{{ formatTime(w.time) }}</span>
-              <v-img class="small-weather-icon my-2" :src="weatherIcon(w.code)" />
-              <span>{{ formatTemperature(w.temp) }}</span>
-            </div>
+        <div class="flex-view">
+          <div class="time-weather-record" v-for="w in weather.hourlyWeather" :key="w.time">
+            <span>{{ formatTime(w.time) }}</span>
+            <v-img class="small-weather-icon my-2" :src="weatherIcon(w.code)" />
+            <span>{{ formatTemperature(w.temp) }}</span>
           </div>
-        </v-card>
+        </div>
       </div>
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -151,7 +147,7 @@ export default {
   margin-left: 8px;
   margin-top: -8px;
   div {
-    font-size: 64px;
+    font-size: 54px;
     font-weight: 600;
   }
   sup {
@@ -167,6 +163,7 @@ export default {
   font-size: 16px;
   line-height: 3;
   padding: 13px 0px;
+  margin: 0px;
   li {
     margin-top: 10px;
     text-align: left;
@@ -176,7 +173,7 @@ export default {
 }
 
 .condition-text {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: bold;
   text-transform: uppercase;
   margin-top: 5px;

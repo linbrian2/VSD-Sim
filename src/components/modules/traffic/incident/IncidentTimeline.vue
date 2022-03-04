@@ -1,14 +1,15 @@
 <template>
   <v-timeline dense>
-    <v-timeline-item v-for="(item, idx) in items" :key="idx" :color="item.color" :icon="item.icon" fill-dot>
+    <v-timeline-item v-for="(item, idx) in items" :key="idx" :color="item.color" fill-dot small>
       <v-row align="center">
         <v-col cols="2">
           <strong>{{ item.time }}</strong>
         </v-col>
         <v-col>
-          <v-alert dense :color="item.color" class="white--text" max-width="500">
-            <strong>{{ item.event }}</strong>
-          </v-alert>
+          <v-chip label :color="item.color" class="font-weight-light">
+            <v-icon small left v-text="item.icon" />
+            {{ item.event }}
+          </v-chip>
         </v-col>
       </v-row>
     </v-timeline-item>

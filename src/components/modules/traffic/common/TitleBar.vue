@@ -30,9 +30,16 @@
           <div class="mt-1" v-if="!isMultigraph">
             <span class="font-weight-bold text-overline">{{ loading ? 'Loading ...' : title }}</span>
             <span class="ml-2 mt-0" v-if="!loading">
-              <v-chip color="green" outlined small v-if="showId || showUid">
-                <span class="white--text">{{ label }}</span>
-              </v-chip>
+              <template v-if="subtitle">
+                <v-chip color="green" outlined small>
+                  <span class="white--text">{{ subtitle }}</span>
+                </v-chip>
+              </template>
+              <template v-else>
+                <v-chip color="green" outlined small v-if="showId || showUid">
+                  <span class="white--text">{{ label }}</span>
+                </v-chip>
+              </template>
             </span>
           </div>
         </div>
@@ -82,6 +89,10 @@ export default {
     showRefresh: {
       type: Boolean,
       default: true
+    },
+    subtitle: {
+      type: String,
+      default: ''
     }
   },
 

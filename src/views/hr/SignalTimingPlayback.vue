@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TitleBar title="Signal Timing" :loading="loading" :refresh="refreshData">
+    <TitleBar title="Signal Timing Playback" :loading="loading" :refresh="refreshData">
       <div style="height:30px" class="d-flex justify-space-between align-center mt-2">
         <v-slider
           style="width:250px"

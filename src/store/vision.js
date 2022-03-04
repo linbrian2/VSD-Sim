@@ -40,7 +40,7 @@ const actions = {
         commit('SET_ACTIVE_MARKER', state.locations[0]);
       }
     } catch (error) {
-      dispatch('setSystemStatus', { text: error, timeout: 0, color: 'error' }, { root: true });
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   }
 };

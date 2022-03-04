@@ -32,9 +32,11 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <div class="mx-4">
-          <IncidentTimeline :items="incidentTimelineSeries" ref="incidentTimeline" />
-        </div>
+        <v-card tile :elevation="10">
+          <div class="mx-4">
+            <IncidentTimeline :items="incidentTimelineSeries" ref="incidentTimeline" />
+          </div>
+        </v-card>
       </v-col>
     </v-row>
 

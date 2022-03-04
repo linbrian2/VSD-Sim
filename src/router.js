@@ -28,7 +28,8 @@ import IncidentMitigation from '@/views/traffic/IncidentMitigation.vue';
 import HRDashboard from '@/views/hr/Dashboard.vue';
 import PCD from '@/views/hr/PCD.vue';
 import TimeSpaceDiagram from '@/views/hr/TimeSpaceDiagram.vue';
-import SignalTiming from '@/views/hr/SignalTiming.vue';
+import SignalTimingPlayback from '@/views/hr/SignalTimingPlayback.vue';
+import SignalTimingLive from '@/views/hr/SignalTimingLive.vue';
 import PerformanceMeasures from '@/views/hr/PerformanceMeasures.vue';
 import MultiPCD from '@/views/hr/MultiPCD.vue';
 import MultiOcc from '@/views/hr/MultiOcc.vue';
@@ -149,9 +150,14 @@ const router = new Router({
           component: TimeSpaceDiagram
         },
         {
+          path: RouterPaths.HR_SIGNAL_LIVE,
+          name: RouterNames.HR_SIGNAL_LIVE,
+          component: SignalTimingLive
+        },
+        {
           path: RouterPaths.HR_SIGNAL,
           name: RouterNames.HR_SIGNAL,
-          component: SignalTiming
+          component: SignalTimingPlayback
         },
         {
           path: RouterPaths.HR_PERFORMANCE_MEASURES,
@@ -186,22 +192,6 @@ const router = new Router({
         }
       ]
     },
-    /* {
-      path: RouterPaths.BLUETOOTH_DASHBOARD,
-      component: Bluetooth,
-      children: [
-        {
-          path: RouterPaths.BLUETOOTH_DASHBOARD,
-          name: RouterNames.BLUETOOTH_DASHBOARD,
-          component: BluetoothDashboard
-        },
-        {
-          path: RouterPaths.BLUETOOTH_MULTIGRAPH,
-          name: RouterNames.BLUETOOTH_MULTIGRAPH,
-          component: BluetoothMultigraph
-        }
-      ]
-    }, */
     {
       path: RouterPaths.CAV_DASHBOARD,
       component: CAV,

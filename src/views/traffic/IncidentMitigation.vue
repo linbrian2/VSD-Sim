@@ -22,7 +22,7 @@
 
     <v-container>
       <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"
-        ><h3>Recommended Mitigation Solution</h3>
+        ><h3>Recommended Timing Plan</h3>
       </v-subheader>
       <v-divider />
 
@@ -36,56 +36,62 @@
             </v-tabs>
           </div>
 
-          <v-menu offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn small outlined color="grey lighten-2" dark v-bind="attrs" v-on="on" class="mt-3 mr-4">
-                &nbsp;&nbsp;Time Offset: {{ selectedTimeOffset }} min&nbsp;&nbsp;
-              </v-btn>
-            </template>
-
-            <v-list>
-              <v-list-item v-for="(timeOffset, i) in timeOffsetItems" :key="i" @click="timeOffsetSelected(timeOffset)">
-                <v-list-item-title :class="{ 'font-weight-bold': timeOffset === selectedTimeOffset }">
-                  <v-icon class="mr-1" v-if="timeOffset === selectedTimeOffset">mdi-check</v-icon>
-                  <span :class="{ 'ml-8': timeOffset !== selectedTimeOffset }"> {{ timeOffset }} min</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <v-menu offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn small outlined color="grey lighten-4" dark v-bind="attrs" v-on="on" class="mt-3 mr-4">
-                &nbsp;&nbsp;Cycle Length: {{ selectedCycleLength }} s&nbsp;&nbsp;
-              </v-btn>
-            </template>
-
-            <v-list>
-              <v-list-item
-                v-for="(cycleLength, i) in cycleLengthItems"
-                :key="i"
-                @click="cycleLengthSelected(cycleLength)"
-              >
-                <v-list-item-title :class="{ 'font-weight-bold': cycleLength === selectedCycleLength }">
-                  <v-icon class="mr-1" v-if="cycleLength === selectedCycleLength">mdi-check</v-icon>
-                  <span :class="{ 'ml-8': cycleLength !== selectedCycleLength }"> {{ cycleLength }} s</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <div class="mr-4">
+            <MenuSelector
+              title="Time Offset"
+              unit="min"
+              :items="timeOffsetItems"
+              :selectedItem="selectedTimeOffset"
+              @click="timeOffsetSelected"
+            />
+          </div>
         </div>
 
         <div>
           <div class="ma-4">
-            <SolutionTable :items="currentSolution" ref="solutionTable" />
+            <v-card tile>
+              <v-card-title class="d-flex justify-space-between">
+                <div class="subtitle-1 ml-n4">Current Plan & MOE</div>
+                <div class="caption grey--text"></div>
+              </v-card-title>
+            </v-card>
+            <SignalGroupTable :items="currentSolution" color="green" href="currentGroupTable" />
           </div>
+
           <div class="ma-4">
-            <div class="grey darken-2 text-center">
-              <span class="text-overline white--text" v-html="hintText"></span>
-            </div>
+            <v-card tile>
+              <v-card-title class="d-flex justify-space-between">
+                <div class="subtitle-1 ml-n4">Recommended Plan & MOE</div>
+                <div class="d-flex justify-space-between mr-n4">
+                  <MenuSelector
+                    title="Cycle Length"
+                    unit="s"
+                    :items="cycleLengthItems"
+                    :selectedItem="selectedCycleLength"
+                    :highlightedItem="optimalCycleLength"
+                    @click="cycleLengthSelected"
+                  />
+                  <v-btn small color="blue" class="mt-3 ml-12" @click="handleRejected">
+                    <v-icon small left>mdi-check</v-icon> Implemented
+                  </v-btn>
+                </div>
+              </v-card-title>
+            </v-card>
+            <SignalGroupTable :items="recommendedSolution" color="cyan darken-3" href="recommendedGroupTable" />
           </div>
         </div>
       </v-card>
+
+      <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
+        <h3>Travel Delay Comparison</h3>
+      </v-subheader>
+      <v-divider />
+
+      <div class="ma-4">
+        <v-card>
+          <SignalDelayChart :data="signalDelays" :height="350" />
+        </v-card>
+      </div>
 
       <v-subheader class="pl-0  d-flex justify-space-between">
         <h3 class="mx-4 font-weight-bold text-overline blue--text">Traffic Flow Evolution</h3>
@@ -150,17 +156,21 @@ import Utils from '@/utils/Utils';
 import { mapState, mapActions } from 'vuex';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import MapSegment from '@/components/modules/traffic/mitigation/MapSegment';
-import SolutionTable from '@/components/modules/traffic/mitigation/SolutionTable';
+import SignalGroupTable from '@/components/modules/traffic/mitigation/SignalGroupTable';
+import SignalDelayChart from '@/components/modules/traffic/mitigation/SignalDelayChart';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
+import MenuSelector from '@/components/modules/traffic/common/MenuSelector';
 
 export default {
   components: {
     TitleBar,
     MapSegment,
     BasicChart,
-    SolutionTable,
-    SelectionPanel
+    MenuSelector,
+    SelectionPanel,
+    SignalGroupTable,
+    SignalDelayChart
   },
 
   data: () => ({
@@ -173,6 +183,7 @@ export default {
     segmentLinks: [],
     incidentItem: null,
     signalDevices: null,
+    baseline: {},
     solutions: {},
     markers: [],
     detourRoute: [],
@@ -182,12 +193,15 @@ export default {
     demandData: {},
     rampTrafficVolumesData: {},
     currentSolution: [],
+    recommendedSolution: [],
     currentSolutionId: -1,
     selectedCycleLength: 120,
+    optimalCycleLength: -1,
     cycleLengthItems: [],
     defaultCycleLengthItems: [120, 130, 140, 150, 160, 170, 180, 190, 200, 210],
     selectedTimeOffset: 0,
-    timeOffsetItems: [0, 15, 30, 45]
+    timeOffsetItems: [0, 15, 30, 45],
+    signalDelays: {}
   }),
 
   computed: {
@@ -234,7 +248,8 @@ export default {
     solutionTab() {
       this.selectedTimeOffset = this.timeOffsetItems[0];
       this.updateCycleLengths(this.solutionTab, this.selectedTimeOffset);
-      this.selectedCycleLength = this.cycleLengthItems[0];
+      this.selectedCycleLength =
+        this.optimalCycleLength > 0 ? this.optimalCycleLength : parseInt(this.cycleLengthItems[0]);
       this.updateCurrentSolution();
     },
 
@@ -275,16 +290,21 @@ export default {
     },
 
     cycleLengthSelected(cycleLength) {
-      this.selectedCycleLength = cycleLength;
+      this.selectedCycleLength = parseInt(cycleLength);
     },
 
     updateCurrentSolution() {
       if (this.solutionTab >= 0 && this.selectedTimeOffset >= 0 && this.selectedCycleLength >= 0) {
-        const keys = Object.keys(this.solutions);
+        const keys = Object.keys(this.baseline);
         const key = keys[this.solutionTab];
+
+        this.currentSolution = this.baseline[key][this.selectedTimeOffset];
+
         const cycles = this.solutions[key][this.selectedTimeOffset];
         this.cycleLengthItems = Object.keys(cycles);
-        this.currentSolution = cycles[this.selectedCycleLength];
+        this.recommendedSolution = cycles[this.selectedCycleLength];
+
+        this.signalDelays = this.composeSignalDelays();
       }
     },
 
@@ -309,7 +329,6 @@ export default {
 
     onMarkerClicked(marker) {
       if (marker.id.startsWith('S')) {
-        console.log(marker);
         this.$refs.solutionTable.expandRowByPermit(marker.name);
       }
     },
@@ -318,6 +337,46 @@ export default {
       if (this.$refs.mapSegmentRef) {
         this.$refs.mapSegmentRef.selectLink(linkId);
       }
+    },
+
+    composeSignalDelays() {
+      const title = 'Travel Time Delay Comparison';
+      const xAxis = 'Traffic Signals';
+      const yAxis = 'Time Delay (s)';
+      const colors = ['#43A047', '#0097A7'];
+
+      const currentDelays = {};
+      this.currentSolution.forEach(s => {
+        currentDelays[s.permitNumber] = [s.avgDelay];
+      });
+      this.recommendedSolution.forEach(s => {
+        const items = currentDelays[s.permitNumber];
+        if (items && items.length > 0) {
+          items.push(s.avgDelay);
+        }
+      });
+
+      const categories = [];
+      const data1 = [];
+      const data2 = [];
+      for (const [key, value] of Object.entries(currentDelays)) {
+        categories.push(key);
+        data1.push(value.length > 0 ? value[0] : null);
+        data2.push(value.length > 1 ? value[1] : null);
+      }
+
+      const series = [
+        {
+          name: 'Current Plan',
+          data: data1
+        },
+        {
+          name: 'Recommended Plan',
+          data: data2
+        }
+      ];
+
+      return { series, xAxis, yAxis, title, categories, colors };
     },
 
     prepareIncidentData(item) {
@@ -361,11 +420,15 @@ export default {
           this.signalDevices = data.signals;
           this.prepareIncidentData(data.incident);
           this.detourRoute = data.detourRoute;
+
           this.onRampData = this.formOnRampData(data.mitigation);
           this.offRampData = this.formOffRampData(data.mitigation);
           this.travelTimeData = this.formTravelTimeData(data.mitigation);
           this.demandData = this.formDemandData(data.mitigation);
+
+          this.baseline = data.baseline;
           this.solutions = data.solutions;
+          this.optimalCycleLength = data.optimalCycleLength;
         } else {
           this.incidentItem = null;
         }
@@ -530,7 +593,6 @@ export default {
 
       if (this.signalDevices) {
         this.signalDevices.forEach(item => {
-          console.log(item);
           markers.push({
             id: 'S' + item.permit,
             name: item.permit,

@@ -5,7 +5,7 @@ const styles = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#ffffff'
+        color: '#8ec3b9'
       }
     ]
   },
@@ -63,6 +63,15 @@ const styles = [
       },
       {
         lightness: 5
+      }
+    ]
+  },
+  {
+    featureType: 'poi',
+    elementType: 'labels',
+    stylers: [
+      {
+        visibility: 'off'
       }
     ]
   },

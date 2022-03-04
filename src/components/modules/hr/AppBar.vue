@@ -65,6 +65,7 @@ export default {
       { title: RouterNames.HR_DASHBOARD, url: RouterPaths.HR_DASHBOARD },
       { title: RouterNames.HR_PCD, url: RouterPaths.HR_PCD },
       { title: RouterNames.HR_TIME_SPACE_DIAGRAM, url: RouterPaths.HR_TIME_SPACE_DIAGRAM },
+      { title: RouterNames.HR_SIGNAL_LIVE, url: RouterPaths.HR_SIGNAL_LIVE },
       { title: RouterNames.HR_SIGNAL, url: RouterPaths.HR_SIGNAL },
       { title: RouterNames.HR_PERFORMANCE_MEASURES, url: RouterPaths.HR_PERFORMANCE_MEASURES },
       { divider: true },

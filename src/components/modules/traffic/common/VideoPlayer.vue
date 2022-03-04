@@ -9,6 +9,13 @@
       controls="controls"
       autoplay="autoplay"
     ></video>
+    <div
+      style="position: absolute; top: 60px; right:10px; background: rgba(50,50,50,0.3)"
+      class="white--text"
+      v-if="caption"
+    >
+      &nbsp;&nbsp;{{ caption }}&nbsp;&nbsp;
+    </div>
   </div>
 </template>
 
@@ -20,6 +27,7 @@ import videojs from 'video.js/dist/alt/video.novtt.js';
 export default {
   name: 'VideoPlayer',
   props: {
+    caption: String,
     options: {
       type: Object,
       default() {

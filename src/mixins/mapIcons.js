@@ -104,7 +104,7 @@ export const mapIcons = {
       },
 
       alertIconActive: {
-        url: require('@/assets/alert-select.png'),
+        url: require('@/assets/alert.png'),
         size: { width: 60, height: 60, f: 'px', b: 'px' },
         anchor: { x: 30, y: 30 }
       },
