@@ -21,6 +21,7 @@ export default {
   },
 
   data: () => ({
+    isDashboard: true,
     title: AppConstants.DASHBOARD_APP_TITLE,
     action_menu_items: []
   })

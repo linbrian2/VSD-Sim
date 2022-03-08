@@ -4,6 +4,17 @@ import client from '@/utils/AxiosClient';
 const AxiosClient = client(process.env.VUE_APP_TRAFFIC_API_URL);
 
 export default {
+  // * Dashboard - Routes (High Congestion)
+  fetchSegments() {
+    let ts = new Date().getTime();
+    return AxiosClient.get(`bluetooth/segments/${ts}`);
+  },
+  // * Dashboard - Reported Waze Alerts
+  fetchWazeData() {
+    let min = 60;
+    let ts = new Date().getTime();
+    return AxiosClient.get(`bluetooth/waze/latest-${min}m/${ts}`);
+  },
   fetchDevices() {
     return AxiosClient.get('api/trafficDevices');
   },
