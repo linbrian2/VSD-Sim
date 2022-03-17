@@ -16,7 +16,8 @@
           :position="m.position"
           :title="m.name"
           :clickable="true"
-          :icon="m.icon || icons[0]"
+          :icon="getMarkerIcon(m.id)"
+          @click="markerClicked(m)"
         />
       </GmapMap>
       <GmapPolyline
@@ -45,6 +46,7 @@ import DarkMapStyle from '@/utils/DarkMapStyle.js';
 export default {
   components: { WeatherOverlay, PreferenceDialog },
   props: {
+    apiInfo: Object,
     zoom: {
       type: Number,
       default: 12
@@ -119,21 +121,12 @@ export default {
   },
   methods: {
     getMarkerIcon(key) {
-      if (this.selectedMarkerIds.length > 0) {
-        return this.selectedMarkerIds.includes(key) ? this.getActiveIcon() : this.getNormalIcon();
-      }
-      return this.selectedMarkerId === key ? this.getActiveIcon() : this.getNormalIcon();
-    },
-    getNormalIcon() {
-      return this.icons ? this.icons[0] : this.mapMarker;
-    },
-    getActiveIcon() {
-      return this.icons ? this.icons[1] : this.mapMarkerActive;
+      return this.selectedMarkerId == key ? this.icons[1] : this.icons[0];
     },
     markerClicked(marker) {
-      this.selectedMarkerIds = [];
+      console.log(marker.id);
       this.selectedMarkerId = marker.id;
-      this.$store.commit('traffic/SET_ACTIVE_MARKER', marker);
+      this.$store.commit('dashboard/SET_ACTIVE_MARKER', marker);
       this.$emit('click', marker);
     },
     detectMapCenterChange() {
@@ -158,8 +151,6 @@ export default {
     },
 
     centerMap(map, markers) {
-      console.log('Map: %o', map);
-      console.log('Markers: %o', markers);
       if (markers && markers.length > 0) {
         console.log(0);
         let bounds = new google.maps.LatLngBounds();
@@ -183,10 +174,12 @@ export default {
       if (this.markers && this.markers.length > 0) {
         this.centerMap(this.map, this.markers);
       }
+    },
+    selectedMarkerId(selectedMarkerId) {
+      console.log(`selectedMarkerId ${selectedMarkerId}`);
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

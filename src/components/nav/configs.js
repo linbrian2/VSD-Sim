@@ -9,12 +9,37 @@ const protectedRoute = [
     },
     children: [
       {
-        path: '/',
-        name: RouterNames.TRAFFIC_DASHBOARD,
+        path: RouterPaths.MAIN_DASHBOARD,
         meta: {
-          title: RouterNames.TRAFFIC_DASHBOARD,
+          title: 'Dashboards',
           icon: 'mdi-view-dashboard'
-        }
+        },
+        children: [
+          {
+            path: RouterPaths.MAIN_DASHBOARD,
+            name: RouterNames.MAIN_DASHBOARD,
+            meta: {
+              title: RouterNames.MAIN_DASHBOARD,
+              icon: 'mdi-view-dashboard'
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_DASHBOARD,
+            name: RouterNames.TRAFFIC_DASHBOARD,
+            meta: {
+              title: RouterNames.TRAFFIC_DASHBOARD,
+              icon: 'mdi-view-dashboard'
+            }
+          },
+          {
+            path: RouterPaths.BLUETOOTH_DASHBOARD,
+            name: RouterNames.BLUETOOTH_DASHBOARD,
+            meta: {
+              title: RouterNames.BLUETOOTH_DASHBOARD,
+              icon: 'mdi-view-dashboard'
+            }
+          }
+        ]
       },
 
       //Traffic Flow
@@ -25,22 +50,6 @@ const protectedRoute = [
           icon: 'flowIcon'
         },
         children: [
-          {
-            path: RouterPaths.TRAFFIC_DASHBOARD,
-            name: RouterNames.TRAFFIC_DASHBOARD,
-            meta: {
-              title: RouterNames.TRAFFIC_DASHBOARD,
-              icon: 'mdi-view-dashboard'
-            }
-          },
-          {
-            path: RouterPaths.TRAFFIC_BT_DASHBOARD,
-            name: RouterNames.TRAFFIC_BT_DASHBOARD,
-            meta: {
-              title: RouterNames.TRAFFIC_BT_DASHBOARD,
-              icon: 'mdi-view-dashboard'
-            }
-          },
           {
             path: RouterPaths.TRAFFIC_FLOW,
             name: RouterNames.TRAFFIC_FLOW,
@@ -223,32 +232,6 @@ const protectedRoute = [
           }
         ]
       },
-      //Bluetooth
-      /* {
-        path: RouterPaths.BLUETOOTH_DASHBOARD,
-        meta: {
-          title: 'Bluetooth and Waze Data',
-          icon: 'btIcon'
-        },
-        children: [
-          {
-            path: RouterPaths.BLUETOOTH_DASHBOARD,
-            name: RouterNames.BLUETOOTH_DASHBOARD,
-            meta: {
-              title: RouterNames.BLUETOOTH_DASHBOARD,
-              icon: 'mdi-view-dashboard'
-            }
-          },
-          {
-            path: RouterPaths.BLUETOOTH_MULTIGRAPH,
-            name: RouterNames.BLUETOOTH_MULTIGRAPH,
-            meta: {
-              title: RouterNames.BLUETOOTH_MULTIGRAPH,
-              icon: 'mdi-chart-areaspline'
-            }
-          }
-        ]
-      }, */
       //CAV
       {
         path: RouterPaths.CAV_DASHBOARD,

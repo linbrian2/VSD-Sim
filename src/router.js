@@ -11,6 +11,7 @@ import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
 import Dashboard from '@/components/layouts/Dashboard.vue';
 
+import MainDashboard from '@/views/dashboard/MainDashboard.vue';
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
 import TrafficFlow from '@/views/traffic/TrafficFlow.vue';
@@ -58,23 +59,29 @@ const router = new Router({
     {
       path: '/',
       alias: '/dash',
-      name: RouterNames.DASHBOARD,
-      component: Dashboard
-    },
-    {
-      path: '/flow',
-      component: Traffic,
+      component: Dashboard,
       children: [
+        {
+          path: '',
+          name: RouterNames.MAIN_DASHBOARD,
+          component: MainDashboard
+        },
         {
           path: RouterPaths.TRAFFIC_DASHBOARD,
           name: RouterNames.TRAFFIC_DASHBOARD,
           component: TrafficDashboard
         },
         {
-          path: RouterPaths.TRAFFIC_BT_DASHBOARD,
-          name: RouterNames.TRAFFIC_BT_DASHBOARD,
+          path: RouterPaths.BLUETOOTH_DASHBOARD,
+          name: RouterNames.BLUETOOTH_DASHBOARD,
           component: TrafficBTDashboard
-        },
+        }
+      ]
+    },
+    {
+      path: '/flow',
+      component: Traffic,
+      children: [
         {
           path: RouterPaths.TRAFFIC_FLOW,
           name: RouterNames.TRAFFIC_FLOW,

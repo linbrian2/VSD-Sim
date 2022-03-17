@@ -9,6 +9,7 @@
     :item-class="itemRowBackground"
     @click:row="handleRowClick"
     class="elevation-1"
+    :search="search"
   >
     <template v-slot:[`item.id`]="{ item }">
       <div class="d-flex">
@@ -40,9 +41,6 @@
     </template>
     <template v-slot:[`item.startTime`]="{ item }">
       {{ item.startTime | time }}
-    </template>
-    <template v-slot:[`item.endTime`]="{ item }">
-      {{ item.endTime | time }}
     </template>
     <template v-slot:[`item.evidenceCounts`]="{ item }">
       <v-badge
@@ -77,40 +75,42 @@
 <script>
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/dashboard';
-/* import { RouterPaths } from '@/utils/constants/router'; */
+
 export default {
   props: {
+    itemsPerPage: { type: Number, default: -1 },
     height: { type: Number, default: 350 },
-    incidents: Array
+    preSelect: { type: Boolean, default: true },
+    incidents: Array,
+    search: String
   },
 
   data: () => ({
-    itemsPerPage: 3,
     headers: [
-      /* { text: 'ID', value: 'id' }, */
       { text: 'Route', value: 'route' },
-      /* { text: 'Region', value: 'region' }, */
       { text: 'Severity', value: 'severity' },
       { text: 'Start Time', value: 'startTime' },
-      /* { text: 'End Time', value: 'endTime' }, */
       { text: 'Duration', value: 'duration' },
       { text: 'Evidences', value: 'evidenceCounts' }
-      /* { text: 'Mitigation', value: 'mitigation' } */
     ],
     selectedRowId: null
   }),
 
   filters: {
     time(time) {
-      const d = new Date(time);
-      const dd = Utils.formatDate(d);
-      const tt = Utils.formatTimeAsMinute(d);
-      return `${dd} ${tt}`;
+      if (time) {
+        const d = new Date(time);
+        const dd = Utils.formatDate(d);
+        const tt = Utils.formatTimeAsMinute(d);
+        return `${dd} ${tt}`;
+      }
     }
   },
 
   mounted() {
-    this.handleRowClick(this.incidents[0]);
+    if (this.preSelect && this.incidents && this.incidents.length > 0) {
+      this.handleRowClick(this.incidents[0]);
+    }
   },
 
   methods: {
@@ -152,6 +152,14 @@ export default {
       const path = RouterPaths.TRAFFIC_MITIGATION;
       this.$router.push({ path: `${path}/${id}` }).catch(() => {});
     } */
+  },
+
+  watch: {
+    incidents(data) {
+      if (data.length > 0) {
+        this.handleRowClick(this.incidents[0]);
+      }
+    }
   }
 };
 </script>

@@ -5,14 +5,23 @@ import HRApi from '@/utils/api/hr';
 import Utils from '@/utils/Utils';
 
 const state = {
-  weatherStations: [],
-  trafficIncidents: [],
-  trafficDevices: [],
-  hrData: [],
-  hrSummary: [],
-  detectors: [],
-  segments: [],
-  waze: [],
+  activeMarker: null,
+
+  weatherStations: null,
+  trafficIncidents: null,
+  trafficDevices: null,
+  signalPerformanceIssues: null,
+  hrSummary: null,
+  detectors: null,
+  segments: null,
+  waze: null,
+
+  selectedTrafficIncident: null,
+  selectedtrafficDevice: null,
+  selectedSignalPerformanceIssue: null,
+  selectedDetector: null,
+  selectedSegment: null,
+  selectedWazeAlert: null,
 
   pref: {
     theme: 'Dark Mode',
@@ -33,6 +42,10 @@ const state = {
 const getters = {};
 
 const mutations = {
+  SET_ACTIVE_MARKER(state, marker) {
+    state.activeMarker = marker;
+  },
+
   SET_WEATHER_STATIONS(state, stations) {
     state.weatherStations = stations;
   },
@@ -43,7 +56,7 @@ const mutations = {
     state.trafficDevices = devices;
   },
   SET_HR_DATA(state, data) {
-    state.hrData = data;
+    state.signalPerformanceIssues = data;
   },
   SET_HR_SUMMARY(state, summary) {
     state.hrSummary = summary;
@@ -83,36 +96,16 @@ const actions = {
     const severity = 50;
     const duration = 30;
     try {
-      const start = new Date().getTime();
+      const start = new Date().getTime() - 24 * 60 * 60 * 1000;
       const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
-      commit('SET_TRAFFIC_INCIDENTS', response.data);
-      // console.log(`Traffic Incidents: %o`, response.data);
+      commit('SET_TRAFFIC_INCIDENTS', response.data.data ? response.data.data : []);
+      console.log(`Traffic Incidents: %o`, state.trafficIncidents);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
-  // async fetchIncidentData(startTime) {
-  //   const { severity, duration } = this.incidentSettings;
-  //   try {
-  //     const start = startTime.getTime();
-  //     const response = await Api.fetchIncidentData(start, 1, severity, duration);
-  //     const data = this.getResponseData(response);
-  //     if (data) {
-  //       this.incidents = data;
-  //       this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
-  //       this.segments = this.createTotalSegments();
-  //     } else {
-  //       this.incidents = [];
-  //       this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
-  //       this.segments = [];
-  //     }
-  //     this.incidentItem = null;
-  //   } catch (error) {
-  //     this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
-  //   }
-  // },
-  // Traffic Detector Issues
-  async fetchDevices({ commit, dispatch }) {
+  // Traffic Flow Issues
+  async fetchTrafficDevices({ commit, dispatch }) {
     try {
       const response = await TrafficApi.fetchAnomalyDevices();
       let deviceLocations = response.data.map(obj => ({ ...obj, status: 0 }));
@@ -127,7 +120,6 @@ const actions = {
     try {
       const response = await HRApi.fetchDevices();
       commit('SET_HR_DATA', response.data);
-      // console.log(`HR: %o`, response.data);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -136,13 +128,16 @@ const actions = {
     // console.log('fetchStatusOfDevices');
     try {
       const response = await HRApi.fetchStatusOfDevices();
-      commit('SET_HR_SUMMARY', response.data);
-      // console.log(`HR Summary: %o`, response.data);
+      let sortedData = response.data.sort((a, b) =>
+        a.AoR[0] + a.AoR[1] > b.AoR[0] + b.AoR[1] ? -1 : b.AoR[0] + b.AoR[1] > a.AoR[0] + a.AoR[1] ? 1 : 0
+      );
+      commit('SET_HR_SUMMARY', sortedData);
+      console.log(`HR Summary: %o`, sortedData);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
-  // Detectors (High Delay)
+  // ! REMOVE THIS Detectors (High Delay)
   async fetchDetectors({ commit, dispatch }) {
     try {
       const response = await TrafficApi.fetchDevices();
@@ -152,7 +147,8 @@ const actions = {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
-  // Routes (High Congestion)
+  // TODO: Device Anomalies
+  // Congested Routes
   async fetchSegments({ commit, dispatch }) {
     try {
       const response = await TrafficApi.fetchSegments();
@@ -162,7 +158,7 @@ const actions = {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
-  // Reported Waze Alerts
+  // Waze Alerts
   async fetchWaze({ commit, dispatch }) {
     try {
       const response = await TrafficApi.fetchWazeData();

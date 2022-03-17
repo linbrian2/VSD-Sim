@@ -1,5 +1,5 @@
 export default Object.freeze({
-  DASHBOARD_APP_TITLE: 'Main Dashboard',
+  DASHBOARD_APP_TITLE: 'Dashboard',
   TRAFFIC_APP_TITLE: 'Traffic Flow Data',
   HR_APP_TITLE: 'High Resolution Data',
   VISION_APP_TITLE: 'Machine Vision',

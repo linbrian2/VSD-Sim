@@ -6,7 +6,7 @@
         :key="s.id"
         :title="s.desc"
         :path.sync="s.path"
-        :options="segmentOptions(s.id)"
+        :options="segmentOptions(s)"
         @click="segmentClicked(s)"
       />
 
@@ -30,6 +30,7 @@
 
 <script>
 /* global google */
+import Utils from '@/utils/Utils';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapBase from '@/components/modules/traffic/map/MapBase';
 export default {
@@ -93,8 +94,8 @@ export default {
       return segment.path[Math.round(segment.path.length / 2)];
     },
 
-    segmentOptions(id) {
-      const color = id === this.selectedSegmentId ? 'orange' : 'green';
+    segmentOptions(segment) {
+      const color = segment.id === this.selectedSegmentId ? 'blue' : Utils.getStrokeColor(segment.travelTime.level);
       return { ...this.defaultSegmentOptions, strokeColor: color };
     },
 
@@ -135,7 +136,7 @@ export default {
     },
 
     getChipColor(s) {
-      return this.selectedSegmentId === s.id ? 'orange' : 'white';
+      return this.selectedSegmentId === s.id ? 'blue' : 'white';
     },
 
     setCenterMap() {

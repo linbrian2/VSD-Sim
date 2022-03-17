@@ -27,7 +27,25 @@
         </v-app-bar>
         <div style="height: 450px;">
           <vue-perfect-scrollbar class="app-drawer__scrollbar">
-            <div class="app-drawer__inner">
+            <div v-if="type == 0">
+              <IncidentTable
+                :height="420"
+                :incidents="incidents"
+                :preSelect="false"
+                :search="search"
+                @click="handleRowClick"
+              />
+            </div>
+            <div v-else-if="type == 2">
+              <SignalPerformanceIssuesTable
+                :height="420"
+                :summary="signalPerformanceIssues"
+                :preSelect="false"
+                :search="search"
+                @click="handleRowClick"
+              />
+            </div>
+            <div v-else>
               <v-data-table
                 disable-sort
                 :headers="headers"
@@ -52,15 +70,22 @@
 <script>
 import Utils from '@/utils/Utils';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
+import IncidentTable from '@/components/modules/dashboard/IncidentTable';
+import SignalPerformanceIssuesTable from '@/components/modules/dashboard/SignalPerformanceIssuesTable';
+
 export default {
   components: {
-    VuePerfectScrollbar
+    VuePerfectScrollbar,
+    IncidentTable,
+    SignalPerformanceIssuesTable
   },
   props: {
     value: Boolean
   },
 
   data: () => ({
+    signalPerformanceIssues: [],
+    incidents: [],
     loading: false,
     height: 470,
     legendY: 15,
@@ -98,13 +123,11 @@ export default {
       this.title = title;
       this.search = '';
       if (type === 0) {
-        // this.x(data);
+        this.prepareTrafficIncidents(data);
       } else if (type === 1) {
         this.prepareTrafficDetectors(data);
       } else if (type === 2) {
         this.prepareSignalPerformanceIssues(data);
-      } else if (type === 3) {
-        // this.x(data);
       } else if (type === 4) {
         this.prepareHighCongestionRoutes(data);
       } else if (type === 5) {
@@ -132,6 +155,10 @@ export default {
       return '';
     },
 
+    prepareTrafficIncidents(data) {
+      this.incidents = data;
+    },
+
     prepareTrafficDetectors(data) {
       this.headers = [
         { text: 'Device', value: 'device' },
@@ -146,20 +173,7 @@ export default {
     },
 
     prepareSignalPerformanceIssues(data) {
-      console.log(data);
-      this.headers = [
-        { text: 'Permit', value: 'permit' },
-        { text: 'Intersection', value: 'intersection', width: '150px' },
-        { text: 'Power', value: 'power' },
-        { text: 'Control', value: 'control' },
-        { text: 'AoR (NB)', value: 'AoRN' },
-        { text: 'AoR (SB)', value: 'AoRS' },
-        { text: 'SimpleDelay (NB)', value: 'simpleDelayN', align: 'center' },
-        { text: 'SimpleDelay (SB)', value: 'simpleDelayS', align: 'center' },
-        { text: 'ApproachVol (NB)', value: 'approachVolumeN', align: 'center' },
-        { text: 'ApproachVol (SB)', value: 'approachVolumeS', align: 'center' }
-      ];
-      this.items = data;
+      this.signalPerformanceIssues = data;
     },
 
     prepareHighCongestionRoutes(data) {
@@ -171,10 +185,10 @@ export default {
         { text: 'Level', value: 'level' }
       ];
       this.items = data.map(d => ({
-        id: d.id,
+        id: d.info.id,
         lastUpdated: d.travelTime.calculationTimestamp.text,
-        name: d.name,
-        desc: d.description,
+        name: d.info.name,
+        desc: d.info.description,
         level: d.travelTime.level
       }));
     },
@@ -276,7 +290,8 @@ export default {
       const id = value.id;
       const type = this.type;
       this.hideDialog();
-      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type });
+      console.log('A');
+      this.$bus.$emit('DISPLAY_MARKER_DETAILS_DASHBOARD', { id, type });
     }
   }
 };

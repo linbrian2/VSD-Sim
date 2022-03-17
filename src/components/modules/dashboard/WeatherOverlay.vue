@@ -1,9 +1,12 @@
 <template>
   <div :style="`position: absolute; top: 10px; left: 320px; `">
     <v-card color="rgba(0, 0, 0, .5)" style="display:flex;" class="px-2">
-      <div :style="`color: ${color};`" class="py-2">
-        {{ dateStr }}
-      </div>
+      <!-- Increase font size -->
+      <b>
+        <div :style="`color: ${color};`" class="py-2">
+          {{ dateStr }}
+        </div>
+      </b>
       <template v-if="weather">
         <v-divider vertical class="mx-2"></v-divider>
         <v-img class="weather-icon" width="40px" height="40px" :src="weatherIcon(weather.conditionCode)" />

@@ -190,6 +190,7 @@ const actions = {
   async fetchBluetoothSegments({ commit, dispatch }) {
     try {
       const response = await Api.fetchBluetoothSegments();
+      console.log('fetchBluetoothSegments: %o', response.data);
       commit('SET_BLUETOOTH_SEGMENTS', response.data);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });

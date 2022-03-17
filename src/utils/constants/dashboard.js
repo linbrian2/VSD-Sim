@@ -2,11 +2,11 @@ export default Object.freeze({
   CHART_HEIGHT: 560,
 
   TRAFFIC_INCIDENTS: 'Traffic Incidents',
-  DEVICE_TRAFFIC: 'Traffic Detectors',
+  DEVICE_TRAFFIC: 'Traffic Flow Issues',
   SIGNAL_PERFORMANCE_ISSUES: 'Signal Performance Issues',
-  TRAFFIC_FLOW_ANOMALIES: 'Traffic Flow Anomalies',
-  HIGH_CONGESTION_ROUTES: 'High Congestion Routes',
-  REPORTED_WAZE_ALERTS: 'Reported Waze Alerts',
+  TRAFFIC_FLOW_ANOMALIES: 'Device Anomalies',
+  HIGH_CONGESTION_ROUTES: 'Congested Routes',
+  REPORTED_WAZE_ALERTS: 'Waze Alerts',
 
   DEVICE_BLUETOOTH: 'Bluetooth Sensors',
   DEVICE_WEATHER: 'Weather Stations',
