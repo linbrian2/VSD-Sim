@@ -106,7 +106,7 @@ export default {
         },
         chart: {
           height: chartHeight,
-          marginTop: 120,
+          marginTop: 50,
           marginLeft: 90,
           marginRight: 50,
           spacingTop: 5,
@@ -251,7 +251,7 @@ export default {
     },
 
     drawPlan(chart) {
-      let plans = this.info.planSeries;
+      /* let plans = this.info.planSeries;
 
       if (this.customObjects.length > 0) {
         Highcharts.each(this.customObjects, function(e) {
@@ -297,7 +297,7 @@ export default {
         }
       });
 
-      this.drawDateAndPhase(chart);
+      this.drawDateAndPhase(chart); */
     },
 
     drawDateAndPhase(chart) {

@@ -125,6 +125,7 @@ export default {
       try {
         const response = await Api.fetchStatusOfDevices();
         this.summary = response.data;
+        console.log(this.summary);
         this.updatedTime = new Date();
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });

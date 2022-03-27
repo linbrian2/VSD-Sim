@@ -3,22 +3,23 @@
     <v-main class="pa-0">
       <v-row>
         <!-- Resizable Map -->
-        <template v-if="pref && pref.resizableMap">
+        <template v-if="rzMap">
           <div class="map">
             <SelectionPanel :width="420">
               <Map
                 :apiInfo="apiInfo"
                 :markers="markers"
-                :polylines="polylines"
+                :segments="polylines"
                 :icons="icons"
                 :disableDefaultUI="true"
                 :height="'calc(100vh - 48px)'"
+                :selectedIdx="selectedIdx"
               />
             </SelectionPanel>
           </div>
         </template>
         <!-- Overview -->
-        <v-col id="overview" :cols="rsz ? 4 : 3" :xl="rsz ? 3 : 2" class="pa-0 px-3 pl-3">
+        <v-col id="overview" :cols="rzMap ? 4 : 3" :xl="rzMap ? 3 : 2" class="pa-0 px-3 pl-3">
           <v-container style="max-height: calc(100vh - 48px); overflow-y: auto;" class="py-0">
             <v-row>
               <v-col cols="12" v-for="(x, i) in cardData" :key="x.id" class="pa-1">
@@ -60,25 +61,26 @@
           </v-container>
         </v-col>
         <!-- Data & Map -->
-        <v-col class="pa-0" :cols="rsz ? 8 : 9" :xl="rsz ? 9 : 10">
+        <v-col class="pa-0" :cols="rzMap ? 8 : 9" :xl="rzMap ? 9 : 10">
           <v-row>
             <!-- Data -->
-            <v-col id="data" :cols="rsz ? 12 : 6" class="pa-0" v-if="pref.layout == '1: Card, 2: Info, 3: Map'">
+            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="pref.layout == '1: Card, 2: Info, 3: Map'">
               <InfoColumn ref="infoColumn" :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
             </v-col>
             <!-- Map -->
-            <v-col id="map" cols="6" class="pa-0" v-if="!pref || !pref.resizableMap">
+            <v-col id="map" cols="6" class="pa-0" v-if="!rzMap">
               <div class="map">
                 <Map
                   :apiInfo="apiInfo"
                   :markers="markers"
-                  :polylines="polylines"
+                  :segments="polylines"
                   :icons="icons"
                   :height="'calc(100vh - 48px)'"
+                  :selectedIdx="selectedIdx"
                 />
               </div>
             </v-col>
-            <v-col id="data" :cols="rsz ? 12 : 6" class="pa-0" v-if="pref.layout == '1: Card, 2: Map, 3: Info'">
+            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="pref.layout == '1: Card, 2: Map, 3: Info'">
               <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
             </v-col>
           </v-row>
@@ -96,7 +98,6 @@ import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
 import SelectionPanel from '@/components/modules/dashboard/SelectionPanel.vue';
 import SelectionDialog from '@/components/modules/dashboard/SelectionDialog.vue';
 import Constants from '@/utils/constants/dashboard.js';
-import StatusApi from '@/utils/api/status';
 import { mapActions, mapState } from 'vuex';
 
 export default {
@@ -111,7 +112,6 @@ export default {
     return {
       deviceLocations: [],
       incidents: [],
-      flowAnomData: [],
       icons: undefined,
       showSelection: false,
       markers: [],
@@ -191,9 +191,9 @@ export default {
           val: '-',
           thresholds: [
             { val: 0, color: 'green' },
-            { val: 150, color: 'yellow' },
-            { val: 225, color: 'orange' },
-            { val: 300, color: 'red' }
+            { val: 1500, color: 'yellow' },
+            { val: 2500, color: 'orange' },
+            { val: 3500, color: 'red' }
           ]
         }
       ],
@@ -203,8 +203,12 @@ export default {
     };
   },
   computed: {
-    rsz() {
-      return this.pref.resizableMap;
+    rzMap() {
+      // return this.pref && this.pref.resizableMap;
+      return (this.pref && this.pref.resizableMap) || this.selectedIdx == 0;
+    },
+    mapCardInfoLayout() {
+      return !this.pref || !this.pref.resizableMap;
     },
     ...mapState('dashboard', [
       'pref',
@@ -212,6 +216,7 @@ export default {
       'trafficIncidents',
       'trafficDevices',
       'signalPerformanceIssues',
+      'flowAnomData',
       'hrSummary',
       'detectors',
       'segments',
@@ -236,12 +241,28 @@ export default {
     this.$bus.$on('DISPLAY_MARKER_DETAILS_DASHBOARD', ({ id, type }) => {
       this.handleMarkerClick(id, type);
     });
+    this.$bus.$on('SET_DASHBOARD_MARKERS', markers => {
+      this.setMarkers(markers);
+    });
+    this.$bus.$on('SET_DASHBOARD_POLYLINES', polylines => {
+      this.setPolylines(polylines);
+    });
   },
   beforeDestroy() {
     this.stopUpdateInterval();
     this.stopCardSwapInterval();
   },
   methods: {
+    setMarkers(markers) {
+      if (markers) {
+        this.markers = markers;
+      }
+    },
+    setPolylines(polylines) {
+      if (polylines) {
+        this.polylines = polylines;
+      }
+    },
     handleMarkerClick(id, type) {
       // let marker = null;
       console.log(id);
@@ -285,7 +306,6 @@ export default {
       this.fetchSignalPerformanceIssues();
       this.fetchStatus();
       this.fetchStatusOfDevices();
-      this.fetchDetectors();
       this.fetchSegments();
       this.fetchWaze();
     },
@@ -319,27 +339,7 @@ export default {
     keydownListener() {
       this.cardElapsedTime = -75;
     },
-    async fetchStatus() {
-      let date = new Date();
-      try {
-        this.updatedTime = new Date();
-        const response = await StatusApi.fetchErrors(date.getTime());
-        const data = this.parseResponseData(response);
-        if (data) {
-          // this.flowAnomData = data;
-          let errCount5m = data.totalErrorCounts.filter(x => x != 0);
-          let count = 0;
-          for (let i = 0; i < 12; i++) {
-            if (i < errCount5m.length) {
-              count += errCount5m[errCount5m.length - 1 - i];
-            }
-          }
-          this.flowAnomData = { ...data, count };
-        }
-      } catch (error) {
-        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
-      }
-    },
+
     createTotalSegments() {
       const linkIds = new Set();
       this.incidents.forEach(item => {
@@ -355,20 +355,6 @@ export default {
       });
 
       return segments;
-    },
-    parseResponseData(response) {
-      let result = null;
-      if (response.data.status === 'OK') {
-        if (response.data.data !== undefined) {
-          let data = response.data.data;
-          if (Object.keys(data).length > 0) {
-            result = data;
-          }
-        }
-      } else {
-        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
-      }
-      return result;
     },
     showSelectionDialog(type) {
       if (this.$refs.selectionDialog) {
@@ -445,27 +431,32 @@ export default {
       switch (idx) {
         case 0:
           this.markers = [];
+          this.polylines = undefined;
           this.icons = undefined;
           break;
         case 1:
           this.markers = this.trafficDevices;
+          this.polylines = undefined;
           this.icons = undefined;
           break;
         case 2:
           this.markers = this.signalPerformanceIssues;
+          this.polylines = undefined;
           this.icons = this.getHRIcons();
           break;
         case 3:
           this.markers = Devices;
+          this.polylines = undefined;
           this.icons = undefined;
           break;
         case 4:
-          this.markers = this.segments;
-          // this.polylines = this.segments;
-          this.icons = this.getTravelTimeIcons();
+          this.markers = undefined;
+          this.polylines = this.segments;
+          this.icons = undefined;
           break;
         case 5:
           this.markers = this.waze;
+          this.polylines = undefined;
           this.icons = this.getWazeIcons();
           break;
         default:
@@ -529,8 +520,8 @@ export default {
       'fetchTrafficIncidents',
       'fetchTrafficDevices',
       'fetchSignalPerformanceIssues',
+      'fetchStatus',
       'fetchStatusOfDevices',
-      'fetchDetectors',
       'fetchSegments',
       'fetchWaze'
     ])
@@ -559,7 +550,8 @@ export default {
     },
     flowAnomData(flowAnomData) {
       if (flowAnomData) {
-        this.cardData[3].val = flowAnomData.count;
+        console.log(flowAnomData);
+        this.cardData[3].val = flowAnomData.sensorErrorCounts.filter(x => x.score > 500).length;
       } else {
         return 'N/A';
       }

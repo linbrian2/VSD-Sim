@@ -1,34 +1,5 @@
 <template>
   <div>
-    <v-card tile class="mb-4">
-      <v-card-title :class="panelStyle">
-        <span class="title white--text font-weight-light">Total Error Counts</span>
-      </v-card-title>
-
-      <div class="mt-2 mx-4" v-if="totalErrorCounts">
-        <HeatmapChart :data="totalErrorCounts" :height="600" />
-      </div>
-    </v-card>
-
-    <v-card tile class="mt-6 mb-4">
-      <v-card-title :class="panelStyle">
-        <span class="title white--text font-weight-light">Error Counts by Type and Hour </span>
-      </v-card-title>
-      <v-row>
-        <v-col>
-          <div class="mt-2" v-if="errorCountsByType">
-            <PieChart :data="errorCountsByType" :height="400" />
-          </div>
-        </v-col>
-
-        <v-col>
-          <div class="mt-2" v-if="errorCountsByHour">
-            <PieChart :data="errorCountsByHour" :height="400" />
-          </div>
-        </v-col>
-      </v-row>
-    </v-card>
-
     <v-card tile class="mt-6 mb-4">
       <v-card-title :class="panelStyle">
         <span class="title white--text font-weight-light">Error Counts by Sensor </span>
@@ -115,14 +86,10 @@ import Api from '@/utils/api/status';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/status';
 import { mapState } from 'vuex';
-import HeatmapChart from '@/components/modules/status/HeatmapChart';
 import SensorHeatmapChart from '@/components/modules/status/SensorHeatmapChart';
-import PieChart from '@/components/modules/status/PieChart';
 
 export default {
   components: {
-    PieChart,
-    HeatmapChart,
     SensorHeatmapChart
   },
 
@@ -170,7 +137,8 @@ export default {
         return this.allItems.filter(item => item.flags === this.selectedRegionId);
       }
     },
-    ...mapState(['darkMode', 'currentDate'])
+    ...mapState(['darkMode', 'currentDate']),
+    ...mapState('dashboard', ['flowAnomData'])
   },
 
   filters: {
@@ -179,14 +147,22 @@ export default {
     }
   },
 
-  watch: {
-    currentDate() {
-      this.refreshData();
+  mounted() {
+    if (this.flowAnomData && this.flowAnomData.sensorErrorCounts) {
+      this.prepareSensorErrorCounts(this.flowAnomData.sensorErrorCounts);
+      this.handleRowClick(this.flowAnomData.sensorErrorCounts[0]);
     }
   },
 
-  async mounted() {
-    this.refreshData();
+  watch: {
+    currentDate() {
+      this.refreshData();
+    },
+    flowAnomData() {
+      if (this.flowAnomData && this.flowAnomData.sensorErrorCounts) {
+        this.prepareSensorErrorCounts(this.flowAnomData.sensorErrorCounts);
+      }
+    }
   },
 
   methods: {
@@ -207,7 +183,7 @@ export default {
       this.fetchStatus(this.currentDate);
     },
 
-    async fetchStatus(date) {
+    /* async fetchStatus(date) {
       this.loading = true;
       try {
         this.updatedTime = new Date();
@@ -225,7 +201,7 @@ export default {
         console.log(error);
       }
       this.loading = false;
-    },
+    }, */
 
     async fetchSensorStatus(deviceId, date) {
       this.sensorLoading = true;

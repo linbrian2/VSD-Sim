@@ -1,8 +1,9 @@
 <template>
   <div class="signal-performance mr-4">
-    {{ selectedSignalPerformanceIssue }}
-    <br /><br />
-    {{ signalPerformanceIssues.map(x => x.name.slice(0, 4)) }}
+    <!-- s -->
+    <!-- PCD: {{ pcd }}<br /><br /> -->
+    <!-- AoR: {{ aor }} <br /><br /> -->
+    <!-- {{ signalPerformanceIssues.map(x => x.name.slice(0, 4)) }} -->
     <SignalPerformanceIssuesTable
       :itemsPerPage="3"
       :height="height"
@@ -10,31 +11,29 @@
       :preSelect="false"
       @click="handleRowClick"
     />
-    <v-card class="py-3">
-      <v-combobox
-        flat
-        dense
-        small-chips
-        hide-details
-        multiple
-        single-line
-        label="Phases:"
-        :items="phases"
-        v-model="select"
-      >
+    <v-card class="mt-1">
+      <!-- <v-select flat dense hide-details single-line label="Phases:" :items="phases" v-model="select">
         <template v-slot:prepend>
           <v-icon class="mt-n1" color="white">mdi-road</v-icon>
         </template>
-      </v-combobox>
+      </v-select> -->
+      <v-tabs v-model="selectedTab" color="teal accent-4" centered>
+        <v-tab v-for="i in phases" :key="i.id">
+          {{ i }}
+        </v-tab>
+        <v-tab-item v-for="i in phases" :key="i.id">
+          <v-card class="my-2" v-if="pcd">
+            <PcdChart :info="pcd.info" :title="pcd.title" :date="pcd.date" :phase="pcd.phase" :height="300" />
+          </v-card>
+          <v-card v-if="aor">
+            <AorChart :data="aor.data" :title="aor.title" :height="300" />
+          </v-card>
+        </v-tab-item>
+      </v-tabs>
     </v-card>
-    <!-- <v-card class="my-2" min-height="36.9vh" v-if="pcd">
+
+    <!-- <v-card class="my-2" v-for="(pcd, index) in pcds" :key="baseIndex + index" min-height="36.9vh">
       <PcdChart :info="pcd.info" :title="pcd.title" :date="pcd.date" :phase="pcd.phase" :height="pcd.height" />
-    </v-card> -->
-    <v-card class="my-2" v-for="(pcd, index) in pcds" :key="baseIndex + index" min-height="36.9vh">
-      <PcdChart :info="pcd.info" :title="pcd.title" :date="pcd.date" :phase="pcd.phase" :height="pcd.height" />
-    </v-card>
-    <!-- <v-card min-height="36.9vh" v-if="aor">
-      <AorChart :data="aor.data" :title="aor.title" :height="420" />
     </v-card> -->
   </div>
 </template>
@@ -42,10 +41,10 @@
 <script>
 import SignalPerformanceIssuesTable from '@/components/modules/dashboard/SignalPerformanceIssuesTable';
 import PcdChart from '@/components/modules/dashboard/graphs/PcdChart';
-// import AorChart from '@/components/modules/dashboard/graphs/AorChart';
+import AorChart from '@/components/modules/dashboard/graphs/AorChart';
 
-// import PCD from '@/utils/samples/PCD.js';
-// import AOR from '@/utils/samples/AOR.js';
+import PCD from '@/utils/samples/PCD.js';
+import AOR from '@/utils/samples/AOR.js';
 import HRApi from '@/utils/api/hr';
 import { mapState } from 'vuex';
 
@@ -56,38 +55,40 @@ export default {
   },
   components: {
     SignalPerformanceIssuesTable,
-    PcdChart
-    // AorChart
+    PcdChart,
+    AorChart
   },
   data() {
     return {
+      phases: [2, 4, 5, 6],
+      selectedTab: 0,
       pcds: [],
-      // pcd: null,
-      // aor: null,
+      pcd: PCD,
+      aor: AOR,
       reload: false,
       itemsPerPage: 3,
       summary: null,
       loading: false,
-      select: [],
+      select: 2,
       baseIndex: 0
     };
   },
   computed: {
-    phases() {
-      if (this.selectedSignalPerformanceIssue) {
-        let issueInfo = null;
-        for (let i = 0; i < this.signalPerformanceIssues.length; i++) {
-          if (this.signalPerformanceIssues[i].name.slice(0, 4) == this.selectedSignalPerformanceIssue.permit) {
-            issueInfo = this.signalPerformanceIssues[i];
-          }
-        }
-        if (issueInfo) {
-          let signal = issueInfo || { phases: [] };
-          return signal.phases;
-        }
-      }
-      return { phases: [] };
-    },
+    // phases() {
+    //   if (this.selectedSignalPerformanceIssue) {
+    //     let issueInfo = null;
+    //     for (let i = 0; i < this.signalPerformanceIssues.length; i++) {
+    //       if (this.signalPerformanceIssues[i].name.slice(0, 4) == this.selectedSignalPerformanceIssue.permit) {
+    //         issueInfo = this.signalPerformanceIssues[i];
+    //       }
+    //     }
+    //     if (issueInfo) {
+    //       let signal = issueInfo || { phases: [] };
+    //       return signal.phases;
+    //     }
+    //   }
+    //   return { phases: [] };
+    // },
     selectedSignalPerformanceIssue: {
       get() {
         return this.$store.state.dashboard.selectedSignalPerformanceIssue;

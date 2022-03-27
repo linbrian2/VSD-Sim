@@ -1,54 +1,446 @@
 <template>
-  <div class="traffic-incidents">
-    <IncidentTable :height="200" :incidents="incidents" @click="handleRowClick" />
-    <Timeline />
-    <v-card class="mt-2">
-      <v-col>
-        <v-row justify="center">
-          <v-img alt="Logo" class="shrink" src="@/assets/collision-example.png" width="458" />
-        </v-row>
-      </v-col>
-    </v-card>
+  <div>
+    <!-- Left map panel -->
+    <SelectionPanel :width="width" name="incidentSideBarWidth">
+      <MapSegment
+        ref="mapSegmentRef"
+        :segments="segmentLinks"
+        :markers="markers"
+        @select="onSegmentSelected"
+        @click="onMarkerClicked"
+      />
+    </SelectionPanel>
+
+    <v-container>
+      <v-card tile class="mx-4 mb-2" v-show="showIncidentTable">
+        <IncidentTable :height="190" :incidents="incidents" @click="handleRowClick" />
+      </v-card>
+
+      <div v-if="incidentItem">
+        <EvidenceListDisplay :incident="incidentItem" @select="singleSegmentSelected" ref="anomalySegmentDisplay" />
+      </div>
+    </v-container>
   </div>
 </template>
 
 <script>
-import IncidentTable from '@/components/modules/dashboard/IncidentTable.vue';
-import Timeline from '@/components/modules/dashboard/Timeline.vue';
-import { mapState } from 'vuex';
+import Api from '@/utils/api/traffic';
+import Utils from '@/utils/Utils';
+import Constants from '@/utils/constants/traffic';
+import { mapState, mapActions } from 'vuex';
+import MapSegment from '@/components/modules/traffic/incident/MapSegment';
+import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+import IncidentTable from '@/components/modules/dashboard/IncidentTable';
+import EvidenceListDisplay from '@/components/modules/dashboard/EvidenceListDisplay';
 
 export default {
-  props: {
-    handleRowClick: Function
-  },
   components: {
+    MapSegment,
+    SelectionPanel,
     IncidentTable,
-    Timeline
+    EvidenceListDisplay
   },
-  data() {
-    return {
-      incidents: []
-    };
-  },
+
+  data: () => ({
+    width: 600,
+    loading: false,
+    showIncidentTable: true,
+
+    segments: [],
+    markers: [],
+    incidents: [],
+
+    incidentsByTime: {},
+    segmentLinks: [],
+    incidentItem: null
+  }),
+
   computed: {
-    ...mapState('dashboard', ['trafficIncidents'])
+    startTimestamp() {
+      return Utils.getStartOfDay(this.currentDate).getTime();
+    },
+
+    ...mapState(['currentDate']),
+    ...mapState('traffic', ['anomalyDevices', 'weatherStations', 'bluetoothSegments', 'incidentSettings', 'showPanel'])
   },
+
+  created() {
+    this.$store.commit('traffic/SHOW_PANEL', true);
+  },
+
   mounted() {
-    if (this.trafficIncidents) {
-      this.prepareTrafficIncidents(this.trafficIncidents);
+    if (this.anomalyDevices.length === 0) {
+      this.fetchAnomalyDevices();
     }
-  },
-  methods: {
-    prepareTrafficIncidents(data) {
-      this.incidents = data;
+    if (this.bluetoothSegments.length === 0) {
+      this.fetchBluetoothSegments();
     }
+
+    this.refreshData();
   },
+
   watch: {
-    trafficIncidents() {
-      this.prepareTrafficIncidents(this.trafficIncidents);
+    currentDate() {
+      this.refreshData();
     }
+  },
+
+  methods: {
+    onSegmentSelected(segmentId) {
+      if (this.$refs.anomalySegmentDisplay) {
+        this.$refs.anomalySegmentDisplay.selectSegment(segmentId);
+      }
+    },
+
+    onMarkerClicked(marker) {
+      const type = marker.type;
+      if (type) {
+        const item = marker.item;
+        this.gotoSection(`#${type}`);
+        if (this.$refs.anomalySegmentDisplay) {
+          this.$refs.anomalySegmentDisplay.selectEvidenceItem(type, item);
+        }
+      }
+    },
+
+    singleSegmentSelected(linkId) {
+      if (this.$refs.mapSegmentRef) {
+        this.$refs.mapSegmentRef.selectLink(linkId);
+      }
+    },
+
+    handleRowClick(item) {
+      this.incidentItem = Object.assign({}, item);
+      if (this.$refs.anomalySegmentDisplay) {
+        this.$refs.anomalySegmentDisplay.init(item);
+      }
+
+      // Compose segment
+      const segments = [];
+      item.segments.forEach(linkId => {
+        const segment = this.bluetoothSegments.find(bs => bs.id === linkId);
+        if (segment) {
+          segments.push(segment);
+        }
+      });
+
+      if (segments.length > 0) {
+        this.markers = this.createMarkers(this.incidentItem);
+        this.segmentLinks = segments;
+        setTimeout(() => {
+          this.updateMap(segments);
+        }, 50);
+      }
+
+      setTimeout(() => {
+        this.updateIncidentTimeline(item);
+      }, 200);
+    },
+
+    gotoSection(target) {
+      this.$vuetify.goTo(target);
+    },
+
+    updateIncidentTimeline(item) {
+      if (this.$refs.heatMapChart) {
+        const startIdx = Utils.get5MinIndexOf288(item.startTime);
+        const endIdx = Utils.get5MinIndexOf288(item.endTime);
+        if (startIdx < endIdx) {
+          const ids = Utils.range(startIdx, endIdx + 1);
+          this.$refs.heatMapChart.highlightCells(ids);
+        }
+      }
+    },
+
+    updateMap(segments) {
+      if (this.$refs.mapSegmentRef) {
+        this.$refs.mapSegmentRef.centerMapAndZoom(segments, true);
+      }
+    },
+
+    refreshData() {
+      this.fetchIncidentData(this.currentDate);
+    },
+
+    async fetchIncidentData(startTime) {
+      this.loading = true;
+      const { severity, duration } = this.incidentSettings;
+      try {
+        const start = startTime.getTime();
+        const response = await Api.fetchIncidentData(start, 1, severity, duration);
+        const data = this.getResponseData(response);
+        if (data) {
+          this.incidents = data;
+          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.segments = this.createTotalSegments();
+        } else {
+          this.incidents = [];
+          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.segments = [];
+        }
+        this.incidentItem = null;
+      } catch (error) {
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+      }
+      this.loading = false;
+    },
+
+    async searchIncidentData(queryInput) {
+      this.loading = true;
+      try {
+        const response = await Api.searchIncidentData(queryInput);
+        const data = this.getResponseData(response);
+        if (data) {
+          this.incidents = data;
+          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.segments = this.createTotalSegments();
+        } else {
+          this.incidents = [];
+          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.segments = [];
+        }
+        this.incidentItem = null;
+      } catch (error) {
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+      }
+      this.loading = false;
+    },
+
+    getResponseData(response) {
+      let result = null;
+      if (response.data.status === 'OK') {
+        if (response.data.data !== undefined) {
+          let data = response.data.data;
+          if (Object.keys(data).length > 0) {
+            result = data;
+          }
+        }
+      } else {
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
+      }
+      return result;
+    },
+
+    createTotalSegments() {
+      const linkIds = new Set();
+      this.incidents.forEach(item => {
+        linkIds.add(item.linkId);
+      });
+
+      const segments = [];
+      linkIds.forEach(linkId => {
+        const segment = this.bluetoothSegments.find(item => item.id === linkId);
+        if (segment) {
+          segments.push(segment);
+        }
+      });
+
+      return segments;
+    },
+
+    composeIncidentHeatMapData(incidents) {
+      let xcategories = [];
+      let ycategories = [];
+
+      let startTime = Utils.getStartOfDay(this.currentDate).getTime();
+
+      const rowCount = 12;
+      const colCount = 24;
+
+      for (let i = 0; i < rowCount; i++) {
+        ycategories.push(i * 5);
+      }
+      for (let i = 0; i < colCount; i++) {
+        xcategories.push(startTime + 3600000 * i);
+      }
+
+      const counts = [];
+      for (let i = 0; i < rowCount * colCount; i++) {
+        counts.push(0);
+      }
+
+      if (incidents.length > 0) {
+        incidents.forEach(incident => {
+          const start = incident.startTime;
+          const end = incident.endTime;
+          const idx0 = Utils.get5MinIndex(startTime, start);
+          const idx1 = Utils.get5MinIndex(startTime, end);
+          for (let i = idx0; i <= idx1; i++) {
+            counts[i] = counts[i] + 1;
+          }
+        });
+      }
+
+      // Create a series
+      let series = [];
+      for (let x = 0; x < colCount; x++) {
+        for (let y = 0; y < rowCount; y++) {
+          series.push([x, y, counts[x * rowCount + y]]);
+        }
+      }
+
+      const dataClasses = [
+        { from: 0, to: 0, color: '#43A047', name: '0' },
+        { from: 1, to: 1, color: '#F44336', name: '1' },
+        { from: 2, to: 2, color: '#D32F2F', name: '2' },
+        { from: 3, to: 50, color: '#B71C1C', name: '3+' }
+      ];
+
+      const colorAxis = {
+        dataClasses
+      };
+
+      let result = {};
+      result.title = '';
+      result.xAxis = 'Time of day (hour)';
+      result.yAxis = 'Time of hour (min)';
+      result.xcategories = xcategories;
+      result.ycategories = ycategories;
+      result.data = series;
+      result.colorAxis = colorAxis;
+
+      return result;
+    },
+
+    createMarkers(incident) {
+      const markers = [];
+
+      // Flow detectors
+      const flows = incident.items.filter(item => item.type === Constants.DATA_TRAFFIC_FLOW);
+      if (flows.length > 0) {
+        Utils.uniqueBy(flows, item => item.data.deviceId + item.data.direction).forEach(item => {
+          markers.push({
+            id: 'F' + item.data.id,
+            name: item.data.name,
+            type: 'flow',
+            item: item.data.deviceId + item.data.direction,
+            position: item.data.position,
+            linkId: item.data.linkId,
+            icon: 'redDotIcon'
+          });
+        });
+      }
+
+      // Bluetooth detectors
+      const travelTimes = incident.items.filter(item => item.type === Constants.DATA_TRAVEL_TIME);
+      if (travelTimes.length > 0) {
+        Utils.uniqueBy(travelTimes, item => item.data.shortName).forEach(item => {
+          markers.push({
+            id: 'B' + item.data.id,
+            name: item.data.name,
+            type: 'travelTime',
+            item: item.data.shortName,
+            position: item.data.position,
+            linkId: item.data.linkId,
+            icon: 'redBluetoothIcon',
+            zIndex: 9999
+          });
+        });
+      }
+
+      // Waze detectors
+      const wazes = incident.items.filter(item => item.type === Constants.DATA_WAZE_ALERTS);
+      if (wazes.length > 0) {
+        const alerts = [];
+        wazes.forEach(item => {
+          const linkId = item.data.linkId;
+          const details = JSON.parse(item.data.details);
+          details.forEach(d => {
+            const id = d.id;
+            const desc = d.desc;
+            const position = { lat: d.lat, lng: d.lon };
+            alerts.push({ id, desc, position, linkId });
+          });
+        });
+
+        Utils.uniqueBy(alerts, item => item.id).forEach(item => {
+          markers.push({
+            id: 'W' + item.id,
+            name: item.desc,
+            type: 'waze',
+            item: item.id,
+            position: item.position,
+            linkId: item.linkId,
+            icon: 'wazeIcon'
+          });
+        });
+      }
+
+      // Restrictions
+      incident.items
+        .filter(item => item.type === Constants.DATA_RESTRICTION)
+        .forEach(item => {
+          markers.push({
+            id: 'R' + item.data.restrictionId,
+            name: item.data.description,
+            type: 'restrictions',
+            item: item.data.restrictionId,
+            position: item.data.position,
+            linkId: item.data.linkId,
+            icon: 'restrictionIcon'
+          });
+        });
+
+      const alerts = incident.items.filter(item => item.type === Constants.DATA_TRAFFIC_ALERT);
+      if (alerts.length > 0) {
+        Utils.uniqueBy(alerts, item => item.data.position.lat + '' + item.data.position.lng).forEach(item => {
+          markers.push({
+            id: 'A' + item.data.id,
+            name: item.data.details,
+            position: item.data.position,
+            linkId: item.data.linkId,
+            icon: 'cautionIcon'
+          });
+        });
+      }
+
+      // Video cameras
+      const videos = incident.items.filter(item => item.type === Constants.DATA_TRAFFIC_VIDEO);
+      if (videos.length > 0) {
+        Utils.uniqueBy(videos, item => item.data.camera).forEach(item => {
+          markers.push({
+            id: 'V' + item.data.camera,
+            name: item.data.camera,
+            type: 'video',
+            item: item.data.camera,
+            position: item.data.position,
+            linkId: item.data.linkId,
+            icon: 'cameraIcon'
+          });
+        });
+      }
+
+      // Weather station
+      if (this.incidentItem && this.incidentItem.info.stationId) {
+        const stationId = this.incidentItem.info.stationId;
+        const weatherStation = this.weatherStations.find(w => w.id === stationId);
+        if (weatherStation) {
+          markers.push({
+            id: 'S' + weatherStation.id,
+            name: weatherStation.name,
+            type: 'weather',
+            item: weatherStation.id,
+            position: weatherStation.position,
+            icon: 'weatherIcon'
+          });
+        }
+      }
+
+      // Incident location
+      if (incident.location) {
+        markers.push({
+          id: 'L1',
+          name: incident.address,
+          position: incident.location,
+          icon: 'alertIcon',
+          zIndex: 99999
+        });
+      }
+
+      return markers;
+    },
+
+    ...mapActions('traffic', ['fetchAnomalyDevices', 'fetchBluetoothSegments'])
   }
 };
 </script>
-
-<style></style>

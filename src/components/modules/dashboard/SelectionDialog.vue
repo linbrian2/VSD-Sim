@@ -185,10 +185,10 @@ export default {
         { text: 'Level', value: 'level' }
       ];
       this.items = data.map(d => ({
-        id: d.info.id,
+        id: d.id,
         lastUpdated: d.travelTime.calculationTimestamp.text,
-        name: d.info.name,
-        desc: d.info.description,
+        name: d.name,
+        desc: d.desc,
         level: d.travelTime.level
       }));
     },
@@ -198,14 +198,16 @@ export default {
         { text: 'Time', value: 'time' },
         { text: 'Description', value: 'desc' },
         { text: 'Street', value: 'street' },
-        { text: 'Road Type', value: 'roadType' }
+        { text: 'Road Type', value: 'roadType' },
+        { text: 'Score', value: 'score' }
       ];
       this.items = data.map(d => ({
         id: d.id,
         time: d.alertTime,
         desc: d.description,
         street: d.address.street,
-        roadType: d.roadType.name
+        roadType: d.roadType.name,
+        score: d.confidence
       }));
     },
 
