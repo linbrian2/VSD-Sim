@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import FlowDataInfo from '@/components/modules/dashboard/FlowDataInfo';
+import FlowDataInfo from '@/components/modules/dashboard/flow/FlowDataInfo';
 import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 

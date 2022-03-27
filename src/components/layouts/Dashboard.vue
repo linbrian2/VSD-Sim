@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import AppBar from '@/components/modules/dashboard/AppBar';
+import AppBar from '@/components/modules/dashboard/app/AppBar';
 import BluetoothModules from '@/components/modules/bluetooth/BluetoothModules';
 
 export default {

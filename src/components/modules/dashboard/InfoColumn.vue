@@ -22,13 +22,12 @@
 </template>
 
 <script>
-import TrafficIncidents from '@/components/modules/dashboard/TrafficIncidents.vue';
-
-import TrafficFlowIssues from '@/components/modules/dashboard/TrafficFlowIssues.vue';
-import DeviceAnomalies from '@/components/modules/dashboard/DeviceAnomalies.vue';
-import SignalPerformanceIssues from '@/components/modules/dashboard/SignalPerformanceIssues.vue';
-import CongestedRoutes from '@/components/modules/dashboard/CongestedRoutes.vue';
-import WazeAlerts from '@/components/modules/dashboard/WazeAlerts.vue';
+import TrafficIncidents from '@/components/modules/dashboard/incidents/TrafficIncidents.vue';
+import TrafficFlowIssues from '@/components/modules/dashboard/flow/TrafficFlowIssues.vue';
+import DeviceAnomalies from '@/components/modules/dashboard/anomalies/DeviceAnomalies.vue';
+import SignalPerformanceIssues from '@/components/modules/dashboard/issues/SignalPerformanceIssues.vue';
+import CongestedRoutes from '@/components/modules/dashboard/routes/CongestedRoutes.vue';
+import WazeAlerts from '@/components/modules/dashboard/waze/WazeAlerts.vue';
 
 import Incidents from '@/utils/samples/Incidents.js';
 

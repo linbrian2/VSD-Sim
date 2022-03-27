@@ -95,7 +95,7 @@
 import Devices from '@/utils/Devices.js';
 import Map from '@/components/modules/dashboard/Map.vue';
 import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
-import SelectionPanel from '@/components/modules/dashboard/SelectionPanel.vue';
+import SelectionPanel from '@/components/modules/dashboard/app/SelectionPanel.vue';
 import SelectionDialog from '@/components/modules/dashboard/SelectionDialog.vue';
 import Constants from '@/utils/constants/dashboard.js';
 import { mapActions, mapState } from 'vuex';

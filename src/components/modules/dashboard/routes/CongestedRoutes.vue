@@ -1,9 +1,6 @@
 <template>
   <div class="congested-routes">
     <TravelTimeTableCard :apiInfo="apiInfo" />
-    <div class="pt-2">
-      <TravelTimeGraphCard :apiInfo="apiInfo" :selection="['i95n', 0]" />
-    </div>
     <v-card class="mt-2">
       <v-col>
         <v-row justify="center">
@@ -22,16 +19,14 @@
 </template>
 
 <script>
-import TravelTimeTableCard from '@/components/modules/dashboard/TravelTimeTableCard.vue';
-import TravelTimeGraphCard from '@/components/modules/dashboard/TravelTimeGraphCard.vue';
+import TravelTimeTableCard from '@/components/modules/dashboard/routes/TravelTimeTableCard.vue';
 
 export default {
   props: {
     apiInfo: Object
   },
   components: {
-    TravelTimeTableCard,
-    TravelTimeGraphCard
+    TravelTimeTableCard
   }
 };
 </script>

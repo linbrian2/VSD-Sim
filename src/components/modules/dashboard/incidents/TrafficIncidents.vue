@@ -30,8 +30,8 @@ import Constants from '@/utils/constants/traffic';
 import { mapState, mapActions } from 'vuex';
 import MapSegment from '@/components/modules/traffic/incident/MapSegment';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
-import IncidentTable from '@/components/modules/dashboard/IncidentTable';
-import EvidenceListDisplay from '@/components/modules/dashboard/EvidenceListDisplay';
+import IncidentTable from '@/components/modules/dashboard/incidents/IncidentTable';
+import EvidenceListDisplay from '@/components/modules/dashboard/incidents/EvidenceListDisplay';
 
 export default {
   components: {

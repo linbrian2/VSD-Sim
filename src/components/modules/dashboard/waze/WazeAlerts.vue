@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import WazeInfo from '@/components/modules/dashboard/WazeInfo';
+import WazeInfo from '@/components/modules/dashboard/waze/WazeInfo';
 import Utils from '@/utils/Utils';
 export default {
   props: {

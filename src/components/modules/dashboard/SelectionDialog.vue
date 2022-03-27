@@ -70,8 +70,8 @@
 <script>
 import Utils from '@/utils/Utils';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
-import IncidentTable from '@/components/modules/dashboard/IncidentTable';
-import SignalPerformanceIssuesTable from '@/components/modules/dashboard/SignalPerformanceIssuesTable';
+import IncidentTable from '@/components/modules/dashboard/incidents/IncidentTable';
+import SignalPerformanceIssuesTable from '@/components/modules/dashboard/issues/SignalPerformanceIssuesTable';
 
 export default {
   components: {
