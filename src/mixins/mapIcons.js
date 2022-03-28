@@ -2,6 +2,7 @@ export const mapIcons = {
   data() {
     return {
       homeIcon: require('@/assets/home-24.png'),
+      msgIcon: require('@/assets/alert-24.png'),
 
       startIcon: {
         url: require('@/assets/start.png'),

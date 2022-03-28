@@ -264,7 +264,7 @@ export default {
 
         case RouterNames.TRAFFIC_ROUTING:
           this.showTrafficRouting();
-          break
+          break;
 
         case RouterNames.TRAFFIC_WEATHER:
           this.showWeatherData();

@@ -12,7 +12,7 @@
           </v-toolbar>
 
           <div class="mx-auto">
-            <VideoPlayer ref="videoPlayer" :options="playerOptions" :caption="caption" />
+            <VideoPlayer ref="videoPlayer" :options="playerOptions" :caption="caption" :icon="icon" />
           </div>
         </v-card>
       </v-dialog>
@@ -37,7 +37,8 @@ export default {
   data: () => ({
     url: '',
     title: 'Video Player',
-    caption: ''
+    caption: '',
+    icon: ''
   }),
   computed: {
     show: {
@@ -86,6 +87,9 @@ export default {
     },
     changeCaption(caption) {
       this.caption = caption;
+    },
+    changeIcon(icon) {
+      this.icon = icon;
     }
   }
 };

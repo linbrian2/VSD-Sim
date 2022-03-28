@@ -16,6 +16,9 @@
     >
       &nbsp;&nbsp;{{ caption }}&nbsp;&nbsp;
     </div>
+    <div style="position: absolute; top: 60px; left:10px;" v-if="icon">
+      <v-icon small v-text="icon" color="amber darken-4" />
+    </div>
   </div>
 </template>
 
@@ -28,6 +31,7 @@ export default {
   name: 'VideoPlayer',
   props: {
     caption: String,
+    icon: String,
     options: {
       type: Object,
       default() {

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="page" fill-height>
+  <v-container class="page" fill-height style="max-width:800px">
     <v-row justify="center" style="margin: 40px auto">
       <v-img alt="Logo" class="shrink" src="@/assets/logo.svg" width="450" />
     </v-row>

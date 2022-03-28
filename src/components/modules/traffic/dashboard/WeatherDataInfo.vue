@@ -219,7 +219,7 @@ export default {
   },
 
   mounted() {
-    this.init(this.statin);
+    this.init(this.station);
   },
 
   methods: {

@@ -16,7 +16,7 @@ export default {
   props: {
     data: Array,
     speed: { type: Number, default: 45 },
-    title: { type: String, default: 'Coordinate Group' }
+    title: { type: String, default: '' }
   },
 
   data: () => ({
@@ -75,7 +75,7 @@ export default {
         data.forEach(item => {
           h += (item.distance * length) / total;
           ticks.push(h);
-          categories.push(item.name);
+          categories.push(`${item.name} (G${item.group})`);
 
           if (item.P2 && item.P2.length > 0) {
             const ts = item.P2[0].filter(item => item > 0);

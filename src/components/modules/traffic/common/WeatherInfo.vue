@@ -1,21 +1,20 @@
 <template>
-  <v-card tile :color="color" dark>
+  <v-card tile>
     <div class="row">
       <div class="col-4">
         <div class="d-flex flex-column align-center py-2 ml-4 mt-4">
           <div class="condition-text">{{ weather.conditionText }}</div>
           <div>
             <v-img class="weather-icon" :src="weatherIcon(weather.conditionCode)" />
-            <div class="temperature">
+            <div class="temperature" v-if="weather.airTemp">
               <div>{{ formatTemperature(weather.airTemp, true) }}<sup>°F</sup></div>
             </div>
           </div>
-          <div class="mt-n2 updated-text font-italic">Updated: {{ formatDate(weather.dataReceived) }}</div>
         </div>
       </div>
       <v-divider class="mx-1" vertical dark></v-divider>
       <div class="col">
-        <ul class="details">
+        <ul class="details ml-n5">
           <li>
             <v-icon color="orange lighten-3" class="mr-1">mdi-thermometer</v-icon>
             Temp: <strong>{{ formatTemperature(weather.minTemp) }} / {{ formatTemperature(weather.maxTemp) }}</strong>
@@ -56,7 +55,7 @@
     <v-divider class="mx-4" dark></v-divider>
 
     <div class="row">
-      <div class="col">
+      <div class="col mx-10">
         <div class="flex-view">
           <div class="time-weather-record" v-for="w in weather.hourlyWeather" :key="w.time">
             <span>{{ formatTime(w.time) }}</span>
@@ -65,6 +64,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="float-right mt-1 mb-3 mr-2">
+      <div class="updated-text font-italic">Updated: {{ formatDate(weather.dataReceived) }}</div>
     </div>
   </v-card>
 </template>
@@ -76,7 +78,7 @@ export default {
     weather: Object,
     color: {
       type: String,
-      default: '#385F73'
+      default: '#000'
     }
   },
   data: () => ({
@@ -160,7 +162,7 @@ export default {
 .details {
   display: flex;
   flex-wrap: wrap;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 3;
   padding: 13px 0px;
   margin: 0px;
@@ -177,6 +179,9 @@ export default {
   font-weight: bold;
   text-transform: uppercase;
   margin-top: 5px;
+  inline-size: 150px;
+  overflow-wrap: break-word;
+  text-align: center;
 }
 
 .updated-text {
