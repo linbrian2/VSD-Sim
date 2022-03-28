@@ -1,8 +1,8 @@
 <template>
   <div class="signal-performance mr-4">
     <SignalPerformanceIssuesTable
-      :itemsPerPage="3"
-      :height="240"
+      :itemsPerPage="itemsPerPage"
+      :height="225"
       :summary="summary"
       :preSelect="false"
       @click="handleRowClick"
@@ -19,6 +19,7 @@ import { mapState } from 'vuex';
 export default {
   props: {
     height: { type: Number, default: 225 },
+    itemsPerPage: {type: Number, default: 3},
     data: Object
   },
   components: {
@@ -29,7 +30,6 @@ export default {
       phases: [2, 4, 5, 6],
       selectedTab: 0,
       reload: false,
-      itemsPerPage: 3,
       summary: null,
       loading: false,
       select: 2,

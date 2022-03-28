@@ -89,6 +89,9 @@ import { mapState } from 'vuex';
 import SensorHeatmapChart from '@/components/modules/status/SensorHeatmapChart';
 
 export default {
+  props: {
+    itemsPerPage: { type: Number, default: 3 }
+  },
   components: {
     SensorHeatmapChart
   },
@@ -105,7 +108,6 @@ export default {
     sensorErrorTypes: null,
 
     search: '',
-    itemsPerPage: 500,
     allItems: [],
     headers: [],
 

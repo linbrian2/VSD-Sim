@@ -129,7 +129,7 @@ const actions = {
         .map(obj => ({ ...obj, status: 0 }))
         .map(obj => ({ ...obj, state: obj.status === 0 ? 'Normal' : 'Anomaly' }));
       // TODO: Remove outside of testing
-      // deviceLocations[0].status = 1;
+      deviceLocations[0].status = 1;
       let sortedData = deviceLocations.sort((a, b) => (a.status > b.status ? -1 : b.status > a.status ? 1 : 0));
       commit('SET_TRAFFIC_DEVICES', sortedData);
       // console.log(`Traffic Devices: %o`, deviceLocations);

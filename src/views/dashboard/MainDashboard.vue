@@ -334,20 +334,18 @@ export default {
       if (!this.manualMode && this.pref && this.pref.swapEnabled && this.cardElapsedTime >= 45) {
         this.cardElapsedTime = 0;
         let newIdx = -1;
-        this.cardData.forEach((data, i) => {
-          // console.log('----');
-          // console.log(`${this.selectedIdx} =? ${newIdx}`);
-          // console.log(data);
-          // console.log(i);
-          // console.log('----');
-          if (this.selectedIdx > i && this.dataAvailable(data)) {
+        for (let i = 0; i < this.cardData.length; i++) {
+          let firstSelect = false;
+          if (i < this.selectedIdx && this.dataAvailable(this.cardData[i]) && !firstSelect) {
+            firstSelect = true;
             newIdx = i;
-          } else if (this.selectedIdx < i && this.dataAvailable(data)) {
+          } else if (i > this.selectedIdx && this.dataAvailable(this.cardData[i])) {
             newIdx = i;
-            return;
+            break;
           }
-        });
+        }
         if (newIdx != -1) {
+          console.log(newIdx);
           this.selectedIdx = newIdx;
           this.cardClicked(this.selectedIdx);
         }

@@ -33,6 +33,7 @@ import { mapState } from 'vuex';
 export default {
   props: {
     height: { type: Number, default: 190 },
+    itemsPerPage: {type: Number, default: 3},
     data: Object
   },
 
@@ -42,7 +43,6 @@ export default {
 
   data: () => ({
     reload: false,
-    itemsPerPage: 3,
     items: [],
     headers: []
   }),

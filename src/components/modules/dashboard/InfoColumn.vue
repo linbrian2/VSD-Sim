@@ -4,19 +4,19 @@
       <TrafficIncidents :handleRowClick="handleRowClick" />
     </div>
     <div id="traffic-flow-issues" v-if="dataAvailable(cardData[1])" v-show="selectedIdx == 1">
-      <TrafficFlowIssues />
+      <TrafficFlowIssues :itemsPerPage="cardData[1].val" />
     </div>
     <div id="signal-performance-issues" v-if="dataAvailable(cardData[2])" v-show="selectedIdx == 2">
-      <SignalPerformanceIssues />
+      <SignalPerformanceIssues :itemsPerPage="cardData[2].val" />
     </div>
     <div id="device-anomalies" v-if="dataAvailable(cardData[3])" v-show="selectedIdx == 3">
-      <DeviceAnomalies />
+      <DeviceAnomalies :itemsPerPage="cardData[3].val" />
     </div>
     <div id="congested-routes" v-if="dataAvailable(cardData[4])" v-show="selectedIdx == 4">
-      <CongestedRoutes :apiInfo="apiInfo" />
+      <CongestedRoutes :itemsPerPage="cardData[4].val" />
     </div>
     <div id="waze-alerts" v-if="dataAvailable(cardData[5])" v-show="selectedIdx == 5">
-      <WazeAlerts />
+      <WazeAlerts :itemsPerPage="cardData[5].val" />
     </div>
   </v-container>
 </template>
