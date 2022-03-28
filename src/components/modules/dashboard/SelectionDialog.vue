@@ -168,7 +168,7 @@ export default {
         id: d.id,
         device: d.name,
         status: d.status,
-        state: d.status === 0 ? 'Normal' : 'Anomaly'
+        state: d.state
       }));
     },
 

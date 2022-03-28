@@ -26,6 +26,7 @@
                 <v-system-bar :color="getColor(x)" height="10" />
                 <v-hover v-slot="{ hover }">
                   <v-card
+                    :disabled="!x.val || (x.val && (x.val == 0 || x.val == '-'))"
                     height="calc(18.9vh - 48px)"
                     class="d-flex align-center justify-center"
                     @click.native="cardClicked(i)"
@@ -122,7 +123,7 @@ export default {
       updateInterval: null,
       cardSwapInterval: null,
       elapsedTime: 0,
-      cardElapsedTime: 0,
+      cardElapsedTime: 40,
       cardData: [
         {
           title: Constants.TRAFFIC_INCIDENTS,
@@ -198,14 +199,14 @@ export default {
         }
       ],
       colors: ['red', 'orange', 'yellow', 'green', 'blue', 'teal'],
-      selectedIdx: 0,
+      selectedIdx: -1,
       transparent: 'rgba(255, 255, 255, 0)'
     };
   },
   computed: {
     rzMap() {
-      // return this.pref && this.pref.resizableMap;
-      return (this.pref && this.pref.resizableMap) || this.selectedIdx == 0;
+      return this.pref && this.pref.resizableMap;
+      // return (this.pref && this.pref.resizableMap) || this.selectedIdx == 0;
     },
     mapCardInfoLayout() {
       return !this.pref || !this.pref.resizableMap;
@@ -253,6 +254,9 @@ export default {
     this.stopCardSwapInterval();
   },
   methods: {
+    dataAvailable(data) {
+      return data.val && data.val != 0 && data.val != '-' && data.val != 'N/A';
+    },
     setMarkers(markers) {
       if (markers) {
         this.markers = markers;
@@ -329,10 +333,23 @@ export default {
       this.cardElapsedTime++;
       if (!this.manualMode && this.pref && this.pref.swapEnabled && this.cardElapsedTime >= 45) {
         this.cardElapsedTime = 0;
-        if (this.selectedIdx == 5) {
-          this.cardClicked(0);
-        } else {
-          this.cardClicked(this.selectedIdx + 1);
+        let newIdx = -1;
+        this.cardData.forEach((data, i) => {
+          // console.log('----');
+          // console.log(`${this.selectedIdx} =? ${newIdx}`);
+          // console.log(data);
+          // console.log(i);
+          // console.log('----');
+          if (this.selectedIdx > i && this.dataAvailable(data)) {
+            newIdx = i;
+          } else if (this.selectedIdx < i && this.dataAvailable(data)) {
+            newIdx = i;
+            return;
+          }
+        });
+        if (newIdx != -1) {
+          this.selectedIdx = newIdx;
+          this.cardClicked(this.selectedIdx);
         }
       }
     },
@@ -543,7 +560,7 @@ export default {
     },
     hrSummary(hrSummary) {
       if (hrSummary) {
-        this.cardData[2].val = 2; /* hrSummary.length; */
+        this.cardData[2].val = this.hrSummary.filter(x => x.score > 50).length;
       } else {
         return 'N/A';
       }
@@ -565,7 +582,7 @@ export default {
     },
     waze(waze) {
       if (waze) {
-        this.cardData[5].val = waze.length;
+        this.cardData[5].val = waze.filter(x => x.confidence >= 5).length;
       } else {
         return 'N/A';
       }

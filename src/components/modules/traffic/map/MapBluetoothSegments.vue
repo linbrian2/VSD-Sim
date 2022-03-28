@@ -34,7 +34,7 @@ import Utils from '@/utils/Utils';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapBase from '@/components/modules/traffic/map/MapBase';
 export default {
-  props: ['segments'],
+  props: ['segments', 'defaultColors'],
   components: {
     GmapCustomMarker,
     MapBase
@@ -95,8 +95,13 @@ export default {
     },
 
     segmentOptions(segment) {
-      const color = segment.id === this.selectedSegmentId ? 'blue' : Utils.getStrokeColor(segment.travelTime.level);
-      return { ...this.defaultSegmentOptions, strokeColor: color };
+      if (this.defaultColors) {
+        const color = segment.id === this.selectedSegmentId ? 'blue' : Utils.getStrokeColor(1);
+        return { ...this.defaultSegmentOptions, strokeColor: color };
+      } else {
+        const color = segment.id === this.selectedSegmentId ? 'blue' : Utils.getStrokeColor(segment.travelTime.level);
+        return { ...this.defaultSegmentOptions, strokeColor: color };
+      }
     },
 
     mapMounted(map) {

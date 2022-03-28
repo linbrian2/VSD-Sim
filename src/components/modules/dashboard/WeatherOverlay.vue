@@ -1,5 +1,5 @@
 <template>
-  <div :style="`position: absolute; top: 10px; left: 320px; `">
+  <div>
     <v-card color="rgba(0, 0, 0, .5)" style="display:flex;" class="px-2">
       <!-- Increase font size -->
       <b>

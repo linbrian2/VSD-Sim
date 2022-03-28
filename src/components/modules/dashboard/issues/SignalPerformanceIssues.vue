@@ -1,8 +1,8 @@
 <template>
   <div class="signal-performance mr-4">
     <SignalPerformanceIssuesTable
-      :itemsPerPage="99"
-      :height="610"
+      :itemsPerPage="3"
+      :height="240"
       :summary="summary"
       :preSelect="false"
       @click="handleRowClick"
@@ -71,7 +71,7 @@ export default {
     if (this.hrSummary) {
       this.prepareSignalPerformanceIssues(this.hrSummary);
     }
-    if (!this.selectedSignalPerformanceIssue) {
+    if (!this.selectedSignalPerformanceIssue && this.items && this.items.length > 0) {
       this.handleRowClick(this.items[0]);
     }
   },
@@ -148,6 +148,11 @@ export default {
     }
   },
   watch: {
+    items() {
+      if (!this.selectedSignalPerformanceIssue && this.items && this.items.length > 0) {
+        this.handleRowClick(this.items[0]);
+      }
+    },
     selectedSignalPerformanceIssue(device) {
       this.fetchInfo(device);
     },
@@ -155,7 +160,7 @@ export default {
       if (this.hrSummary) {
         this.prepareSignalPerformanceIssues(this.hrSummary);
       }
-      if (!this.selectedSignalPerformanceIssue) {
+      if (!this.selectedSignalPerformanceIssue && this.items && this.items.length > 0) {
         this.handleRowClick(this.items[0]);
       }
     }

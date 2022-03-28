@@ -22,19 +22,9 @@ export default {
     navigation: {
       shown: false,
       borderSize: 5
-    }
+    },
+    showPanel: true
   }),
-
-  computed: {
-    showPanel: {
-      get() {
-        return this.$store.state.showPanel;
-      },
-      set(show) {
-        this.$store.commit('SHOW_PANEL', show);
-      }
-    }
-  },
 
   mounted() {
     if (!this.name) {
@@ -79,12 +69,6 @@ export default {
     saveConfig() {
       if (this.name) {
         Utils.saveToLocalStorage(this.name, this.navigationWidth);
-      }
-    },
-
-    showPanelIfNot() {
-      if (!this.showPanel) {
-        this.$store.commit('SHOW_PANEL', true);
       }
     },
 

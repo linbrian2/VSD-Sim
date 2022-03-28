@@ -1,45 +1,59 @@
 <template>
-  <div id="basic-map">
-    <div v-if="!reload">
-      <GmapMap
-        ref="mapRef"
-        :options="options"
-        :center="center"
-        :zoom="zoom"
-        map-type-id="roadmap"
-        class="map"
-        :style="style"
-      >
-        <GmapMarker
-          v-for="m in markers"
-          :key="m.id"
-          :position="m.position"
-          :title="m.name"
-          :clickable="true"
-          :icon="getMarkerIcon(m.id)"
-          @click="markerClicked(m)"
+  <div id="wrapper">
+    <div id="google_map">
+      <!-- <div v-show="selectedIdx == 0">
+        <MapSegment
+          ref="mapSegmentRef"
+          :incidentSegmentLinks="incidentSegmentLinks"
+          :incidentMarkers="incidentMarkers"
+          @select="onSegmentSelected"
+          @click="onMarkerClicked"
         />
-        <GmapPolyline
-          v-for="s in segments"
-          :key="s.id"
-          :title="s.desc"
-          :path.sync="s.path"
-          :options="segmentOptions(s)"
-          @click="segmentClicked(s)"
-        />
-        <GmapCustomMarker
-          alignment="center"
-          v-for="s in segments"
-          :key="`L-${s.id}`"
-          :offsetX="0"
-          :offsetY="-50"
-          :marker="midPoint(s)"
+      </div> -->
+      <div>
+        <!-- <div v-show="selectedIdx != 0"> -->
+        <GmapMap
+          ref="mapRef"
+          :options="options"
+          :center="center"
+          :zoom="zoom"
+          map-type-id="roadmap"
+          class="map"
+          :style="style"
         >
-          <div v-if="s.id == selectedSegmentId">
-            <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.short }}</v-chip>
-          </div>
-        </GmapCustomMarker>
-      </GmapMap>
+          <GmapMarker
+            v-for="m in markers"
+            :key="m.id"
+            :position="m.position"
+            :title="m.name"
+            :clickable="true"
+            :icon="getMarkerIcon(m.id)"
+            @click="markerClicked(m)"
+          />
+          <GmapPolyline
+            v-for="s in segments"
+            :key="s.id"
+            :title="s.desc"
+            :path.sync="s.path"
+            :options="segmentOptions(s)"
+            @click="segmentClicked(s)"
+          />
+          <GmapCustomMarker
+            alignment="center"
+            v-for="s in segments"
+            :key="`L-${s.id}`"
+            :offsetX="0"
+            :offsetY="-50"
+            :marker="midPoint(s)"
+          >
+            <div v-if="s.id == selectedSegmentId">
+              <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.short }}</v-chip>
+            </div>
+          </GmapCustomMarker>
+        </GmapMap>
+      </div>
+    </div>
+    <div id="over_map">
       <WeatherOverlay :center="center"></WeatherOverlay>
     </div>
   </div>
@@ -50,10 +64,12 @@
 import Utils from '@/utils/Utils';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import WeatherOverlay from '@/components/modules/dashboard/WeatherOverlay.vue';
+import MapSegment from '@/components/modules/dashboard/MapSegment';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
+import { mapState } from 'vuex';
 
 export default {
-  components: { WeatherOverlay, GmapCustomMarker },
+  components: { WeatherOverlay, GmapCustomMarker, MapSegment },
   props: {
     apiInfo: Object,
     zoom: {
@@ -134,6 +150,9 @@ export default {
       }
     };
   },
+  computed: {
+    ...mapState('dashboard', ['incidentSegmentLinks', 'incidentMarkers'])
+  },
   mounted() {
     setTimeout(() => {
       this.loadPage(this.$vuetify.theme.dark);
@@ -150,7 +169,9 @@ export default {
         position: google.maps.ControlPosition.BOTTOM_CENTER,
         mapTypeIds: ['roadmap', 'hybrid']
       };
-      this.centerMap(this.map, this.markers);
+      if (this.markers && this.markers.length > 0) {
+        this.centerMap(this.map, this.markers);
+      }
       this.detectMapCenterChange();
       this.$emit('map-ready', map);
     });
@@ -164,6 +185,12 @@ export default {
     });
   },
   methods: {
+    onSegmentSelected(segmentId) {
+      console.log(segmentId);
+    },
+    onMarkerClicked(marker) {
+      console.log(marker);
+    },
     getMarkerIcon(key) {
       return this.selectedMarkerId == key ? this.icons[1] : this.icons[0];
     },
@@ -305,4 +332,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+#wrapper {
+  position: relative;
+}
+#over_map {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+</style>

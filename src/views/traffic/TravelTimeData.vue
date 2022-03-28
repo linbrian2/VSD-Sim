@@ -36,7 +36,12 @@
           </v-list>
         </v-menu>
       </div>
-      <MapBluetoothSegments ref="mapSegments" :segments="segments" @clicked="segmentClicked" />
+      <MapBluetoothSegments
+        ref="mapSegments"
+        :segments="segments"
+        @clicked="segmentClicked"
+        :defaultColors="!isToday"
+      />
     </SelectionPanel>
 
     <!-- Title bar on the top -->
@@ -80,6 +85,7 @@
 </template>
 
 <script>
+import Utils from '@/utils/Utils';
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
@@ -140,6 +146,10 @@ export default {
     }
   }),
   computed: {
+    isToday() {
+      return Utils.isToday(this.currentDate);
+    },
+
     segments() {
       if (!this.selectedRoute) {
         return this.bluetoothSegments;

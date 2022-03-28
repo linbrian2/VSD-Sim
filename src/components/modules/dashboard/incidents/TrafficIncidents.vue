@@ -1,15 +1,15 @@
 <template>
-  <div>
+  <div v-if="!reload">
     <!-- Left map panel -->
-    <SelectionPanel :width="width" name="incidentSideBarWidth">
+    <!-- <SelectionPanel :width="width" name="incidentSideBarWidth">
       <MapSegment
         ref="mapSegmentRef"
-        :segments="segmentLinks"
-        :markers="markers"
+        :segments="$store.state.dashboard.incidentSegmentLinks"
+        :markers="$store.state.dashboard.incidentMarkers"
         @select="onSegmentSelected"
         @click="onMarkerClicked"
       />
-    </SelectionPanel>
+    </SelectionPanel> -->
 
     <v-container>
       <v-card tile class="mx-4 mb-2" v-show="showIncidentTable">
@@ -28,30 +28,28 @@ import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
 import { mapState, mapActions } from 'vuex';
-import MapSegment from '@/components/modules/traffic/incident/MapSegment';
-import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+// import MapSegment from '@/components/modules/traffic/incident/MapSegment';
+// import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import IncidentTable from '@/components/modules/dashboard/incidents/IncidentTable';
 import EvidenceListDisplay from '@/components/modules/dashboard/incidents/EvidenceListDisplay';
 
 export default {
   components: {
-    MapSegment,
-    SelectionPanel,
+    // MapSegment,
+    // SelectionPanel,
     IncidentTable,
     EvidenceListDisplay
   },
 
   data: () => ({
+    reload: true,
     width: 600,
     loading: false,
     showIncidentTable: true,
 
     segments: [],
-    markers: [],
     incidents: [],
 
-    incidentsByTime: {},
-    segmentLinks: [],
     incidentItem: null
   }),
 
@@ -69,6 +67,9 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
+      this.reload = false;
+    }, 500);
     if (this.anomalyDevices.length === 0) {
       this.fetchAnomalyDevices();
     }
@@ -77,12 +78,6 @@ export default {
     }
 
     this.refreshData();
-  },
-
-  watch: {
-    currentDate() {
-      this.refreshData();
-    }
   },
 
   methods: {
@@ -125,8 +120,8 @@ export default {
       });
 
       if (segments.length > 0) {
-        this.markers = this.createMarkers(this.incidentItem);
-        this.segmentLinks = segments;
+        this.$store.state.dashboard.incidentMarkers = this.createMarkers(this.incidentItem);
+        this.$store.state.dashboard.incidentSegmentLinks = segments;
         setTimeout(() => {
           this.updateMap(segments);
         }, 50);
@@ -171,32 +166,9 @@ export default {
         const data = this.getResponseData(response);
         if (data) {
           this.incidents = data;
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = this.createTotalSegments();
         } else {
           this.incidents = [];
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
-          this.segments = [];
-        }
-        this.incidentItem = null;
-      } catch (error) {
-        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
-      }
-      this.loading = false;
-    },
-
-    async searchIncidentData(queryInput) {
-      this.loading = true;
-      try {
-        const response = await Api.searchIncidentData(queryInput);
-        const data = this.getResponseData(response);
-        if (data) {
-          this.incidents = data;
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
-          this.segments = this.createTotalSegments();
-        } else {
-          this.incidents = [];
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = [];
         }
         this.incidentItem = null;
@@ -236,70 +208,6 @@ export default {
       });
 
       return segments;
-    },
-
-    composeIncidentHeatMapData(incidents) {
-      let xcategories = [];
-      let ycategories = [];
-
-      let startTime = Utils.getStartOfDay(this.currentDate).getTime();
-
-      const rowCount = 12;
-      const colCount = 24;
-
-      for (let i = 0; i < rowCount; i++) {
-        ycategories.push(i * 5);
-      }
-      for (let i = 0; i < colCount; i++) {
-        xcategories.push(startTime + 3600000 * i);
-      }
-
-      const counts = [];
-      for (let i = 0; i < rowCount * colCount; i++) {
-        counts.push(0);
-      }
-
-      if (incidents.length > 0) {
-        incidents.forEach(incident => {
-          const start = incident.startTime;
-          const end = incident.endTime;
-          const idx0 = Utils.get5MinIndex(startTime, start);
-          const idx1 = Utils.get5MinIndex(startTime, end);
-          for (let i = idx0; i <= idx1; i++) {
-            counts[i] = counts[i] + 1;
-          }
-        });
-      }
-
-      // Create a series
-      let series = [];
-      for (let x = 0; x < colCount; x++) {
-        for (let y = 0; y < rowCount; y++) {
-          series.push([x, y, counts[x * rowCount + y]]);
-        }
-      }
-
-      const dataClasses = [
-        { from: 0, to: 0, color: '#43A047', name: '0' },
-        { from: 1, to: 1, color: '#F44336', name: '1' },
-        { from: 2, to: 2, color: '#D32F2F', name: '2' },
-        { from: 3, to: 50, color: '#B71C1C', name: '3+' }
-      ];
-
-      const colorAxis = {
-        dataClasses
-      };
-
-      let result = {};
-      result.title = '';
-      result.xAxis = 'Time of day (hour)';
-      result.yAxis = 'Time of hour (min)';
-      result.xcategories = xcategories;
-      result.ycategories = ycategories;
-      result.data = series;
-      result.colorAxis = colorAxis;
-
-      return result;
     },
 
     createMarkers(incident) {

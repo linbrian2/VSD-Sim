@@ -41,7 +41,7 @@
       </v-tabs>
       <v-row>
         <v-col class="px-10 py-0">
-          <v-card tile class="basic-chart" elevation="4">
+          <v-card tile class="basic-chart" elevation="4" v-if="url">
             <VideoPlayer ref="videoPlayer" :options="playerOptions" :caption="caption" />
           </v-card>
         </v-col>
@@ -89,9 +89,6 @@ export default {
   }),
 
   computed: {
-    camerasAvaliable() {
-      return !Utils.isEmpty(this.cameraIds);
-    },
     playerOptions() {
       return {
         // videojs options
@@ -117,9 +114,11 @@ export default {
   },
 
   mounted() {
-    this.init(this.marker);
-    if (this.cameraIds && this.cameraIds.length > 0) {
-      this.playVideo(this.cameraIds[0]);
+    if (this.marker) {
+      this.init(this.marker);
+      if (this.cameraIds && this.cameraIds.length > 0) {
+        this.playVideo(this.cameraIds[0]);
+      }
     }
     this.interval = setInterval(() => {
       if (this.$refs.weather) {
@@ -380,6 +379,12 @@ export default {
     }
   },
   watch: {
+    marker() {
+      this.init(this.marker);
+      if (this.cameraIds && this.cameraIds.length > 0) {
+        this.playVideo(this.cameraIds[0]);
+      }
+    },
     cameraIds() {
       if (this.cameraIds && this.cameraIds.length > 0) {
         this.playVideo(this.cameraIds[0]);

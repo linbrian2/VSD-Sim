@@ -376,7 +376,7 @@ export default {
     sortVideoCameras(cameras) {
       const items = cameras.map(item => {
         const segment = this.bluetoothSegments.find(segment => segment.id === item.linkId);
-        const camera = segment.cameras.find(camera => camera.id === item.name);
+        const camera = segment ? segment.cameras.find(camera => camera.id === item.name) : null;
         const seq = segment && camera ? segment.seq * 100 + camera.seq : 100000;
         return { seq, ...item };
       });

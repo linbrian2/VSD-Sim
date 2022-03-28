@@ -1,21 +1,21 @@
 <template>
   <v-container class="pa-0 px-2" style="max-height: calc(100vh - 48px); overflow-y: auto;">
-    <div id="traffic-incidents" v-if="selectedIdx == 0">
+    <div id="traffic-incidents" v-if="dataAvailable(cardData[0])" v-show="selectedIdx == 0">
       <TrafficIncidents :handleRowClick="handleRowClick" />
     </div>
-    <div id="traffic-flow-issues" v-else-if="selectedIdx == 1">
+    <div id="traffic-flow-issues" v-if="dataAvailable(cardData[1])" v-show="selectedIdx == 1">
       <TrafficFlowIssues />
     </div>
-    <div id="signal-performance-issues" v-else-if="selectedIdx == 2">
+    <div id="signal-performance-issues" v-if="dataAvailable(cardData[2])" v-show="selectedIdx == 2">
       <SignalPerformanceIssues />
     </div>
-    <div id="device-anomalies" v-else-if="selectedIdx == 3">
+    <div id="device-anomalies" v-if="dataAvailable(cardData[3])" v-show="selectedIdx == 3">
       <DeviceAnomalies />
     </div>
-    <div id="congested-routes" v-else-if="selectedIdx == 4">
+    <div id="congested-routes" v-if="dataAvailable(cardData[4])" v-show="selectedIdx == 4">
       <CongestedRoutes :apiInfo="apiInfo" />
     </div>
-    <div id="waze-alerts" v-else-if="selectedIdx == 5">
+    <div id="waze-alerts" v-if="dataAvailable(cardData[5])" v-show="selectedIdx == 5">
       <WazeAlerts />
     </div>
   </v-container>
@@ -53,6 +53,9 @@ export default {
   methods: {
     handleRowClick(data) {
       console.log('handleRowClick: %o', data);
+    },
+    dataAvailable(data) {
+      return data.val && data.val != 0 && data.val != '-' && data.val != 'N/A';
     }
   }
 };
