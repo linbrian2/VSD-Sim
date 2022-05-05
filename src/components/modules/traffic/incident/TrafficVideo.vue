@@ -1,7 +1,7 @@
 <template>
   <v-card tile @click.stop="clicked">
     <v-card-title class="d-flex justify-space-between">
-      <div class="body-1">{{ video.camera }}</div>
+      <div :class="cameraCaption(video.classification)">{{ video.camera }}</div>
       <div class="caption grey--text">{{ video.time | dateAndTime }}</div>
     </v-card-title>
 
@@ -33,6 +33,10 @@ export default {
   },
 
   methods: {
+    cameraCaption(classification) {
+      return classification ? 'body-1 amber--text' : 'body-1';
+    },
+
     clicked() {
       this.$emit('video-click', this.video);
     }

@@ -144,12 +144,17 @@
 
     <!-- Bottom Sheet Display -->
     <v-bottom-sheet v-model="sheet">
-      <v-sheet class="text-center" height="200px">
-        <v-btn class="mt-6" text color="red" @click="sheet = !sheet">
-          close
+      <v-app-bar dense>
+        <v-toolbar-title>Notifications</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="sheet = !sheet">
+          <v-icon small>mdi-close</v-icon>
         </v-btn>
+      </v-app-bar>
+
+      <v-sheet class="text-center" height="400px">
         <div class="py-3">
-          Example page
+          Coming soon ...
         </div>
       </v-sheet>
     </v-bottom-sheet>
@@ -439,6 +444,7 @@ export default {
 
     addMapControls(map) {
       this.addHomeControl(map);
+      this.addMessageControl(map);
     },
 
     addHomeControl(map) {
@@ -456,6 +462,27 @@ export default {
         events: {
           click: () => {
             this.centerMap(map, this.markers);
+          }
+        }
+      };
+      MapUtils.addControl(map, options);
+    },
+
+    addMessageControl(map) {
+      let options = {
+        position: 'right',
+        content: `<div style="margin:-5px 4px;"><img src="${this.msgIcon}"/></div>`,
+        style: {
+          width: '40px',
+          height: '40px',
+          margin: '10px',
+          padding: '12px 3px',
+          border: 'solid 1px #717B87',
+          background: '#fff'
+        },
+        events: {
+          click: () => {
+            this.showBottomSheet();
           }
         }
       };
@@ -504,7 +531,6 @@ export default {
         setTimeout(() => {
           if (this.$refs.refPanelInfo) {
             this.$refs.refPanelInfo.init(marker);
-            //this.$vuetify.goTo('#info', { container: FlowDataInfo });
           }
         }, 250);
       }
@@ -533,7 +559,11 @@ export default {
         this.currentComponent = WeatherDataInfo;
       } else {
         if (this.$refs.refPanelInfo) {
-          this.$refs.refPanelInfo.init(marker);
+          setTimeout(() => {
+            if (this.$refs.refPanelInfo) {
+              this.$refs.refPanelInfo.init(marker);
+            }
+          }, 250);
         }
       }
     },
@@ -565,7 +595,7 @@ export default {
     },
 
     midPoint(s) {
-      return s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
+      return s && s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
     },
 
     centerSegment(segment) {

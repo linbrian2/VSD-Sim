@@ -82,9 +82,39 @@
 
     <v-row v-if="isVisible('video')" id="video">
       <v-col cols="12">
-        <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
-          <h3>Traffic Videos</h3>
-        </v-subheader>
+        <div class="d-flex justify-space-between">
+          <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
+            <h3>Traffic Videos</h3>
+          </v-subheader>
+
+          <!-- Region selection menu -->
+          <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
+            <template v-slot:activator="{ on: menu, attrs }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                    <v-icon small dark>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <span>Video Filter</span>
+              </v-tooltip>
+            </template>
+
+            <v-list>
+              <v-list-item
+                v-for="item in video_menu_items"
+                :key="item.value"
+                @click="filterMenuItemClicked(item.value)"
+              >
+                <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedFilter }">
+                  <v-icon class="mr-1" v-if="item.value === selectedFilter">mdi-check</v-icon>
+                  <span :class="{ 'ml-8': item.value !== selectedFilter }"> {{ item.title }} </span>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+
         <v-divider />
       </v-col>
       <v-col cols="12">
@@ -93,6 +123,7 @@
             :items="videos"
             :cameras="videoCameras"
             :selectedSegmentId="selectedSegmentId"
+            :selectedFilter="selectedFilter"
             ref="videoDataList"
           />
         </div>
@@ -235,7 +266,15 @@ export default {
     incidentLoc: [],
     incidentType: {},
     incidentScore: 0,
-    severityColor: '#000000'
+    severityColor: '#000000',
+
+    video_menu_items: [
+      { title: 'All videos', value: -1 },
+      { title: 'Normal videos', value: 1 },
+      { title: 'Congested videos', value: 2 }
+    ],
+
+    selectedFilter: -1
   }),
 
   computed: {
@@ -313,6 +352,10 @@ export default {
 
       // Setup data tabs
       this.prepareDataForDisplay(this.incident);
+    },
+
+    filterMenuItemClicked(value) {
+      this.selectedFilter = value;
     },
 
     segmentMenuItemClicked(segmentId) {

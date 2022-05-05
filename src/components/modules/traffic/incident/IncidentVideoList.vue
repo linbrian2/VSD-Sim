@@ -30,7 +30,8 @@ export default {
   props: {
     items: Array,
     cameras: Array,
-    selectedSegmentId: null
+    selectedSegmentId: null,
+    selectedFilter: null
   },
 
   components: {
@@ -47,9 +48,19 @@ export default {
   computed: {
     filteredVideos() {
       if (this.selectedCamera) {
-        return this.items.filter(item => item.camera === this.selectedCamera.name);
+        if (!this.selectedFilter || this.selectedFilter < 0) {
+          return this.items.filter(item => item.camera === this.selectedCamera.name);
+        } else {
+          return this.items.filter(
+            item => item.camera === this.selectedCamera.name && item.classification === this.selectedFilter - 1
+          );
+        }
       } else {
-        return this.items;
+        if (!this.selectedFilter || this.selectedFilter < 0) {
+          return this.items;
+        } else {
+          return this.items.filter(item => item.classification === this.selectedFilter - 1);
+        }
       }
     },
 
@@ -112,6 +123,7 @@ export default {
           this.$refs.vpRef.changeVideoSource(url);
           this.$refs.vpRef.changeTitle(video.camera);
           this.$refs.vpRef.changeCaption(this.dateAndTime(video.time));
+          this.$refs.vpRef.changeIcon(video.classification ? 'mdi-car-emergency' : '');
         }
         this.showVideoPlayer = true;
       }

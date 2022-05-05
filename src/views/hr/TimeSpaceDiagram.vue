@@ -40,10 +40,17 @@
         </div>
       </div>
     </TitleBar>
-    <v-container>
-      <div v-for="(data, group, index) in timeSpaceGroups" :key="index">
+    <v-container fluid style="max-width: 95%">
+      <div v-if="showChartInGroup">
+        <div v-for="(data, group, index) in timeSpaceGroups" :key="index">
+          <v-card class="mt-4">
+            <TimeSpaceChart :data="data" :speed="speed" :title="`Group ${group}`" />
+          </v-card>
+        </div>
+      </div>
+      <div v-lese>
         <v-card class="mt-4">
-          <TimeSpaceChart :data="data" :speed="speed" :title="`Group ${group}`" />
+          <TimeSpaceChart :data="data" :speed="speed" />
         </v-card>
       </div>
     </v-container>
@@ -71,6 +78,8 @@ export default {
     duration: 900,
     startTime: null,
     timeSpaceGroups: {},
+    data: {},
+    showChartInGroup: false,
     speed: 45,
     speedItems: [
       { text: '60 MPH', value: 60 },
@@ -172,15 +181,18 @@ export default {
           if (response.data.status === 'OK') {
             const data = response.data.data;
 
-            // Group the data by group
-            const groups = data.reduce((r, item) => {
-              r[item.group] = r[item.group] || [];
-              r[item.group].push(item);
-              return r;
-            }, {});
-            //console.log(groups);
-
-            this.timeSpaceGroups = groups;
+            if (this.showChartInGroup) {
+              // Group the data by group
+              const groups = data.reduce((r, item) => {
+                r[item.group] = r[item.group] || [];
+                r[item.group].push(item);
+                return r;
+              }, {});
+              //console.log(groups);
+              this.timeSpaceGroups = groups;
+            } else {
+              this.data = data;
+            }
           } else {
             this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
           }

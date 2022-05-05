@@ -21,7 +21,7 @@
           </v-btn>
         </div>
 
-        <div class="d-flex justify-space-between" style="width: 150px;">
+        <div class="d-flex justify-space-between" style="width: 200px;">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn class="mt-1" icon v-on="on" @click.stop="displaySearchSettings">
@@ -47,6 +47,17 @@
               </v-btn>
             </template>
             <span>Settings</span>
+          </v-tooltip>
+
+          <v-divider vertical />
+
+          <v-tooltip bottom v-if="isSimulation">
+            <template v-slot:activator="{ on }">
+              <v-btn class="mt-1" icon v-on="on" @click.stop="showSimulationConfig = !showSimulationConfig">
+                <v-icon medium color="white">mdi-traffic-light-outline </v-icon>
+              </v-btn>
+            </template>
+            <span>Simulation Config</span>
           </v-tooltip>
         </div>
       </div>
@@ -78,7 +89,9 @@
         <EvidenceListDisplay :incident="incidentItem" @select="singleSegmentSelected" ref="anomalySegmentDisplay" />
       </div>
     </v-container>
+
     <IncidentSettings v-model="showSettings" ref="settings" />
+    <SimulationConfigs v-model="showSimulationConfig" ref="simu" v-if="isSimulation" />
     <GlobalSearchDialog v-model="showSearch" ref="search" @handler="searchStarted" />
   </div>
 </template>
@@ -93,6 +106,7 @@ import MapSegment from '@/components/modules/traffic/incident/MapSegment';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import IncidentTable from '@/components/modules/traffic/incident/IncidentTable';
 import IncidentSettings from '@/components/modules/traffic/incident/IncidentSettings';
+import SimulationConfigs from '@/components/modules/traffic/incident/SimulationConfigs';
 import GlobalSearchDialog from '@/components/modules/traffic/incident/GlobalSearchDialog';
 import IncidentHeatMapChart from '@/components/modules/traffic/incident/IncidentHeatMapChart';
 import EvidenceListDisplay from '@/components/modules/traffic/incident/EvidenceListDisplay';
@@ -104,6 +118,7 @@ export default {
     SelectionPanel,
     IncidentTable,
     IncidentSettings,
+    SimulationConfigs,
     GlobalSearchDialog,
     IncidentHeatMapChart,
     EvidenceListDisplay
@@ -116,6 +131,7 @@ export default {
     showIncidentTimeline: false,
     showSettings: false,
     showSearch: false,
+    showSimulationConfig: false,
 
     segments: [],
     markers: [],
@@ -137,6 +153,10 @@ export default {
 
     maxWidth() {
       return this.showPanel ? '100%' : '85%';
+    },
+
+    isSimulation() {
+      return process.env.VUE_APP_MITIGATION_MODE === 'simulation';
     },
 
     ...mapState(['currentDate']),
