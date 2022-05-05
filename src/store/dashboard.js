@@ -112,7 +112,7 @@ const actions = {
       if (response.data.data) {
         sortedData = response.data.data
           .filter(x => {
-            return new Date().getTime() - x.endTime < 24 * 60 * 60 * 1000;
+            return new Date().getTime() - x.endTime < 1 * 60 * 60 * 1000;
           })
           .sort((a, b) => (a.severity > b.severity ? -1 : b.severity > a.severity ? 1 : 0));
       }

@@ -82,9 +82,7 @@ export default {
   },
 
   mounted() {
-    if (this.$store.state.dashboard.incidents.length == 0) {
-      this.fetchIncidentData(this.currentDate);
-    }
+    this.fetchIncidentData(this.currentDate);
   },
 
   methods: {
