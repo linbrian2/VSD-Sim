@@ -177,7 +177,6 @@ export default {
     },
 
     prepareHighCongestionRoutes(data) {
-      console.log(data);
       this.headers = [
         { text: 'Last Updated', value: 'lastUpdated' },
         { text: 'Name', value: 'name' },
@@ -292,7 +291,6 @@ export default {
       const id = value.id;
       const type = this.type;
       this.hideDialog();
-      console.log('A');
       this.$bus.$emit('DISPLAY_MARKER_DETAILS_DASHBOARD', { id, type });
     }
   }

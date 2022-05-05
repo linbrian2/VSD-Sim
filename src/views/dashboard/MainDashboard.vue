@@ -22,40 +22,51 @@
         <v-col id="overview" :cols="rzMap ? 4 : 3" :xl="rzMap ? 3 : 2" class="pa-0 px-3 pl-3">
           <v-container style="max-height: calc(100vh - 48px); overflow-y: auto;" class="py-0">
             <v-row>
+              <!-- TODO -->
+              <!-- <v-card class="d-flex align-center justify-center">
+                <v-progress-linear :value="cardProgress" />
+              </v-card> -->
               <v-col cols="12" v-for="(x, i) in cardData" :key="x.id" class="pa-1">
-                <v-system-bar :color="getColor(x)" height="10" />
                 <v-hover v-slot="{ hover }">
-                  <v-card
-                    :disabled="!x.val || (x.val && (x.val == 0 || x.val == '-'))"
-                    height="calc(18.9vh - 48px)"
-                    class="d-flex align-center justify-center"
-                    @click.native="cardClicked(i)"
-                    :color="selectedIdx != i ? null : $store.state.darkMode ? 'grey darken-1' : 'grey lighten-1'"
-                    :elevation="hover ? 12 : 2"
-                    :class="{ 'on-hover': hover }"
-                  >
-                    <v-col class="grid-center pa-0">
-                      <v-card-title v-show="$vuetify.breakpoint.lgAndUp" class="py-0" style="font-size:19px">
-                        {{ x.title }}
-                      </v-card-title>
-                      <h1 style="font-size:42px" class="pr-2">
-                        <v-icon class="pb-2" :color="colors[i]" x-large>{{ x.icon }}</v-icon>
-                        {{ x.val }}
-                      </h1>
-                    </v-col>
-                    <div v-show="$vuetify.breakpoint.lgAndUp" class="card-container">
-                      <v-btn icon @click="showSelectionDialog(i)" class="detail-button" v-if="i != 3">
-                        <v-icon :class="{ 'show-btns': hover }" :color="transparent">
-                          mdi-information-outline
-                        </v-icon>
-                      </v-btn>
-                      <v-btn icon @click="goToPage(x.link)" class="link-button">
-                        <v-icon :class="{ 'show-btns': hover }" :color="transparent">
-                          mdi-open-in-new
-                        </v-icon>
-                      </v-btn>
-                    </div>
-                  </v-card>
+                  <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
+                    <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
+                      <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
+                        <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
+                          <v-card
+                            :disabled="!x.val || (x.val && (x.val == 0 || x.val == '-'))"
+                            height="calc(19vh - 48px)"
+                            class="d-flex align-center justify-center"
+                            @click.native="cardClicked(i)"
+                            :color="getColor(x)"
+                            :elevation="hover ? 12 : 2"
+                            :class="{ 'on-hover': hover }"
+                          >
+                            <v-col class="grid-center pa-0">
+                              <v-card-title v-show="$vuetify.breakpoint.lgAndUp" class="py-0" style="font-size:26px">
+                                {{ x.title }}
+                              </v-card-title>
+                              <h1 style="font-size:48px" class="pr-2">
+                                <v-icon class="pb-2 pr-3" :color="colors[i]" x-large>{{ x.icon }}</v-icon>
+                                {{ x.val }}
+                              </h1>
+                            </v-col>
+                            <div v-show="$vuetify.breakpoint.lgAndUp" class="card-container">
+                              <v-btn icon @click="showSelectionDialog(i)" class="detail-button" v-if="i != 3">
+                                <v-icon :class="{ 'show-btns': hover }" :color="transparent">
+                                  mdi-information-outline
+                                </v-icon>
+                              </v-btn>
+                              <v-btn icon @click="goToPage(x.link)" class="link-button">
+                                <v-icon :class="{ 'show-btns': hover }" :color="transparent">
+                                  mdi-open-in-new
+                                </v-icon>
+                              </v-btn>
+                            </div>
+                          </v-card>
+                        </v-sheet>
+                      </v-sheet>
+                    </v-sheet>
+                  </v-sheet>
                 </v-hover>
               </v-col>
             </v-row>
@@ -65,7 +76,7 @@
         <v-col class="pa-0" :cols="rzMap ? 8 : 9" :xl="rzMap ? 9 : 10">
           <v-row>
             <!-- Data -->
-            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="pref.layout == '1: Card, 2: Info, 3: Map'">
+            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="layout == '1: Card, 2: Info, 3: Map'">
               <InfoColumn ref="infoColumn" :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
             </v-col>
             <!-- Map -->
@@ -81,7 +92,7 @@
                 />
               </div>
             </v-col>
-            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="pref.layout == '1: Card, 2: Map, 3: Info'">
+            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="layout == '1: Card, 2: Map, 3: Info'">
               <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
             </v-col>
           </v-row>
@@ -99,7 +110,7 @@ import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
 import SelectionPanel from '@/components/modules/dashboard/app/SelectionPanel.vue';
 import SelectionDialog from '@/components/modules/dashboard/SelectionDialog.vue';
 import Constants from '@/utils/constants/dashboard.js';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 export default {
   name: 'App',
@@ -123,7 +134,7 @@ export default {
       updateInterval: null,
       cardSwapInterval: null,
       elapsedTime: 0,
-      cardElapsedTime: 40,
+      cardElapsedTime: 38,
       cardData: [
         {
           title: Constants.TRAFFIC_INCIDENTS,
@@ -131,10 +142,12 @@ export default {
           link: 'http://http://aitoms.net/flow/incidents',
           val: '-',
           thresholds: [
-            { val: 0, color: 'green' },
-            { val: 3, color: 'yellow' },
-            { val: 6, color: 'orange' },
-            { val: 9, color: 'red' }
+            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
+            { val: 1, color: '#339900' },
+            { val: 3, color: '#D7DF01' },
+            { val: 5, color: '#FFCC55' },
+            { val: 7, color: '#FF6600' },
+            { val: 9, color: '#FF0000' }
           ]
         },
         {
@@ -143,10 +156,12 @@ export default {
           link: 'http://aitoms.net/',
           val: '-',
           thresholds: [
-            { val: 0, color: 'green' },
-            { val: 2, color: 'yellow' },
-            { val: 4, color: 'orange' },
-            { val: 6, color: 'red' }
+            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
+            { val: 1, color: '#339900' },
+            { val: 2, color: '#D7DF01' },
+            { val: 4, color: '#FFCC55' },
+            { val: 6, color: '#FF6600' },
+            { val: 8, color: '#FF0000' }
           ]
         },
         {
@@ -155,10 +170,12 @@ export default {
           link: 'http://aitoms.net/hr/summary',
           val: '-',
           thresholds: [
-            { val: 0, color: 'green' },
-            { val: 2, color: 'yellow' },
-            { val: 4, color: 'orange' },
-            { val: 6, color: 'red' }
+            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
+            { val: 1, color: '#339900' },
+            { val: 4, color: '#D7DF01' },
+            { val: 6, color: '#FFCC55' },
+            { val: 8, color: '#FF6600' },
+            { val: 10, color: '#FF0000' }
           ]
         },
         {
@@ -167,10 +184,12 @@ export default {
           link: 'http://aitoms.net/flow/bt-dash',
           val: '-',
           thresholds: [
-            { val: 0, color: 'green' },
-            { val: 8000, color: 'yellow' },
-            { val: 12000, color: 'orange' },
-            { val: 15000, color: 'red' }
+            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
+            { val: 1, color: '#339900' },
+            { val: 4, color: '#D7DF01' },
+            { val: 6, color: '#FFCC55' },
+            { val: 8, color: '#FF6600' },
+            { val: 10, color: '#FF0000' }
           ]
         },
         {
@@ -179,10 +198,12 @@ export default {
           link: 'http://aitoms.net/flow/bt-dash',
           val: '-',
           thresholds: [
-            { val: 0, color: 'green' },
-            { val: 5, color: 'yellow' },
-            { val: 10, color: 'orange' },
-            { val: 15, color: 'red' }
+            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
+            { val: 1, color: '#339900' },
+            { val: 3, color: '#D7DF01' },
+            { val: 6, color: '#FFCC55' },
+            { val: 9, color: '#FF6600' },
+            { val: 12, color: '#FF0000' }
           ]
         },
         {
@@ -191,25 +212,32 @@ export default {
           link: 'http://aitoms.net/flow/bt-dash',
           val: '-',
           thresholds: [
-            { val: 0, color: 'green' },
-            { val: 1500, color: 'yellow' },
-            { val: 2500, color: 'orange' },
-            { val: 3500, color: 'red' }
+            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
+            { val: 1, color: '#339900' },
+            { val: 20, color: '#D7DF01' },
+            { val: 35, color: '#FFCC55' },
+            { val: 50, color: '#FF6600' },
+            { val: 65, color: '#FF0000' }
           ]
         }
       ],
-      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'teal'],
+      colors: ['white', 'white', 'white', 'white', 'white', 'white'],
       selectedIdx: -1,
       transparent: 'rgba(255, 255, 255, 0)'
     };
   },
   computed: {
-    rzMap() {
-      return this.pref && this.pref.resizableMap;
-      // return (this.pref && this.pref.resizableMap) || this.selectedIdx == 0;
+    incidentData() {
+      return this.segments != null && this.trafficIncidents != null;
     },
-    mapCardInfoLayout() {
-      return !this.pref || !this.pref.resizableMap;
+    cardProgress() {
+      return this.cardElapsedTime < 0 ? 0 : (this.cardElapsedTime / 45) * 100;
+    },
+    rzMap() {
+      return this.getSetting('mainDashboard', 'resizableMap');
+    },
+    layout() {
+      return this.getSetting('mainDashboard', 'pageLayout');
     },
     ...mapState('dashboard', [
       'pref',
@@ -222,7 +250,8 @@ export default {
       'detectors',
       'segments',
       'waze'
-    ])
+    ]),
+    ...mapGetters(['getSetting'])
   },
   created() {
     window.addEventListener('click', this.keydownListener);
@@ -267,33 +296,6 @@ export default {
         this.polylines = polylines;
       }
     },
-    handleMarkerClick(id, type) {
-      // let marker = null;
-      console.log(id);
-      console.log(type);
-      /* switch (type) {
-        case 0:
-          marker = this.markers.find(m => m.id === id);
-          this.markerClicked(marker);
-          break;
-        case 1:
-          marker = this.bluetoothLocations.find(m => m.id === id);
-          this.segmentClicked(marker);
-          break;
-        case 2:
-          marker = this.weatherStations.find(m => m.id === id);
-          this.weatherMarkerClicked(marker);
-          break;
-        case 3:
-          marker = this.restrictions.find(m => m.id === id);
-          this.restrictionClicked(marker);
-          break;
-        case 4:
-          marker = this.currentAnomalySegments.find(m => m.id === id);
-          this.anomalySegmentClicked(marker);
-          break;
-      } */
-    },
     startUpdateInterval() {
       this.updateInterval = setInterval(this.updateData, 1000);
     },
@@ -304,6 +306,7 @@ export default {
       }
     },
     fetchApiData() {
+      this.fetchBluetoothSegments();
       this.fetchWeatherStations();
       this.fetchTrafficIncidents();
       this.fetchTrafficDevices();
@@ -315,7 +318,10 @@ export default {
     },
     updateData() {
       this.elapsedTime++;
-      if (this.pref && this.pref.dataUpdateEnabled && this.elapsedTime >= 300) {
+      if (
+        this.getSetting('mainDashboard', 'autoDataUpdate') &&
+        this.elapsedTime >= this.getSetting('mainDashboard', 'dataUpdateInterval') * 60
+      ) {
         this.elapsedTime = 0;
         this.fetchApiData();
       }
@@ -331,23 +337,25 @@ export default {
     },
     updateCardSwap() {
       this.cardElapsedTime++;
-      if (!this.manualMode && this.pref && this.pref.swapEnabled && this.cardElapsedTime >= 45) {
+      let pageSwapEnabled = this.getSetting('mainDashboard', 'autoPageSwaps');
+      let swapInterval = this.getSetting('mainDashboard', 'swapInterval');
+      if (!this.manualMode && pageSwapEnabled && this.cardElapsedTime >= swapInterval) {
         this.cardElapsedTime = 0;
-        let newIdx = -1;
-        for (let i = 0; i < this.cardData.length; i++) {
-          let firstSelect = false;
-          if (i < this.selectedIdx && this.dataAvailable(this.cardData[i]) && !firstSelect) {
-            firstSelect = true;
-            newIdx = i;
-          } else if (i > this.selectedIdx && this.dataAvailable(this.cardData[i])) {
-            newIdx = i;
-            break;
+        if (this.selectedIdx >= 0 && this.selectedIdx <= 4) {
+          for (let i = this.selectedIdx + 1; i < this.cardData.length; i++) {
+            if (this.dataAvailable(this.cardData[i])) {
+              this.selectedIdx = i;
+              this.cardClicked(this.selectedIdx);
+              return;
+            }
           }
         }
-        if (newIdx != -1) {
-          console.log(newIdx);
-          this.selectedIdx = newIdx;
-          this.cardClicked(this.selectedIdx);
+        for (let i = 0; i < this.cardData.length; i++) {
+          if (this.dataAvailable(this.cardData[i])) {
+            this.selectedIdx = i;
+            this.cardClicked(this.selectedIdx);
+            return;
+          }
         }
       }
     },
@@ -482,26 +490,6 @@ export default {
     goToPage(link) {
       window.open(link, '_blank');
     },
-    getTravelTimeIcons() {
-      return [
-        {
-          path: 0,
-          scale: 10.0,
-          fillColor: '#0580FF',
-          fillOpacity: 0.8,
-          strokeWeight: 1.0,
-          strokeColor: 'white'
-        },
-        {
-          path: 0,
-          scale: 10.0,
-          fillColor: '#FF7F00',
-          fillOpacity: 0.8,
-          strokeWeight: 1.0,
-          strokeColor: 'white'
-        }
-      ];
-    },
     getWazeIcons() {
       return [
         {
@@ -539,12 +527,13 @@ export default {
       'fetchStatusOfDevices',
       'fetchSegments',
       'fetchWaze'
-    ])
+    ]),
+    ...mapActions('traffic', ['fetchBluetoothSegments'])
   },
   watch: {
-    trafficIncidents(incidents) {
+    incidentData(incidents) {
       if (incidents) {
-        this.cardData[0].val = incidents.length;
+        this.cardData[0].val = this.trafficIncidents.length;
       } else {
         return 'N/A';
       }
@@ -558,15 +547,18 @@ export default {
     },
     hrSummary(hrSummary) {
       if (hrSummary) {
-        this.cardData[2].val = this.hrSummary.filter(x => x.score > 50).length;
+        this.cardData[2].val = this.hrSummary.filter(x => x.score > 60).length;
       } else {
         return 'N/A';
       }
     },
     flowAnomData(flowAnomData) {
       if (flowAnomData) {
-        console.log(flowAnomData);
-        this.cardData[3].val = flowAnomData.sensorErrorCounts.filter(x => x.score > 500).length;
+        let maxCount = flowAnomData.sensorErrorCounts[0].score;
+        let hours = new Date().getHours()
+        this.cardData[3].val = flowAnomData.sensorErrorCounts.filter(
+          x => x.score / hours > 50 && x.score > maxCount - maxCount * 0.15
+        ).length;
       } else {
         return 'N/A';
       }

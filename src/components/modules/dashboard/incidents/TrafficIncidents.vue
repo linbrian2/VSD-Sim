@@ -1,54 +1,69 @@
 <template>
   <div v-if="!reload">
-    <!-- Left map panel -->
-    <!-- <SelectionPanel :width="width" name="incidentSideBarWidth">
-      <MapSegment
-        ref="mapSegmentRef"
-        :segments="$store.state.dashboard.incidentSegmentLinks"
-        :markers="$store.state.dashboard.incidentMarkers"
-        @select="onSegmentSelected"
-        @click="onMarkerClicked"
-      />
-    </SelectionPanel> -->
+    <v-card tile class="mb-2" v-show="showIncidentTable">
+      <IncidentTable :incidents="$store.state.dashboard.incidents" @click="handleRowClick" />
+    </v-card>
 
-    <v-container>
-      <v-card tile class="mx-4 mb-2" v-show="showIncidentTable">
-        <IncidentTable :height="190" :incidents="incidents" @click="handleRowClick" />
-      </v-card>
-
-      <div v-if="incidentItem">
-        <EvidenceListDisplay :incident="incidentItem" @select="singleSegmentSelected" ref="anomalySegmentDisplay" />
-      </div>
-    </v-container>
+    <v-row class="mt-3 ml-1 mr-7" v-if="incidentItem">
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-clock-outline'"
+          :valueFontSize="28"
+          :name="'End Time'"
+          :value="getTimeStr(incidentItem.endTime)"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-chart-bar-stacked'"
+          :name="'Severity'"
+          :value="incidentItem.severity"
+          :valueColor="incidentItem.severityColor"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard :icon="'mdi-map-marker-outline'" :name="'Total Evidence'" :value="incidentItem.evidenceCount" />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard :icon="'mdi-alert-circle-outline'" :name="'Type'" :value="incidentItem.type" />
+      </v-col>
+      <v-col cols="12" class="pa-1">
+        <InfoCard
+          :icon="'mdi-shield-check-outline'"
+          :name="'Reason'"
+          :value="incidentItem.reason"
+          :wide="true"
+          :valueFontSize="32"
+        />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
+import InfoCard from '@/components/modules/dashboard/InfoCard';
 import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
-import { mapState, mapActions } from 'vuex';
-// import MapSegment from '@/components/modules/traffic/incident/MapSegment';
-// import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
+import { mapState } from 'vuex';
 import IncidentTable from '@/components/modules/dashboard/incidents/IncidentTable';
-import EvidenceListDisplay from '@/components/modules/dashboard/incidents/EvidenceListDisplay';
 
 export default {
+  props: {
+    maxItems: Number
+  },
   components: {
-    // MapSegment,
-    // SelectionPanel,
-    IncidentTable,
-    EvidenceListDisplay
+    InfoCard,
+    IncidentTable
   },
 
   data: () => ({
-    reload: true,
+    reload: false,
     width: 600,
     loading: false,
     showIncidentTable: true,
 
     segments: [],
-    incidents: [],
 
     incidentItem: null
   }),
@@ -67,20 +82,27 @@ export default {
   },
 
   mounted() {
-    setTimeout(() => {
-      this.reload = false;
-    }, 500);
-    if (this.anomalyDevices.length === 0) {
-      this.fetchAnomalyDevices();
+    if (this.$store.state.dashboard.incidents.length == 0) {
+      this.fetchIncidentData(this.currentDate);
     }
-    if (this.bluetoothSegments.length === 0) {
-      this.fetchBluetoothSegments();
-    }
-
-    this.refreshData();
   },
 
   methods: {
+    getTimeStr(ts) {
+      let time = new Date(ts);
+      return `${Utils.formatTimeAsMinute(time)} (${Utils.fromNow(time)})`;
+    },
+    getTime(ts) {
+      if (ts) {
+        let date = new Date(ts);
+        return Utils.formatTimeAsMinute(date);
+      } else {
+        return '-';
+      }
+    },
+    getStrokeColor(level) {
+      return Utils.getStrokeColor(level);
+    },
     onSegmentSelected(segmentId) {
       if (this.$refs.anomalySegmentDisplay) {
         this.$refs.anomalySegmentDisplay.selectSegment(segmentId);
@@ -118,7 +140,6 @@ export default {
           segments.push(segment);
         }
       });
-
       if (segments.length > 0) {
         this.$store.state.dashboard.incidentMarkers = this.createMarkers(this.incidentItem);
         this.$store.state.dashboard.incidentSegmentLinks = segments;
@@ -126,35 +147,16 @@ export default {
           this.updateMap(segments);
         }, 50);
       }
-
-      setTimeout(() => {
-        this.updateIncidentTimeline(item);
-      }, 200);
     },
 
     gotoSection(target) {
       this.$vuetify.goTo(target);
     },
 
-    updateIncidentTimeline(item) {
-      if (this.$refs.heatMapChart) {
-        const startIdx = Utils.get5MinIndexOf288(item.startTime);
-        const endIdx = Utils.get5MinIndexOf288(item.endTime);
-        if (startIdx < endIdx) {
-          const ids = Utils.range(startIdx, endIdx + 1);
-          this.$refs.heatMapChart.highlightCells(ids);
-        }
-      }
-    },
-
     updateMap(segments) {
       if (this.$refs.mapSegmentRef) {
         this.$refs.mapSegmentRef.centerMapAndZoom(segments, true);
       }
-    },
-
-    refreshData() {
-      this.fetchIncidentData(this.currentDate);
     },
 
     async fetchIncidentData(startTime) {
@@ -165,10 +167,10 @@ export default {
         const response = await Api.fetchIncidentData(start, 1, severity, duration);
         const data = this.getResponseData(response);
         if (data) {
-          this.incidents = data;
+          this.$store.state.dashboard.incidents = data;
           this.segments = this.createTotalSegments();
         } else {
-          this.incidents = [];
+          this.$store.state.dashboard.incidents = [];
           this.segments = [];
         }
         this.incidentItem = null;
@@ -195,7 +197,7 @@ export default {
 
     createTotalSegments() {
       const linkIds = new Set();
-      this.incidents.forEach(item => {
+      this.$store.state.dashboard.incidents.forEach(item => {
         linkIds.add(item.linkId);
       });
 
@@ -206,7 +208,6 @@ export default {
           segments.push(segment);
         }
       });
-
       return segments;
     },
 
@@ -346,9 +347,15 @@ export default {
       }
 
       return markers;
-    },
-
-    ...mapActions('traffic', ['fetchAnomalyDevices', 'fetchBluetoothSegments'])
+    }
   }
+
+  /* watch: {
+    bluetoothSegments(segments) {
+      if (segments) {
+        this.handleRowClick(0);
+      }
+    }
+  } */
 };
 </script>

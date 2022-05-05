@@ -3,7 +3,7 @@ export default Object.freeze({
 
   TRAFFIC_INCIDENTS: 'Traffic Incidents',
   DEVICE_TRAFFIC: 'Traffic Flow Issues',
-  SIGNAL_PERFORMANCE_ISSUES: 'Signal Performance Issues',
+  SIGNAL_PERFORMANCE_ISSUES: 'Signal Issues',
   TRAFFIC_FLOW_ANOMALIES: 'Device Anomalies',
   HIGH_CONGESTION_ROUTES: 'Congested Routes',
   REPORTED_WAZE_ALERTS: 'Waze Alerts',

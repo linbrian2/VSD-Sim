@@ -37,6 +37,7 @@ new Vue({
     store.dispatch('auth/startRefreshTokenTimer');
     store.dispatch('traffic/loadMapLayers');
     store.dispatch('traffic/loadIncidentSettings');
+    store.dispatch('loadSettings');
     store.dispatch('loadDarkMode');
   },
   render: h => h(App)

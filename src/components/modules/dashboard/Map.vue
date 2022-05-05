@@ -1,7 +1,7 @@
 <template>
   <div id="wrapper">
     <div id="google_map">
-      <!-- <div v-show="selectedIdx == 0">
+      <div v-show="selectedIdx == 0">
         <MapSegment
           ref="mapSegmentRef"
           :incidentSegmentLinks="incidentSegmentLinks"
@@ -9,9 +9,9 @@
           @select="onSegmentSelected"
           @click="onMarkerClicked"
         />
-      </div> -->
-      <div>
-        <!-- <div v-show="selectedIdx != 0"> -->
+      </div>
+      <!-- <div> -->
+      <div v-show="selectedIdx != 0">
         <GmapMap
           ref="mapRef"
           :options="options"
@@ -21,6 +21,7 @@
           class="map"
           :style="style"
         >
+          {{ selectedMarkers.selectedMarkers[selectedMarkers.selectedIdx] }}
           <GmapMarker
             v-for="m in markers"
             :key="m.id"
@@ -28,7 +29,6 @@
             :title="m.name"
             :clickable="true"
             :icon="getMarkerIcon(m.id)"
-            @click="markerClicked(m)"
           />
           <GmapPolyline
             v-for="s in segments"
@@ -36,7 +36,6 @@
             :title="s.desc"
             :path.sync="s.path"
             :options="segmentOptions(s)"
-            @click="segmentClicked(s)"
           />
           <GmapCustomMarker
             alignment="center"
@@ -151,9 +150,32 @@ export default {
     };
   },
   computed: {
-    ...mapState('dashboard', ['incidentSegmentLinks', 'incidentMarkers'])
+    selectedMarkers() {
+      return {
+        selectedIdx: this.selectedIdx,
+        selectedMarkers: [
+          this.selectedTrafficIncident,
+          this.selectedtrafficDevice,
+          this.selectedSignalPerformanceIssue,
+          this.selectedDetector,
+          this.selectedSegment,
+          this.selectedWazeAlert
+        ]
+      };
+    },
+    ...mapState('dashboard', [
+      'incidentSegmentLinks',
+      'incidentMarkers',
+      'selectedTrafficIncident',
+      'selectedtrafficDevice',
+      'selectedSignalPerformanceIssue',
+      'selectedDetector',
+      'selectedSegment',
+      'selectedWazeAlert'
+    ])
   },
   mounted() {
+    this.addSelectedMarker();
     setTimeout(() => {
       this.loadPage(this.$vuetify.theme.dark);
     }, 1);
@@ -195,7 +217,6 @@ export default {
       return this.selectedMarkerId == key ? this.icons[1] : this.icons[0];
     },
     markerClicked(marker) {
-      console.log(marker.id);
       this.selectedMarkerId = marker.id;
       this.$store.commit('dashboard/SET_ACTIVE_MARKER', marker);
       this.$emit('click', marker);
@@ -221,9 +242,8 @@ export default {
       }
     },
 
-    centerMap(map, markers) {
+    centerMap(map, markers, zoom = null) {
       if (markers && markers.length > 0) {
-        console.log(0);
         let bounds = new google.maps.LatLngBounds();
         for (let i = 0; i < markers.length; i++) {
           bounds.extend(markers[i].position);
@@ -231,12 +251,14 @@ export default {
         map.setCenter(bounds.getCenter());
         if (markers.length == 0) {
           map.setCenter({ lat: 33.907, lng: -117.7 });
-          map.setZoom(10);
+          map.setZoom(zoom ? zoom : 10);
         } else if (markers.length == 1) {
-          map.setZoom(10);
+          map.setZoom(zoom ? zoom : 10);
         } else {
           map.fitBounds(bounds);
         }
+        let center = this.map.getCenter();
+        this.center = { lat: center.lat(), lng: center.lng() };
       }
     },
 
@@ -295,7 +317,7 @@ export default {
       }
     },
 
-    centerMapSegments(map, segments) {
+    centerMapSegments(map, segments, zoom = null) {
       if (segments.length > 0) {
         const bounds = new google.maps.LatLngBounds();
         segments.forEach(segment => {
@@ -304,6 +326,11 @@ export default {
           });
         });
         map.fitBounds(bounds, 0);
+        if (zoom) {
+          map.setZoom(zoom);
+        }
+        let center = this.map.getCenter();
+        this.center = { lat: center.lat(), lng: center.lng() };
       }
     },
 
@@ -312,9 +339,73 @@ export default {
       if (segment) {
         this.segmentClicked(segment);
       }
+    },
+    // this.centerMapSegments(this.map, this.segments);
+    // this.centerMap(this.map, this.markers);
+    addSelectedMarker() {
+      switch (this.selectedIdx) {
+        case 0:
+          break;
+        case 1:
+          this.markerClicked(this.selectedtrafficDevice);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.markers.filter(x => x.id == this.selectedMarkerId),
+              12
+            );
+          }, 1);
+          break;
+        case 2:
+          this.markerClicked(this.selectedSignalPerformanceIssue);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.markers.filter(x => x.id == this.selectedMarkerId),
+              15
+            );
+          }, 1);
+          break;
+        case 3:
+          this.markerClicked(this.selectedDetector);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.markers.filter(x => x.id == this.selectedMarkerId),
+              12
+            );
+          }, 1);
+          break;
+        case 4:
+          this.segmentClicked(this.selectedSegment);
+          setTimeout(() => {
+            this.centerMapSegments(
+              this.map,
+              this.segments.filter(x => x.id == this.selectedSegmentId),
+              13
+            );
+          }, 1);
+          break;
+        case 5:
+          this.markerClicked(this.selectedWazeAlert);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.markers.filter(x => x.id == this.selectedMarkerId),
+              12
+            );
+          }, 1);
+          break;
+      }
     }
   },
   watch: {
+    selectedMarkers: {
+      handler: function() {
+        this.addSelectedMarker();
+      },
+      deep: true
+    },
     segments() {
       if (this.segments && this.segments.length > 0) {
         this.centerMapSegments(this.map, this.segments);

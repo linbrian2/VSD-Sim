@@ -3,7 +3,7 @@
     :height="height"
     fixed-header
     :headers="headers"
-    :items="incidents"
+    :items="filteredIncidents"
     :items-per-page="itemsPerPage"
     hide-default-footer
     :item-class="itemRowBackground"
@@ -40,7 +40,7 @@
       <v-badge class="ml-2" color="blue" :content="item.segmentCount" bordered> </v-badge>
     </template>
     <template v-slot:[`item.startTime`]="{ item }">
-      {{ item.startTime | time }}
+      {{ getTime(item.startTime) }}
     </template>
     <template v-slot:[`item.evidenceCounts`]="{ item }">
       <v-badge
@@ -69,6 +69,11 @@
       </div>
     </template>
     <template v-slot:[`item.duration`]="{ item }"> {{ item.duration }} min </template>
+    <template v-slot:[`footer`]>
+      <v-btn :disabled="maxItems == 1" block @click="expandTable">
+        <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
+      </v-btn>
+    </template>
   </v-data-table>
 </template>
 
@@ -78,23 +83,34 @@ import Constants from '@/utils/constants/dashboard';
 
 export default {
   props: {
-    itemsPerPage: { type: Number, default: -1 },
-    height: { type: Number, default: 350 },
     preSelect: { type: Boolean, default: true },
     incidents: Array,
     search: String
   },
 
   data: () => ({
+    maxItems: 10,
+    height: null,
+    itemsPerPage: 1,
     headers: [
       { text: 'Route', value: 'route' },
-      { text: 'Severity', value: 'severity' },
       { text: 'Start Time', value: 'startTime' },
       { text: 'Duration', value: 'duration' },
-      { text: 'Evidences', value: 'evidenceCounts' }
+      { text: 'Evidences', value: 'evidenceCounts' },
+      { text: 'Severity', value: 'severity' }
     ],
     selectedRowId: null
   }),
+
+  computed: {
+    filteredIncidents() {
+      if (this.itemsPerPage == 1) {
+        return this.incidents.filter(item => item.id == this.selectedRowId);
+      } else {
+        return this.incidents;
+      }
+    }
+  },
 
   filters: {
     time(time) {
@@ -114,6 +130,22 @@ export default {
   },
 
   methods: {
+    expandTable() {
+      if (this.itemsPerPage == 1) {
+        if (this.maxItems > 12) {
+          this.height = 'calc(95vh - 48px)';
+        }
+        this.itemsPerPage = this.maxItems;
+      } else {
+        this.height = null;
+        this.itemsPerPage = 1;
+      }
+    },
+
+    getTime(date) {
+      return Utils.formatTimeAsMinute(new Date(date));
+    },
+
     itemRowBackground(item) {
       return item.id == this.selectedRowId ? 'table_tr_selected' : 'table_tr_normal';
     },

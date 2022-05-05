@@ -1,78 +1,43 @@
 <template>
   <div>
-    <v-card tile class="mt-6 mb-4">
-      <v-card-title :class="panelStyle">
-        <span class="title white--text font-weight-light">Error Counts by Sensor </span>
-        <v-spacer></v-spacer>
-        <!-- Region selection menu -->
-        <div style="width:280px;">
-          <v-select
-            dark
-            dense
-            v-model="selectedRegionId"
-            :items="region_items"
-            item-text="title"
-            item-value="value"
-            hide-details
-            prepend-icon="mdi-check-box-outline "
-            single-line
-          />
-        </div>
+    <v-card class="device-anomalies">
+      <v-data-table
+        :height="height"
+        fixed-header
+        :headers="headers"
+        :items="items"
+        hide-default-footer
+        :items-per-page="itemsPerPage"
+        :item-class="itemRowBackground"
+        @click:row="handleRowClick"
+        class="elevation-1"
+      >
+        <template v-slot:[`item.id`]="{ item }">
+          <v-chip color="pink" outlined small style="width:62px;">{{ item.id }}</v-chip>
+        </template>
+        <template v-slot:[`footer`]>
+          <v-btn :disabled="maxItems == 1" block @click="expandTable">
+            <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
+          </v-btn>
+        </template>
+      </v-data-table>
+      <v-row class="mt-3 ml-1 mr-7" v-if="selectedDetector">
+        <v-col cols="6" class="pa-1">
+          <InfoCard :icon="'mdi-note-outline'" :name="'Total Issues'" :value="selectedDetector.counts[0]" />
+        </v-col>
+        <v-col cols="6" class="pa-1">
+          <InfoCard :icon="'mdi-note-outline'" :name="getCount('name')" :value="getCount('val')" />
+        </v-col>
+      </v-row>
 
-        <v-spacer></v-spacer>
-        <v-text-field
-          dark
-          rounded
-          dense
-          outlined
-          clearable
-          v-model="search"
-          prepend-inner-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-          class="shrink mr-5"
-        ></v-text-field>
-
-        <v-btn small icon class="refresh-btn mr-3" :loading="sensorLoading">
-          <v-icon color="white">mdi-refresh</v-icon>
-        </v-btn>
-      </v-card-title>
-
-      <v-card-subtitle color="#26c6da" class="mt-2 ml-3 font-italic" v-if="!sensorErrorTypes">
-        <div>
-          <div class="ml-3 py-2">
-            Click a table row to reveal more details about the selected detector
-          </div>
-        </div>
-      </v-card-subtitle>
-
-      <v-card-text style="height: 340px;">
-        <v-data-table
-          :headers="headers"
-          height="300"
-          fixed-header
-          :items="items"
-          :items-per-page="itemsPerPage"
-          hide-default-footer
-          @click:row="handleRowClick"
-          :search="search"
-          class="elevation-1"
-        >
-          <template v-slot:[`item.id`]="{ item }">
-            <v-chip color="success" outlined small style="width:62px;">{{ item.id }}</v-chip>
-          </template>
-        </v-data-table>
-      </v-card-text>
-
-      <div class="ml-8 mr-2 mb-4 sensor-chart" v-if="sensorErrorTypes">
+      <div class="ml-8 mr-2 mb-4 sensor-chart" v-if="sensorErrorTypes && !reload">
         <v-tabs color="deep-purple accent-4" v-model="activeTab" show-arrows>
           <v-tab v-for="({ dir }, i) in sensorErrorTypes" :key="i">
             <v-chip color="orange" small>{{ dir }}</v-chip>
           </v-tab>
           <v-tab-item v-for="({ errorTypes }, i) in sensorErrorTypes" :key="i">
             <v-container fluid>
-              <SensorHeatmapChart :data="errorTypes" :height="450" />
+              <SensorHeatmapChart :data="errorTypes" :height="350" />
             </v-container>
           </v-tab-item>
         </v-tabs>
@@ -87,16 +52,23 @@ import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/status';
 import { mapState } from 'vuex';
 import SensorHeatmapChart from '@/components/modules/status/SensorHeatmapChart';
+import InfoCard from '@/components/modules/dashboard/InfoCard';
 
 export default {
   props: {
-    itemsPerPage: { type: Number, default: 3 }
+    data: Object,
+    maxItems: Number
   },
   components: {
-    SensorHeatmapChart
+    SensorHeatmapChart,
+    InfoCard
   },
 
   data: () => ({
+    height: null,
+    itemsPerPage: 1,
+
+    reload: false,
     loading: false,
     sensorLoading: false,
     updatedTime: new Date(),
@@ -107,7 +79,6 @@ export default {
     errorCountsByHour: null,
     sensorErrorTypes: null,
 
-    search: '',
     allItems: [],
     headers: [],
 
@@ -128,10 +99,6 @@ export default {
   }),
 
   computed: {
-    panelStyle() {
-      return this.darkMode ? 'pa-1 pl-3 grey darken-3' : 'pa-1 pl-3 primary';
-    },
-
     items() {
       if (this.selectedRegionId < 0) {
         return this.allItems;
@@ -139,7 +106,18 @@ export default {
         return this.allItems.filter(item => item.flags === this.selectedRegionId);
       }
     },
-    ...mapState(['darkMode', 'currentDate']),
+    selectedDetector: {
+      get() {
+        return this.$store.state.dashboard.selectedDetector;
+      },
+      set(val) {
+        this.$store.state.dashboard.selectedDetector = val;
+        this.reload = true;
+        setTimeout(() => {
+          this.reload = false;
+        }, 1);
+      }
+    },
     ...mapState('dashboard', ['flowAnomData'])
   },
 
@@ -157,20 +135,65 @@ export default {
   },
 
   watch: {
-    currentDate() {
-      this.refreshData();
+    allItems(data) {
+      console.log(data[0]);
     },
     flowAnomData() {
       if (this.flowAnomData && this.flowAnomData.sensorErrorCounts) {
+        this.selectedDetector = this.flowAnomData;
         this.prepareSensorErrorCounts(this.flowAnomData.sensorErrorCounts);
       }
     }
   },
 
   methods: {
+    expandTable() {
+      if (this.itemsPerPage == 1) {
+        this.prepareSensorErrorCounts(this.flowAnomData.sensorErrorCounts);
+        if (this.maxItems > 12) {
+          this.height = 'calc(95vh - 48px)';
+        }
+        this.itemsPerPage = this.maxItems;
+      } else {
+        this.allItems = this.items.filter(x => x.id == this.selectedDetector.id);
+        this.height = null;
+        this.itemsPerPage = 1;
+      }
+    },
+
+    getCount(attr) {
+      if (this.selectedDetector) {
+        let counts = this.selectedDetector.counts;
+        for (let i = 0; i < counts.length; i++) {
+          if (counts[i] != 0 && attr == 'name' && i != 0) {
+            return this.getError(i);
+          } else if (counts[i] != 0 && attr == 'val') {
+            return counts[i];
+          }
+        }
+      }
+      return 'N/A';
+    },
+    getError(idx) {
+      if (idx == 0) return 'Total Counts';
+      else if (idx == 1) return 'Missing data';
+      else if (idx == 2) return 'Flow status';
+      else if (idx == 3) return 'Exceeding Threshold';
+      else if (idx == 4) return 'VOS Constant';
+      else if (idx == 5) return 'VOS Inconsistency';
+      else if (idx == 6) return 'Volume Aggregation';
+      else if (idx == 6) return 'Timezone Issue';
+      else return 'N/A';
+    },
     handleRowClick(value) {
-      this.fetchSensorStatus(value.id, this.currentDate);
+      this.selectedDetector = value;
+      let currDate = Utils.getStartOfDay(new Date());
+      this.fetchSensorStatus(value.id, currDate);
       this.scrollToElement('sensor-chart');
+    },
+
+    itemRowBackground(item) {
+      return item.id == this.selectedDetector.id ? 'table_tr_selected' : 'table_tr_normal';
     },
 
     scrollToElement(className) {
@@ -180,30 +203,6 @@ export default {
         el.scrollIntoView({ behavior: 'smooth' });
       }
     },
-
-    refreshData() {
-      this.fetchStatus(this.currentDate);
-    },
-
-    /* async fetchStatus(date) {
-      this.loading = true;
-      try {
-        this.updatedTime = new Date();
-        const response = await Api.fetchErrors(date.getTime());
-        const data = this.parseResponseData(response);
-
-        if (data) {
-          this.totalErrorCounts = this.composeTotalErrorCountsHeatMapData(data.totalErrorCounts);
-          this.errorCountsByType = this.composeErrorByTypePieChartData(data.errorCountsByType);
-          this.prepareSensorErrorCounts(data.sensorErrorCounts);
-          this.errorCountsByHour = this.composeErrorByHourPieChartData(data.errorCountsByHour);
-          this.sensorErrorTypes = null;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-      this.loading = false;
-    }, */
 
     async fetchSensorStatus(deviceId, date) {
       this.sensorLoading = true;
@@ -244,7 +243,7 @@ export default {
       let xcategories = [];
       let ycategories = [];
 
-      let startTime = Utils.getStartOfDay(this.currentDate).getTime();
+      let startTime = Utils.getStartOfDay(new Date()).getTime();
 
       const rowCount = 12;
       const colCount = 24;
@@ -286,7 +285,7 @@ export default {
       let xcategories = [];
       let ycategories = [];
 
-      let startTime = Utils.getStartOfDay(this.currentDate).getTime();
+      let startTime = Utils.getStartOfDay(new Date()).getTime();
 
       const rowCount = 12;
       const colCount = 24;
@@ -390,26 +389,17 @@ export default {
     },
 
     prepareSensorErrorCounts(data) {
-      const TYPE_AND_FIELD = [
-        { text: 'Total Counts', value: 'total' },
-        { text: 'Missing data', value: 'e1' },
-        { text: 'Flow status', value: 'e2' },
-        { text: 'Exceeding Threshold', value: 'e3' },
-        { text: 'VOS Constant', value: 'e4' },
-        { text: 'VOS Inconsistency', value: 'e5' },
-        { text: 'Volume Aggregation', value: 'e6' },
-        { text: 'Timezone Issue', value: 'e7' }
-      ];
+      const TYPE_AND_FIELD = [{ text: 'Total Counts', value: 'total' }];
 
       this.headers = [{ text: 'Sensor Id', value: 'id' }];
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < TYPE_AND_FIELD.length; i++) {
         this.headers.push(TYPE_AND_FIELD[i]);
       }
 
       this.allItems = data.map(d => {
         const counts = d.counts;
-        const item = { id: d.id, flags: d.flags };
-        for (let i = 0; i < counts.length; i++) {
+        const item = { id: d.id, flags: d.flags, counts: d.counts, score: d.score };
+        for (let i = 0; i < TYPE_AND_FIELD.length; i++) {
           const value = TYPE_AND_FIELD[i].value;
           item[value] = counts[i];
         }

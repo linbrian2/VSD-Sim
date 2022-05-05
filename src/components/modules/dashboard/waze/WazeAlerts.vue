@@ -11,27 +11,48 @@
       @click:row="handleRowClick"
       class="elevation-1"
     >
+      <template v-slot:[`item.score`]="{ item }">
+        <v-chip small :color="getStrokeColor(item.score)">
+          <strong class="black--text">{{ item.score }}</strong>
+        </v-chip>
+      </template>
+      <template v-slot:[`item.time`]="{ item }">
+        {{ item.time.split(' ')[1].slice(0, 5) }}
+      </template>
+      <template v-slot:[`footer`]>
+        <v-btn :disabled="maxItems == 1" block @click="expandTable">
+          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
+        </v-btn>
+      </template>
     </v-data-table>
-    <!-- Data Display -->
-    <!-- {{ selectedWazeAlert }} -->
     <v-row class="mt-3 ml-1 mr-7" v-if="currWaze">
       <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-information-outline'" :name="'Time'" :value="currWazeTime" />
+        <InfoCard
+          :icon="'mdi-clock-outline'"
+          :name="'Time'"
+          :valueFontSize="28"
+          :value="getTimeStr(currWaze.alertTimeTS)"
+        />
       </v-col>
       <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-information-outline'" :name="'Alert Type'" :value="currWaze.alertType.name" />
+        <InfoCard
+          :icon="'mdi-account-multiple-check'"
+          :valueColor="getStrokeColor(currWaze.confidence)"
+          :name="'Score'"
+          :value="currWaze.confidence"
+        />
       </v-col>
       <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-information-outline'" :name="'Address'" :value="currWaze.address.street" />
+        <InfoCard :icon="'mdi-alert-circle-outline'" :name="'Alert Type'" :value="currWaze.alertType.name" />
       </v-col>
       <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-information-outline'" :name="'Score'" :value="currWaze.confidence" />
+        <InfoCard :icon="'mdi-map-marker-outline'" :name="'Address'" :value="currWaze.roadType.name" />
       </v-col>
       <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-information-outline'" :name="'Reliability'" :value="currWaze.reliability" />
+        <InfoCard :icon="'mdi-shield-check-outline'" :name="'Reliability'" :value="currWaze.reliability" />
       </v-col>
       <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-information-outline'" :name="'Thumbs Up'" :value="currWaze.thumbsUp" />
+        <InfoCard :icon="'mdi-thumb-up-outline'" :name="'Thumbs Up'" :value="currWaze.thumbsUp" />
       </v-col>
     </v-row>
   </div>
@@ -44,29 +65,24 @@ import { mapState } from 'vuex';
 
 export default {
   props: {
-    height: { type: Number, default: 190 },
-    itemsPerPage: { type: Number, default: 3 },
-    data: Object
+    data: Object,
+    maxItems: Number
   },
   components: { InfoCard },
   data: () => ({
+    height: null,
+    itemsPerPage: 1,
     reload: false,
     items: [],
     headers: []
   }),
   computed: {
-    currWazeTime() {
-      if (this.currWaze) {
-        return Utils.formatTimeAsMinute(new Date(this.currWaze.alertTimeTS))
-      } else {
-        return '-'
-      }
-    },
     currWaze() {
-      if (this.waze) {
-        return this.waze[0]
+      if (this.selectedWazeAlert && this.waze) {
+        let result = this.waze.filter(x => x.id == this.selectedWazeAlert.id);
+        return result.length > 0 ? result[0] : null;
       } else {
-        return null
+        return null;
       }
     },
     selectedWazeAlert: {
@@ -86,27 +102,47 @@ export default {
   mounted() {
     if (this.waze) {
       this.prepareReportedWazeAlerts(this.waze);
-    }
-    if (!this.selectedWazeAlert) {
       this.handleRowClick(this.items[0]);
     }
   },
   methods: {
+    getTimeStr(ts) {
+      let time = new Date(ts);
+      return `${Utils.formatTimeAsMinute(time)} (${Utils.fromNow(time)})`;
+    },
+    expandTable() {
+      if (this.itemsPerPage == 1) {
+        this.prepareReportedWazeAlerts(this.waze);
+        if (this.maxItems > 12) {
+          this.height = 'calc(95vh - 48px)';
+        }
+        this.itemsPerPage = this.maxItems;
+      } else {
+        this.prepareReportedWazeAlerts([this.selectedWazeAlert]);
+        this.height = null;
+        this.itemsPerPage = 1;
+      }
+    },
+    getStrokeColor(level) {
+      if (level == 5) return Utils.getStrokeColor(3);
+      else if (level == 6 || level == 7) return Utils.getStrokeColor(4);
+      else if (level == 10 || level == 9) return Utils.getStrokeColor(5);
+      else return Utils.getStrokeColor(6);
+    },
     prepareReportedWazeAlerts(data) {
       this.headers = [
-        { text: 'Time', value: 'time' },
         { text: 'Description', value: 'desc' },
+        { text: 'Time', value: 'time' },
         { text: 'Street', value: 'street' },
-        { text: 'Road Type', value: 'roadType' },
         { text: 'Score', value: 'score' }
       ];
       this.items = data.map(d => ({
         id: d.id,
-        time: d.alertTime,
-        desc: d.description,
-        street: d.address.street,
-        roadType: d.roadType.name,
-        score: d.confidence
+        time: d.alertTime || d.time,
+        desc: d.description || d.desc,
+        street: d.address ? d.address.street : d.street,
+        // roadType: d.roadType.name,
+        score: d.confidence || d.score
       }));
     },
 
@@ -117,21 +153,12 @@ export default {
     handleRowClick(item) {
       this.selectedWazeAlert = item;
       this.$emit('click', item);
-    },
-
-    fetchInfo(device) {
-      console.log('Fetch Device Info: %o', device);
     }
   },
   watch: {
-    selectedWazeAlert(data) {
-      this.fetchInfo(data);
-    },
     waze() {
       if (this.waze) {
         this.prepareReportedWazeAlerts(this.waze);
-      }
-      if (!this.selectedWazeAlert) {
         this.handleRowClick(this.items[0]);
       }
     }

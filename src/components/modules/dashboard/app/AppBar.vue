@@ -99,7 +99,6 @@ export default {
     },
 
     dataMenuItemClicked(name) {
-      console.log(name);
       setTimeout(() => {
         this.performTask(name);
       }, 100);

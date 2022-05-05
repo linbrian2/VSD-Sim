@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { state, mutations, actions } from '@/store/app';
+import { state, getters, mutations, actions } from '@/store/app';
 import auth from '@/store/auth';
 import dashboard from '@/store/dashboard';
 import cav from '@/store/cav';
@@ -25,6 +25,7 @@ const modules = {
 export default new Vuex.Store({
   modules,
   state,
+  getters,
   mutations,
   actions
 });

@@ -1,5 +1,6 @@
 <template>
   <div class="bluetooth-dashboard">
+    <BluetoothModules />
     <BluetoothMap />
     <Toolbar :searchItems="apiData.segments" :fetchDone="fetchDone" v-show="mapLayerSelection && map" />
     <PlaybackToolbar />
@@ -57,6 +58,7 @@
 </template>
 
 <script>
+import BluetoothModules from '@/components/modules/bluetooth/BluetoothModules';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { mapState } from 'vuex';
 // UI
@@ -75,6 +77,7 @@ import * as infoWindows from '@/utils/InfoWindows.js';
 export default {
   name: 'App',
   components: {
+    BluetoothModules,
     /* UI */
     BluetoothMap,
     Dialogs,

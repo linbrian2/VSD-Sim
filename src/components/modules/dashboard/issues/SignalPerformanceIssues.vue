@@ -2,15 +2,54 @@
   <div class="signal-performance mr-4">
     <SignalPerformanceIssuesTable
       :itemsPerPage="itemsPerPage"
-      :height="225"
       :summary="summary"
       :preSelect="false"
+      :hrSummary="hrSummary"
+      :maxItems="maxItems"
       @click="handleRowClick"
+      @prepareData="prepareSignalPerformanceIssues"
     />
+    <v-row class="mt-3 ml-1 mr-7" v-if="currSignalPerformanceIssue">
+      <v-col cols="6" class="pa-1">
+        <InfoCard :icon="'mdi-note-outline'" :name="'Permit'" :value="currSignalPerformanceIssue.permit" />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard :icon="'mdi-map-marker-outline'" :name="'AoR Total'" :value="currSignalPerformanceIssue.score" />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-arrow-up-bold-outline'"
+          :name="'Simple Delay (NB)'"
+          :value="currSignalPerformanceIssue.simpleDelay[0]"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-arrow-down-bold-outline'"
+          :name="'Simple Delay (SB)'"
+          :value="currSignalPerformanceIssue.simpleDelay[1]"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-arrow-up-bold-outline'"
+          :name="'Approach Volume (NB)'"
+          :value="currSignalPerformanceIssue.approachVolume[0]"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-arrow-down-bold-outline'"
+          :name="'Approach Volume (SB)'"
+          :value="currSignalPerformanceIssue.approachVolume[1]"
+        />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
+import InfoCard from '@/components/modules/dashboard/InfoCard';
 import SignalPerformanceIssuesTable from '@/components/modules/dashboard/issues/SignalPerformanceIssuesTable';
 
 import HRApi from '@/utils/api/hr';
@@ -19,15 +58,16 @@ import { mapState } from 'vuex';
 export default {
   props: {
     height: { type: Number, default: 225 },
-    itemsPerPage: {type: Number, default: 3},
+    itemsPerPage: { type: Number, default: 3 },
+    maxItems: Number,
     data: Object
   },
   components: {
+    InfoCard,
     SignalPerformanceIssuesTable
   },
   data() {
     return {
-      phases: [2, 4, 5, 6],
       selectedTab: 0,
       reload: false,
       summary: null,
@@ -37,21 +77,14 @@ export default {
     };
   },
   computed: {
-    // phases() {
-    //   if (this.selectedSignalPerformanceIssue) {
-    //     let issueInfo = null;
-    //     for (let i = 0; i < this.signalPerformanceIssues.length; i++) {
-    //       if (this.signalPerformanceIssues[i].name.slice(0, 4) == this.selectedSignalPerformanceIssue.permit) {
-    //         issueInfo = this.signalPerformanceIssues[i];
-    //       }
-    //     }
-    //     if (issueInfo) {
-    //       let signal = issueInfo || { phases: [] };
-    //       return signal.phases;
-    //     }
-    //   }
-    //   return { phases: [] };
-    // },
+    currSignalPerformanceIssue() {
+      if (this.selectedSignalPerformanceIssue && this.hrSummary) {
+        let result = this.hrSummary.filter(x => x.id == this.selectedSignalPerformanceIssue.id);
+        return result.length > 0 ? result[0] : null;
+      } else {
+        return null;
+      }
+    },
     selectedSignalPerformanceIssue: {
       get() {
         return this.$store.state.dashboard.selectedSignalPerformanceIssue;
@@ -103,21 +136,6 @@ export default {
     prepareSignalPerformanceIssues(data) {
       this.summary = data;
     },
-    fetchInfo(device) {
-      console.log('Fetch Device Info: %o', device);
-      let issueInfo = null;
-      for (let i = 0; i < this.signalPerformanceIssues.length; i++) {
-        if (this.signalPerformanceIssues[i].name.slice(0, 4) == device.permit) {
-          issueInfo = this.signalPerformanceIssues[i];
-        }
-      }
-      if (issueInfo) {
-        const id = issueInfo.id;
-        const time = new Date().getTime();
-        const title = issueInfo.name;
-        this.fetchPCDData(id, this.select, time, title);
-      }
-    },
     fetchPCDData(id, phases, time, title) {
       try {
         this.loading = true;
@@ -152,9 +170,6 @@ export default {
       if (!this.selectedSignalPerformanceIssue && this.items && this.items.length > 0) {
         this.handleRowClick(this.items[0]);
       }
-    },
-    selectedSignalPerformanceIssue(device) {
-      this.fetchInfo(device);
     },
     hrSummary() {
       if (this.hrSummary) {

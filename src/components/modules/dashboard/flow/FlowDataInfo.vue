@@ -2,23 +2,32 @@
   <div>
     <v-container>
       <v-tabs v-model="selectedTab" color="teal accent-4" centered>
-        <v-tab>Volume</v-tab>
-        <v-tab>Speed</v-tab>
-        <v-tab>Occupancy</v-tab>
-        <v-tab-item>
+        <v-tab>
+          <v-icon class="pr-2">mdi-speedometer</v-icon>
+          Speed
+        </v-tab>
+        <v-tab>
+          <v-icon class="pr-2">mdi-car-multiple</v-icon>
+          Volume
+        </v-tab>
+        <v-tab>
+          <v-icon class="pr-2">mdi-car-select</v-icon>
+          Occupancy
+        </v-tab>
+        <v-tab-item class="px-3">
           <v-row>
-            <v-col cols="12">
+            <v-col class="pt-0" cols="12">
               <div class="mx-4">
-                <v-card tile class="basic-chart" elevation="4">
+                <v-card class="basic-chart" elevation="4">
                   <BasicChart :data="volume" :height="height" :left="marginLeft" :legendy="legendY" />
                 </v-card>
               </div>
             </v-col>
           </v-row>
         </v-tab-item>
-        <v-tab-item>
+        <v-tab-item class="px-3">
           <v-row>
-            <v-col cols="12">
+            <v-col class="pt-0" cols="12">
               <div class="mx-4">
                 <v-card tile class="basic-chart" elevation="4">
                   <BasicChart :data="speed" :height="height" :left="marginLeft" :legendy="legendY" />
@@ -27,9 +36,9 @@
             </v-col>
           </v-row>
         </v-tab-item>
-        <v-tab-item>
+        <v-tab-item class="px-3">
           <v-row>
-            <v-col cols="12">
+            <v-col class="pt-0" cols="12">
               <div class="mx-4">
                 <v-card tile class="basic-chart" elevation="4">
                   <BasicChart :data="occupancy" :height="height" :left="marginLeft" :legendy="legendY" />
@@ -39,13 +48,15 @@
           </v-row>
         </v-tab-item>
       </v-tabs>
-      <v-row>
-        <v-col class="px-10 py-0">
-          <v-card tile class="basic-chart" elevation="4" v-if="url">
-            <VideoPlayer ref="videoPlayer" :options="playerOptions" :caption="caption" />
-          </v-card>
-        </v-col>
-      </v-row>
+      <v-card>
+        <v-row>
+          <v-col class="px-10 pt-0">
+            <v-card tile class="basic-chart" elevation="4" v-if="url">
+              <VideoPlayer ref="videoPlayer" :options="playerOptions" :caption="caption" />
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card>
     </v-container>
   </div>
 </template>
@@ -72,7 +83,7 @@ export default {
     loading: false,
     showChartDialog: false,
     showVideoPlayer: false,
-    height: 300,
+    height: 240,
     legendY: 5,
     marginLeft: 80,
     speed: {},
@@ -170,7 +181,6 @@ export default {
     },
 
     playVideo(id) {
-      console.log(id);
       this.url = this.getVideoUrl(id);
       if (this.url) {
         this.changeVideoSource(this.url);
@@ -222,8 +232,6 @@ export default {
           }
         }
       } else {
-        console.log(response);
-        console.log(response.data.message);
         this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
       return result;

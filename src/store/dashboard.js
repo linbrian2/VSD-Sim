@@ -24,6 +24,7 @@ const state = {
   selectedSegment: null,
   selectedWazeAlert: null,
 
+  incidents: [],
   incidentSegmentLinks: null,
   incidentMarkers: null,
 
@@ -110,13 +111,12 @@ const actions = {
       let sortedData = null;
       if (response.data.data) {
         sortedData = response.data.data
-          // .filter(x => {
-          //   new Date().getTime() - x.endTime < 60 * 60 * 1000;
-          // })
+          .filter(x => {
+            return new Date().getTime() - x.endTime < 24 * 60 * 60 * 1000;
+          })
           .sort((a, b) => (a.severity > b.severity ? -1 : b.severity > a.severity ? 1 : 0));
       }
       commit('SET_TRAFFIC_INCIDENTS', sortedData ? sortedData : []);
-      // console.log(`Traffic Incidents: %o`, state.trafficIncidents);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -125,14 +125,14 @@ const actions = {
   async fetchTrafficDevices({ commit, dispatch }) {
     try {
       const response = await TrafficApi.fetchAnomalyDevices();
-      let deviceLocations = response.data
-        .map(obj => ({ ...obj, status: 0 }))
-        .map(obj => ({ ...obj, state: obj.status === 0 ? 'Normal' : 'Anomaly' }));
+      let deviceLocations = response.data.map(obj => ({ ...obj, status: 0 }));
       // TODO: Remove outside of testing
-      deviceLocations[0].status = 1;
+      // deviceLocations[0].status = 1;
+      // deviceLocations[1].status = 1;
+      // deviceLocations[2].status = 1;
+      deviceLocations = deviceLocations.map(obj => ({ ...obj, state: obj.status === 0 ? 'Normal' : 'Anomaly' }));
       let sortedData = deviceLocations.sort((a, b) => (a.status > b.status ? -1 : b.status > a.status ? 1 : 0));
       commit('SET_TRAFFIC_DEVICES', sortedData);
-      // console.log(`Traffic Devices: %o`, deviceLocations);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -153,7 +153,6 @@ const actions = {
         .map(x => ({ ...x, score: x.AoR[0] + x.AoR[1] }))
         .sort((a, b) => (a.score > b.score ? -1 : b.score > a.score ? 1 : 0));
       commit('SET_HR_SUMMARY', sortedData);
-      // console.log(`HR Summary: %o`, sortedData);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -166,7 +165,6 @@ const actions = {
       const response = await StatusApi.fetchErrors(date.getTime());
       if (response.data && response.data.data) {
         let data = response.data.data;
-        // console.log(data);
         let errCount5m = data.totalErrorCounts.filter(x => x != 0);
         let count = 0;
         for (let i = 0; i < 12; i++) {
@@ -180,7 +178,6 @@ const actions = {
           })
           .sort((a, b) => (a.score > b.score ? -1 : b.score > a.score ? 1 : 0));
         commit('SET_FLOW_ANOM_DATA', { ...data, count });
-        // console.log(`Flow Anom: %o`, state.flowAnomData);
       }
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' });
@@ -194,7 +191,6 @@ const actions = {
         a.travelTime.level > b.travelTime.level ? -1 : b.travelTime.level > a.travelTime.level ? 1 : 0
       );
       commit('SET_SEGMENTS', sortedData);
-      // console.log(`Segments: %o`, sortedData);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -209,7 +205,6 @@ const actions = {
           (value, index, self) => index === self.findIndex(t => t.alertTimeTS === value.alertTimeTS && t.description)
         );
       commit('SET_WAZE', sortedData);
-      // console.log(`Waze: %o`, sortedData);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }

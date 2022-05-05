@@ -7,7 +7,6 @@
 </template>
 
 <script>
-/* global google */
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 
@@ -22,16 +21,9 @@ export default {
     layerIcon: require('@/assets/layers-24.png'),
     map: null,
     options: {
-      mapTypeControl: true,
-      mapTypeControlOptions: {
-        mapTypeIds: ['roadmap', 'satellite']
-      },
+      mapTypeControl: false,
 
       streetViewControl: false,
-      zoomControl: true,
-      zoomControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_CENTER
-      },
 
       fullscreenControl: true,
 

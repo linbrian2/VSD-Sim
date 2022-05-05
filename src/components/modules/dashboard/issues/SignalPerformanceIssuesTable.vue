@@ -13,14 +13,7 @@
       :search="search"
     >
       <template v-slot:[`item.permit`]="{ item }">
-        <v-chip color="success" outlined x-small style="width:45px;">{{ item.permit }}</v-chip>
-      </template>
-      <template v-slot:[`item.power`]="{ item }">
-        <v-icon small :color="powerColor(item.power)">mdi-record</v-icon>
-      </template>
-
-      <template v-slot:[`item.control`]="{ item }">
-        <v-icon small :color="controlColor(item.control)">{{ controlType(item.control) }}</v-icon>
+        <v-chip color="pink" outlined small style="width:62px;">{{ item.permit }}</v-chip>
       </template>
 
       <template v-slot:[`item.AoRN`]="{ item }">
@@ -30,25 +23,10 @@
       <template v-slot:[`item.AoRS`]="{ item }">
         <FormatChip :value="item.AoR[1]" />
       </template>
-
-      <template v-slot:[`item.simpleDelayN`]="{ item }">
-        <div>{{ item.simpleDelay[0] }}</div>
-      </template>
-
-      <template v-slot:[`item.simpleDelayS`]="{ item }">
-        <div>{{ item.simpleDelay[1] }}</div>
-      </template>
-
-      <template v-slot:[`item.approachVolumeN`]="{ item }">
-        <div>{{ item.approachVolume[0] }}</div>
-      </template>
-
-      <template v-slot:[`item.approachVolumeS`]="{ item }">
-        <div>{{ item.approachVolume[1] }}</div>
-      </template>
-
-      <template v-slot:[`item.performanceIndex`]="{ item }">
-        <v-chip outlined small color="teal">{{ getPerformanceScore(item.performanceIndex) }}</v-chip>
+      <template v-slot:[`footer`]>
+        <v-btn :disabled="maxItems == 1" block @click="expandTable">
+          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
+        </v-btn>
       </template>
     </v-data-table>
   </div>
@@ -64,27 +42,27 @@ export default {
     FormatChip
   },
   props: {
-    itemsPerPage: { type: Number, default: -1 },
-    height: { type: Number, default: 350 },
     preSelect: { type: Boolean, default: true },
+    maxItems: Number,
     summary: Array,
-    search: String
+    search: String,
+    hrSummary: Array
   },
   data: () => ({
+    height: null,
+    itemsPerPage: 1,
     updatedTime: null,
     initPanelState: true,
     selectedRowId: null,
     headers: [
       { text: 'Permit', value: 'permit' },
-      { text: 'Intersection', value: 'intersection', width: '150px' },
-      { text: 'Power', value: 'power' },
-      { text: 'Control', value: 'control' },
+      { text: 'Intersection', value: 'intersection' },
       { text: 'AoR (NB)', value: 'AoRN' },
-      { text: 'AoR (SB)', value: 'AoRS' },
-      { text: 'SimpleDelay (NB)', value: 'simpleDelayN', align: 'center' },
-      { text: 'SimpleDelay (SB)', value: 'simpleDelayS', align: 'center' },
-      { text: 'ApproachVol (NB)', value: 'approachVolumeN', align: 'center' },
-      { text: 'ApproachVol (SB)', value: 'approachVolumeS', align: 'center' }
+      { text: 'AoR (SB)', value: 'AoRS' }
+      // { text: 'SimpleDelay (NB)', value: 'simpleDelayN', align: 'center' },
+      // { text: 'SimpleDelay (SB)', value: 'simpleDelayS', align: 'center' },
+      // { text: 'ApproachVol (NB)', value: 'approachVolumeN', align: 'center' },
+      // { text: 'ApproachVol (SB)', value: 'approachVolumeS', align: 'center' }
     ]
   }),
   computed: {
@@ -103,11 +81,24 @@ export default {
   },
 
   methods: {
+    expandTable() {
+      if (this.itemsPerPage == 1) {
+        this.$emit('prepareData', this.hrSummary);
+        if (this.maxItems > 12) {
+          this.height = 'calc(95vh - 48px)';
+        }
+        this.itemsPerPage = this.maxItems;
+      } else {
+        this.$emit('prepareData', [this.selectedSignalPerformanceIssue]);
+        this.height = null;
+        this.itemsPerPage = 1;
+      }
+    },
+
     itemRowBackground(item) {
       return item.id == this.selectedRowId ? 'table_tr_selected' : 'table_tr_normal';
     },
     handleRowClick(item) {
-      console.log(item);
       this.selectedRowId = item.id;
       this.$emit('click', item);
     },
@@ -133,7 +124,7 @@ export default {
   },
   watch: {
     summary() {
-      if (this.summary && !this.selectedSignalPerformanceIssue) {
+      if (this.summary && this.itemsPerPage == 1) {
         this.handleRowClick(this.summary[0]);
       }
     }

@@ -14,7 +14,6 @@
         :title="m.name"
         :icon="getIcon(m)"
         :zIndex="m.zIndex"
-        @click="markerClicked(m)"
       />
     </MapBase>
   </div>
@@ -81,6 +80,9 @@ export default {
     incidentMarkers(markers) {
       this.layers = this.composeMapLayers(markers);
       this.selectedLayers = this.layers.map(layer => layer.key);
+    },
+    incidentSegmentLinks() {
+      this.centerMapAndZoom(this.incidentSegmentLinks, true);
     }
   },
 
@@ -174,10 +176,6 @@ export default {
         map.panTo(marker.position);
         map.setZoom(16);
       }
-    },
-
-    filterMarkers(markers, keys) {
-      return markers;
     },
 
     composeMapLayers(markers) {

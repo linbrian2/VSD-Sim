@@ -121,6 +121,9 @@ export default {
     ...mapState('hr', ['activeMarker', 'timing', 'mapProjection'])
   },
   watch: {
+    signals(signals) {
+      console.log('Signals: %o', signals);
+    },
     changeData: {
       handler: function(v) {
         if (v.proj !== null && v.timing != null) {
@@ -133,6 +136,7 @@ export default {
 
   mounted() {
     // Setup map change event
+    console.log('Signals: %o', this.signals);
     let mapRef = this.$parent.map || this.$parent.$parent.getMap();
     mapRef.$mapPromise.then(map => {
       google.maps.event.addListener(map, 'zoom_changed', () => {
@@ -197,6 +201,7 @@ export default {
     },
 
     addDetector(projection, id, center, size, angle, route, phaseId) {
+      console.log('projection: %o', projection);
       const ratio = 0.65;
       let polygon = SignalPolygon.rectangle(center, ratio, (ratio * size.height) / size.width, -angle, projection);
       let signal = {

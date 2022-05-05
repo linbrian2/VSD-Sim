@@ -1,22 +1,22 @@
 <template>
   <v-container class="pa-0 px-2" style="max-height: calc(100vh - 48px); overflow-y: auto;">
-    <div id="traffic-incidents" v-if="dataAvailable(cardData[0])" v-show="selectedIdx == 0">
-      <TrafficIncidents :handleRowClick="handleRowClick" />
+    <div id="traffic-incidents" v-if="dataAvailable(cardData[0]) && selectedIdx == 0">
+      <TrafficIncidents :listLimit="listLimit" :handleRowClick="handleRowClick" />
     </div>
-    <div id="traffic-flow-issues" v-if="dataAvailable(cardData[1])" v-show="selectedIdx == 1">
-      <TrafficFlowIssues :itemsPerPage="cardData[1].val" />
+    <div id="traffic-flow-issues" v-if="dataAvailable(cardData[1]) && selectedIdx == 1">
+      <TrafficFlowIssues :listLimit="listLimit" :maxItems="cardData[1].val" />
     </div>
-    <div id="signal-performance-issues" v-if="dataAvailable(cardData[2])" v-show="selectedIdx == 2">
-      <SignalPerformanceIssues :itemsPerPage="cardData[2].val" />
+    <div id="signal-performance-issues" v-if="dataAvailable(cardData[2]) && selectedIdx == 2">
+      <SignalPerformanceIssues :listLimit="listLimit" :maxItems="cardData[2].val" />
     </div>
-    <div id="device-anomalies" v-if="dataAvailable(cardData[3])" v-show="selectedIdx == 3">
-      <DeviceAnomalies :itemsPerPage="cardData[3].val" />
+    <div id="device-anomalies" v-if="dataAvailable(cardData[3]) && selectedIdx == 3">
+      <DeviceAnomalies :listLimit="listLimit" :maxItems="cardData[3].val" />
     </div>
-    <div id="congested-routes" v-if="dataAvailable(cardData[4])" v-show="selectedIdx == 4">
-      <CongestedRoutes :itemsPerPage="cardData[4].val" />
+    <div id="congested-routes" v-if="dataAvailable(cardData[4]) && selectedIdx == 4">
+      <CongestedRoutes :listLimit="listLimit" :maxItems="cardData[4].val" />
     </div>
-    <div id="waze-alerts" v-if="dataAvailable(cardData[5])" v-show="selectedIdx == 5">
-      <WazeAlerts :itemsPerPage="cardData[5].val" />
+    <div id="waze-alerts" v-if="dataAvailable(cardData[5]) && selectedIdx == 5">
+      <WazeAlerts :listLimit="listLimit" :maxItems="cardData[5].val" />
     </div>
   </v-container>
 </template>
@@ -30,6 +30,7 @@ import CongestedRoutes from '@/components/modules/dashboard/routes/CongestedRout
 import WazeAlerts from '@/components/modules/dashboard/waze/WazeAlerts.vue';
 
 import Incidents from '@/utils/samples/Incidents.js';
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
@@ -49,6 +50,16 @@ export default {
     return {
       incidents: Incidents
     };
+  },
+  computed: {
+    listLimit() {
+      if (this.getSetting) {
+        return this.getSetting('mainDashboard', 'limitListings');
+      } else {
+        return 1;
+      }
+    },
+    ...mapGetters(['getSetting'])
   },
   methods: {
     handleRowClick(data) {

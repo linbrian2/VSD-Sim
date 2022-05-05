@@ -4,20 +4,17 @@
     <v-main>
       <router-view></router-view>
     </v-main>
-    <BluetoothModules />
   </div>
 </template>
 
 <script>
 import AppBar from '@/components/modules/traffic/app/AppBar';
-import BluetoothModules from '@/components/modules/bluetooth/BluetoothModules';
 import { trafficWebsocketUrl } from '@/utils/websocketUrl';
 
 export default {
   name: 'App',
   components: {
-    AppBar,
-    BluetoothModules
+    AppBar
   },
 
   created() {

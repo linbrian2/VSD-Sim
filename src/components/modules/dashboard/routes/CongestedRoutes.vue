@@ -5,46 +5,113 @@
       fixed-header
       :headers="headers"
       :items="items"
-      hide-default-footer
       :items-per-page="itemsPerPage"
       :item-class="itemRowBackground"
+      hide-default-footer
       @click:row="handleRowClick"
       class="elevation-1"
     >
+      <template v-slot:[`item.level`]="{ item }">
+        <v-chip small :color="getStrokeColor(item.level)">
+          <strong class="black--text">{{ item.level }}</strong>
+        </v-chip>
+      </template>
+      <template v-slot:[`item.lastUpdated`]="{ item }">
+        {{ item.lastUpdated.split(' ')[1].slice(0, 5) }}
+      </template>
+      <template v-slot:[`footer`]>
+        <v-btn :disabled="maxItems == 1" block @click="expandTable">
+          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
+        </v-btn>
+      </template>
     </v-data-table>
-    <v-card class="mt-2">
-      <v-col>
-        <v-row justify="center">
-          <v-img alt="Logo" class="shrink" src="@/assets/tt-graph-sample.png" contain />
-        </v-row>
+    <v-row class="mt-3 ml-1 mr-7" v-if="currSegment">
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-clock-outline'"
+          :name="'Time'"
+          :titleFontSize="20"
+          :valueFontSize="28"
+          :value="getTimeStr(currSegment.travelTime.calculationTimestamp.value)"
+        />
       </v-col>
-    </v-card>
-    <v-card class="mt-2">
-      <v-col>
-        <v-row justify="center">
-          <v-img alt="Logo" class="shrink" src="@/assets/collision-example.png" width="458" />
-        </v-row>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-chart-bar-stacked'"
+          :name="'Severity'"
+          :valueColor="getStrokeColor(currSegment.travelTime.level)"
+          :value="currSegment.travelTime.level"
+        />
       </v-col>
-    </v-card>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-vector-line'"
+          :name="'Distance'"
+          :titleFontSize="20"
+          :valueFontSize="28"
+          :value="currSegment.distance"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-speedometer'"
+          :name="'Speed (mph)'"
+          :titleFontSize="20"
+          :valueFontSize="28"
+          :value="currSegment.travelTime.data.speedMph"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-timer-outline'"
+          :name="'Free Flow Run TIme'"
+          :titleFontSize="20"
+          :valueFontSize="28"
+          :value="currSegment.travelTime.data.freeFlowRunTimeSecs"
+        />
+      </v-col>
+      <v-col cols="6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-timer-outline'"
+          :name="'Travel Time Mean'"
+          :titleFontSize="20"
+          :valueFontSize="28"
+          :value="currSegment.travelTime.data.meanTravelTimeSecs"
+        />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
-import Utils from '@/utils/Utils';
+import InfoCard from '@/components/modules/dashboard/InfoCard';
+import Utils from '@/utils/Utils.js';
 import { mapState } from 'vuex';
 
 export default {
   props: {
-    height: { type: Number, default: 190 },
-    itemsPerPage: {type: Number, default: 3},
-    data: Object
+    data: Object,
+    maxItems: Number
+  },
+  components: {
+    InfoCard
   },
   data: () => ({
+    height: null,
+    itemsPerPage: 1,
     reload: false,
     items: [],
     headers: []
   }),
   computed: {
+    currSegment() {
+      if (this.selectedSegment && this.segments) {
+        let result = this.segments.filter(x => x.id == this.selectedSegment.id);
+        return result.length > 0 ? result[0] : null;
+      } else {
+        return null;
+      }
+    },
     selectedSegment: {
       get() {
         return this.$store.state.dashboard.selectedSegment;
@@ -62,17 +129,34 @@ export default {
   mounted() {
     if (this.segments) {
       this.prepareHighCongestionRoutes(this.segments);
-    }
-    if (!this.selectedSegment) {
       this.handleRowClick(this.items[0]);
     }
   },
   methods: {
+    getTimeStr(ts) {
+      let time = new Date(ts);
+      return `${Utils.formatTimeAsMinute(time)} (${Utils.fromNow(time)})`;
+    },
+    expandTable() {
+      if (this.itemsPerPage == 1) {
+        this.prepareHighCongestionRoutes(this.segments);
+        if (this.maxItems > 12) {
+          this.height = 'calc(95vh - 48px)';
+        }
+        this.itemsPerPage = this.maxItems;
+      } else {
+        this.prepareHighCongestionRoutes([this.currSegment]);
+        this.height = null;
+        this.itemsPerPage = 1;
+      }
+    },
+    getStrokeColor(level) {
+      return Utils.getStrokeColor(level);
+    },
     prepareHighCongestionRoutes(data) {
-      console.log(data);
       this.headers = [
-        { text: 'Last Updated', value: 'lastUpdated' },
         { text: 'Description', value: 'desc' },
+        { text: 'Last Updated', value: 'lastUpdated' },
         { text: 'Level', value: 'level' }
       ];
       this.items = data.map(d => ({
@@ -90,21 +174,12 @@ export default {
     handleRowClick(item) {
       this.selectedSegment = item;
       this.$emit('click', item);
-    },
-
-    fetchInfo(device) {
-      console.log('Fetch Device Info: %o', device);
     }
   },
   watch: {
-    selectedSegment(data) {
-      this.fetchInfo(data);
-    },
     segments() {
       if (this.segments) {
         this.prepareHighCongestionRoutes(this.segments);
-      }
-      if (!this.selectedSegment) {
         this.handleRowClick(this.items[0]);
       }
     }
