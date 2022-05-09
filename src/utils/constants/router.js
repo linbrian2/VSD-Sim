@@ -1,6 +1,9 @@
 export const RouterNames = {
-  TRAFFIC_DASHBOARD: 'Dashboard',
-  TRAFFIC_BT_DASHBOARD: 'Bluetooth Dashboard',
+  DASHBOARD: 'Dashboard',
+  MAIN_DASHBOARD: 'Main',
+  TRAFFIC_DASHBOARD: 'Traffic',
+  BLUETOOTH_DASHBOARD: 'Bluetooth',
+
   TRAFFIC_FLOW: 'Flow Charts',
   TRAFFIC_LCM: 'Traffic LCM',
   TRAFFIC_ROUTING: 'Traffic Routing',
@@ -25,9 +28,6 @@ export const RouterNames = {
   VISION_DASHBOARD: 'Traffic Cameras',
   VISION_REID: 'Vehicle Re-ID',
 
-  BLUETOOTH_DASHBOARD: 'Dashboard ',
-  BLUETOOTH_MULTIGRAPH: 'Bluetooth Multigraph',
-
   CAV_DASHBOARD: 'Trip Data',
   CAV_STATUS: 'Trip Status',
 
@@ -42,9 +42,12 @@ export const RouterNames = {
 };
 
 export const RouterPaths = {
+  DASHBOARD_ROOT: '/dash',
+  MAIN_DASHBOARD: '/dash/main',
+  TRAFFIC_DASHBOARD: '/dash/traffic',
+  BLUETOOTH_DASHBOARD: '/dash/bluetooth',
+
   TRAFFIC_ROOT: '/flow',
-  TRAFFIC_DASHBOARD: '/flow/dash',
-  TRAFFIC_BT_DASHBOARD: '/flow/bt-dash',
   TRAFFIC_FLOW: '/flow/data',
   TRAFFIC_LCM: '/flow/lcm',
   TRAFFIC_ROUTING: '/flow/routing',
@@ -71,10 +74,6 @@ export const RouterPaths = {
   VISION_ROOT: '/vision',
   VISION_DASHBOARD: '/vision/camera',
   VISION_REID: '/vision/re-id',
-
-  BLUETOOTH_ROOT: '/bluetooth',
-  BLUETOOTH_DASHBOARD: '/bluetooth/dash',
-  BLUETOOTH_MULTIGRAPH: '/bluetooth/multigraph',
 
   CAV_ROOT: '/cav',
   CAV_DASHBOARD: '/cav/trip',

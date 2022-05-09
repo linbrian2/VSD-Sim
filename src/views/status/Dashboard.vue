@@ -111,6 +111,7 @@ export default {
       this.loading = true;
       try {
         const response = await Api.fetchStatus();
+        console.log(response.data);
         this.summary = response.data;
         this.updatedTime = new Date();
       } catch (error) {

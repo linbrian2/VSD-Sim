@@ -165,7 +165,7 @@ export default {
           x: -22,
           y: 115,
           valueDecimals: 0,
-          backgroundColor: 'rgba(255,255,255,0.9)',
+          backgroundColor: 'rgba(255,255,255,0.4)',
           borderColor: '#C98657',
           borderWidth: 1,
           symbolRadius: 0,

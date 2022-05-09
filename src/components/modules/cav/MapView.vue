@@ -326,5 +326,5 @@ export default {
   margin-top: -12px;
   margin-left: -12px;
   margin-right: 0px;
-} 
+}
 </style>

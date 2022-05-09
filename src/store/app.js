@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Utils from '@/utils/Utils';
+import Settings from '@/utils/AppSettings';
 
 const state = {
   socket: {
@@ -9,11 +10,24 @@ const state = {
     reconnectCount: 0
   },
 
+  settings: null,
   darkMode: null,
   showDrawer: false,
   snackbar: {},
   position: { lat: 39.084, lng: -77.1528 },
   currentDate: new Date()
+};
+
+const getters = {
+  getSetting: state => (app, key) => {
+    if (state.settings && app && key) {
+      if (state.settings[app] && state.settings[app].params[key]) {
+        return state.settings[app].params[key].val;
+      }
+    } else {
+      return null;
+    }
+  }
 };
 
 const mutations = {
@@ -37,6 +51,10 @@ const mutations = {
   },
   SOCKET_RECONNECT_ERROR(state) {
     state.socket.reconnectError = true;
+  },
+
+  SET_SETTINGS: (state, settings) => {
+    state.settings = settings;
   },
 
   SET_DARK_MODE: (state, darkMode) => {
@@ -81,8 +99,18 @@ const actions = {
     }
   },
 
+  loadSettings({ commit }) {
+    const settings = localStorage.getItem('Settings');
+    commit('SET_SETTINGS', settings ? JSON.parse(settings) : Settings.getDefault());
+  },
+
+  saveSettings({ state, commit }, settings) {
+    commit('SET_SETTINGS', settings);
+    localStorage.setItem('Settings', JSON.stringify(state.settings));
+  },
+
   loadDarkMode({ commit }) {
-    const darkMode = localStorage.getItem('ThemeDarkMode');
+    const darkMode = localStorage.getItem('Settings');
     commit('SET_DARK_MODE', darkMode ? JSON.parse(darkMode) : true);
   },
 
@@ -109,4 +137,4 @@ const actions = {
   }
 };
 
-export { state, mutations, actions };
+export { state, getters, mutations, actions };

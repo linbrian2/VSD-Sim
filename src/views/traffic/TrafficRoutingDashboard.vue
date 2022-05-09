@@ -59,7 +59,7 @@ export default {
   name: 'App',
   components: {
     BluetoothMap,
-    TrafficRouting,
+    TrafficRouting
   },
   methods: {
     resetMapZoom() {
@@ -70,11 +70,11 @@ export default {
       let map = this.map;
       let newZoom = map.getZoom() + val;
       map.setZoom(newZoom);
-    },
+    }
   },
   computed: {
-    ...mapState('bluetooth', ['map']),
-  },
+    ...mapState('bluetooth', ['map'])
+  }
 };
 </script>
 

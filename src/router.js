@@ -9,8 +9,9 @@ import HR from '@/components/layouts/HR.vue';
 import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
-/* import Bluetooth from '@/components/layouts/Bluetooth.vue'; */
+import Dashboard from '@/components/layouts/Dashboard.vue';
 
+import MainDashboard from '@/views/dashboard/MainDashboard.vue';
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
 import TrafficFlow from '@/views/traffic/TrafficFlow.vue';
@@ -37,9 +38,6 @@ import MultiOcc from '@/views/hr/MultiOcc.vue';
 import VisionDashboard from '@/views/vision/Dashboard.vue';
 import ReID from '@/views/vision/ReID.vue';
 
-/* import BluetoothDashboard from '@/views/bluetooth/Dashboard.vue';
-import BluetoothMultigraph from '@/views/bluetooth/MultiGraph.vue'; */
-
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
 
@@ -60,19 +58,30 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      alias: '/flow',
-      component: Traffic,
+      alias: '/dash',
+      component: Dashboard,
       children: [
         {
           path: '',
+          name: RouterNames.MAIN_DASHBOARD,
+          component: MainDashboard
+        },
+        {
+          path: RouterPaths.TRAFFIC_DASHBOARD,
           name: RouterNames.TRAFFIC_DASHBOARD,
           component: TrafficDashboard
         },
         {
-          path: RouterPaths.TRAFFIC_BT_DASHBOARD,
-          name: RouterNames.TRAFFIC_BT_DASHBOARD,
+          path: RouterPaths.BLUETOOTH_DASHBOARD,
+          name: RouterNames.BLUETOOTH_DASHBOARD,
           component: TrafficBTDashboard
-        },
+        }
+      ]
+    },
+    {
+      path: '/flow',
+      component: Traffic,
+      children: [
         {
           path: RouterPaths.TRAFFIC_FLOW,
           name: RouterNames.TRAFFIC_FLOW,

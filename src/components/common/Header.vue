@@ -20,8 +20,10 @@
 
       <NavDropdown :title="title" />
       <v-toolbar-title>{{ title }}</v-toolbar-title>
-      <NavDropdown :items="actionItems" :title="itemTitle" />
-      <v-toolbar-title class="overline">{{ itemTitle }}</v-toolbar-title>
+      <template v-if="actionItems && actionItems.length > 0">
+        <NavDropdown :items="actionItems" :title="itemTitle" />
+        <v-toolbar-title class="overline">{{ itemTitle }}</v-toolbar-title>
+      </template>
 
       <v-spacer></v-spacer>
       <div v-if="showDate">

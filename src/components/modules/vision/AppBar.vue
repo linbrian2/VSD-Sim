@@ -27,7 +27,6 @@ import Header from '@/components/common/Header';
 import { RouterNames, RouterPaths } from '@/utils/constants/router';
 import AppConstants from '@/utils/constants/app';
 
-
 export default {
   components: {
     Header
