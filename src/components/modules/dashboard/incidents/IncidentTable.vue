@@ -198,7 +198,7 @@ export default {
 
 <style lang="scss">
 .table_tr_selected {
-  background-color: #eee;
+  background-color: rgb(238, 238, 238);
 }
 .table_tr_normal {
   background-color: transparent !important;
@@ -215,6 +215,6 @@ export default {
 }
 
 .table_tr_selected {
-  background-color: #a9a9a9;
+  background-color: #bfd707;
 }
 </style>

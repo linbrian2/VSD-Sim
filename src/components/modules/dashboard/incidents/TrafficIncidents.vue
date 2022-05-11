@@ -33,7 +33,7 @@
           :name="'Reason'"
           :value="incidentItem.reason"
           :wide="true"
-          :valueFontSize="32"
+          :valueFontSize="22"
         />
       </v-col>
     </v-row>

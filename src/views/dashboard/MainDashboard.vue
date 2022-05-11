@@ -19,7 +19,7 @@
           </div>
         </template>
         <!-- Overview -->
-        <v-col id="overview" :cols="rzMap ? 4 : 3" :xl="rzMap ? 3 : 2" class="pa-0 px-3 pl-3">
+        <v-col id="overview" :cols="rzMap ? 4 : 3" :xl="rzMap ? 3 : 2" class="pa-0 px-2 pl-3">
           <v-container style="max-height: calc(100vh - 48px); overflow-y: auto;" class="py-0">
             <v-row>
               <!-- TODO -->
@@ -28,11 +28,12 @@
               </v-card> -->
               <v-col cols="12" v-for="(x, i) in cardData" :key="x.id" class="pa-1">
                 <v-hover v-slot="{ hover }">
-                  <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
-                    <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
-                      <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
-                        <v-sheet outlined :color="i == selectedIdx ? 'blue' : 'transparent'" rounded>
+                  <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
+                    <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
+                      <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
+                        <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
                           <v-card
+                            tile
                             :disabled="!x.val || (x.val && (x.val == 0 || x.val == '-'))"
                             height="calc(19vh - 48px)"
                             class="d-flex align-center justify-center"
@@ -43,21 +44,21 @@
                           >
                             <v-col class="grid-center pa-0">
                               <v-card-title v-show="$vuetify.breakpoint.lgAndUp" class="py-0" style="font-size:26px">
+                                <v-icon class="pr-2" :color="colors[i]" x-normal>{{ x.icon }}</v-icon>
                                 {{ x.title }}
                               </v-card-title>
                               <h1 style="font-size:48px" class="pr-2">
-                                <v-icon class="pb-2 pr-3" :color="colors[i]" x-large>{{ x.icon }}</v-icon>
                                 {{ x.val }}
                               </h1>
                             </v-col>
                             <div v-show="$vuetify.breakpoint.lgAndUp" class="card-container">
                               <v-btn icon @click="showSelectionDialog(i)" class="detail-button" v-if="i != 3">
-                                <v-icon :class="{ 'show-btns': hover }" :color="transparent">
+                                <v-icon small :class="{ 'show-btns': hover }" :color="transparent">
                                   mdi-information-outline
                                 </v-icon>
                               </v-btn>
                               <v-btn icon @click="goToPage(x.link)" class="link-button">
-                                <v-icon :class="{ 'show-btns': hover }" :color="transparent">
+                                <v-icon small :class="{ 'show-btns': hover }" :color="transparent">
                                   mdi-open-in-new
                                 </v-icon>
                               </v-btn>
@@ -555,7 +556,7 @@ export default {
     flowAnomData(flowAnomData) {
       if (flowAnomData) {
         let maxCount = flowAnomData.sensorErrorCounts[0].score;
-        let hours = new Date().getHours()
+        let hours = new Date().getHours();
         this.cardData[3].val = flowAnomData.sensorErrorCounts.filter(
           x => x.score / hours > 50 && x.score > maxCount - maxCount * 0.15
         ).length;
