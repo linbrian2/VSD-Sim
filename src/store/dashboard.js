@@ -102,32 +102,25 @@ const actions = {
   },
   //! Traffic Incidents
   async fetchTrafficIncidents({ commit, dispatch }) {
-    console.log('fetchTrafficIncidents');
-    console.log(1);
     const severity = 50;
     const duration = 30;
     try {
-      console.log(2);
       // TODO: Remove outside of testing
-      // const start = new Date().getTime();
-      const start = new Date().getTime() - 24 * 60 * 60 * 1000;
+      const start = new Date().getTime();
+      // const start = new Date().getTime() - 24 * 60 * 60 * 1000;
       const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
       let sortedData = null;
       if (response.data.data) {
-        console.log(3);
         sortedData = response.data.data
           .filter(x => {
-            return new Date().getTime() - x.endTime < 24 * 60 * 60 * 1000;
+            return new Date().getTime() - x.endTime < 90 * 60 * 1000;
           })
           .sort((a, b) => (a.severity > b.severity ? -1 : b.severity > a.severity ? 1 : 0));
-        console.log('Traffic Incidents: %o', sortedData);
+        // console.log('Traffic Incidents: %o', sortedData);
       }
-      console.log(4);
       commit('SET_TRAFFIC_INCIDENTS', sortedData ? sortedData : []);
-      console.log(5);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
-      console.log(6);
     }
   },
   //! Traffic Flow Issues
