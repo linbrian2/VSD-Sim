@@ -2,9 +2,9 @@
   <div>
     <Header
       :title="title"
-      :showDate="!isDashboard"
-      :clipLeft="!isDashboard"
-      :clipRight="isDashboard"
+      :showDate="false"
+      :showWeatherInfo="true"
+      :showCurrentTime="true"
       :actionItems="action_menu_items"
     >
       <div v-show="$vuetify.breakpoint.mdAndUp">
