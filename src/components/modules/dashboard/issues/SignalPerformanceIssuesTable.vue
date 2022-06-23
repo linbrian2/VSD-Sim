@@ -6,6 +6,8 @@
       :headers="headers"
       :items="summary"
       :items-per-page="itemsPerPage"
+      disable-sort
+      :hide-default-header="itemsPerPage == 1"
       hide-default-footer
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
@@ -23,8 +25,15 @@
       <template v-slot:[`item.AoRS`]="{ item }">
         <FormatChip :value="item.AoR[1]" />
       </template>
-      <template v-slot:[`footer`]>
-        <v-btn :disabled="maxItems == 1" block @click="expandTable">
+      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
+        <div class="grid-right pr-6">
+          <v-icon small @click="expandTable">
+            mdi-arrow-expand-down
+          </v-icon>
+        </div>
+      </template>
+      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
+        <v-btn block @click="expandTable">
           <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
         </v-btn>
       </template>
@@ -58,7 +67,8 @@ export default {
       { text: 'Permit', value: 'permit' },
       { text: 'Intersection', value: 'intersection' },
       { text: 'AoR (NB)', value: 'AoRN' },
-      { text: 'AoR (SB)', value: 'AoRS' }
+      { text: 'AoR (SB)', value: 'AoRS' },
+      { text: '', value: 'actions' }
       // { text: 'SimpleDelay (NB)', value: 'simpleDelayN', align: 'center' },
       // { text: 'SimpleDelay (SB)', value: 'simpleDelayS', align: 'center' },
       // { text: 'ApproachVol (NB)', value: 'approachVolumeN', align: 'center' },
@@ -87,7 +97,11 @@ export default {
         if (this.maxItems > 12) {
           this.height = 'calc(95vh - 48px)';
         }
-        this.itemsPerPage = this.maxItems;
+        if (this.maxItems == 1) {
+          this.itemsPerPage = 1.1;
+        } else {
+          this.itemsPerPage = this.maxItems;
+        }
       } else {
         this.$emit('prepareData', [this.selectedSignalPerformanceIssue]);
         this.height = null;

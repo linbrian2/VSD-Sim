@@ -1,36 +1,81 @@
 <template>
   <div>
-    <v-card class="device-anomalies">
-      <v-data-table
-        :height="height"
-        fixed-header
-        :headers="headers"
-        :items="items"
-        hide-default-footer
-        :items-per-page="itemsPerPage"
-        :item-class="itemRowBackground"
-        @click:row="handleRowClick"
-        class="elevation-1"
+    <v-data-table
+      :height="height"
+      fixed-header
+      :headers="headers"
+      :items="items"
+      disable-sort
+      :hide-default-header="itemsPerPage == 1"
+      hide-default-footer
+      :items-per-page="itemsPerPage"
+      :item-class="itemRowBackground"
+      @click:row="handleRowClick"
+      class="elevation-1"
+    >
+      <template v-slot:[`item.id`]="{ item }">
+        <v-chip color="pink" outlined small style="width:62px;">{{ item.id }}</v-chip>
+      </template>
+      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
+        <div class="grid-right pr-6">
+          <v-icon small @click="expandTable">
+            mdi-arrow-expand-down
+          </v-icon>
+        </div>
+      </template>
+      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
+        <v-btn block @click="expandTable">
+          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
+        </v-btn>
+      </template>
+    </v-data-table>
+    <v-row class="mt-3 ml-1 mr-7" v-if="selectedDetector">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-alert-circle-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Total Issues'"
+          :value="selectedDetector.counts[0]"
+        />
+      </v-col>
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Major Error Type'"
+          :value="getCount('name', selectedDetector)"
+          :valueFontSize="36"
+        />
+      </v-col>
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="getCount('name', selectedDetector)"
+          :value="getCount('val', selectedDetector)"
+        />
+      </v-col>
+      <v-col
+        :offset-lg="singleCol ? 1 : 0"
+        :cols="singleCol ? 10 : 6"
+        class="pa-1"
+        v-for="err in sensorErrorTypes"
+        :key="err.dir"
       >
-        <template v-slot:[`item.id`]="{ item }">
-          <v-chip color="pink" outlined small style="width:62px;">{{ item.id }}</v-chip>
-        </template>
-        <template v-slot:[`footer`]>
-          <v-btn :disabled="maxItems == 1" block @click="expandTable">
-            <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
-          </v-btn>
-        </template>
-      </v-data-table>
-      <v-row class="mt-3 ml-1 mr-7" v-if="selectedDetector">
-        <v-col cols="6" class="pa-1">
-          <InfoCard :icon="'mdi-note-outline'" :name="'Total Issues'" :value="selectedDetector.counts[0]" />
-        </v-col>
-        <v-col cols="6" class="pa-1">
-          <InfoCard :icon="'mdi-note-outline'" :name="getCount('name')" :value="getCount('val')" />
-        </v-col>
-      </v-row>
+        <InfoCard
+          :icon="'mdi-alert-circle-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="`Total Issues (${err.dir})`"
+          :value="getDirErrorCount(err)"
+        />
+      </v-col>
+    </v-row>
 
-      <div class="ml-8 mr-2 mb-4 sensor-chart" v-if="sensorErrorTypes && !reload">
+    <!-- <div class="ml-8 mr-2 mb-4 sensor-chart" v-if="sensorErrorTypes && !reload">
         <v-tabs color="deep-purple accent-4" v-model="activeTab" show-arrows>
           <v-tab v-for="({ dir }, i) in sensorErrorTypes" :key="i">
             <v-chip color="orange" small>{{ dir }}</v-chip>
@@ -41,8 +86,7 @@
             </v-container>
           </v-tab-item>
         </v-tabs>
-      </div>
-    </v-card>
+      </div> -->
   </div>
 </template>
 
@@ -51,16 +95,15 @@ import Api from '@/utils/api/status';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/status';
 import { mapState } from 'vuex';
-import SensorHeatmapChart from '@/components/modules/status/SensorHeatmapChart';
 import InfoCard from '@/components/modules/dashboard/InfoCard';
 
 export default {
   props: {
     data: Object,
-    maxItems: Number
+    maxItems: Number,
+    infoColumnCount: Number
   },
   components: {
-    SensorHeatmapChart,
     InfoCard
   },
 
@@ -99,6 +142,12 @@ export default {
   }),
 
   computed: {
+    singleCol() {
+      return this.infoColumnCount == 1;
+    },
+    cardHeight() {
+      return this.singleCol ? '11vh' : undefined;
+    },
     items() {
       if (this.selectedRegionId < 0) {
         return this.allItems;
@@ -147,13 +196,21 @@ export default {
   },
 
   methods: {
+    getDirErrorCount(data) {
+      console.log(data);
+      return data.errorTypes.data.reduce((x, y) => x + y[2], 0);
+    },
     expandTable() {
       if (this.itemsPerPage == 1) {
         this.prepareSensorErrorCounts(this.flowAnomData.sensorErrorCounts);
         if (this.maxItems > 12) {
           this.height = 'calc(95vh - 48px)';
         }
-        this.itemsPerPage = this.maxItems;
+        if (this.maxItems == 1) {
+          this.itemsPerPage = 1.1;
+        } else {
+          this.itemsPerPage = this.maxItems;
+        }
       } else {
         this.allItems = this.items.filter(x => x.id == this.selectedDetector.id);
         this.height = null;
@@ -161,9 +218,9 @@ export default {
       }
     },
 
-    getCount(attr) {
-      if (this.selectedDetector) {
-        let counts = this.selectedDetector.counts;
+    getCount(attr, detector) {
+      if (detector) {
+        let counts = detector.counts;
         for (let i = 0; i < counts.length; i++) {
           if (counts[i] != 0 && attr == 'name' && i != 0) {
             return this.getError(i);
@@ -396,13 +453,22 @@ export default {
         this.headers.push(TYPE_AND_FIELD[i]);
       }
 
+      this.headers.push({ text: 'Major Error Type', value: 'majorError' });
+      this.headers.push({ text: '', value: 'actions' });
       this.allItems = data.map(d => {
         const counts = d.counts;
-        const item = { id: d.id, flags: d.flags, counts: d.counts, score: d.score };
+        const item = {
+          id: d.id,
+          flags: d.flags,
+          counts: d.counts,
+          score: d.score,
+          majorError: this.getCount('name', d)
+        };
         for (let i = 0; i < TYPE_AND_FIELD.length; i++) {
           const value = TYPE_AND_FIELD[i].value;
           item[value] = counts[i];
         }
+
         return item;
       });
     }

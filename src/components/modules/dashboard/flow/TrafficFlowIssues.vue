@@ -5,7 +5,9 @@
       fixed-header
       :headers="headers"
       :items="items"
+      :hide-default-header="itemsPerPage == 1"
       hide-default-footer
+      disable-sort
       :items-per-page="itemsPerPage"
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
@@ -16,8 +18,15 @@
           <strong class="black--text">{{ item.state }}</strong>
         </v-chip>
       </template>
-      <template v-slot:[`footer`]>
-        <v-btn :disabled="maxItems == 1" block @click="expandTable">
+      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
+        <div class="grid-right pr-6">
+          <v-icon small @click="expandTable">
+            mdi-arrow-expand-down
+          </v-icon>
+        </div>
+      </template>
+      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
+        <v-btn block @click="expandTable">
           <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
         </v-btn>
       </template>
@@ -37,7 +46,8 @@ import { mapState } from 'vuex';
 export default {
   props: {
     data: Object,
-    maxItems: Number
+    maxItems: Number,
+    infoColumnCount: Number
   },
 
   components: {
@@ -91,7 +101,11 @@ export default {
         if (this.maxItems > 12) {
           this.height = 'calc(95vh - 48px)';
         }
-        this.itemsPerPage = this.maxItems;
+        if (this.maxItems == 1) {
+          this.itemsPerPage = 1.1;
+        } else {
+          this.itemsPerPage = this.maxItems;
+        }
       } else {
         this.prepareTrafficDetectors([this.selectedtrafficDevice]);
         this.height = null;
@@ -101,7 +115,8 @@ export default {
     prepareTrafficDetectors(data) {
       this.headers = [
         { text: 'Device', value: 'device' },
-        { text: 'Status', value: 'state' }
+        { text: 'Status', value: 'state' },
+        { text: '', value: 'actions' }
       ];
       this.items = data.map(d => ({
         id: d.id,

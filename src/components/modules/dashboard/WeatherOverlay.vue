@@ -2,13 +2,13 @@
   <div>
     <v-card color="rgba(0, 0, 0, .5)" style="display:flex;" class="px-2">
       <!-- Increase font size -->
-      <b>
+      <b v-if="showCurrentTime">
         <div :style="`color: ${color};`" class="py-2">
           {{ dateStr }}
         </div>
       </b>
       <template v-if="weather">
-        <v-divider vertical class="mx-2"></v-divider>
+        <v-divider vertical class="mx-2" v-if="showCurrentTime" />
         <v-img class="weather-icon" width="40px" height="40px" :src="weatherIcon(weather.conditionCode)" />
         <!-- <v-divider class="pl-3" vertical /> -->
         <v-icon v-if="weather.airTemp" :color="`${color}`" class="pl-3">mdi-thermometer</v-icon>
@@ -39,7 +39,8 @@ import { mapState } from 'vuex';
 
 export default {
   props: {
-    center: Object
+    center: Object,
+    showCurrentTime: Boolean
   },
   data() {
     return {

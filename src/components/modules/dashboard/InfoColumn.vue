@@ -1,22 +1,22 @@
 <template>
   <v-container class="pa-0 px-2" style="max-height: calc(100vh - 48px); overflow-y: auto;">
     <div id="traffic-incidents" v-if="dataAvailable(cardData[0]) && selectedIdx == 0">
-      <TrafficIncidents :listLimit="listLimit" :handleRowClick="handleRowClick" />
+      <TrafficIncidents :listLimit="listLimit" :infoColumnCount="infoColumnCount" :handleRowClick="handleRowClick" />
     </div>
     <div id="traffic-flow-issues" v-if="dataAvailable(cardData[1]) && selectedIdx == 1">
-      <TrafficFlowIssues :listLimit="listLimit" :maxItems="cardData[1].val" />
+      <TrafficFlowIssues :listLimit="listLimit" :maxItems="cardData[1].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="signal-performance-issues" v-if="dataAvailable(cardData[2]) && selectedIdx == 2">
-      <SignalPerformanceIssues :listLimit="listLimit" :maxItems="cardData[2].val" />
+      <SignalPerformanceIssues :listLimit="listLimit" :maxItems="cardData[2].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="device-anomalies" v-if="dataAvailable(cardData[3]) && selectedIdx == 3">
-      <DeviceAnomalies :listLimit="listLimit" :maxItems="cardData[3].val" />
+      <DeviceAnomalies :listLimit="listLimit" :maxItems="cardData[3].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="congested-routes" v-if="dataAvailable(cardData[4]) && selectedIdx == 4">
-      <CongestedRoutes :listLimit="listLimit" :maxItems="cardData[4].val" />
+      <CongestedRoutes :listLimit="listLimit" :maxItems="cardData[4].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="waze-alerts" v-if="dataAvailable(cardData[5]) && selectedIdx == 5">
-      <WazeAlerts :listLimit="listLimit" :maxItems="cardData[5].val" />
+      <WazeAlerts :listLimit="listLimit" :maxItems="cardData[5].val" :infoColumnCount="infoColumnCount" />
     </div>
   </v-container>
 </template>
@@ -52,6 +52,9 @@ export default {
     };
   },
   computed: {
+    infoColumnCount() {
+      return this.getSetting('mainDashboard', 'infoColumnCount');
+    },
     listLimit() {
       if (this.getSetting) {
         return this.getSetting('mainDashboard', 'limitListings');

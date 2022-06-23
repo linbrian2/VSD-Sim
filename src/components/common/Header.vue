@@ -29,6 +29,9 @@
       <div v-if="showDate">
         <MenuDatePicker :date="currentDate" />
       </div>
+      <div v-if="showWeatherInfo">
+        <WeatherOverlay :center="mapCenter" :showCurrentTime="showCurrentTime" />
+      </div>
 
       <v-spacer></v-spacer>
 
@@ -55,6 +58,7 @@ import LoggedInUser from '@/components/common/LoggedInUser';
 import ThreeDotMenu from '@/components/common/ThreeDotMenu';
 import SnackBar from '@/components/common/SnackBar';
 import ChartStyles from '@/utils/ChartStyles.js';
+import WeatherOverlay from '@/components/modules/dashboard/WeatherOverlay.vue';
 
 export default {
   props: {
@@ -63,6 +67,14 @@ export default {
     dotItems: {
       type: Array,
       default: () => []
+    },
+    showWeatherInfo: {
+      type: Boolean,
+      default: false
+    },
+    showCurrentTime: {
+      type: Boolean,
+      default: false
     },
     showDate: {
       type: Boolean,
@@ -84,7 +96,8 @@ export default {
     MenuDatePicker,
     NavDrawer,
     ThreeDotMenu,
-    SnackBar
+    SnackBar,
+    WeatherOverlay
   },
 
   data: () => ({}),
@@ -106,7 +119,7 @@ export default {
       return this.$store.state.auth.user;
     },
 
-    ...mapState(['currentDate', 'darkMode'])
+    ...mapState(['currentDate', 'darkMode', 'mapCenter'])
   },
 
   watch: {

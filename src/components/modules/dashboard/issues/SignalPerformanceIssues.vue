@@ -10,38 +10,58 @@
       @prepareData="prepareSignalPerformanceIssues"
     />
     <v-row class="mt-3 ml-1 mr-7" v-if="currSignalPerformanceIssue">
-      <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-note-outline'" :name="'Permit'" :value="currSignalPerformanceIssue.permit" />
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Permit'"
+          :value="currSignalPerformanceIssue.permit"
+        />
       </v-col>
-      <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-map-marker-outline'" :name="'AoR Total'" :value="currSignalPerformanceIssue.score" />
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-map-marker-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'AoR Total'"
+          :value="`${currSignalPerformanceIssue.score / 2} %`"
+        />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-up-bold-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Simple Delay (NB)'"
-          :value="currSignalPerformanceIssue.simpleDelay[0]"
+          :value="`${currSignalPerformanceIssue.simpleDelay[0]} s`"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-down-bold-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Simple Delay (SB)'"
-          :value="currSignalPerformanceIssue.simpleDelay[1]"
+          :value="`${currSignalPerformanceIssue.simpleDelay[1]} s`"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-up-bold-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Approach Volume (NB)'"
-          :value="currSignalPerformanceIssue.approachVolume[0]"
+          :value="`${currSignalPerformanceIssue.approachVolume[0]} veh/5m`"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-down-bold-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Approach Volume (SB)'"
-          :value="currSignalPerformanceIssue.approachVolume[1]"
+          :value="`${currSignalPerformanceIssue.approachVolume[1]} veh/5m`"
         />
       </v-col>
     </v-row>
@@ -60,7 +80,8 @@ export default {
     height: { type: Number, default: 225 },
     itemsPerPage: { type: Number, default: 3 },
     maxItems: Number,
-    data: Object
+    data: Object,
+    infoColumnCount: Number
   },
   components: {
     InfoCard,
@@ -77,6 +98,12 @@ export default {
     };
   },
   computed: {
+    singleCol() {
+      return this.infoColumnCount == 1;
+    },
+    cardHeight() {
+      return this.singleCol ? '11vh' : undefined;
+    },
     currSignalPerformanceIssue() {
       if (this.selectedSignalPerformanceIssue && this.hrSummary) {
         let result = this.hrSummary.filter(x => x.id == this.selectedSignalPerformanceIssue.id);

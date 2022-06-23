@@ -22,6 +22,12 @@ export default {
             val: '1: Card, 2: Map, 3: Info',
             items: ['1: Card, 2: Info, 3: Map', '1: Card, 2: Map, 3: Info']
           },
+          infoColumnCount: {
+            label: 'Info Column Count',
+            val: 1,
+            min: 1,
+            max: 2
+          },
           limitListings: { label: 'Limit Listings', val: 1, min: 1, max: 5 }
         }
       },
