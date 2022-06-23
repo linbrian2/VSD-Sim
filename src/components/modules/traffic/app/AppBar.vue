@@ -8,55 +8,29 @@
       :actionItems="action_menu_items"
     >
       <div v-show="$vuetify.breakpoint.mdAndUp">
-        <v-menu bottom right offset-y>
-          <template v-slot:activator="{ on: menu, attrs }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn class="mx-1" fab :color="color('chart')" icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                  <v-icon>mdi-chart-line</v-icon>
-                </v-btn>
-              </template>
-              <span>Show Charts</span>
-            </v-tooltip>
-          </template>
+        <MenuButton
+          :items="chart_menu_items"
+          tooltip="Show Charts"
+          icon="mdi-chart-line"
+          :color="color('chart')"
+          @menuItemclick="dataMenuItemClicked"
+        />
 
-          <v-list>
-            <template v-for="(item, index) in chart_menu_items">
-              <v-divider v-if="item.divider" :key="index"></v-divider>
-              <v-list-item v-else :key="index" @click="dataMenuItemClicked(item.name)">
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-list>
-        </v-menu>
+        <MenuButton
+          :items="anomaly_menu_items"
+          tooltip="Anomaly Map"
+          icon="mdi-view-comfy"
+          :color="color('anomaly')"
+          @menuItemclick="dataMenuItemClicked"
+        />
 
-        <v-menu bottom right offset-y>
-          <template v-slot:activator="{ on: menu, attrs }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn class="mx-1" fab :color="color('anomaly')" icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                  <v-icon>mdi-view-comfy</v-icon>
-                </v-btn>
-              </template>
-              <span>Anomaly Map</span>
-            </v-tooltip>
-          </template>
-
-          <v-list>
-            <v-list-item v-for="item in anomaly_menu_items" :key="item.id" @click="dataMenuItemClicked(item.name)">
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn class="mx-1" fab :color="color('predict')" icon v-on="on" @click.stop="showTrafficPredict()">
-              <v-icon>mdi-waveform</v-icon>
-            </v-btn>
-          </template>
-          <span>Traffic Flow Prediction</span>
-        </v-tooltip>
+        <MenuButton
+          :items="prediction_menu_items"
+          tooltip="Traffic Prediction"
+          icon="mdi-waveform"
+          :color="color('predict')"
+          @menuItemclick="dataMenuItemClicked"
+        />
       </div>
 
       <!-- notification -->
@@ -86,6 +60,7 @@
 import { RouterNames, RouterPaths } from '@/utils/constants/router';
 import AppConstants from '@/utils/constants/app';
 import Header from '@/components/common/Header';
+import MenuButton from '@/components/common/MenuButton';
 import FlowChartDialog from '@/components/modules/traffic/app/FlowChartDialog';
 import IncidentNotificationList from '@/components/modules/traffic/dashboard/IncidentNotificationList';
 import { mapState, mapGetters } from 'vuex';
@@ -93,6 +68,7 @@ import { mapState, mapGetters } from 'vuex';
 export default {
   components: {
     Header,
+    MenuButton,
     FlowChartDialog,
     IncidentNotificationList
   },
@@ -101,21 +77,26 @@ export default {
     title: AppConstants.TRAFFIC_APP_TITLE,
 
     chart_menu_items: [
-      { title: 'Traffic Flow Data', name: RouterNames.TRAFFIC_FLOW },
-      { title: 'Travel Time Data', name: RouterNames.TRAVEL_TIME_DATA },
-      { title: 'Weather Data', name: RouterNames.TRAFFIC_WEATHER },
+      { title: RouterNames.TRAFFIC_FLOW, url: RouterPaths.TRAFFIC_FLOW },
+      { title: RouterNames.TRAVEL_TIME_DATA, url: RouterPaths.TRAVEL_TIME_DATA },
+      { title: RouterNames.TRAFFIC_WEATHER, url: RouterPaths.TRAFFIC_WEATHER },
       { divider: true },
-      { title: 'Multigraph', name: RouterNames.TRAFFIC_MULTIGRAPH },
+      { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
-      { title: 'Traffic LCM', name: RouterNames.TRAFFIC_LCM },
+      { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
       { divider: true },
-      { title: 'Traffic Routing', name: RouterNames.TRAFFIC_ROUTING }
+      { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING }
     ],
 
     anomaly_menu_items: [
-      { title: 'Traffic Flow Map', name: RouterNames.TRAFFIC_ANOMALY },
-      { title: 'Travel Time Map', name: RouterNames.TRAVEL_TIME_MAP },
-      { title: 'Traffic Incidents', name: RouterNames.TRAFFIC_INCIDENT }
+      { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
+      { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
+      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT }
+    ],
+
+    prediction_menu_items: [
+      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
+      { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT }
     ],
 
     action_menu_items: [
@@ -130,6 +111,7 @@ export default {
       { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
       { divider: true },
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
+      { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT },
       { divider: true },
       { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM }
     ]
@@ -147,13 +129,14 @@ export default {
   methods: {
     color(name) {
       if (name === 'chart') {
-        const item = this.chart_menu_items.find(item => item.name === this.$route.name);
+        const item = this.chart_menu_items.find(item => item.title === this.$route.name);
         return item ? 'orange' : 'teal';
       } else if (name === 'anomaly') {
-        const item = this.anomaly_menu_items.find(item => item.name === this.$route.name);
+        const item = this.anomaly_menu_items.find(item => item.title === this.$route.name);
         return item ? 'orange' : 'teal';
       } else if (name === 'predict') {
-        return this.$route.name === RouterNames.TRAFFIC_PREDICT ? 'orange' : 'teal';
+        const item = this.prediction_menu_items.find(item => item.title === this.$route.name);
+        return item ? 'orange' : 'teal';
       } else {
         return 'teal';
       }
@@ -163,105 +146,9 @@ export default {
       this.$router.push({ path }).catch(() => {});
     },
 
-    showDashboard() {
-      this.switchTo(RouterPaths.TRAFFIC_DASHBOARD);
-    },
-
-    showBTDashboard() {
-      this.switchTo(RouterPaths.BLUETOOTH_DASHBOARD);
-    },
-
-    showTrafficFlow() {
-      this.switchTo(RouterPaths.TRAFFIC_FLOW);
-    },
-
-    showTrafficLCM() {
-      this.switchTo(RouterPaths.TRAFFIC_LCM);
-    },
-
-    showTrafficPredict() {
-      this.switchTo(RouterPaths.TRAFFIC_PREDICT);
-    },
-
-    showAnomalyMap() {
-      this.switchTo(RouterPaths.TRAFFIC_ANOMALY);
-    },
-
-    showWeatherData() {
-      this.switchTo(RouterPaths.TRAFFIC_WEATHER);
-    },
-
-    showMultigraph() {
-      this.switchTo(RouterPaths.TRAFFIC_MULTIGRAPH);
-    },
-
-    showTravelTimeData() {
-      this.switchTo(RouterPaths.TRAVEL_TIME_DATA);
-    },
-
-    showTravelTimeMap() {
-      this.switchTo(RouterPaths.TRAVEL_TIME_MAP);
-    },
-
-    showHistoricalIncidents() {
-      this.switchTo(RouterPaths.TRAFFIC_INCIDENT);
-    },
-
-    showTrafficRouting() {
-      this.switchTo(RouterPaths.TRAFFIC_ROUTING);
-    },
-
-    performTask(name) {
-      switch (name) {
-        case RouterNames.TRAFFIC_FLOW:
-          this.showTrafficFlow();
-          break;
-
-        case RouterNames.TRAFFIC_DASHBOARD:
-          this.showDashboard();
-          break;
-
-        case RouterNames.BLUETOOTH_DASHBOARD:
-          this.showBTDashboard();
-          break;
-
-        case RouterNames.TRAFFIC_LCM:
-          this.showTrafficLCM();
-          break;
-
-        case RouterNames.TRAFFIC_ROUTING:
-          this.showTrafficRouting();
-          break;
-
-        case RouterNames.TRAFFIC_WEATHER:
-          this.showWeatherData();
-          break;
-
-        case RouterNames.TRAFFIC_MULTIGRAPH:
-          this.showMultigraph();
-          break;
-
-        case RouterNames.TRAVEL_TIME_DATA:
-          this.showTravelTimeData();
-          break;
-
-        case RouterNames.TRAFFIC_ANOMALY:
-          this.showAnomalyMap();
-          break;
-
-        case RouterNames.TRAVEL_TIME_MAP:
-          this.showTravelTimeMap();
-          break;
-
-        case RouterNames.TRAFFIC_INCIDENT:
-          this.showHistoricalIncidents();
-          break;
-      }
-    },
-
-    dataMenuItemClicked(name) {
+    dataMenuItemClicked(url) {
       setTimeout(() => {
-        this.performTask(name);
+        this.switchTo(url);
       }, 100);
     }
   }

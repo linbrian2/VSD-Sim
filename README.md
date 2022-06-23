@@ -22,3 +22,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+VUE_APP_AUTH_API_URL=http://aitoms.net/auth

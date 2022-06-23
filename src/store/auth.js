@@ -18,7 +18,7 @@ const actions = {
         if (user.jwtToken) {
           AuthTimer.startRefreshTokenTimer();
           commit('loginSuccess', user);
-          router.push('/', () => {});
+          router.push(sessionStorage.getItem('redirectPath') || '/', () => {});
         }
       },
       error => {

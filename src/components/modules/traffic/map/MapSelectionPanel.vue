@@ -8,7 +8,7 @@
       :items="items"
       :value="valueSelected"
       @input="valueSelectHandler"
-      label="Loading ..."
+      label="Select ..."
     />
     <MapSelect ref="mapSelect" :markers="markers" :icons="markerIcons" @click="onMapClick" />
   </SelectionPanel>

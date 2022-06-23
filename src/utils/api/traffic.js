@@ -82,6 +82,11 @@ export default {
     return AxiosClient.post('api/trafficVolumeAndBaseline', params);
   },
 
+  fetchTrafficVolumeAndBaselineDataList(ids, interval, startDate) {
+    let params = { ids, interval, startDate };
+    return AxiosClient.post('api/trafficVolumeAndBaseline', params);
+  },
+
   fetchFlowData(deviceId, direction, start) {
     let id = `${deviceId}-${direction}`;
     return AxiosClient.post('vision/flowData', { id, start });
@@ -97,6 +102,16 @@ export default {
     return api.post('api/predict', { deviceId, deviceDir, startTime, endTime, method });
   },
 
+  fetchGTSPredictions(baseURL, deviceId, deviceDir, startTime, endTime, interval) {
+    const api = axios.create({ baseURL });
+    return api.post('api/predict', { deviceId, deviceDir, startTime, endTime, interval });
+  },
+
+  startSimulation(baseURL, params) {
+    const api = axios.create({ baseURL });
+    return api.post('api/simulate', params);
+  },
+
   fetchAnomalyDevices() {
     return AxiosClient.get('api/anomalyDevices');
   },
@@ -107,6 +122,10 @@ export default {
 
   fetchAnomalyTimeList(deviceId, direction, start) {
     return AxiosClient.post('api/anomalyTimeList', { deviceId, direction, start });
+  },
+
+  fetchAnomalyTimeLists(devices, start) {
+    return AxiosClient.post('api/anomalyTimeList', { devices, start });
   },
 
   fetchAnomalyHourlyResults(deviceId, direction, start, hour) {

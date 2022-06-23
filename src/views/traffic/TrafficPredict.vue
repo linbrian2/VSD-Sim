@@ -8,48 +8,21 @@
       :onMarkerClick="markerClicked"
     />
 
-    <TitleBar title="Traffic Flow Prediction" :showId="true" :loading="loading" :refresh="refreshData" />
-
-    <v-container>
-      <div class="d-flex justify-space-between">
-        <div>
-          <v-tabs color="teal accent-4" v-model="tab">
-            <v-tab v-for="item in tabItems" :key="item.key" :href="`#${item.key}`">
-              {{ item.value }}
-            </v-tab>
-          </v-tabs>
-        </div>
-        <div class="time-display" v-if="timeUsedDisplay">{{ timeUsedDisplay }} ms</div>
+    <TitleBar title="Traffic Flow Prediction" :showId="true" :loading="loading" :refresh="refreshData">
+      <div class="d-flex align-center justify-end mt-3">
+        <div class="text-caption" v-if="timeUsedDisplay">Time used: {{ timeUsedDisplay }} ms</div>
       </div>
+    </TitleBar>
 
-      <div>
-        <v-tabs-items v-model="tab">
-          <v-tab-item value="LSTM" v-if="isTabVisible('LSTM')">
-            <div class="mt-3">
-              <FlowChartDisplay
-                :name="selectedSensor"
-                :speed="speed0"
-                :volume="volume0"
-                :occupancy="occupancy0"
-                :vosList="vosList0"
-              />
-            </div>
-          </v-tab-item>
-
-          <v-tab-item value="XGBM" v-if="isTabVisible('XGBM')">
-            <div class="mt-3">
-              <FlowChartDisplay
-                :name="selectedSensor"
-                :speed="speed1"
-                :volume="volume1"
-                :occupancy="occupancy1"
-                :vosList="vosList1"
-              />
-            </div>
-          </v-tab-item>
-        </v-tabs-items>
-      </div>
-    </v-container>
+    <div class="mt-3">
+      <FlowChartDisplay
+        :name="selectedSensor"
+        :speed="speed0"
+        :volume="volume0"
+        :occupancy="occupancy0"
+        :vosList="vosList0"
+      />
+    </div>
   </div>
 </template>
 
@@ -119,7 +92,7 @@ export default {
     },
 
     timeUsedDisplay() {
-      return this.tab === 'LSTM' ? this.timeUsed0 : this.timeUsed1;
+      return this.timeUsed0;
     },
 
     ...mapState(['currentDate'])
@@ -177,7 +150,7 @@ export default {
       if (marker && marker.dir) {
         this.tabItems = marker.methods.map(item => ({ key: item, value: item }));
         this.tab = this.tabItems.length > 0 ? this.tabItems[0].key : null;
-        this.fetchPredictionResults(marker.methods, marker.sensorId, marker.dir, time);
+        this.fetchPredictionResults(['LSTM'], marker.sensorId, marker.dir, time);
       }
     },
 
