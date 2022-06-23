@@ -1,37 +1,54 @@
 <template>
   <div v-if="!reload">
     <v-card tile class="mb-2" v-show="showIncidentTable">
-      <IncidentTable :incidents="$store.state.dashboard.incidents" @click="handleRowClick" />
+      <IncidentTable :incidents="$store.state.dashboard.trafficIncidents" @click="handleRowClick" />
     </v-card>
-
     <v-row class="mt-3 ml-1 mr-7" v-if="incidentItem">
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-clock-outline'"
-          :valueFontSize="28"
+          :height="cardHeight"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? 38 : 28"
           :name="'End Time'"
           :value="getTimeStr(incidentItem.endTime)"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-chart-bar-stacked'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Severity'"
           :value="incidentItem.severity"
           :valueColor="incidentItem.severityColor"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-map-marker-outline'" :name="'Total Evidence'" :value="incidentItem.evidenceCount" />
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-map-marker-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Total Evidence'"
+          :value="incidentItem.evidenceCount"
+        />
       </v-col>
-      <v-col cols="6" class="pa-1">
-        <InfoCard :icon="'mdi-alert-circle-outline'" :name="'Type'" :value="incidentItem.type" />
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+        <InfoCard
+          :icon="'mdi-alert-circle-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Type'"
+          :value="incidentItem.type"
+        />
       </v-col>
-      <v-col cols="12" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-shield-check-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Reason'"
-          :value="incidentItem.reason"
+          :value="incidentItem.reason.split('.')[0] ? incidentItem.reason.split('.')[0] : incidentItem.reason"
           :wide="true"
           :valueFontSize="22"
         />
@@ -42,7 +59,6 @@
 
 <script>
 import InfoCard from '@/components/modules/dashboard/InfoCard';
-import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
 import { mapState } from 'vuex';
@@ -50,7 +66,8 @@ import IncidentTable from '@/components/modules/dashboard/incidents/IncidentTabl
 
 export default {
   props: {
-    maxItems: Number
+    maxItems: Number,
+    infoColumnCount: Number
   },
   components: {
     InfoCard,
@@ -69,20 +86,18 @@ export default {
   }),
 
   computed: {
+    singleCol() {
+      return this.infoColumnCount == 1;
+    },
+    cardHeight() {
+      return this.singleCol ? '11vh' : undefined;
+    },
     startTimestamp() {
       return Utils.getStartOfDay(this.currentDate).getTime();
     },
 
     ...mapState(['currentDate']),
     ...mapState('traffic', ['anomalyDevices', 'weatherStations', 'bluetoothSegments', 'incidentSettings', 'showPanel'])
-  },
-
-  created() {
-    this.$store.commit('traffic/SHOW_PANEL', true);
-  },
-
-  mounted() {
-    this.fetchIncidentData(this.currentDate);
   },
 
   methods: {
@@ -101,30 +116,9 @@ export default {
     getStrokeColor(level) {
       return Utils.getStrokeColor(level);
     },
-    onSegmentSelected(segmentId) {
-      if (this.$refs.anomalySegmentDisplay) {
-        this.$refs.anomalySegmentDisplay.selectSegment(segmentId);
-      }
-    },
-
-    onMarkerClicked(marker) {
-      const type = marker.type;
-      if (type) {
-        const item = marker.item;
-        this.gotoSection(`#${type}`);
-        if (this.$refs.anomalySegmentDisplay) {
-          this.$refs.anomalySegmentDisplay.selectEvidenceItem(type, item);
-        }
-      }
-    },
-
-    singleSegmentSelected(linkId) {
-      if (this.$refs.mapSegmentRef) {
-        this.$refs.mapSegmentRef.selectLink(linkId);
-      }
-    },
 
     handleRowClick(item) {
+      console.log(item);
       this.incidentItem = Object.assign({}, item);
       if (this.$refs.anomalySegmentDisplay) {
         this.$refs.anomalySegmentDisplay.init(item);
@@ -147,66 +141,10 @@ export default {
       }
     },
 
-    gotoSection(target) {
-      this.$vuetify.goTo(target);
-    },
-
     updateMap(segments) {
       if (this.$refs.mapSegmentRef) {
         this.$refs.mapSegmentRef.centerMapAndZoom(segments, true);
       }
-    },
-
-    async fetchIncidentData(startTime) {
-      this.loading = true;
-      const { severity, duration } = this.incidentSettings;
-      try {
-        const start = startTime.getTime();
-        const response = await Api.fetchIncidentData(start, 1, severity, duration);
-        const data = this.getResponseData(response);
-        if (data) {
-          this.$store.state.dashboard.incidents = data;
-          this.segments = this.createTotalSegments();
-        } else {
-          this.$store.state.dashboard.incidents = [];
-          this.segments = [];
-        }
-        this.incidentItem = null;
-      } catch (error) {
-        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
-      }
-      this.loading = false;
-    },
-
-    getResponseData(response) {
-      let result = null;
-      if (response.data.status === 'OK') {
-        if (response.data.data !== undefined) {
-          let data = response.data.data;
-          if (Object.keys(data).length > 0) {
-            result = data;
-          }
-        }
-      } else {
-        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
-      }
-      return result;
-    },
-
-    createTotalSegments() {
-      const linkIds = new Set();
-      this.$store.state.dashboard.incidents.forEach(item => {
-        linkIds.add(item.linkId);
-      });
-
-      const segments = [];
-      linkIds.forEach(linkId => {
-        const segment = this.bluetoothSegments.find(item => item.id === linkId);
-        if (segment) {
-          segments.push(segment);
-        }
-      });
-      return segments;
     },
 
     createMarkers(incident) {
@@ -347,13 +285,5 @@ export default {
       return markers;
     }
   }
-
-  /* watch: {
-    bluetoothSegments(segments) {
-      if (segments) {
-        this.handleRowClick(0);
-      }
-    }
-  } */
 };
 </script>

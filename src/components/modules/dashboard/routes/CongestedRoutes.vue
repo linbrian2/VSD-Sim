@@ -7,6 +7,8 @@
       :items="items"
       :items-per-page="itemsPerPage"
       :item-class="itemRowBackground"
+      disable-sort
+      :hide-default-header="itemsPerPage == 1"
       hide-default-footer
       @click:row="handleRowClick"
       class="elevation-1"
@@ -19,64 +21,83 @@
       <template v-slot:[`item.lastUpdated`]="{ item }">
         {{ item.lastUpdated.split(' ')[1].slice(0, 5) }}
       </template>
-      <template v-slot:[`footer`]>
-        <v-btn :disabled="maxItems == 1" block @click="expandTable">
+      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
+        <div class="grid-right pr-6">
+          <v-icon small @click="expandTable">
+            mdi-arrow-expand-down
+          </v-icon>
+        </div>
+      </template>
+      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
+        <v-btn block @click="expandTable">
           <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
         </v-btn>
       </template>
     </v-data-table>
     <v-row class="mt-3 ml-1 mr-7" v-if="currSegment">
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-clock-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Time'"
-          :titleFontSize="20"
-          :valueFontSize="28"
+          :titleFontSize="singleCol ? undefined : 20"
+          :valueFontSize="singleCol ? 38 : 28"
           :value="getTimeStr(currSegment.travelTime.calculationTimestamp.value)"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-chart-bar-stacked'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Severity'"
           :valueColor="getStrokeColor(currSegment.travelTime.level)"
           :value="currSegment.travelTime.level"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-vector-line'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Distance'"
-          :titleFontSize="20"
-          :valueFontSize="28"
-          :value="currSegment.distance"
+          :titleFontSize="singleCol ? undefined : 20"
+          :valueFontSize="singleCol ? 38 : 28"
+          :value="`${currSegment.distance} mi`"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-speedometer'"
-          :name="'Speed (mph)'"
-          :titleFontSize="20"
-          :valueFontSize="28"
-          :value="currSegment.travelTime.data.speedMph"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Speed'"
+          :titleFontSize="singleCol ? undefined : 20"
+          :valueFontSize="singleCol ? 38 : 28"
+          :value="`${currSegment.travelTime.data.speedMph.toFixed(2)} mph`"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-timer-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Free Flow Run TIme'"
-          :titleFontSize="20"
-          :valueFontSize="28"
-          :value="currSegment.travelTime.data.freeFlowRunTimeSecs"
+          :titleFontSize="singleCol ? undefined : 20"
+          :valueFontSize="singleCol ? 38 : 28"
+          :value="`${currSegment.travelTime.data.freeFlowRunTimeSecs} s`"
         />
       </v-col>
-      <v-col cols="6" class="pa-1">
+      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-timer-outline'"
+          :flex="singleCol"
+          :height="cardHeight"
           :name="'Travel Time Mean'"
-          :titleFontSize="20"
-          :valueFontSize="28"
-          :value="currSegment.travelTime.data.meanTravelTimeSecs"
+          :titleFontSize="singleCol ? undefined : 20"
+          :valueFontSize="singleCol ? 38 : 28"
+          :value="`${currSegment.travelTime.data.meanTravelTimeSecs} s`"
         />
       </v-col>
     </v-row>
@@ -91,19 +112,25 @@ import { mapState } from 'vuex';
 export default {
   props: {
     data: Object,
-    maxItems: Number
+    maxItems: Number,
+    infoColumnCount: Number
   },
   components: {
     InfoCard
   },
   data: () => ({
-    height: null,
     itemsPerPage: 1,
     reload: false,
     items: [],
     headers: []
   }),
   computed: {
+    singleCol() {
+      return this.infoColumnCount == 1;
+    },
+    cardHeight() {
+      return this.singleCol ? '11vh' : undefined;
+    },
     currSegment() {
       if (this.selectedSegment && this.segments) {
         let result = this.segments.filter(x => x.id == this.selectedSegment.id);
@@ -143,7 +170,11 @@ export default {
         if (this.maxItems > 12) {
           this.height = 'calc(95vh - 48px)';
         }
-        this.itemsPerPage = this.maxItems;
+        if (this.maxItems == 1) {
+          this.itemsPerPage = 1.1;
+        } else {
+          this.itemsPerPage = this.maxItems;
+        }
       } else {
         this.prepareHighCongestionRoutes([this.currSegment]);
         this.height = null;
@@ -157,7 +188,8 @@ export default {
       this.headers = [
         { text: 'Description', value: 'desc' },
         { text: 'Last Updated', value: 'lastUpdated' },
-        { text: 'Level', value: 'level' }
+        { text: 'Level', value: 'level' },
+        { text: '', value: 'actions' }
       ];
       this.items = data.map(d => ({
         id: d.id,

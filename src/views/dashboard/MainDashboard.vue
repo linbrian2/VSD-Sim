@@ -21,12 +21,8 @@
         <!-- Overview -->
         <v-col id="overview" :cols="rzMap ? 4 : 3" :xl="rzMap ? 3 : 2" class="pa-0 px-2 pl-3">
           <v-container style="max-height: calc(100vh - 48px); overflow-y: auto;" class="py-0">
-            <v-row>
-              <!-- TODO -->
-              <!-- <v-card class="d-flex align-center justify-center">
-                <v-progress-linear :value="cardProgress" />
-              </v-card> -->
-              <v-col cols="12" v-for="(x, i) in cardData" :key="x.id" class="pa-1">
+            <v-row v-for="(x, i) in cardData" :key="x.id">
+              <v-col cols="12" v-if="x.val" class="pa-1">
                 <v-hover v-slot="{ hover }">
                   <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
                     <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
@@ -34,29 +30,30 @@
                         <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
                           <v-card
                             tile
+                            class="d-flex align-center justify-center"
                             :disabled="!x.val || (x.val && (x.val == 0 || x.val == '-'))"
                             height="calc(19vh - 48px)"
-                            class="d-flex align-center justify-center"
                             @click.native="cardClicked(i)"
                             :color="getColor(x)"
                             :elevation="hover ? 12 : 2"
                             :class="{ 'on-hover': hover }"
                           >
                             <v-col class="grid-center pa-0">
-                              <v-card-title v-show="$vuetify.breakpoint.lgAndUp" class="py-0" style="font-size:26px">
+                              <v-card-title v-show="$vuetify.breakpoint.lgAndUp" class="pa-0" style="font-size:26px">
                                 <v-icon class="pr-2" :color="colors[i]" x-normal>{{ x.icon }}</v-icon>
                                 {{ x.title }}
                               </v-card-title>
                               <h1 style="font-size:48px" class="pr-2">
-                                {{ x.val }}
+                                <template v-if="!x.val || (x.val && (x.val == 0 || x.val == '-'))">
+                                  <div class="pt-3"></div>
+                                  <Spinner />
+                                </template>
+                                <template v-else>
+                                  {{ x.val }}
+                                </template>
                               </h1>
                             </v-col>
                             <div v-show="$vuetify.breakpoint.lgAndUp" class="card-container">
-                              <v-btn icon @click="showSelectionDialog(i)" class="detail-button" v-if="i != 3">
-                                <v-icon small :class="{ 'show-btns': hover }" :color="transparent">
-                                  mdi-information-outline
-                                </v-icon>
-                              </v-btn>
                               <v-btn icon @click="goToPage(x.link)" class="link-button">
                                 <v-icon small :class="{ 'show-btns': hover }" :color="transparent">
                                   mdi-open-in-new
@@ -112,6 +109,7 @@ import SelectionPanel from '@/components/modules/dashboard/app/SelectionPanel.vu
 import SelectionDialog from '@/components/modules/dashboard/SelectionDialog.vue';
 import Constants from '@/utils/constants/dashboard.js';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import Spinner from '@/components/common/Spinner.vue';
 
 export default {
   name: 'App',
@@ -119,7 +117,8 @@ export default {
     Map,
     SelectionPanel,
     InfoColumn,
-    SelectionDialog
+    SelectionDialog,
+    Spinner
   },
   data() {
     return {
@@ -140,7 +139,7 @@ export default {
         {
           title: Constants.TRAFFIC_INCIDENTS,
           icon: Constants.TRAFFIC_INCIDENTS_ICON,
-          link: 'http://http://aitoms.net/flow/incidents',
+          link: 'http://aitoms.net/flow/incidents',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -154,7 +153,7 @@ export default {
         {
           title: Constants.DEVICE_TRAFFIC,
           icon: Constants.DEVICE_TRAFFIC_ICON,
-          link: 'http://aitoms.net/',
+          link: 'http://aitoms.net/dash/traffic',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -182,7 +181,7 @@ export default {
         {
           title: Constants.TRAFFIC_FLOW_ANOMALIES,
           icon: Constants.TRAFFIC_FLOW_ANOMALIES_ICON,
-          link: 'http://aitoms.net/flow/bt-dash',
+          link: 'http://aitoms.net/flow/data',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -196,7 +195,7 @@ export default {
         {
           title: Constants.HIGH_CONGESTION_ROUTES,
           icon: Constants.HIGH_CONGESTION_ROUTES_ICON,
-          link: 'http://aitoms.net/flow/bt-dash',
+          link: 'http://aitoms.net/dash/bluetooth',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -210,7 +209,7 @@ export default {
         {
           title: Constants.REPORTED_WAZE_ALERTS,
           icon: Constants.REPORTED_WAZE_ALERTS_ICON,
-          link: 'http://aitoms.net/flow/bt-dash',
+          link: 'http://aitoms.net/dash/bluetooth',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -264,6 +263,7 @@ export default {
   mounted() {
     this.startUpdateInterval();
     this.startCardSwapInterval();
+    this.initExistingData();
     this.fetchApiData();
 
     this.$bus.$on('SHOW_SELECTION_POPUP', id => {
@@ -284,6 +284,30 @@ export default {
     this.stopCardSwapInterval();
   },
   methods: {
+    initExistingData() {
+      if (this.incidentData) {
+        this.cardData[0].val = this.trafficIncidents.length;
+      }
+      if (this.trafficDevices) {
+        this.cardData[1].val = this.trafficDevices.filter(x => x.status !== 0).length;
+      }
+      if (this.hrSummary) {
+        this.cardData[2].val = this.hrSummary.filter(x => x.score > 60).length;
+      }
+      if (this.flowAnomData) {
+        let maxCount = this.flowAnomData.sensorErrorCounts[0].score;
+        let hours = new Date().getHours();
+        this.cardData[3].val = this.flowAnomData.sensorErrorCounts.filter(
+          x => x.score / hours > 50 && x.score > maxCount - maxCount * 0.15
+        ).length;
+      }
+      if (this.segments) {
+        this.cardData[4].val = this.segments.filter(x => x.travelTime.level >= 5).length;
+      }
+      if (this.waze) {
+        this.cardData[5].val = this.waze.filter(x => x.confidence >= 5).length;
+      }
+    },
     dataAvailable(data) {
       return data.val && data.val != 0 && data.val != '-' && data.val != 'N/A';
     },
@@ -307,6 +331,7 @@ export default {
       }
     },
     fetchApiData() {
+      console.log('fetchApiData');
       this.fetchBluetoothSegments();
       this.fetchWeatherStations();
       this.fetchTrafficIncidents();
@@ -502,6 +527,56 @@ export default {
           url: require('@/assets/waze-select.png'),
           size: { width: 36, height: 36, f: 'px', b: 'px' },
           anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-accident.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-accident-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-construction.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-construction-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-hazard.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-hazard-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-road-closed.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-road-closed-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-traffic-jam.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-traffic-jam-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
         }
       ];
     },
@@ -581,6 +656,14 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.v-progress-linear {
+  display: block;
+  width: 100px;
+  margin: 0 auto;
+}
+</style>
 
 <style>
 .card-container {

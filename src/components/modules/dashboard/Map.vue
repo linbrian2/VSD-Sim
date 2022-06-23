@@ -28,7 +28,8 @@
             :position="m.position"
             :title="m.name"
             :clickable="true"
-            :icon="getMarkerIcon(m.id)"
+            :icon="getMarkerIcon(m)"
+            :options="markerOptions(m.id)"
           />
           <GmapPolyline
             v-for="s in segments"
@@ -52,9 +53,6 @@
         </GmapMap>
       </div>
     </div>
-    <div id="over_map">
-      <WeatherOverlay :center="center"></WeatherOverlay>
-    </div>
   </div>
 </template>
 
@@ -62,13 +60,13 @@
 /* global google */
 import Utils from '@/utils/Utils';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
-import WeatherOverlay from '@/components/modules/dashboard/WeatherOverlay.vue';
 import MapSegment from '@/components/modules/dashboard/MapSegment';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import { mapState } from 'vuex';
+import * as d3 from 'd3';
 
 export default {
-  components: { WeatherOverlay, GmapCustomMarker, MapSegment },
+  components: { GmapCustomMarker, MapSegment },
   props: {
     apiInfo: Object,
     zoom: {
@@ -108,6 +106,7 @@ export default {
   },
   data() {
     return {
+      selectedColor: 'blue',
       reload: false,
       map: null,
       center: { lat: 39.14, lng: -75.5 },
@@ -150,6 +149,14 @@ export default {
     };
   },
   computed: {
+    currentPolyline() {
+      if (this.segments) {
+        let segmentList = this.segments.filter(x => x.id == this.selectedSegmentId);
+        return segmentList[0];
+      } else {
+        return null;
+      }
+    },
     selectedMarkers() {
       return {
         selectedIdx: this.selectedIdx,
@@ -175,6 +182,7 @@ export default {
     ])
   },
   mounted() {
+    console.log(this.currentPolyline);
     this.addSelectedMarker();
     setTimeout(() => {
       this.loadPage(this.$vuetify.theme.dark);
@@ -205,8 +213,19 @@ export default {
     this.$bus.$on('SELECT_SEGMENT_BY_NAME', name => {
       this.selectSegmentByName(name);
     });
+
+    this.changeSelectedColor();
   },
   methods: {
+    changeSelectedColor() {
+      setInterval(() => {
+        let timeVal = parseFloat((new Date().getTime() % 2000) / 1000).toFixed(2);
+        if (timeVal > 1) {
+          timeVal = 2 - timeVal;
+        }
+        this.selectedColor = d3.interpolateLab('red', 'blue')(timeVal);
+      }, 50);
+    },
     onSegmentSelected(segmentId) {
       console.log(segmentId);
     },
@@ -214,7 +233,35 @@ export default {
       console.log(marker);
     },
     getMarkerIcon(key) {
-      return this.selectedMarkerId == key ? this.icons[1] : this.icons[0];
+      let id = key.id;
+      if (this.icons.length == 12) {
+        // Waze Selected
+        let typeId = key.subType;
+        return this.selectedMarkerId == id ? this.getWazeIcon(typeId, 1) : this.getWazeIcon(typeId, 0);
+      } else {
+        return this.selectedMarkerId == id ? this.icons[1] : this.icons[0];
+      }
+    },
+    getWazeIcon(key, active) {
+      let id = key.id
+      if (id >= 10 && id <= 13)
+        // Accident
+        return active ? this.icons[3] : this.icons[2];
+      else if (id >= 20 && id <= 25)
+        // Jam
+        return active ? this.icons[11] : this.icons[10];
+      else if (id >= 90 && id <= 91)
+        // Construction
+        return active ? this.icons[5] : this.icons[4];
+      else if (id >= 100 && id <= 104)
+        // Closure
+        return active ? this.icons[9] : this.icons[8];
+      // Hazard
+      else return active ? this.icons[7] : this.icons[6];
+    },
+    markerOptions(key) {
+      const zIndex = this.selectedMarkerId == key ? 2 : 1;
+      return { zIndex };
     },
     markerClicked(marker) {
       this.selectedMarkerId = marker.id;
@@ -225,6 +272,7 @@ export default {
       google.maps.event.addListener(this.map, 'dragend', () => {
         let center = this.map.getCenter();
         this.center = { lat: center.lat(), lng: center.lng() };
+        this.$store.commit('SET_MAP_CENTER', this.center);
       });
     },
     loadPage(darkMode) {
@@ -259,6 +307,7 @@ export default {
         }
         let center = this.map.getCenter();
         this.center = { lat: center.lat(), lng: center.lng() };
+        this.$store.commit('SET_MAP_CENTER', this.center);
       }
     },
 
@@ -267,8 +316,10 @@ export default {
     },
 
     segmentOptions(segment) {
-      const color = segment.id === this.selectedSegmentId ? 'blue' : Utils.getStrokeColor(segment.travelTime.level);
-      return { ...this.defaultSegmentOptions, strokeColor: color };
+      const color =
+        segment.id === this.selectedSegmentId ? this.selectedColor : Utils.getStrokeColor(segment.travelTime.level);
+      const zIndex = segment.id === this.selectedSegmentId ? 2 : 1;
+      return { ...this.defaultSegmentOptions, strokeColor: color, zIndex };
     },
 
     mapMounted(map) {
@@ -331,6 +382,7 @@ export default {
         }
         let center = this.map.getCenter();
         this.center = { lat: center.lat(), lng: center.lng() };
+        this.$store.commit('SET_MAP_CENTER', this.center);
       }
     },
 
