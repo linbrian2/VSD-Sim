@@ -35,18 +35,18 @@
       </template>
     </v-data-table>
     <v-row class="mt-3 ml-1 mr-7" v-if="currSegment">
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-clock-outline'"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Time'"
           :titleFontSize="singleCol ? undefined : 20"
-          :valueFontSize="singleCol ? 38 : 28"
+          :valueFontSize="singleCol ? undefined : 28"
           :value="getTimeStr(currSegment.travelTime.calculationTimestamp.value)"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-chart-bar-stacked'"
           :flex="singleCol"
@@ -56,7 +56,7 @@
           :value="currSegment.travelTime.level"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-vector-line'"
           :flex="singleCol"
@@ -67,7 +67,7 @@
           :value="`${currSegment.distance} mi`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-speedometer'"
           :flex="singleCol"
@@ -78,7 +78,7 @@
           :value="`${currSegment.travelTime.data.speedMph.toFixed(2)} mph`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-timer-outline'"
           :flex="singleCol"
@@ -89,7 +89,7 @@
           :value="`${currSegment.travelTime.data.freeFlowRunTimeSecs} s`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-timer-outline'"
           :flex="singleCol"

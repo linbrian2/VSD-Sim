@@ -35,17 +35,17 @@
       </template>
     </v-data-table>
     <v-row class="mt-3 ml-1 mr-7" v-if="currWaze">
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-clock-outline'"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Time'"
-          :valueFontSize="28"
+          :valueFontSize="singleCol ? undefined : 28"
           :value="getTimeStr(currWaze.alertTimeTS)"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-account-multiple-check'"
           :valueColor="getStrokeColor(currWaze.confidence)"
@@ -55,7 +55,7 @@
           :value="currWaze.confidence"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-alert-circle-outline'"
           :flex="singleCol"
@@ -64,7 +64,7 @@
           :value="currWaze.alertType.name"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-map-marker-outline'"
           :flex="singleCol"
@@ -73,7 +73,7 @@
           :value="currWaze.roadType.name"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-shield-check-outline'"
           :flex="singleCol"
@@ -82,7 +82,7 @@
           :value="currWaze.reliability"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-thumb-up-outline'"
           :flex="singleCol"

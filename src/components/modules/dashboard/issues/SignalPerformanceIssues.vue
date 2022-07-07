@@ -10,7 +10,7 @@
       @prepareData="prepareSignalPerformanceIssues"
     />
     <v-row class="mt-3 ml-1 mr-7" v-if="currSignalPerformanceIssue">
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-note-outline'"
           :flex="singleCol"
@@ -19,7 +19,7 @@
           :value="currSignalPerformanceIssue.permit"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-map-marker-outline'"
           :flex="singleCol"
@@ -28,7 +28,7 @@
           :value="`${currSignalPerformanceIssue.score / 2} %`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-up-bold-outline'"
           :flex="singleCol"
@@ -37,7 +37,7 @@
           :value="`${currSignalPerformanceIssue.simpleDelay[0]} s`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-down-bold-outline'"
           :flex="singleCol"
@@ -46,7 +46,7 @@
           :value="`${currSignalPerformanceIssue.simpleDelay[1]} s`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-up-bold-outline'"
           :flex="singleCol"
@@ -55,7 +55,7 @@
           :value="`${currSignalPerformanceIssue.approachVolume[0]} veh/5m`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-down-bold-outline'"
           :flex="singleCol"

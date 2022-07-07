@@ -30,7 +30,7 @@
       </template>
     </v-data-table>
     <v-row class="mt-3 ml-1 mr-7" v-if="selectedDetector">
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-alert-circle-outline'"
           :flex="singleCol"
@@ -39,17 +39,17 @@
           :value="selectedDetector.counts[0]"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-note-outline'"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Major Error Type'"
           :value="getCount('name', selectedDetector)"
-          :valueFontSize="36"
+          :valueFontSize="singleCol ? undefined : 36"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-note-outline'"
           :flex="singleCol"
@@ -58,13 +58,7 @@
           :value="getCount('val', selectedDetector)"
         />
       </v-col>
-      <v-col
-        :offset-lg="singleCol ? 1 : 0"
-        :cols="singleCol ? 10 : 6"
-        class="pa-1"
-        v-for="err in sensorErrorTypes"
-        :key="err.dir"
-      >
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1" v-for="err in sensorErrorTypes" :key="err.dir">
         <InfoCard
           :icon="'mdi-alert-circle-outline'"
           :flex="singleCol"

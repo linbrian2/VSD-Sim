@@ -15,7 +15,7 @@
       <v-row v-if="flex">
         <div style="display: flex">
           <v-icon class="pl-8 pr-3" :color="iconColor" :size="iconSize">{{ icon }}</v-icon>
-          <h3 class="pt-3 pr-3" :style="`color: ${color}; font-size:${titleFontSize}px`">{{ name }}:</h3>
+          <h3 class="pt-3 pr-3" :style="`color: ${titleColor}; font-size:${titleFontSize}px`">{{ name }}:</h3>
           <h1 :style="`color: ${color !== 'undefined' ? color : valueColor}; font-size:${valueFontSize}px`">
             <b>{{ value }}</b>
           </h1>
@@ -34,13 +34,14 @@ export default {
     valueFontSize: { type: Number, default: 42 },
     cardColor: { type: String, default: undefined },
     color: { type: String, default: 'undefined' },
-    iconColor: { type: String, default: 'amber' },
+    titleColor: { type: String, default: '#FFC107' },
+    iconColor: { type: String, default: '#FFC107' },
     height: { type: String, default: '21vh' },
     iconSize: { type: Number, default: 50 },
     icon: { type: String, default: 'mdi-cog' },
     name: { type: String, default: 'Placeholder' },
     value: { type: [Number, String], default: '-' },
-    valueColor: { type: String, default: 'undefined' }
+    valueColor: { type: String, default: '#E0E0E0' }
   }
 };
 </script>

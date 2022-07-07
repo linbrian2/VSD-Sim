@@ -4,17 +4,17 @@
       <IncidentTable :incidents="$store.state.dashboard.trafficIncidents" @click="handleRowClick" />
     </v-card>
     <v-row class="mt-3 ml-1 mr-7" v-if="incidentItem">
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-clock-outline'"
           :height="cardHeight"
           :flex="singleCol"
-          :valueFontSize="singleCol ? 38 : 28"
+          :valueFontSize="singleCol ? undefined : 28"
           :name="'End Time'"
           :value="getTimeStr(incidentItem.endTime)"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-chart-bar-stacked'"
           :flex="singleCol"
@@ -24,7 +24,7 @@
           :valueColor="incidentItem.severityColor"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-map-marker-outline'"
           :flex="singleCol"
@@ -33,7 +33,7 @@
           :value="incidentItem.evidenceCount"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-alert-circle-outline'"
           :flex="singleCol"
@@ -42,7 +42,7 @@
           :value="incidentItem.type"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
         <InfoCard
           :icon="'mdi-shield-check-outline'"
           :flex="singleCol"
@@ -50,7 +50,7 @@
           :name="'Reason'"
           :value="incidentItem.reason.split('.')[0] ? incidentItem.reason.split('.')[0] : incidentItem.reason"
           :wide="true"
-          :valueFontSize="22"
+          :valueFontSize="singleCol ? 22 : 22"
         />
       </v-col>
     </v-row>

@@ -106,14 +106,15 @@ const actions = {
     const duration = 30;
     try {
       // TODO: Remove outside of testing
-      const start = new Date().getTime();
-      // const start = new Date().getTime() - 24 * 60 * 60 * 1000;
+      // const start = new Date().getTime();
+      const start = new Date().getTime() - 24 * 60 * 60 * 1000;
       const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
       let sortedData = null;
       if (response.data.data) {
         sortedData = response.data.data
           .filter(x => {
-            return new Date().getTime() - x.endTime < 90 * 60 * 1000;
+            // return new Date().getTime() - x.endTime < 90 * 60 * 1000;
+            return new Date().getTime() - x.endTime < 24 * 60 * 60 * 1000;
           })
           .sort((a, b) => (a.severity > b.severity ? -1 : b.severity > a.severity ? 1 : 0));
         // console.log('Traffic Incidents: %o', sortedData);

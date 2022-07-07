@@ -5,7 +5,7 @@
         <!-- Resizable Map -->
         <template v-if="rzMap">
           <div class="map">
-            <SelectionPanel :width="420">
+            <SelectionPanel :width="1000">
               <Map
                 :apiInfo="apiInfo"
                 :markers="markers"
@@ -18,67 +18,15 @@
             </SelectionPanel>
           </div>
         </template>
-        <!-- Overview -->
-        <v-col id="overview" :cols="rzMap ? 4 : 3" :xl="rzMap ? 3 : 2" class="pa-0 px-2 pl-3">
-          <v-container style="max-height: calc(100vh - 48px); overflow-y: auto;" class="py-0">
-            <v-row v-for="(x, i) in cardData" :key="x.id">
-              <v-col cols="12" v-if="x.val" class="pa-1">
-                <v-hover v-slot="{ hover }">
-                  <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
-                    <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
-                      <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
-                        <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
-                          <v-card
-                            tile
-                            class="d-flex align-center justify-center"
-                            :disabled="!x.val || (x.val && (x.val == 0 || x.val == '-'))"
-                            height="calc(19vh - 48px)"
-                            @click.native="cardClicked(i)"
-                            :color="getColor(x)"
-                            :elevation="hover ? 12 : 2"
-                            :class="{ 'on-hover': hover }"
-                          >
-                            <v-col class="grid-center pa-0">
-                              <v-card-title v-show="$vuetify.breakpoint.lgAndUp" class="pa-0" style="font-size:26px">
-                                <v-icon class="pr-2" :color="colors[i]" x-normal>{{ x.icon }}</v-icon>
-                                {{ x.title }}
-                              </v-card-title>
-                              <h1 style="font-size:48px" class="pr-2">
-                                <template v-if="!x.val || (x.val && (x.val == 0 || x.val == '-'))">
-                                  <div class="pt-3"></div>
-                                  <Spinner />
-                                </template>
-                                <template v-else>
-                                  {{ x.val }}
-                                </template>
-                              </h1>
-                            </v-col>
-                            <div v-show="$vuetify.breakpoint.lgAndUp" class="card-container">
-                              <v-btn icon @click="goToPage(x.link)" class="link-button">
-                                <v-icon small :class="{ 'show-btns': hover }" :color="transparent">
-                                  mdi-open-in-new
-                                </v-icon>
-                              </v-btn>
-                            </div>
-                          </v-card>
-                        </v-sheet>
-                      </v-sheet>
-                    </v-sheet>
-                  </v-sheet>
-                </v-hover>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-col>
         <!-- Data & Map -->
-        <v-col class="pa-0" :cols="rzMap ? 8 : 9" :xl="rzMap ? 9 : 10">
+        <v-col class="pa-0" :cols="rzMap ? 8 : 12" :xl="rzMap ? 9 : 12">
           <v-row>
             <!-- Data -->
-            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="layout == '1: Card, 2: Info, 3: Map'">
+            <!-- <v-col id="data" :cols="rzMap ? 12 : 5" class="pa-0" v-if="layout == '1: Card, 2: Info, 3: Map'">
               <InfoColumn ref="infoColumn" :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
-            </v-col>
+            </v-col> -->
             <!-- Map -->
-            <v-col id="map" cols="6" class="pa-0" v-if="!rzMap">
+            <v-col id="map" cols="12" class="py-0 pl-0 pr-6" v-if="!rzMap">
               <div class="map">
                 <Map
                   :apiInfo="apiInfo"
@@ -88,14 +36,18 @@
                   :height="'calc(100vh - 48px)'"
                   :selectedIdx="selectedIdx"
                 />
+                <DashboardInfoOverlay :selectedIdx="selectedIdx" :cardData="cardData" @cardClicked="cardClicked" />
               </div>
             </v-col>
-            <v-col id="data" :cols="rzMap ? 12 : 6" class="pa-0" v-if="layout == '1: Card, 2: Map, 3: Info'">
+            <!-- <v-col id="data" :cols="rzMap ? 12 : 5" class="pa-0" v-if="layout == '1: Card, 2: Map, 3: Info'">
               <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
-            </v-col>
+            </v-col> -->
           </v-row>
         </v-col>
       </v-row>
+      <RightPanel name="dashboardSideBarWidth" :width="727" :title="selectedTitle">
+        <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
+      </RightPanel>
       <SelectionDialog v-model="showSelection" ref="selectionDialog" />
     </v-main>
   </div>
@@ -109,7 +61,8 @@ import SelectionPanel from '@/components/modules/dashboard/app/SelectionPanel.vu
 import SelectionDialog from '@/components/modules/dashboard/SelectionDialog.vue';
 import Constants from '@/utils/constants/dashboard.js';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import Spinner from '@/components/common/Spinner.vue';
+import DashboardInfoOverlay from '@/components/modules/dashboard/app/DashboardInfoOverlay.vue';
+import RightPanel from '@/components/modules/traffic/common/RightPanel';
 
 export default {
   name: 'App',
@@ -118,7 +71,8 @@ export default {
     SelectionPanel,
     InfoColumn,
     SelectionDialog,
-    Spinner
+    DashboardInfoOverlay,
+    RightPanel
   },
   data() {
     return {
@@ -221,12 +175,22 @@ export default {
           ]
         }
       ],
-      colors: ['white', 'white', 'white', 'white', 'white', 'white'],
       selectedIdx: -1,
       transparent: 'rgba(255, 255, 255, 0)'
     };
   },
   computed: {
+    showPanel: {
+      get() {
+        return this.$store.state.traffic.showPanel;
+      },
+      set(show) {
+        this.$store.commit('traffic/SHOW_PANEL', show);
+      }
+    },
+    selectedTitle() {
+      return this.selectedIdx >= 0 && this.cardData[this.selectedIdx] ? this.cardData[this.selectedIdx].title : '';
+    },
     incidentData() {
       return this.segments != null && this.trafficIncidents != null;
     },
@@ -331,7 +295,6 @@ export default {
       }
     },
     fetchApiData() {
-      console.log('fetchApiData');
       this.fetchBluetoothSegments();
       this.fetchWeatherStations();
       this.fetchTrafficIncidents();
@@ -454,28 +417,11 @@ export default {
       }
     },
 
-    getColor(param) {
-      if (param.val == '-') {
-        return 'black';
-      }
-      if (param && param.thresholds) {
-        for (let i = 0; i < param.thresholds.length; i++) {
-          if (i == param.thresholds.length - 1) {
-            return param.thresholds[i].color;
-          } else {
-            if (param.val >= param.thresholds[i].val && param.val < param.thresholds[i + 1].val) {
-              return param.thresholds[i].color;
-            }
-          }
-        }
-      } else {
-        return 'black';
-      }
-    },
     openDialog() {
       this.showDialog = true;
     },
     cardClicked(idx) {
+      this.showPanel = true;
       this.selectedIdx = idx;
       switch (idx) {
         case 0:
@@ -512,9 +458,6 @@ export default {
           alert('Unhandled Case');
           break;
       }
-    },
-    goToPage(link) {
-      window.open(link, '_blank');
     },
     getWazeIcons() {
       return [

@@ -48,9 +48,7 @@ export default {
   },
 
   mounted() {
-    if (!this.name) {
-      this.navigationWidth = this.width;
-    }
+    this.navigationWidth = this.width;
 
     this.setBorderWidth();
     this.setEvents();
