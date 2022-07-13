@@ -10,54 +10,70 @@
       @prepareData="prepareSignalPerformanceIssues"
     />
     <v-row class="mt-3 ml-1 mr-7" v-if="currSignalPerformanceIssue">
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Permit'"
           :value="currSignalPerformanceIssue.permit"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-map-marker-outline'"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Intersection'"
+          :value="currSignalPerformanceIssue.intersection"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'AoR Total'"
           :value="`${currSignalPerformanceIssue.score / 2} %`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-up-bold-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Simple Delay (NB)'"
           :value="`${currSignalPerformanceIssue.simpleDelay[0]} s`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-down-bold-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Simple Delay (SB)'"
           :value="`${currSignalPerformanceIssue.simpleDelay[1]} s`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-up-bold-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Approach Volume (NB)'"
           :value="`${currSignalPerformanceIssue.approachVolume[0]} veh/5m`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-arrow-down-bold-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Approach Volume (SB)'"

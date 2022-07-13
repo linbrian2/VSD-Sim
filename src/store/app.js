@@ -10,6 +10,7 @@ const state = {
     reconnectCount: 0
   },
 
+  navigationWidth: 600,
   settings: null,
   darkMode: null,
   showDrawer: false,
@@ -22,8 +23,13 @@ const state = {
 const getters = {
   getSetting: state => (app, key) => {
     if (state.settings && app && key) {
-      if (state.settings[app] && state.settings[app].params[key]) {
-        return state.settings[app].params[key].val;
+      if (state.settings[app]) {
+        let settingFilt = state.settings[app].settings.filter(s => s.name && s.name == key);
+        if (settingFilt.length > 0) {
+          return settingFilt[0].val;
+        } else {
+          return null;
+        }
       }
     } else {
       return null;
@@ -32,6 +38,9 @@ const getters = {
 };
 
 const mutations = {
+  SET_NAV_WIDTH(state, width) {
+    state.navigationWidth = width;
+  },
   SOCKET_ONOPEN(state, event) {
     Vue.prototype.$socket = event.currentTarget;
     state.socket.isConnected = true;

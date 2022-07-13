@@ -1,10 +1,16 @@
 <template>
   <v-navigation-drawer app clipped right ref="drawer" v-model="showPanel" :width="navigationWidth">
-    <v-toolbar dense flat fixed overflow>
+    <v-toolbar dense flat fixed overflow @click="changeTable">
       <v-toolbar-title class="action-title">{{ title }}</v-toolbar-title>
+
+      <v-spacer></v-spacer>
+      <v-icon v-if="tableButton" class="mr-10" :loading="loading">
+        {{ showTable ? 'mdi-arrow-expand-up' : 'mdi-arrow-expand-down' }}
+      </v-icon>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <slot name="buttons"></slot>
+
         <v-btn icon small @click="showPanel = false" :loading="loading"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar-items>
     </v-toolbar>
@@ -15,8 +21,10 @@
 
 <script>
 import Utils from '@/utils/Utils';
+import { mapGetters } from 'vuex';
 export default {
   props: {
+    tableButton: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },
     width: {
       type: Number,
@@ -29,7 +37,6 @@ export default {
     title: String
   },
   data: () => ({
-    navigationWidth: 600,
     navigation: {
       shown: false,
       borderSize: 5
@@ -44,13 +51,31 @@ export default {
       set(show) {
         this.$store.commit('traffic/SHOW_PANEL', show);
       }
-    }
+    },
+    navigationWidth: {
+      get() {
+        return this.$store.state.navigationWidth;
+      },
+      set(width) {
+        this.$store.commit('SET_NAV_WIDTH', width);
+      }
+    },
+    showTable: {
+      get() {
+        return this.$store.state.dashboard.showTable;
+      },
+      set(show) {
+        this.$store.commit('dashboard/SHOW_TABLE', show);
+      }
+    },
+    sideBarWidth() {
+      return this.getSetting('general', 'sideBarWidth');
+    },
+    ...mapGetters(['getSetting'])
   },
 
   mounted() {
-    if (!this.name) {
-      this.navigationWidth = this.width;
-    }
+    this.navigationWidth = this.sideBarWidth;
 
     this.setBorderWidth();
     this.setEvents();
@@ -69,10 +94,23 @@ export default {
   watch: {
     navigationWidth(value) {
       this.$emit('navigation-width-changed', value);
+    },
+    width(width) {
+      this.navigationWidth = width;
+    },
+    sideBarWidth(width) {
+      this.width = width;
     }
   },
 
   methods: {
+    changeTable() {
+      setTimeout(() => {
+        if (this.showPanel) {
+          this.showTable = !this.showTable;
+        }
+      }, 10);
+    },
     loadConfig() {
       if (this.name) {
         let value = Utils.loadFromLocalStorage(this.name);

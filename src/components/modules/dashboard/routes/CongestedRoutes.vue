@@ -5,10 +5,10 @@
       fixed-header
       :headers="headers"
       :items="items"
-      :items-per-page="itemsPerPage"
-      :item-class="itemRowBackground"
+      :items-per-page="showTable && maxItems > listLimit ? maxItems : listLimit"
       disable-sort
-      :hide-default-header="itemsPerPage == 1"
+      :hide-default-header="!showTable"
+      :item-class="itemRowBackground"
       hide-default-footer
       @click:row="handleRowClick"
       class="elevation-1"
@@ -21,34 +21,36 @@
       <template v-slot:[`item.lastUpdated`]="{ item }">
         {{ item.lastUpdated.split(' ')[1].slice(0, 5) }}
       </template>
-      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
-        <div class="grid-right pr-6">
-          <v-icon small @click="expandTable">
-            mdi-arrow-expand-down
-          </v-icon>
-        </div>
-      </template>
-      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
-        <v-btn block @click="expandTable">
-          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
-        </v-btn>
-      </template>
     </v-data-table>
     <v-row class="mt-3 ml-1 mr-7" v-if="currSegment">
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
+        <InfoCard
+          :icon="'mdi-vector-line'"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Name'"
+          :titleFontSize="singleCol ? undefined : 20"
+          :valueFontSize="singleCol ? undefined : 28"
+          :value="currSegment.desc"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-clock-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Time'"
           :titleFontSize="singleCol ? undefined : 20"
-          :valueFontSize="singleCol ? 38 : 28"
+          :valueFontSize="singleCol ? undefined : 28"
           :value="getTimeStr(currSegment.travelTime.calculationTimestamp.value)"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-chart-bar-stacked'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Severity'"
@@ -56,9 +58,10 @@
           :value="currSegment.travelTime.level"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-vector-line'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Distance'"
@@ -67,9 +70,10 @@
           :value="`${currSegment.distance} mi`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-speedometer'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Speed'"
@@ -78,9 +82,10 @@
           :value="`${currSegment.travelTime.data.speedMph.toFixed(2)} mph`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-timer-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Free Flow Run TIme'"
@@ -89,9 +94,10 @@
           :value="`${currSegment.travelTime.data.freeFlowRunTimeSecs} s`"
         />
       </v-col>
-      <v-col :offset-lg="singleCol ? 1 : 0" :cols="singleCol ? 10 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-timer-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Travel Time Mean'"
@@ -107,7 +113,7 @@
 <script>
 import InfoCard from '@/components/modules/dashboard/InfoCard';
 import Utils from '@/utils/Utils.js';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   props: {
@@ -119,12 +125,19 @@ export default {
     InfoCard
   },
   data: () => ({
-    itemsPerPage: 1,
+    itemsPerPage: 0,
     reload: false,
     items: [],
     headers: []
   }),
   computed: {
+    height() {
+      if (this.showTable && this.maxItems > 12) {
+        return 'calc(80vh - 48px)';
+      } else {
+        return null;
+      }
+    },
     singleCol() {
       return this.infoColumnCount == 1;
     },
@@ -151,6 +164,22 @@ export default {
         }, 1);
       }
     },
+    showTable: {
+      get() {
+        return this.$store.state.dashboard.showTable;
+      },
+      set(show) {
+        this.$store.commit('dashboard/SHOW_TABLE', show);
+      }
+    },
+    listLimit() {
+      if (this.getSetting) {
+        return this.getSetting('dashboard', 'limitListings');
+      } else {
+        return 0;
+      }
+    },
+    ...mapGetters(['getSetting']),
     ...mapState('dashboard', ['segments'])
   },
   mounted() {
@@ -162,24 +191,7 @@ export default {
   methods: {
     getTimeStr(ts) {
       let time = new Date(ts);
-      return `${Utils.formatTimeAsMinute(time)} (${Utils.fromNow(time)})`;
-    },
-    expandTable() {
-      if (this.itemsPerPage == 1) {
-        this.prepareHighCongestionRoutes(this.segments);
-        if (this.maxItems > 12) {
-          this.height = 'calc(95vh - 48px)';
-        }
-        if (this.maxItems == 1) {
-          this.itemsPerPage = 1.1;
-        } else {
-          this.itemsPerPage = this.maxItems;
-        }
-      } else {
-        this.prepareHighCongestionRoutes([this.currSegment]);
-        this.height = null;
-        this.itemsPerPage = 1;
-      }
+      return `${Utils.formatTimeAsMinute(time)}`;
     },
     getStrokeColor(level) {
       return Utils.getStrokeColor(level);

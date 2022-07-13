@@ -66,7 +66,7 @@ import VuePerfectScrollbar from 'vue-perfect-scrollbar';
 import Utils from '@/utils/Utils';
 import NavList from '@/components/nav/NavList';
 import routes from '@/components/nav/configs';
-import { RouterPaths } from '@/utils/constants/router';
+// import { RouterPaths } from '@/utils/constants/router';
 
 export default {
   name: 'AppDrawer',
@@ -135,7 +135,7 @@ export default {
     },
 
     handleSettings() {
-      this.$router.push({ path: RouterPaths.AUTH_PREFERENCES }).catch(() => {});
+      this.$bus.$emit('TOGGLE_SETTINGS_DIALOG', true);
     }
   }
 };

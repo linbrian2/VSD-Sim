@@ -15,8 +15,8 @@ export default Object.freeze({
 
   TRAFFIC_INCIDENTS_ICON: 'mdi-vector-line',
   DEVICE_TRAFFIC_ICON: 'mdi-traffic-cone',
-  SIGNAL_PERFORMANCE_ISSUES_ICON: 'mdi-signal-variant',
-  TRAFFIC_FLOW_ANOMALIES_ICON: 'mdi-leak',
+  SIGNAL_PERFORMANCE_ISSUES_ICON: 'mdi-traffic-light',
+  TRAFFIC_FLOW_ANOMALIES_ICON: 'mdi-alert-circle-outline',
   HIGH_CONGESTION_ROUTES_ICON: 'mdi-car-multiple',
   REPORTED_WAZE_ALERTS_ICON: 'mdi-waze',
 

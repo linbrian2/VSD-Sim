@@ -5,9 +5,9 @@
       fixed-header
       :headers="headers"
       :items="summary"
-      :items-per-page="itemsPerPage"
+      :items-per-page="showTable && maxItems > listLimit ? maxItems : listLimit"
       disable-sort
-      :hide-default-header="itemsPerPage == 1"
+      :hide-default-header="!showTable"
       hide-default-footer
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
@@ -25,18 +25,6 @@
       <template v-slot:[`item.AoRS`]="{ item }">
         <FormatChip :value="item.AoR[1]" />
       </template>
-      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
-        <div class="grid-right pr-6">
-          <v-icon small @click="expandTable">
-            mdi-arrow-expand-down
-          </v-icon>
-        </div>
-      </template>
-      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
-        <v-btn block @click="expandTable">
-          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
-        </v-btn>
-      </template>
     </v-data-table>
   </div>
 </template>
@@ -44,7 +32,7 @@
 <script>
 import Utils from '@/utils/Utils';
 import FormatChip from '@/components/modules/hr/FormatChip';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   components: {
@@ -59,7 +47,7 @@ export default {
   },
   data: () => ({
     height: null,
-    itemsPerPage: 1,
+    itemsPerPage: 0,
     updatedTime: null,
     initPanelState: true,
     selectedRowId: null,
@@ -67,15 +55,26 @@ export default {
       { text: 'Permit', value: 'permit' },
       { text: 'Intersection', value: 'intersection' },
       { text: 'AoR (NB)', value: 'AoRN' },
-      { text: 'AoR (SB)', value: 'AoRS' },
-      { text: '', value: 'actions' }
-      // { text: 'SimpleDelay (NB)', value: 'simpleDelayN', align: 'center' },
-      // { text: 'SimpleDelay (SB)', value: 'simpleDelayS', align: 'center' },
-      // { text: 'ApproachVol (NB)', value: 'approachVolumeN', align: 'center' },
-      // { text: 'ApproachVol (SB)', value: 'approachVolumeS', align: 'center' }
+      { text: 'AoR (SB)', value: 'AoRS' }
     ]
   }),
   computed: {
+    showTable: {
+      get() {
+        return this.$store.state.dashboard.showTable;
+      },
+      set(show) {
+        this.$store.commit('dashboard/SHOW_TABLE', show);
+      }
+    },
+    listLimit() {
+      if (this.getSetting) {
+        return this.getSetting('dashboard', 'limitListings');
+      } else {
+        return 0;
+      }
+    },
+    ...mapGetters(['getSetting']),
     ...mapState('dashboard', ['selectedSignalPerformanceIssue'])
   },
   filters: {
@@ -88,11 +87,16 @@ export default {
     if (this.summary && !this.selectedSignalPerformanceIssue) {
       this.handleRowClick(this.summary[0]);
     }
+
+    this.itemsPerPage = this.listLimit;
+    if (this.showTable) {
+      this.expandTable();
+    }
   },
 
   methods: {
     expandTable() {
-      if (this.itemsPerPage == 1) {
+      if (this.itemsPerPage == this.listLimit) {
         this.$emit('prepareData', this.hrSummary);
         if (this.maxItems > 12) {
           this.height = 'calc(95vh - 48px)';
@@ -105,7 +109,7 @@ export default {
       } else {
         this.$emit('prepareData', [this.selectedSignalPerformanceIssue]);
         this.height = null;
-        this.itemsPerPage = 1;
+        this.itemsPerPage = this.listLimit;
       }
     },
 
@@ -138,9 +142,17 @@ export default {
   },
   watch: {
     summary() {
-      if (this.summary && this.itemsPerPage == 1) {
+      if (this.summary && this.itemsPerPage == this.listLimit) {
         this.handleRowClick(this.summary[0]);
       }
+    },
+    listLimit(limit) {
+      if (!this.showTable) {
+        this.itemsPerPage = limit;
+      }
+    },
+    showTable() {
+      this.expandTable();
     }
   }
 };

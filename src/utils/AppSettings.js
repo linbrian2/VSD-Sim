@@ -1,55 +1,70 @@
 export default {
   // Get a setting: $store.getters.getSettings(app, setting)
-  // Example: $store.getters.getSetting('mainDashboard', 'autoDataUpdate')
-  // Computed property: ...mapGetters(['getSetting']) => getSetting('mainDashboard', 'autoDataUpdate')
+  // Example: $store.getters.getSetting('dashboard', 'autoDataUpdate')
+  // Computed property: ...mapGetters(['getSetting']) => getSetting('dashboard', 'autoDataUpdate')
   // ! Use restore to default button on settings page after making changes/adding new settings
   getDefault() {
     return {
       general: {
+        name: 'General',
         icon: 'mdi-cog',
-        params: {}
+        settings: [
+          { divider: true, title: 'Weather Settings' },
+          { id: 0, name: 'showWeatherBar', label: 'Show Weather Bar', type: 'boolean', val: true },
+          { id: 1, name: 'showTemp', label: 'Show Temperature', type: 'boolean', val: true },
+          { id: 2, name: 'showWind', label: 'Show Wind Speed', type: 'boolean', val: false },
+          { id: 3, name: 'showVisibility', label: 'Show Visibility', type: 'boolean', val: false },
+          { id: 4, name: 'showPrecip', label: 'Show Percipitation', type: 'boolean', val: false },
+          // { divider: true, title: 'Side Bar' },
+          // { id: 5, name: 'sideBarWidth', label: 'Side Bar Width', type: 'number', val: 700, min: 0, max: 1500 }
+        ]
       },
-      mainDashboard: {
+      dashboard: {
+        name: 'Main Dashboard',
         icon: 'mdi-view-dashboard',
-        params: {
-          autoDataUpdate: { label: 'Enable Automatic Data Update', val: true },
-          dataUpdateInterval: { label: 'Data update interval (min)', val: 5, min: 1, max: 10 },
-          autoPageSwaps: { label: 'Enable Automatic Page Swaps', val: true },
-          swapInterval: { label: 'Swap Interval (sec)', val: 45, min: 10, max: 60 },
-          resizableMap: { label: 'Enable Resizable Map (Overrides layout)', val: false },
-          pageLayout: {
-            label: 'Page layout',
-            val: '1: Card, 2: Map, 3: Info',
-            items: ['1: Card, 2: Info, 3: Map', '1: Card, 2: Map, 3: Info']
-          },
-          infoColumnCount: {
-            label: 'Info Column Count',
-            val: 1,
+        settings: [
+          { divider: true, title: 'Updates' },
+          { id: 100, name: 'autoDataUpdate', label: 'Automatic Data Update', type: 'boolean', val: true },
+          {
+            id: 101,
+            name: 'dataUpdateInterval',
+            label: 'Data Update Interval (min)',
+            type: 'number',
+            val: 5,
             min: 1,
-            max: 2
+            max: 10
           },
-          limitListings: { label: 'Limit Listings', val: 1, min: 1, max: 5 }
-        }
+          { id: 102, name: 'autoPageSwaps', label: 'Automatic Page Swaps', type: 'boolean', val: true },
+          { id: 103, name: 'swapInterval', label: 'Swap Interval (sec)', type: 'number', val: 45, min: 10, max: 60 },
+          { divider: true, title: 'Miscellaneous' },
+          { id: 104, name: 'infoColumnCount', label: 'Info Column Count', type: 'number', val: 1, min: 1, max: 5 },
+          { id: 105, name: 'limitListings', label: 'Limit Listings', type: 'number', val: 0, min: 0, max: 5 }
+        ]
       },
-      trafficFlowData: {
+      traffic: {
+        name: 'Traffic Flow Data',
         icon: 'flowIcon',
-        params: {}
+        settings: [{ divider: true, title: 'Flow Settings' }]
       },
-      highResolutionData: {
+      hr: {
+        name: 'High Resolution Data',
         icon: 'hrIcon',
-        params: {}
+        settings: [{ divider: true, title: 'Hr Settings' }]
       },
-      machineVision: {
+      vision: {
+        name: 'Machine Vision',
         icon: 'visionIcon',
-        params: {}
+        settings: [{ divider: true, title: 'Vision Settings' }]
       },
-      cavData: {
+      cav: {
+        name: 'CAV Data',
         icon: 'cavIcon',
-        params: {}
+        settings: [{ divider: true, title: 'Cav Settings' }]
       },
-      systemMonitoring: {
+      status: {
+        name: 'System Monitoring',
         icon: 'healthIcon',
-        params: {}
+        settings: [{ divider: true, title: 'Health Settings' }]
       }
     };
   }

@@ -182,7 +182,6 @@ export default {
     ])
   },
   mounted() {
-    console.log(this.currentPolyline);
     this.addSelectedMarker();
     setTimeout(() => {
       this.loadPage(this.$vuetify.theme.dark);
