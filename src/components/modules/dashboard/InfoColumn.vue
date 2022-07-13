@@ -1,22 +1,22 @@
 <template>
-  <v-container class="pa-0 px-2" style="max-height: calc(100vh - 48px); overflow-y: auto;">
+  <v-container class="pa-0 px-2">
     <div id="traffic-incidents" v-if="dataAvailable(cardData[0]) && selectedIdx == 0">
-      <TrafficIncidents :listLimit="listLimit" :infoColumnCount="infoColumnCount" :handleRowClick="handleRowClick" />
+      <TrafficIncidents class="mt-1" :infoColumnCount="infoColumnCount" :handleRowClick="handleRowClick" />
     </div>
     <div id="traffic-flow-issues" v-if="dataAvailable(cardData[1]) && selectedIdx == 1">
-      <TrafficFlowIssues :listLimit="listLimit" :maxItems="cardData[1].val" :infoColumnCount="infoColumnCount" />
+      <TrafficFlowIssues class="mt-1" :maxItems="cardData[1].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="signal-performance-issues" v-if="dataAvailable(cardData[2]) && selectedIdx == 2">
-      <SignalPerformanceIssues :listLimit="listLimit" :maxItems="cardData[2].val" :infoColumnCount="infoColumnCount" />
+      <SignalPerformanceIssues class="mt-1" :maxItems="cardData[2].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="device-anomalies" v-if="dataAvailable(cardData[3]) && selectedIdx == 3">
-      <DeviceAnomalies :listLimit="listLimit" :maxItems="cardData[3].val" :infoColumnCount="infoColumnCount" />
+      <DeviceAnomalies class="mt-1" :maxItems="cardData[3].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="congested-routes" v-if="dataAvailable(cardData[4]) && selectedIdx == 4">
-      <CongestedRoutes :listLimit="listLimit" :maxItems="cardData[4].val" :infoColumnCount="infoColumnCount" />
+      <CongestedRoutes class="mt-1" :maxItems="cardData[4].val" :infoColumnCount="infoColumnCount" />
     </div>
     <div id="waze-alerts" v-if="dataAvailable(cardData[5]) && selectedIdx == 5">
-      <WazeAlerts :listLimit="listLimit" :maxItems="cardData[5].val" :infoColumnCount="infoColumnCount" />
+      <WazeAlerts class="mt-1" :maxItems="cardData[5].val" :infoColumnCount="infoColumnCount" />
     </div>
   </v-container>
 </template>
@@ -53,13 +53,13 @@ export default {
   },
   computed: {
     infoColumnCount() {
-      return this.getSetting('mainDashboard', 'infoColumnCount');
+      return this.getSetting('dashboard', 'infoColumnCount');
     },
     listLimit() {
       if (this.getSetting) {
-        return this.getSetting('mainDashboard', 'limitListings');
+        return this.getSetting('dashboard', 'limitListings');
       } else {
-        return 1;
+        return 0;
       }
     },
     ...mapGetters(['getSetting'])

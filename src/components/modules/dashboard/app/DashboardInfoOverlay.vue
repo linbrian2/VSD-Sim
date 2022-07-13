@@ -13,9 +13,9 @@
                         tile
                         class="d-flex align-center justify-center"
                         :disabled="!x.val || (x.val && (x.val == 0 || x.val == '-'))"
-                        height="56px"
+                        height="65px"
                         width="120px"
-                        @click.native="cardClicked(i, x.link)"
+                        @click.native="cardClicked(i)"
                         :color="getColor(x)"
                         :elevation="hover ? 12 : 2"
                         :class="{ 'on-hover': hover }"
@@ -33,6 +33,13 @@
                             </template>
                           </v-card-title>
                         </v-col>
+                        <div v-show="hover" class="card-container">
+                          <v-btn icon @click="goToPage(x.link)" class="link-button">
+                            <v-icon small :class="{ 'show-btns': hover }" color="transparent">
+                              mdi-open-in-new
+                            </v-icon>
+                          </v-btn>
+                        </div>
                       </v-card>
                     </template>
                     <span>{{ x.title }}</span>
@@ -65,10 +72,10 @@ export default {
     };
   },
   methods: {
-    cardClicked(i, link) {
-      if (this.selectedIdx == i) {
-        this.goToPage(link);
-      }
+    cardClicked(i) {
+      // if (this.selectedIdx == i) {
+      //   this.goToPage(link);
+      // }
       this.$emit('cardClicked', i);
     },
     goToPage(link) {
@@ -96,4 +103,20 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.link-button {
+  position: absolute;
+  bottom: 4px;
+  right: -8px;
+}
+.card-container {
+  position: relative;
+}
+
+.show-btns {
+  color: rgba(255, 255, 255, 1) !important;
+}
+.show-btns-light {
+  color: rgba(0, 0, 0, 1) !important;
+}
+</style>

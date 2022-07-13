@@ -2,31 +2,11 @@
   <div class="status">
     <v-main class="pa-0">
       <v-row>
-        <!-- Resizable Map -->
-        <template v-if="rzMap">
-          <div class="map">
-            <SelectionPanel :width="1000">
-              <Map
-                :apiInfo="apiInfo"
-                :markers="markers"
-                :segments="polylines"
-                :icons="icons"
-                :disableDefaultUI="true"
-                :height="'calc(100vh - 48px)'"
-                :selectedIdx="selectedIdx"
-              />
-            </SelectionPanel>
-          </div>
-        </template>
         <!-- Data & Map -->
-        <v-col class="pa-0" :cols="rzMap ? 8 : 12" :xl="rzMap ? 9 : 12">
+        <v-col class="pa-0" cols="12">
           <v-row>
-            <!-- Data -->
-            <!-- <v-col id="data" :cols="rzMap ? 12 : 5" class="pa-0" v-if="layout == '1: Card, 2: Info, 3: Map'">
-              <InfoColumn ref="infoColumn" :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
-            </v-col> -->
             <!-- Map -->
-            <v-col id="map" cols="12" class="py-0 pl-0 pr-6" v-if="!rzMap">
+            <v-col id="map" cols="12" class="py-0 pl-0 pr-6">
               <div class="map">
                 <Map
                   :apiInfo="apiInfo"
@@ -39,13 +19,10 @@
                 <DashboardInfoOverlay :selectedIdx="selectedIdx" :cardData="cardData" @cardClicked="cardClicked" />
               </div>
             </v-col>
-            <!-- <v-col id="data" :cols="rzMap ? 12 : 5" class="pa-0" v-if="layout == '1: Card, 2: Map, 3: Info'">
-              <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
-            </v-col> -->
           </v-row>
         </v-col>
       </v-row>
-      <RightPanel name="dashboardSideBarWidth" :width="727" :title="selectedTitle">
+      <RightPanel name="dashboardSideBarWidth" :width="sideBarWidth" :title="selectedTitle" :tableButton="true">
         <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
       </RightPanel>
       <SelectionDialog v-model="showSelection" ref="selectionDialog" />
@@ -57,7 +34,6 @@
 import Devices from '@/utils/Devices.js';
 import Map from '@/components/modules/dashboard/Map.vue';
 import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
-import SelectionPanel from '@/components/modules/dashboard/app/SelectionPanel.vue';
 import SelectionDialog from '@/components/modules/dashboard/SelectionDialog.vue';
 import Constants from '@/utils/constants/dashboard.js';
 import { mapActions, mapGetters, mapState } from 'vuex';
@@ -68,7 +44,6 @@ export default {
   name: 'App',
   components: {
     Map,
-    SelectionPanel,
     InfoColumn,
     SelectionDialog,
     DashboardInfoOverlay,
@@ -197,12 +172,6 @@ export default {
     cardProgress() {
       return this.cardElapsedTime < 0 ? 0 : (this.cardElapsedTime / 45) * 100;
     },
-    rzMap() {
-      return this.getSetting('mainDashboard', 'resizableMap');
-    },
-    layout() {
-      return this.getSetting('mainDashboard', 'pageLayout');
-    },
     ...mapState('dashboard', [
       'pref',
       'weatherStations',
@@ -308,8 +277,8 @@ export default {
     updateData() {
       this.elapsedTime++;
       if (
-        this.getSetting('mainDashboard', 'autoDataUpdate') &&
-        this.elapsedTime >= this.getSetting('mainDashboard', 'dataUpdateInterval') * 60
+        this.getSetting('dashboard', 'autoDataUpdate') &&
+        this.elapsedTime >= this.getSetting('dashboard', 'dataUpdateInterval') * 60
       ) {
         this.elapsedTime = 0;
         this.fetchApiData();
@@ -326,8 +295,8 @@ export default {
     },
     updateCardSwap() {
       this.cardElapsedTime++;
-      let pageSwapEnabled = this.getSetting('mainDashboard', 'autoPageSwaps');
-      let swapInterval = this.getSetting('mainDashboard', 'swapInterval');
+      let pageSwapEnabled = this.getSetting('dashboard', 'autoPageSwaps');
+      let swapInterval = this.getSetting('dashboard', 'swapInterval');
       if (!this.manualMode && pageSwapEnabled && this.cardElapsedTime >= swapInterval) {
         this.cardElapsedTime = 0;
         if (this.selectedIdx >= 0 && this.selectedIdx <= 4) {
@@ -601,14 +570,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-progress-linear {
-  display: block;
-  width: 100px;
-  margin: 0 auto;
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none; /* Firefox */
 }
 </style>
 
 <style>
+html {
+  overflow-y: auto;
+}
 .card-container {
   position: relative;
 }

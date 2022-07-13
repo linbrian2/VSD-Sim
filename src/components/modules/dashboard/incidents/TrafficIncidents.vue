@@ -4,19 +4,54 @@
       <IncidentTable :incidents="$store.state.dashboard.trafficIncidents" @click="handleRowClick" />
     </v-card>
     <v-row class="mt-3 ml-1 mr-7" v-if="incidentItem">
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
+        <InfoCard
+          :icon="'mdi-vector-line'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Route'"
+          :value="incidentItem.route"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-clock-outline'"
           :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Start Time'"
+          :value="getTimeStr(incidentItem.startTime)"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
+        <InfoCard
+          :icon="'mdi-clock-outline'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :valueFontSize="singleCol ? undefined : 28"
           :name="'End Time'"
           :value="getTimeStr(incidentItem.endTime)"
         />
       </v-col>
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
-          :icon="'mdi-chart-bar-stacked'"
+          :icon="'mdi-timer-outline'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Duration'"
+          :value="`${incidentItem.duration} min`"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Severity'"
@@ -24,27 +59,30 @@
           :valueColor="incidentItem.severityColor"
         />
       </v-col>
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
-          :icon="'mdi-map-marker-outline'"
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
-          :name="'Total Evidence'"
-          :value="incidentItem.evidenceCount"
+          :name="'Evidence Counts'"
+          :value="incidentItem.evidenceCounts"
         />
       </v-col>
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-alert-circle-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Type'"
           :value="incidentItem.type"
         />
       </v-col>
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
-          :icon="'mdi-shield-check-outline'"
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Reason'"
@@ -101,9 +139,33 @@ export default {
   },
 
   methods: {
+    getEvidenceIcon(name) {
+      const ICONS = {
+        flow: Constants.DEVICE_TRAFFIC_ICON,
+        bluetooth: Constants.DEVICE_BLUETOOTH_ICON,
+        waze: Constants.DEVICE_WAZE_ICON,
+        restriction: Constants.DEVICE_RESTRICTIONS_ICON,
+        weather: Constants.DEVICE_WEATHER_ICON,
+        alert: Constants.DEVICE_ALERT_ICON
+      };
+      return ICONS[name];
+    },
+
+    getEvidenceColor(name) {
+      const ICONS = {
+        flow: 'purple',
+        bluetooth: 'blue darken-4',
+        waze: 'cyan accent-4',
+        restriction: 'orange',
+        weather: 'grey',
+        alert: 'red'
+      };
+      return ICONS[name];
+    },
+
     getTimeStr(ts) {
       let time = new Date(ts);
-      return `${Utils.formatTimeAsMinute(time)} (${Utils.fromNow(time)})`;
+      return `${Utils.formatTimeAsMinute(time)}`;
     },
     getTime(ts) {
       if (ts) {

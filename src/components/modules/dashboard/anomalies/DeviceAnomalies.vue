@@ -4,11 +4,11 @@
       :height="height"
       fixed-header
       :headers="headers"
-      :items="items"
+      :items="items.slice(0, maxItems)"
+      :items-per-page="showTable && maxItems > listLimit ? maxItems : listLimit"
       disable-sort
-      :hide-default-header="itemsPerPage == 1"
+      :hide-default-header="!showTable"
       hide-default-footer
-      :items-per-page="itemsPerPage"
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
       class="elevation-1"
@@ -16,32 +16,22 @@
       <template v-slot:[`item.id`]="{ item }">
         <v-chip color="pink" outlined small style="width:62px;">{{ item.id }}</v-chip>
       </template>
-      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
-        <div class="grid-right pr-6">
-          <v-icon small @click="expandTable">
-            mdi-arrow-expand-down
-          </v-icon>
-        </div>
-      </template>
-      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
-        <v-btn block @click="expandTable">
-          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
-        </v-btn>
-      </template>
     </v-data-table>
     <v-row class="mt-3 ml-1 mr-7" v-if="selectedDetector">
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-alert-circle-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Total Issues'"
           :value="selectedDetector.counts[0]"
         />
       </v-col>
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="'Major Error Type'"
@@ -49,18 +39,20 @@
           :valueFontSize="singleCol ? undefined : 36"
         />
       </v-col>
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1">
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="getCount('name', selectedDetector)"
           :value="getCount('val', selectedDetector)"
         />
       </v-col>
-      <v-col :cols="singleCol ? 12 : 6" class="pa-1" v-for="err in sensorErrorTypes" :key="err.dir">
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-for="err in sensorErrorTypes" :key="err.dir">
         <InfoCard
           :icon="'mdi-alert-circle-outline'"
+          :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
           :name="`Total Issues (${err.dir})`"
@@ -88,7 +80,7 @@
 import Api from '@/utils/api/status';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/status';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import InfoCard from '@/components/modules/dashboard/InfoCard';
 
 export default {
@@ -102,8 +94,7 @@ export default {
   },
 
   data: () => ({
-    height: null,
-    itemsPerPage: 1,
+    itemsPerPage: 0,
 
     reload: false,
     loading: false,
@@ -136,6 +127,13 @@ export default {
   }),
 
   computed: {
+    height() {
+      if (this.showTable && this.maxItems > 12) {
+        return 'calc(80vh - 48px)';
+      } else {
+        return null;
+      }
+    },
     singleCol() {
       return this.infoColumnCount == 1;
     },
@@ -161,6 +159,22 @@ export default {
         }, 1);
       }
     },
+    showTable: {
+      get() {
+        return this.$store.state.dashboard.showTable;
+      },
+      set(show) {
+        this.$store.commit('dashboard/SHOW_TABLE', show);
+      }
+    },
+    listLimit() {
+      if (this.getSetting) {
+        return this.getSetting('dashboard', 'limitListings');
+      } else {
+        return 0;
+      }
+    },
+    ...mapGetters(['getSetting']),
     ...mapState('dashboard', ['flowAnomData'])
   },
 
@@ -193,23 +207,6 @@ export default {
     getDirErrorCount(data) {
       console.log(data);
       return data.errorTypes.data.reduce((x, y) => x + y[2], 0);
-    },
-    expandTable() {
-      if (this.itemsPerPage == 1) {
-        this.prepareSensorErrorCounts(this.flowAnomData.sensorErrorCounts);
-        if (this.maxItems > 12) {
-          this.height = 'calc(95vh - 48px)';
-        }
-        if (this.maxItems == 1) {
-          this.itemsPerPage = 1.1;
-        } else {
-          this.itemsPerPage = this.maxItems;
-        }
-      } else {
-        this.allItems = this.items.filter(x => x.id == this.selectedDetector.id);
-        this.height = null;
-        this.itemsPerPage = 1;
-      }
     },
 
     getCount(attr, detector) {

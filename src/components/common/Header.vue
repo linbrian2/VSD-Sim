@@ -44,6 +44,7 @@
 
     <NavDrawer />
     <SnackBar />
+    <SettingsDialog />
   </div>
 </template>
 
@@ -59,6 +60,7 @@ import ThreeDotMenu from '@/components/common/ThreeDotMenu';
 import SnackBar from '@/components/common/SnackBar';
 import ChartStyles from '@/utils/ChartStyles.js';
 import WeatherOverlay from '@/components/modules/dashboard/WeatherOverlay.vue';
+import SettingsDialog from './SettingsDialog.vue';
 
 export default {
   props: {
@@ -97,7 +99,8 @@ export default {
     NavDrawer,
     ThreeDotMenu,
     SnackBar,
-    WeatherOverlay
+    WeatherOverlay,
+    SettingsDialog
   },
 
   data: () => ({}),

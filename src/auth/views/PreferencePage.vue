@@ -28,40 +28,41 @@
             <v-img v-else class="mr-1" :src="getIcon(category.icon)" max-width="30" />
             {{ camelCaseToWords(key) }}
           </v-tab>
-          <v-tab-item :key="category.id">
+          <v-tab-item :key="category.id" class="pb-10">
             <v-row>
-              <v-col cols="12">
-                <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
-                  <h3>{{ camelCaseToWords(key) }}</h3>
-                </v-subheader>
-                <v-divider />
-              </v-col>
               <v-col cols="6" v-if="key == 'general'">
-                <v-btn @click="defaultSettingsDialog = true">Restore Settings to Default</v-btn>
+                <v-btn @click="defaultSettingsDialog = true">Restore Settings to Default / Refresh New Settings</v-btn>
               </v-col>
-              <v-col cols="6" v-for="param in category.params" :key="param.id">
+              <!-- <v-divider v-if="item.divider" :key="index"></v-divider> -->
+              <v-col :cols="setting.divider ? 12 : 6" v-for="setting in category.settings" :key="setting.id">
+                <template v-if="setting.divider">
+                  <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
+                    <h3>{{ camelCaseToWords(setting.title) }}</h3>
+                  </v-subheader>
+                  <v-divider />
+                </template>
                 <v-checkbox
-                  v-if="typeof param.val == 'boolean'"
-                  v-model="param.val"
-                  :label="param.label"
+                  v-if="typeof setting.val == 'boolean'"
+                  v-model="setting.val"
+                  :label="setting.label"
                   class="mr-10"
                 ></v-checkbox>
                 <v-select
-                  v-else-if="typeof param.val == 'string' && param.items"
-                  v-model="param.val"
-                  :label="param.label"
-                  :items="param.items"
+                  v-else-if="typeof setting.val == 'string' && setting.items"
+                  v-model="setting.val"
+                  :label="setting.label"
+                  :items="setting.items"
                   class="mr-10"
                   dense
                   filled
                   hide-details
                 ></v-select>
                 <v-text-field
-                  v-else-if="typeof param.val == 'number'"
-                  v-model.number="param.val"
-                  :label="param.label"
-                  :min="param.min"
-                  :max="param.max"
+                  v-else-if="typeof setting.val == 'number'"
+                  v-model.number="setting.val"
+                  :label="setting.label"
+                  :min="setting.min"
+                  :max="setting.max"
                   class="mr-10"
                   type="number"
                   dense
@@ -154,10 +155,12 @@ export default {
     },
 
     restoreDefault() {
-      this.defaultSettingsDialog = false;
-      this.settings = Settings.getDefault();
-      this.$store.dispatch('saveSettings', this.settings);
-      this.saveData();
+      // this.defaultSettingsDialog = false;
+      // this.settings = Settings.getDefault();
+      // this.$store.dispatch('saveSettings', this.settings);
+      // let notifText = 'Settings saved.';
+      // this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
+      // this.saveData(false);
     },
 
     getIcon(name) {

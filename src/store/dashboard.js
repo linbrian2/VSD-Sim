@@ -5,6 +5,7 @@ import StatusApi from '@/utils/api/status';
 import Utils from '@/utils/Utils';
 
 const state = {
+  showTable: false,
   activeMarker: null,
 
   weatherStations: null,
@@ -47,6 +48,9 @@ const state = {
 const getters = {};
 
 const mutations = {
+  SHOW_TABLE(state, show) {
+    state.showTable = show;
+  },
   SET_ACTIVE_MARKER(state, marker) {
     state.activeMarker = marker;
   },

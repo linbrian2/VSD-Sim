@@ -48,7 +48,6 @@ import LoginPage from '@/auth/views/LoginPage';
 import ChangePasswordPage from '@/auth/views/ChangePasswordPage';
 import ResetPasswordPage from '@/auth/views/ResetPasswordPage';
 import ForgotPasswordPage from '@/auth/views/ForgotPasswordPage';
-import PreferencePage from '@/auth/views/PreferencePage';
 
 Vue.use(Router);
 
@@ -257,11 +256,6 @@ const router = new Router({
           path: RouterPaths.AUTH_FORGOT_PASSWORD,
           name: RouterNames.AUTH_FORGOT_PASSWORD,
           component: ForgotPasswordPage
-        },
-        {
-          path: RouterPaths.AUTH_PREFERENCES,
-          name: RouterNames.AUTH_PREFERENCES,
-          component: PreferencePage
         }
       ]
     },

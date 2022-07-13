@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <!-- {{ incidents }}<br/><br/><br/>
-    {{ filteredIncidents }} -->
+  <div class="incidents">
     <v-data-table
       :height="height"
       fixed-header
       :headers="headers"
-      :items="filteredIncidents"
-      :items-per-page="itemsPerPage"
+      :items="incidents"
+      :items-per-page="showTable && maxItems > listLimit ? maxItems : listLimit"
       disable-sort
-      :hide-default-header="itemsPerPage == 1"
+      :hide-default-header="!showTable"
       hide-default-footer
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
@@ -74,18 +72,6 @@
         </div>
       </template>
       <template v-slot:[`item.duration`]="{ item }"> {{ item.duration }} min </template>
-      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
-        <div class="grid-right pr-6">
-          <v-icon small @click="expandTable">
-            mdi-arrow-expand-down
-          </v-icon>
-        </div>
-      </template>
-      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
-        <v-btn block @click="expandTable">
-          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
-        </v-btn>
-      </template>
     </v-data-table>
   </div>
 </template>
@@ -93,6 +79,7 @@
 <script>
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/dashboard';
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
@@ -103,27 +90,40 @@ export default {
 
   data: () => ({
     maxItems: 10,
-    height: null,
-    itemsPerPage: 1,
     headers: [
       { text: 'Route', value: 'route' },
       { text: 'Start Time', value: 'startTime' },
       { text: 'Duration', value: 'duration' },
       // { text: 'Evidences', value: 'evidenceCounts' },
-      { text: 'Severity', value: 'severity' },
-      { text: '', value: 'actions' }
+      { text: 'Severity', value: 'severity' }
     ],
     selectedRowId: null
   }),
 
   computed: {
-    filteredIncidents() {
-      if (this.itemsPerPage == 1) {
-        return this.incidents.filter(item => item.id == this.selectedRowId);
+    height() {
+      if (this.showTable && this.maxItems > 12) {
+        return 'calc(80vh - 48px)';
       } else {
-        return this.incidents;
+        return null;
       }
-    }
+    },
+    showTable: {
+      get() {
+        return this.$store.state.dashboard.showTable;
+      },
+      set(show) {
+        this.$store.commit('dashboard/SHOW_TABLE', show);
+      }
+    },
+    listLimit() {
+      if (this.getSetting) {
+        return this.getSetting('dashboard', 'limitListings');
+      } else {
+        return 0;
+      }
+    },
+    ...mapGetters(['getSetting'])
   },
 
   filters: {
@@ -144,22 +144,6 @@ export default {
   },
 
   methods: {
-    expandTable() {
-      if (this.itemsPerPage == 1) {
-        if (this.maxItems > 12) {
-          this.height = 'calc(95vh - 48px)';
-        }
-        if (this.maxItems == 1) {
-          this.itemsPerPage = 1.1;
-        } else {
-          this.itemsPerPage = this.maxItems;
-        }
-      } else {
-        this.height = null;
-        this.itemsPerPage = 1;
-      }
-    },
-
     getTime(date) {
       return Utils.formatTimeAsMinute(new Date(date));
     },

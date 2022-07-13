@@ -5,10 +5,10 @@
       fixed-header
       :headers="headers"
       :items="items"
-      :hide-default-header="itemsPerPage == 1"
-      hide-default-footer
+      :items-per-page="showTable && maxItems > listLimit ? maxItems : listLimit"
       disable-sort
-      :items-per-page="itemsPerPage"
+      :hide-default-header="!showTable"
+      hide-default-footer
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
       class="elevation-1"
@@ -17,18 +17,6 @@
         <v-chip small :color="'red'">
           <strong class="black--text">{{ item.state }}</strong>
         </v-chip>
-      </template>
-      <template v-slot:[`item.actions`] v-if="itemsPerPage == 1">
-        <div class="grid-right pr-6">
-          <v-icon small @click="expandTable">
-            mdi-arrow-expand-down
-          </v-icon>
-        </div>
-      </template>
-      <template v-slot:[`footer`] v-if="itemsPerPage != 1">
-        <v-btn block @click="expandTable">
-          <v-icon>{{ itemsPerPage == 1 ? 'mdi-arrow-expand-down' : 'mdi-arrow-expand-up' }}</v-icon>
-        </v-btn>
       </template>
     </v-data-table>
     <!-- Data Display -->
@@ -41,7 +29,7 @@
 <script>
 import FlowDataInfo from '@/components/modules/dashboard/flow/FlowDataInfo';
 import Utils from '@/utils/Utils';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   props: {
@@ -56,7 +44,7 @@ export default {
 
   data: () => ({
     height: null,
-    itemsPerPage: 1,
+    itemsPerPage: 0,
     reload: false,
     items: [],
     headers: []
@@ -75,6 +63,22 @@ export default {
         }, 1);
       }
     },
+    showTable: {
+      get() {
+        return this.$store.state.dashboard.showTable;
+      },
+      set(show) {
+        this.$store.commit('dashboard/SHOW_TABLE', show);
+      }
+    },
+    listLimit() {
+      if (this.getSetting) {
+        return this.getSetting('dashboard', 'limitListings');
+      } else {
+        return 0;
+      }
+    },
+    ...mapGetters(['getSetting']),
     ...mapState('dashboard', ['trafficDevices'])
   },
 
@@ -92,11 +96,16 @@ export default {
       this.prepareTrafficDetectors(this.trafficDevices);
       this.handleRowClick(this.items[0]);
     }
+
+    this.itemsPerPage = this.listLimit;
+    if (this.showTable) {
+      this.expandTable();
+    }
   },
 
   methods: {
     expandTable() {
-      if (this.itemsPerPage == 1) {
+      if (this.itemsPerPage == 0) {
         this.prepareTrafficDetectors(this.trafficDevices);
         if (this.maxItems > 12) {
           this.height = 'calc(95vh - 48px)';
@@ -109,14 +118,13 @@ export default {
       } else {
         this.prepareTrafficDetectors([this.selectedtrafficDevice]);
         this.height = null;
-        this.itemsPerPage = 1;
+        this.itemsPerPage = 0;
       }
     },
     prepareTrafficDetectors(data) {
       this.headers = [
         { text: 'Device', value: 'device' },
-        { text: 'Status', value: 'state' },
-        { text: '', value: 'actions' }
+        { text: 'Status', value: 'state' }
       ];
       this.items = data.map(d => ({
         id: d.id,
@@ -141,6 +149,14 @@ export default {
   },
 
   watch: {
+    listLimit(limit) {
+      if (!this.showTable) {
+        this.itemsPerPage = limit;
+      }
+    },
+    showTable() {
+      this.expandTable();
+    },
     selectedtrafficDevice(device) {
       this.fetchInfo(device);
     },
