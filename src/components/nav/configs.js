@@ -129,6 +129,14 @@ const protectedRoute = [
               title: RouterNames.TRAFFIC_PREDICT,
               icon: 'mdi-waveform'
             }
+          },
+          {
+            path: RouterPaths.TRAFFIC_GTS_PREDICT,
+            name: RouterNames.TRAFFIC_GTS_PREDICT,
+            meta: {
+              title: RouterNames.TRAFFIC_GTS_PREDICT,
+              icon: 'mdi-waveform'
+            }
           }
         ]
       },

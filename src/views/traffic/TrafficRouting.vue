@@ -2,10 +2,7 @@
   <div id="historical-mode">
     <!-- Card -->
     <v-scale-transition>
-      <v-card
-        style="position: absolute; top: 10px; left: 10px"
-        class="pa-2"
-      >
+      <v-card style="position: absolute; top: 10px; left: 10px" class="pa-2">
         <v-card-title> Traffic Routing </v-card-title>
         <v-col>
           <v-row>

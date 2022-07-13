@@ -209,7 +209,7 @@ export default {
     },
     centerMap(map, markers) {
       if (markers.length > 0) {
-        const outlierRemoval = new OutlierRemoval(4.0);
+        const outlierRemoval = new OutlierRemoval(5.0);
         const points = outlierRemoval.remove(markers.map(item => item.position));
         const bounds = new google.maps.LatLngBounds();
         for (let i = 0; i < points.length; i++) {
