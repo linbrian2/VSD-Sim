@@ -9,14 +9,16 @@
       </b>
       <template v-if="weather">
         <v-divider vertical class="mx-2" v-if="showCurrentTime" />
-        <v-img  class="mt-1 weather-icon" width="30px" height="30px" :src="weatherIcon(weather.conditionCode)" />
+        <v-img class="mt-1 weather-icon" width="30px" height="30px" :src="weatherIcon(weather.conditionCode)" />
         <!-- <v-divider class="pl-3" vertical /> -->
         <v-icon v-if="weather.airTemp && showTemp" :color="`${color}`" class="pl-3">mdi-thermometer</v-icon>
         <div v-if="weather.airTemp && showTemp" :style="`color: ${color};`" class="pt-2">
           {{ formatTemperature(weather.airTemp, true) }}<sup>°F</sup>
         </div>
         <v-icon v-if="weather.precip && showPrecip" :color="`${color}`" class="pl-3">mdi-water</v-icon>
-        <div v-if="weather.precip && showPrecip" :style="`color: ${color};`" class="pt-2">{{ toPercentage(weather.precip) }}%</div>
+        <div v-if="weather.precip && showPrecip" :style="`color: ${color};`" class="pt-2">
+          {{ toPercentage(weather.precip) }}%
+        </div>
         <v-icon v-if="weather.windAvg && weather.windAvgHeading && showWind" :color="`${color}`" class="pl-3 pr-1"
           >mdi-weather-windy</v-icon
         >
