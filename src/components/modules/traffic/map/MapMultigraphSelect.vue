@@ -268,9 +268,9 @@ export default {
 <style lang="scss" scoped>
 .map-select {
   width: 100%;
-  height: calc(100vh - 84px);
+  height: calc(100vh - 96px);
 }
 .gm-style div {
-  -webkit-transform: scale(1.005);
+  -webkit-transform: scale(1.007);
 }
 </style>

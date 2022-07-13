@@ -8,21 +8,23 @@
       name="weatherSideBarWidth"
       :onMarkerClick="markerClicked"
     />
-    <TitleBar :title="title" :showId="true" :loading="loading" :refresh="refreshData">
-      <div style="margin-left:50px; margin-top:8px">
-        <v-select
-          dark
-          style="width:140px; font-size: 14px"
-          dense
-          v-model="interval"
-          :items="intervalItems"
-          item-text="text"
-          item-value="value"
-          @input="intervalSelected"
-          hide-details
-          prepend-icon="mdi-clock-outline"
-          single-line
-        />
+    <TitleBar :title="title" :loading="loading" :refresh="refreshData">
+      <div class="d-flex justify-center align-center">
+        <div style="margin-left:50px; margin-top:8px">
+          <v-select
+            dark
+            style="width:140px; font-size: 14px"
+            dense
+            v-model="interval"
+            :items="intervalItems"
+            item-text="text"
+            item-value="value"
+            @input="intervalSelected"
+            hide-details
+            prepend-icon="mdi-clock-outline"
+            single-line
+          />
+        </div>
       </div>
     </TitleBar>
 
@@ -54,7 +56,7 @@
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
 import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPanel';
-import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
 export default {

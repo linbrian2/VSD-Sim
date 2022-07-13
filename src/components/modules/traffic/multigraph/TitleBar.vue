@@ -1,7 +1,7 @@
 <template>
-  <div class="title-name non-selection">
+  <div class="title-name non-selection" style="height: 48px">
     <v-row wrap no-gutters>
-      <v-col lg="4" sm="6" xs="12">
+      <v-col lg="6" sm="6" xs="12">
         <div class="d-flex mt-1">
           <span v-if="showMap">
             <v-tooltip bottom>
@@ -14,24 +14,28 @@
             </v-tooltip>
           </span>
 
-          <div class="mt-1">
-            <span class="font-weight-bold text-overline">{{ loading ? 'Loading ...' : title }}</span>
-            <span class="ml-2 mt-0" v-if="!loading">
-              <template v-if="subtitle">
-                <v-chip color="green" outlined small>
-                  <span class="white--text">{{ subtitle }}</span>
-                </v-chip>
-              </template>
-              <template v-else>
-                <v-chip color="green" outlined small v-if="showId || showUid">
-                  <span class="white--text">{{ label }}</span>
-                </v-chip>
-              </template>
-            </span>
-          </div>
+          <v-overflow-btn
+            dense
+            outlined
+            class="ml-n1 mt-n1 mb-n2"
+            v-model="multigraphModeSelect"
+            :items="multigraphModes"
+            auto-select-first
+          />
+
+          <v-overflow-btn
+            class="ml-2 mr-2 mt-n1 mb-n2"
+            v-model="singleMode"
+            :items="selectItems"
+            dense
+            auto-select-first
+            single-line
+            prepend-icon="mdi-gesture-tap-button "
+          />
+          <v-divider vertical class="ml-2 mt-n2 mb-4" />
         </div>
       </v-col>
-      <v-col lg="7" sm="4" xs="12">
+      <v-col lg="5" sm="4" xs="12">
         <span><slot></slot></span>
       </v-col>
       <v-col lg="1" sm="2" xs="12">
@@ -57,14 +61,6 @@ export default {
     title: String,
     loading: Boolean,
     refresh: Function,
-    showId: {
-      type: Boolean,
-      default: false
-    },
-    showUid: {
-      type: Boolean,
-      default: false
-    },
     showMap: {
       type: Boolean,
       default: true
@@ -79,6 +75,13 @@ export default {
     }
   },
 
+  data: () => ({
+    selectItems: [
+      { text: 'Single Select', value: true },
+      { text: 'Multi Select', value: false }
+    ]
+  }),
+
   computed: {
     activeSignal() {
       return (
@@ -89,20 +92,25 @@ export default {
       );
     },
 
-    label() {
-      const u1 = this.showId && this.activeSignal.id ? this.activeSignal.id + '' : '';
-      const u2 = this.showUid && this.activeSignal.uid ? this.activeSignal.uid + '' : '';
-      let result = u1;
-      if (u1 && u2) {
-        result = u1 + ' / ' + u2;
-      } else {
-        result = u1 + u2;
+    multigraphModeSelect: {
+      get() {
+        return this.$store.state.traffic.multigraphModeSelect;
+      },
+      set(val) {
+        this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
       }
-
-      return result;
     },
 
-    ...mapState('traffic', ['activeMarker'])
+    singleMode: {
+      get() {
+        return this.$store.state.traffic.singleSelect;
+      },
+      set(val) {
+        this.$store.commit('traffic/SET_SINGLE_SELECT', val);
+      }
+    },
+
+    ...mapState('traffic', ['activeMarker', 'multigraphModes'])
   },
   methods: {
     refreshData() {

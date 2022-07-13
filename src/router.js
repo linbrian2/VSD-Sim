@@ -14,12 +14,9 @@ import Dashboard from '@/components/layouts/Dashboard.vue';
 import MainDashboard from '@/views/dashboard/MainDashboard.vue';
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
-import TrafficFlow from '@/views/traffic/TrafficFlow.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
-import TravelTimeData from '@/views/traffic/TravelTimeData.vue';
 import Multigraph from '@/views/traffic/Multigraph.vue';
 import TrafficRoutingDashboard from '@/views/traffic/TrafficRoutingDashboard';
-import WeatherData from '@/views/traffic/WeatherData.vue';
 import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
 import TrafficGTSPredict from '@/views/traffic/TrafficGTSPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
@@ -59,7 +56,7 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      alias: '/dash',
+      alias: RouterPaths.MAIN_DASHBOARD,
       component: Dashboard,
       children: [
         {
@@ -80,14 +77,9 @@ const router = new Router({
       ]
     },
     {
-      path: '/flow',
+      path: RouterPaths.TRAFFIC_MULTIGRAPH,
       component: Traffic,
       children: [
-        {
-          path: RouterPaths.TRAFFIC_FLOW,
-          name: RouterNames.TRAFFIC_FLOW,
-          component: TrafficFlow
-        },
         {
           path: RouterPaths.TRAFFIC_LCM,
           name: RouterNames.TRAFFIC_LCM,
@@ -114,19 +106,9 @@ const router = new Router({
           component: AnomalyMap
         },
         {
-          path: RouterPaths.TRAFFIC_WEATHER,
-          name: RouterNames.TRAFFIC_WEATHER,
-          component: WeatherData
-        },
-        {
           path: RouterPaths.TRAFFIC_MULTIGRAPH,
           name: RouterNames.TRAFFIC_MULTIGRAPH,
           component: Multigraph
-        },
-        {
-          path: RouterPaths.TRAVEL_TIME_DATA,
-          name: RouterNames.TRAVEL_TIME_DATA,
-          component: TravelTimeData
         },
         {
           path: RouterPaths.TRAVEL_TIME_MAP,

@@ -52,15 +52,15 @@ export default {
 
   computed: {
     speed() {
-      return this.formSpeedData(this.data, this.direction);
+      return this.formSpeedData(this.data, this.direction, this.name);
     },
 
     volume() {
-      return this.formVolumeData(this.data, this.direction);
+      return this.formVolumeData(this.data, this.direction, this.name);
     },
 
     occupancy() {
-      return this.formOccupancyData(this.data, this.direction);
+      return this.formOccupancyData(this.data, this.direction, this.name);
     },
 
     isSpeed() {
@@ -77,8 +77,8 @@ export default {
   },
 
   methods: {
-    formSpeedData(flowList, direction) {
-      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
+    formSpeedData(flowList, direction, name) {
+      const title = name;
       const subtitle = 'Speed';
       const xAxis = 'Time of day';
       const yAxis = 'Speed (mph)';
@@ -89,8 +89,8 @@ export default {
       return result;
     },
 
-    formVolumeData(flowList, direction) {
-      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
+    formVolumeData(flowList, direction, name) {
+      const title = name;
       const subtitle = 'Volume';
       const xAxis = 'Time of day';
       const yAxis = 'Volume (vehicles/interval)';
@@ -101,8 +101,8 @@ export default {
       return result;
     },
 
-    formOccupancyData(flowList, direction) {
-      const title = 'SBT0039-SBT0004: EB DE16 from DE5 to DE1';
+    formOccupancyData(flowList, direction, name) {
+      const title = name;
       const subtitle = 'Occupancy';
       const xAxis = 'Time of day';
       const yAxis = 'Occupancy (%)';

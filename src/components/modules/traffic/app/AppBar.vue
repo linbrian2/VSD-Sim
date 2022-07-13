@@ -77,10 +77,6 @@ export default {
     title: AppConstants.TRAFFIC_APP_TITLE,
 
     chart_menu_items: [
-      { title: RouterNames.TRAFFIC_FLOW, url: RouterPaths.TRAFFIC_FLOW },
-      { title: RouterNames.TRAVEL_TIME_DATA, url: RouterPaths.TRAVEL_TIME_DATA },
-      { title: RouterNames.TRAFFIC_WEATHER, url: RouterPaths.TRAFFIC_WEATHER },
-      { divider: true },
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
       { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
@@ -100,11 +96,7 @@ export default {
     ],
 
     action_menu_items: [
-      { title: RouterNames.TRAFFIC_FLOW, url: RouterPaths.TRAFFIC_FLOW },
-      { title: RouterNames.TRAVEL_TIME_DATA, url: RouterPaths.TRAVEL_TIME_DATA },
-      { title: RouterNames.TRAFFIC_WEATHER, url: RouterPaths.TRAFFIC_WEATHER },
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
-      { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING },
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
@@ -113,7 +105,8 @@ export default {
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
       { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT },
       { divider: true },
-      { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM }
+      { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
+      { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING }
     ]
   }),
 

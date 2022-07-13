@@ -33,7 +33,7 @@ export default {
     return {
       app_menu_items: [
         { title: AppConstants.DASHBOARD_APP_TITLE, url: RouterPaths.MAIN_DASHBOARD },
-        { title: AppConstants.TRAFFIC_APP_TITLE, url: RouterPaths.TRAFFIC_FLOW },
+        { title: AppConstants.TRAFFIC_APP_TITLE, url: RouterPaths.TRAFFIC_MULTIGRAPH },
         { title: AppConstants.HR_APP_TITLE, url: RouterPaths.HR_DASHBOARD },
         { title: AppConstants.VISION_APP_TITLE, url: RouterPaths.VISION_DASHBOARD },
         { title: AppConstants.CAV_APP_TITLE, url: RouterPaths.CAV_DASHBOARD },

@@ -51,51 +51,11 @@ const protectedRoute = [
         },
         children: [
           {
-            path: RouterPaths.TRAFFIC_FLOW,
-            name: RouterNames.TRAFFIC_FLOW,
-            meta: {
-              title: RouterNames.TRAFFIC_FLOW,
-              icon: 'mdi-chart-line'
-            }
-          },
-          {
-            path: RouterPaths.TRAVEL_TIME_DATA,
-            name: RouterNames.TRAVEL_TIME_DATA,
-            meta: {
-              title: RouterNames.TRAVEL_TIME_DATA,
-              icon: 'mdi-chart-line'
-            }
-          },
-          {
-            path: RouterPaths.TRAFFIC_WEATHER,
-            name: RouterNames.TRAFFIC_WEATHER,
-            meta: {
-              title: RouterNames.TRAFFIC_WEATHER,
-              icon: 'mdi-chart-line'
-            }
-          },
-          {
             path: RouterPaths.TRAFFIC_MULTIGRAPH,
             name: RouterNames.TRAFFIC_MULTIGRAPH,
             meta: {
               title: RouterNames.TRAFFIC_MULTIGRAPH,
               icon: 'mdi-chart-line'
-            }
-          },
-          {
-            path: RouterPaths.TRAFFIC_LCM,
-            name: RouterNames.TRAFFIC_LCM,
-            meta: {
-              title: RouterNames.TRAFFIC_LCM,
-              icon: 'mdi-chart-bell-curve'
-            }
-          },
-          {
-            path: RouterPaths.TRAFFIC_ROUTING,
-            name: RouterNames.TRAFFIC_ROUTING,
-            meta: {
-              title: RouterNames.TRAFFIC_ROUTING,
-              icon: 'mdi-vector-radius'
             }
           },
           {
@@ -136,6 +96,22 @@ const protectedRoute = [
             meta: {
               title: RouterNames.TRAFFIC_GTS_PREDICT,
               icon: 'mdi-waveform'
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_LCM,
+            name: RouterNames.TRAFFIC_LCM,
+            meta: {
+              title: RouterNames.TRAFFIC_LCM,
+              icon: 'mdi-chart-bell-curve'
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_ROUTING,
+            name: RouterNames.TRAFFIC_ROUTING,
+            meta: {
+              title: RouterNames.TRAFFIC_ROUTING,
+              icon: 'mdi-vector-radius'
             }
           }
         ]

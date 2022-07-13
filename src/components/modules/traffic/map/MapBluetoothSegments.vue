@@ -10,8 +10,6 @@
         @click="segmentClicked(s)"
       />
 
-      <!-- <GmapMarker v-for="s in segments" :key="`M-${s.id}`" :position="s.path[0]" :title="s.desc" :icon="redIcon" /> -->
-
       <GmapCustomMarker
         alignment="center"
         v-for="s in segments"

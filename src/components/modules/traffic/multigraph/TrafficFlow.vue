@@ -40,8 +40,8 @@
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar :title="title" showId showUid :loading="loading" :refresh="refreshData">
-      <div class="d-flex align-items justify-space-between align-center">
+    <TitleBar :title="title" :loading="loading" :refresh="refreshData">
+      <div class="d-flex align-items justify-center align-center">
         <div class="d-flex justify-space-between">
           <div class="mt-1 mr-15" style="width:140px;">
             <v-select
@@ -108,7 +108,7 @@ import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapSelect from '@/components/modules/traffic/map/MapSelect';
-import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 import TrafficFlowCombinedCharts from '@/components/modules/traffic/common/TrafficFlowCombinedCharts';
 
 export default {

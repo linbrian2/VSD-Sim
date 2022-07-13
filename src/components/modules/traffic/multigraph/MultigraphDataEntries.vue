@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
+    <v-col :cols="cols" xl="6" class="pt-0" v-for="i in valuesSelected" :key="i.id">
       <template v-if="i.data && i.data[param] && !flowParams.isFlow">
         <div class="graph-container">
           <v-btn icon @click="removeItem(i)" class="graph-close-button"><v-icon>mdi-close</v-icon></v-btn>
@@ -12,7 +12,6 @@
           i.data && i.data[param] && flowParams.isFlow && !isEmpty(i.data[param]) && objContainsKey(i.data[param])
         "
       >
-        <!-- {{ i.data[param] }} -->
         <div class="graph-container">
           <v-btn icon @click="removeItem(i)" class="graph-close-button"><v-icon>mdi-close</v-icon></v-btn>
         </div>
@@ -37,7 +36,7 @@
         <v-card max-width :height="height" color="#333333" class="pa-6">
           <v-row class="grid-center">
             <h3>{{ i.name }}</h3>
-            <h1 style="color: #ff6666; margin-top: 160px">Data is unavailable</h1>
+            <h1 style="color: #aaa; margin-top: 160px">NO DATA</h1>
           </v-row>
         </v-card>
       </template>
@@ -62,6 +61,7 @@ import TrafficFlowMultigraphCombinedCharts from '@/components/modules/traffic/mu
 
 export default {
   props: {
+    cols: { type: Number, default: 12 },
     valuesSelected: { type: Array },
     param: { type: String },
     flowParams: {

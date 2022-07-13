@@ -17,6 +17,17 @@
           label="SELECT DETECTORS TO SHOW"
           return-object
         >
+          <template v-slot:selection="{ attrs, item, parent, selected }">
+            <v-chip v-if="item === Object(item)" v-bind="attrs" :input-value="selected" label small>
+              <span class="pr-1">
+                {{ item.permit }}
+              </span>
+              <v-icon small @click="parent.selectItem(item)">
+                $delete
+              </v-icon>
+            </v-chip>
+          </template>
+
           <!-- Region selection menu -->
           <template v-slot:append-outer>
             <v-btn icon @click="clear">
@@ -55,8 +66,8 @@
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar :isMultigraph="true" :showId="false" :loading="loading" :refresh="refreshData">
-      <div class="d-flex align-items justify-space-between align-center">
+    <TitleBar :loading="loading" :refresh="refreshData">
+      <div class="d-flex align-items justify-center align-center">
         <div class="d-flex justify-space-between">
           <div class="mt-1 ml-6 mr-6" style="width: 120px">
             <v-select
@@ -71,7 +82,7 @@
             />
           </div>
 
-          <div class="mt-1 mr-6" style="width: 128px">
+          <div class="mt-1 mr-6" style="width: 100px">
             <v-select
               dark
               dense
@@ -81,7 +92,19 @@
               item-value="value"
               @input="intervalSelected"
               hide-details
-              prepend-icon="mdi-clock-outline"
+              single-line
+            />
+          </div>
+
+          <div class="mt-1" style="width: 110px">
+            <v-select
+              dark
+              dense
+              v-model="cols"
+              :items="columnItems"
+              item-text="text"
+              item-value="value"
+              hide-details
               single-line
             />
           </div>
@@ -103,6 +126,7 @@
               :valuesSelected="valuesSelected"
               :param="'boundData'"
               :flowParams="flowParams"
+              :cols="cols"
               @removeItem="removeItem"
             />
           </v-tab-item>
@@ -112,6 +136,7 @@
               :valuesSelected="valuesSelected"
               :param="'laneData'"
               :flowParams="flowParams"
+              :cols="cols"
               @removeItem="removeItem"
             />
           </v-tab-item>
@@ -121,6 +146,7 @@
               :valuesSelected="valuesSelected"
               :param="'minuteData'"
               :flowParams="flowParams"
+              :cols="cols"
               @removeItem="removeItem"
             />
           </v-tab-item>
@@ -136,7 +162,7 @@ import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
-import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
 
 export default {
@@ -150,6 +176,7 @@ export default {
     startDelay: true,
     selectedVal: 'Volume',
     valItems: ['Speed', 'Volume', 'Occupancy'],
+    cols: 12,
 
     loading: false,
     showBaseline: true,
@@ -176,14 +203,21 @@ export default {
       { key: 'lane', value: 'Per Lane' },
       { key: 'minute', value: 'Per Minute' }
     ],
+
+    columnItems: [
+      { text: '1 column', value: 12 },
+      { text: '2 column', value: 6 },
+      { text: '3 column', value: 4 }
+    ],
+
     tab: null,
 
     valuesSelected: [],
     intervalItems: [
       { text: '1 Hour', value: 3600000 },
-      { text: '30 mins', value: 1800000 },
-      { text: '15 mins', value: 900000 },
-      { text: '5 mins', value: 300000 },
+      { text: '30 min', value: 1800000 },
+      { text: '15 min', value: 900000 },
+      { text: '5 min', value: 300000 },
       { text: '1 min', value: 60000 }
     ],
     direction: '',
@@ -227,7 +261,7 @@ export default {
 
     items() {
       return this.markers.map(location => {
-        return { id: location.id, name: location.name, data: null };
+        return { id: location.id, permit: location.uid, name: location.name, data: null };
       });
     },
 
@@ -306,7 +340,7 @@ export default {
         if (action == 'remove') {
           this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name);
         } else {
-          this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
+          this.valuesSelected.push({ id: marker.id, permit: marker.uid, name: marker.name, data: null });
           const time = this.currentDate.getTime();
           this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
         }

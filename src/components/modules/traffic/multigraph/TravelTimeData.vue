@@ -45,14 +45,7 @@
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar
-      :title="title"
-      :showId="false"
-      :showUid="false"
-      :subtitle="subtitle"
-      :loading="loading"
-      :refresh="refreshData"
-    >
+    <TitleBar :title="title" :subtitle="subtitle" :loading="loading" :refresh="refreshData">
       <div class="d-flex justify-center align-center">
         <div style="width:140px; margin-top: 5px">
           <v-select
@@ -90,7 +83,7 @@ import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapBluetoothSegments from '@/components/modules/traffic/map/MapBluetoothSegments';
-import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 
 export default {
