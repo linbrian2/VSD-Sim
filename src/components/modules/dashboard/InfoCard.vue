@@ -96,7 +96,12 @@ export default {
   },
   computed: {
     navigationWidth() {
-      return parseInt(this.$store.state.navigationWidth.split('px')[0]);
+      let navigationWidth = this.$store.state.navigationWidth;
+      if (typeof navigationWidth === 'string') {
+        return parseInt(this.$store.state.navigationWidth.split('px')[0]);
+      } else {
+        return this.$store.state.navigationWidth;
+      }
     }
   },
   methods: {

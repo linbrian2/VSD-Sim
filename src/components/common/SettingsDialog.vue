@@ -54,7 +54,7 @@
                 v-model="setting.val"
                 :label="setting.label"
                 :items="setting.items"
-                class="mr-10"
+                class="mr-10 mb-3"
                 dense
                 filled
                 hide-details
@@ -65,7 +65,7 @@
                 :label="setting.label"
                 :min="setting.min"
                 :max="setting.max"
-                class="mr-10"
+                class="mr-10 mb-3"
                 type="number"
                 dense
                 filled

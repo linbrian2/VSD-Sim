@@ -22,7 +22,7 @@
           </v-row>
         </v-col>
       </v-row>
-      <RightPanel name="dashboardSideBarWidth" :width="sideBarWidth" :title="selectedTitle" :tableButton="true">
+      <RightPanel name="dashboardSideBarWidth" :title="selectedTitle" :tableButton="true">
         <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
       </RightPanel>
       <SelectionDialog v-model="showSelection" ref="selectionDialog" />
