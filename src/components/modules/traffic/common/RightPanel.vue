@@ -75,7 +75,7 @@ export default {
   },
 
   mounted() {
-    this.navigationWidth = this.sideBarWidth;
+    this.navigationWidth = this.sideBarWidth ? this.sideBarWidth : this.width;
 
     this.setBorderWidth();
     this.setEvents();
