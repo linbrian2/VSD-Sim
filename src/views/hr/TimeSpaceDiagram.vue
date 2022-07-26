@@ -41,6 +41,7 @@
       </div>
     </TitleBar>
     <v-container fluid style="max-width: 95%">
+      <!-- {{ data }} -->
       <div v-if="showChartInGroup">
         <div v-for="(data, group, index) in timeSpaceGroups" :key="index">
           <v-card class="mt-4">
@@ -48,7 +49,7 @@
           </v-card>
         </div>
       </div>
-      <div v-lese>
+      <div v-else>
         <v-card class="mt-4">
           <TimeSpaceChart :data="data" :speed="speed" />
         </v-card>
@@ -175,11 +176,13 @@ export default {
     },
 
     fetchTimeSpaceData(ids, start, duration, overlay) {
+      // console.log(`ids: ${ids}, start: ${start}, duration: ${duration}, overlay: ${overlay}`);
       try {
         this.loading = true;
         Api.fetchTimeSpaceData(ids, start, duration, overlay).then(response => {
           if (response.data.status === 'OK') {
             const data = response.data.data;
+            console.log('Data: %o', data);
 
             if (this.showChartInGroup) {
               // Group the data by group

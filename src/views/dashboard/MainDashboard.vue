@@ -9,7 +9,6 @@
             <v-col id="map" cols="12" class="py-0 pl-0 pr-6">
               <div class="map">
                 <Map
-                  :apiInfo="apiInfo"
                   :markers="markers"
                   :segments="polylines"
                   :icons="icons"
@@ -23,7 +22,7 @@
         </v-col>
       </v-row>
       <RightPanel name="dashboardSideBarWidth" :title="selectedTitle" :tableButton="true">
-        <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
+        <InfoColumn :selectedIdx="selectedIdx" :cardData="cardData" />
       </RightPanel>
       <SelectionDialog v-model="showSelection" ref="selectionDialog" />
     </v-main>
@@ -59,7 +58,6 @@ export default {
       polylines: null,
       loading: false,
       manualMode: false,
-      apiInfo: null,
       updateInterval: null,
       cardSwapInterval: null,
       elapsedTime: 0,

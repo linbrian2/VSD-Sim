@@ -3,7 +3,7 @@
     <v-row v-if="colDisplay" class="mx-3">
       <v-col :cols="navigationWidth < 420 ? 12 : 5">
         <div style="display: flex;">
-          <v-icon class="pr-1" :color="iconColor" :size="40">{{ icon }}</v-icon>
+          <v-icon v-if="!hideIcons" class="pr-1" :color="iconColor" :size="40">{{ icon }}</v-icon>
           <h1 v-if="!(navigationWidth < 420)" :style="`color: ${titleColor}`">{{ name }}</h1>
           <h1 v-else class="pl-2" :style="`color: ${color !== 'undefined' ? color : valueColor};`">
             <b>{{ value }}</b>
@@ -75,6 +75,7 @@
 
 <script>
 import Constants from '@/utils/constants/traffic';
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
@@ -95,6 +96,9 @@ export default {
     valueColor: { type: String, default: '#E0E0E0' }
   },
   computed: {
+    hideIcons() {
+      return this.getSetting('dashboard', 'hideIconsRightPanel');
+    },
     navigationWidth() {
       let navigationWidth = this.$store.state.navigationWidth;
       if (typeof navigationWidth === 'string') {
@@ -102,7 +106,8 @@ export default {
       } else {
         return this.$store.state.navigationWidth;
       }
-    }
+    },
+    ...mapGetters(['getSetting'])
   },
   methods: {
     getEvidenceIcon(name) {

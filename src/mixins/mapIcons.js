@@ -196,6 +196,13 @@ export const mapIcons = {
       }
     },
 
+    getDefaultMarkerIcon(marker) {
+      if (marker) {
+        return marker.status > 0 ? this.icons[1] : this.icons[0];
+      }
+      return this.selectedMarkerId === marker.id ? this.icons[1] : this.icons[0];
+    },
+
     getMarkerIcon(marker) {
       if (marker) {
         return marker.status > 0 ? this.icons[1] : this.icons[0];

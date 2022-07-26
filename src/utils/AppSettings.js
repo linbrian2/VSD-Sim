@@ -24,9 +24,9 @@ export default {
         icon: 'mdi-view-dashboard',
         settings: [
           { divider: true, title: 'Updates' },
-          { id: 100, name: 'autoDataUpdate', label: 'Automatic Data Update', type: 'boolean', val: true },
+          { id: 1000, name: 'autoDataUpdate', label: 'Automatic Data Update', type: 'boolean', val: true },
           {
-            id: 101,
+            id: 1001,
             name: 'dataUpdateInterval',
             label: 'Data Update Interval (min)',
             type: 'number',
@@ -34,21 +34,23 @@ export default {
             min: 1,
             max: 10
           },
-          { id: 102, name: 'autoPageSwaps', label: 'Automatic Page Swaps', type: 'boolean', val: true },
-          { id: 103, name: 'swapInterval', label: 'Swap Interval (sec)', type: 'number', val: 45, min: 10, max: 60 },
+          { id: 1002, name: 'autoPageSwaps', label: 'Automatic Page Swaps', type: 'boolean', val: true },
+          { id: 1003, name: 'swapInterval', label: 'Swap Interval (sec)', type: 'number', val: 45, min: 10, max: 60 },
           { divider: true, title: 'Miscellaneous' },
-          { id: 104, name: 'infoColumnCount', label: 'Info Column Count', type: 'number', val: 1, min: 1, max: 5 },
-          { id: 105, name: 'limitListings', label: 'Limit Listings', type: 'number', val: 0, min: 0, max: 5 },
+          { id: 1100, name: 'infoColumnCount', label: 'Info Column Count', type: 'number', val: 1, min: 1, max: 5 },
+          { id: 1101, name: 'limitListings', label: 'Limit Listings', type: 'number', val: 0, min: 0, max: 5 },
+          { id: 1102, name: 'hideIconsRightPanel', label: 'Hide Icons on Right Panel', type: 'boolean', val: false },
+          { id: 1103, name: 'showAllOverlayCards', label: 'Show All Overlay Cards', type: 'boolean', val: false },
           { divider: true, title: 'Debug' },
           {
-            id: 106,
+            id: 1200,
             name: 'incidentsWholeDay',
             label: 'Use Whole Day of Traffic Incidents',
             type: 'boolean',
             val: false
           },
           {
-            id: 107,
+            id: 1201,
             name: 'usePrevDay',
             label: 'Use Previous Day',
             type: 'boolean',
