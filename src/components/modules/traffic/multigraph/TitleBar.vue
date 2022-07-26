@@ -14,24 +14,14 @@
             </v-tooltip>
           </span>
 
-          <v-overflow-btn
-            dense
-            outlined
-            class="ml-n1 mt-n1 mb-n2"
-            v-model="multigraphModeSelect"
-            :items="multigraphModes"
-            auto-select-first
-          />
+          <div class="mt-n2 mb-n2">
+            <MenuSelector :items="multigraphModes" :selectedItem="multigraphModeSelect" @click="setMultiGraphMode" />
+          </div>
 
-          <v-overflow-btn
-            class="ml-2 mr-2 mt-n1 mb-n2"
-            v-model="singleMode"
-            :items="selectItems"
-            dense
-            auto-select-first
-            single-line
-            prepend-icon="mdi-gesture-tap-button "
-          />
+          <div class="ml-3 mt-n2 mb-n2">
+            <MenuSelector :items="selectItems" :selectedItem="singleSelect" @click="setSingleSelectMode" />
+          </div>
+
           <v-divider vertical class="ml-2 mt-n2 mb-4" />
         </div>
       </v-col>
@@ -56,7 +46,12 @@
 
 <script>
 import { mapState } from 'vuex';
+import MenuSelector from '@/components/common/MenuSelector';
 export default {
+  components: {
+    MenuSelector
+  },
+
   props: {
     title: String,
     loading: Boolean,
@@ -76,10 +71,7 @@ export default {
   },
 
   data: () => ({
-    selectItems: [
-      { text: 'Single Select', value: true },
-      { text: 'Multi Select', value: false }
-    ]
+    selectItems: ['Single Select', 'Multi Select']
   }),
 
   computed: {
@@ -92,25 +84,7 @@ export default {
       );
     },
 
-    multigraphModeSelect: {
-      get() {
-        return this.$store.state.traffic.multigraphModeSelect;
-      },
-      set(val) {
-        this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', val);
-      }
-    },
-
-    singleMode: {
-      get() {
-        return this.$store.state.traffic.singleSelect;
-      },
-      set(val) {
-        this.$store.commit('traffic/SET_SINGLE_SELECT', val);
-      }
-    },
-
-    ...mapState('traffic', ['activeMarker', 'multigraphModes'])
+    ...mapState('traffic', ['activeMarker', 'multigraphModes', 'multigraphModeSelect', 'singleSelect'])
   },
   methods: {
     refreshData() {
@@ -119,6 +93,14 @@ export default {
 
     showPanel() {
       this.$store.commit('traffic/TOGGLE_SHOW_PANEL');
+    },
+
+    setMultiGraphMode(mode) {
+      this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', mode);
+    },
+
+    setSingleSelectMode(mode) {
+      this.$store.commit('traffic/SET_SINGLE_SELECT', mode);
     }
   }
 };

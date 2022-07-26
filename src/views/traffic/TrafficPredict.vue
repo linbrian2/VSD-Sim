@@ -8,7 +8,7 @@
       :onMarkerClick="markerClicked"
     />
 
-    <TitleBar title="Traffic Flow Prediction" :showId="true" :loading="loading" :refresh="refreshData">
+    <TitleBar title="Traffic Flow Prediction" :loading="loading" :refresh="refreshData">
       <div class="d-flex align-center justify-end mt-3">
         <div class="text-caption" v-if="timeUsedDisplay">Time used: {{ timeUsedDisplay }} ms</div>
       </div>

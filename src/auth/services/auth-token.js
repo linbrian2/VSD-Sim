@@ -46,8 +46,6 @@ function isLoggedIn() {
     return false;
   }
 
-  //console.log(expires);
-
   return new Date() < expires;
 }
 

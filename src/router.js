@@ -23,12 +23,12 @@ import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
 import TravelTimeMap from '@/views/traffic/TravelTimeMap.vue';
 import IncidentList from '@/views/traffic/IncidentList.vue';
 import IncidentMitigation from '@/views/traffic/IncidentMitigation.vue';
+import TrafficResponsiveData from '@/views/traffic/TrafficResponsiveData.vue';
 
 import HRDashboard from '@/views/hr/Dashboard.vue';
 import PCD from '@/views/hr/PCD.vue';
 import TimeSpaceDiagram from '@/views/hr/TimeSpaceDiagram.vue';
-import SignalTimingPlayback from '@/views/hr/SignalTimingPlayback.vue';
-import SignalTimingLive from '@/views/hr/SignalTimingLive.vue';
+import SignalTimingDisplay from '@/views/hr/SignalTimingDisplay.vue';
 import PerformanceMeasures from '@/views/hr/PerformanceMeasures.vue';
 import MultiPCD from '@/views/hr/MultiPCD.vue';
 import MultiOcc from '@/views/hr/MultiOcc.vue';
@@ -123,6 +123,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_MITIGATION_PATH,
           name: RouterNames.TRAFFIC_MITIGATION,
           component: IncidentMitigation
+        },
+        {
+          path: RouterPaths.TRAFFIC_RESPONSIVE_DATA,
+          name: RouterNames.TRAFFIC_RESPONSIVE_DATA,
+          component: TrafficResponsiveData
         }
       ]
     },
@@ -146,14 +151,9 @@ const router = new Router({
           component: TimeSpaceDiagram
         },
         {
-          path: RouterPaths.HR_SIGNAL_LIVE,
-          name: RouterNames.HR_SIGNAL_LIVE,
-          component: SignalTimingLive
-        },
-        {
-          path: RouterPaths.HR_SIGNAL,
-          name: RouterNames.HR_SIGNAL,
-          component: SignalTimingPlayback
+          path: RouterPaths.HR_SIGNAL_DISPLAY,
+          name: RouterNames.HR_SIGNAL_DISPLAY,
+          component: SignalTimingDisplay
         },
         {
           path: RouterPaths.HR_PERFORMANCE_MEASURES,

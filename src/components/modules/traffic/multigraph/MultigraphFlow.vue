@@ -159,6 +159,7 @@
 <script>
 import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
+import TrafficConstants from '@/utils/constants/traffic';
 import { mapState } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
@@ -222,17 +223,7 @@ export default {
     ],
     direction: '',
 
-    region_menu_items: [
-      { title: 'All Detectors', value: -1 },
-      { title: 'Urban Freeway Detectors', value: 1 },
-      { title: 'Urban System Detectors', value: 2 },
-      { title: 'CAV Area Freeway Detectors', value: 3 },
-      { title: 'CAV Area System Detectors', value: 4 },
-      { title: ' Rural Freeway Detectors', value: 5 },
-      { title: 'Rural System Detectors', value: 6 },
-      { title: 'Outside study area', value: 7 }
-    ],
-
+    region_menu_items: TrafficConstants.TRAFFIC_DEVICE_CATEGORIES,
     selectedRegionId: -1,
 
     devices: []

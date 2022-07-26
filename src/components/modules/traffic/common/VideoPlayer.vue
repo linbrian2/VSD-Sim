@@ -17,7 +17,7 @@
       &nbsp;&nbsp;{{ caption }}&nbsp;&nbsp;
     </div>
     <div style="position: absolute; top: 60px; left:10px;" v-if="icon">
-      <v-icon small v-text="icon" color="amber darken-4" />
+      <v-icon v-text="icon" color="white" />
     </div>
   </div>
 </template>

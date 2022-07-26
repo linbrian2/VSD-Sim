@@ -14,7 +14,7 @@ export default {
         return 300;
       }
       let len = Object.keys(this.phaseTiming).length;
-      return 50 * len;
+      return 45 * len;
     },
     chartOptions() {
       if (this.phaseTiming == null) {
@@ -44,7 +44,7 @@ export default {
       if (data) {
         Object.keys(data).forEach((phaseId, i) => {
           ticks.push(i);
-          categories.push('Phase ' + phaseId);
+          categories.push('P' + phaseId);
           let h = i;
           let signal = data[phaseId];
           if (signal.signals) {
@@ -150,9 +150,10 @@ export default {
         chart.xAxis[0].removePlotLine(lineId);
         chart.xAxis[0].addPlotLine({
           value: time,
-          color: 'red',
+          color: 'white',
           width: 1,
-          id: lineId
+          id: lineId,
+          zIndex: 30
         });
       }
     },
@@ -165,9 +166,9 @@ export default {
         },
         chart: {
           height: chartHeight,
-          spacingTop: 20,
-          spacingBottom: 10,
-          marginRight: 20,
+          spacingTop: 5,
+          spacingBottom: 5,
+          marginRight: 5,
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#888',
@@ -207,8 +208,8 @@ export default {
           labels: {
             style: {
               color: '#fff',
-              font: '12px Helvetica',
-              fontWeight: 'bold'
+              font: '11px Arial',
+              fontWeight: 'normal'
             }
           },
           title: {

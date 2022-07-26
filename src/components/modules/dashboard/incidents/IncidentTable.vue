@@ -42,23 +42,11 @@
         {{ item.route }} {{ item.direction }}
         <v-badge class="ml-2" color="blue" :content="item.segmentCount" bordered> </v-badge>
       </template>
+
       <template v-slot:[`item.startTime`]="{ item }">
         {{ getTime(item.startTime) }}
       </template>
-      <!-- <template v-slot:[`item.evidenceCounts`]="{ item }">
-        <v-badge
-          class="mr-8"
-          v-for="(count, name, index) in item.evidenceCounts"
-          :color="getEvidenceColor(name)"
-          :key="index"
-          :content="count"
-          offset-x="5"
-          offset-y="22"
-          bordered
-        >
-          <v-icon v-text="getEvidenceIcon(name)"></v-icon>
-        </v-badge>
-      </template> -->
+
       <template v-slot:[`item.mitigation`]="{ item }">
         <div v-if="item.mitigation">
           <v-tooltip bottom>

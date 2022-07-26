@@ -65,12 +65,8 @@ export default {
       { title: RouterNames.HR_DASHBOARD, url: RouterPaths.HR_DASHBOARD },
       { title: RouterNames.HR_PCD, url: RouterPaths.HR_PCD },
       { title: RouterNames.HR_TIME_SPACE_DIAGRAM, url: RouterPaths.HR_TIME_SPACE_DIAGRAM },
-      { title: RouterNames.HR_SIGNAL_LIVE, url: RouterPaths.HR_SIGNAL_LIVE },
-      { title: RouterNames.HR_SIGNAL, url: RouterPaths.HR_SIGNAL },
-      { title: RouterNames.HR_PERFORMANCE_MEASURES, url: RouterPaths.HR_PERFORMANCE_MEASURES },
-      { divider: true },
-      { title: RouterNames.HR_MULTI_PCD, url: RouterPaths.HR_MULTI_PCD },
-      { title: RouterNames.HR_MULTI_OCC, url: RouterPaths.HR_MULTI_OCC }
+      { title: RouterNames.HR_SIGNAL_DISPLAY, url: RouterPaths.HR_SIGNAL_DISPLAY },
+      { title: RouterNames.HR_PERFORMANCE_MEASURES, url: RouterPaths.HR_PERFORMANCE_MEASURES }
     ]
   }),
   computed: {
@@ -89,7 +85,7 @@ export default {
         case 2:
           return this.$route.name === RouterNames.HR_TIME_SPACE_DIAGRAM ? 'orange' : 'teal';
         case 3:
-          return this.$route.name === RouterNames.HR_SIGNAL ? 'orange' : 'teal';
+          return this.$route.name === RouterNames.HR_SIGNAL_DISPLAY ? 'orange' : 'teal';
         case 4:
           return this.$route.name === RouterNames.HR_PERFORMANCE_MEASURES ? 'orange' : 'teal';
       }
@@ -107,7 +103,7 @@ export default {
       this.switchTo(RouterPaths.HR_TIME_SPACE_DIAGRAM);
     },
     showSignal() {
-      this.switchTo(RouterPaths.HR_SIGNAL);
+      this.switchTo(RouterPaths.HR_SIGNAL_DISPLAY);
     },
     showPerformanceMeasures() {
       this.switchTo(RouterPaths.HR_PERFORMANCE_MEASURES);

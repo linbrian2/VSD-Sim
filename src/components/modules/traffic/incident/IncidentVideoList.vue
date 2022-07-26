@@ -7,7 +7,14 @@
       :callback="cameraClicked"
       :allowExpand="false"
       ref="slideButtons"
-    />
+    >
+      <v-btn outlined small @click.stop="playLiveVideo()" class="mr-5">
+        <v-icon left small color="warning">
+          mdi-camera
+        </v-icon>
+        Live
+      </v-btn>
+    </SlideButtons>
 
     <div class="mt-4" v-if="filteredVideos.length > 0">
       <v-row>
@@ -124,6 +131,20 @@ export default {
           this.$refs.vpRef.changeTitle(video.camera);
           this.$refs.vpRef.changeCaption(this.dateAndTime(video.time));
           this.$refs.vpRef.changeIcon(video.classification ? 'mdi-car-emergency' : '');
+        }
+        this.showVideoPlayer = true;
+      }
+    },
+
+    playLiveVideo() {
+      if (this.selectedCamera) {
+        const cameraId = this.selectedCamera.name;
+        const url = `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
+        if (this.$refs.vpRef) {
+          this.$refs.vpRef.changeVideoSource(url);
+          this.$refs.vpRef.changeTitle(cameraId);
+          this.$refs.vpRef.changeCaption('LIVE');
+          this.$refs.vpRef.changeIcon('mdi-video');
         }
         this.showVideoPlayer = true;
       }

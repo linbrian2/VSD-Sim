@@ -80,6 +80,7 @@
 import Api from '@/utils/api/status';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/status';
+import TrafficConstants from '@/utils/constants/traffic';
 import { mapGetters, mapState } from 'vuex';
 import InfoCard from '@/components/modules/dashboard/InfoCard';
 
@@ -112,17 +113,7 @@ export default {
 
     activeTab: null,
 
-    region_items: [
-      { title: 'All Detectors', value: -1 },
-      { title: 'Urban Freeway Detectors', value: 1 },
-      { title: 'Urban System Detectors', value: 2 },
-      { title: 'CAV Area Freeway Detectors', value: 3 },
-      { title: 'CAV Area System Detectors', value: 4 },
-      { title: ' Rural Freeway Detectors', value: 5 },
-      { title: 'Rural System Detectors', value: 6 },
-      { title: 'Outside study area', value: 7 }
-    ],
-
+    region_items: TrafficConstants.TRAFFIC_DEVICE_CATEGORIES,
     selectedRegionId: -1
   }),
 

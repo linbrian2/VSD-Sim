@@ -62,11 +62,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
 import Utils from '@/utils/Utils';
 import NavList from '@/components/nav/NavList';
 import routes from '@/components/nav/configs';
-// import { RouterPaths } from '@/utils/constants/router';
 
 export default {
   name: 'AppDrawer',
@@ -101,7 +101,9 @@ export default {
 
     menuItems() {
       return this.filterRouteItem(routes[0].children);
-    }
+    },
+
+    ...mapGetters('auth', ['userRole'])
   },
 
   mounted() {
@@ -116,7 +118,7 @@ export default {
   methods: {
     filterRouteItem(routes) {
       return routes
-        .filter(item => item.meta.hidden !== true)
+        .filter(item => item.meta.hidden !== true && this.isAllowed(item.meta.permissions))
         .map(item => ({
           title: item.meta.title,
           icon: item.meta.icon,
@@ -124,6 +126,14 @@ export default {
           isNew: false,
           children: item.children ? this.filterRouteItem(item.children) : []
         }));
+    },
+
+    isAllowed(permissions) {
+      if (!permissions) {
+        return true;
+      }
+
+      return !!permissions.find(item => item === this.userRole);
     },
 
     handleDarkMode() {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="singleSelect">
+  <div v-if="singleSelect == 'Single Select'">
     <div v-if="multigraphModeSelect == 'Traffic Flow Data'">
       <TrafficFlow />
     </div>

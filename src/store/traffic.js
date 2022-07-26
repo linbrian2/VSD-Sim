@@ -31,7 +31,7 @@ const state = {
 
   multigraphModes: ['Traffic Flow Data', 'Travel Time Data', 'Weather Data'],
   multigraphModeSelect: 'Traffic Flow Data',
-  singleSelect: true,
+  singleSelect: 'Single Select',
   activeMultigraphMarkers: [],
   mitigation: null,
   simulation: null

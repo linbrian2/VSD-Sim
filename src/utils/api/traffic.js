@@ -31,6 +31,10 @@ export default {
     return AxiosClient.get('api/trafficPerMinuteDevices');
   },
 
+  fetchZoneList() {
+    return AxiosClient.get('api/zoneList');
+  },
+
   fetchInfo(id) {
     return AxiosClient.get('api/trafficDevice', { params: { id } });
   },
@@ -253,5 +257,9 @@ export default {
   fetchMitigationRampVolumes(incidentId) {
     const params = { incidentId };
     return AxiosClient.post('solution/rampVolumes', params);
+  },
+
+  fetchTrafficResponsiveData(zoneId, startDate) {
+    return AxiosClient.post('api/trafficResponsiveData', { zoneId, startDate });
   }
 };

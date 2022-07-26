@@ -5,7 +5,7 @@
       :showDate="!isDashboard"
       :clipLeft="!isDashboard"
       :clipRight="isDashboard"
-      :actionItems="action_menu_items"
+      :actionItems="actionItems"
     >
       <div v-show="$vuetify.breakpoint.mdAndUp">
         <MenuButton
@@ -79,6 +79,8 @@ export default {
     chart_menu_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
+      { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
+      { divider: true },
       { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
       { divider: true },
       { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING }
@@ -95,15 +97,20 @@ export default {
       { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT }
     ],
 
-    action_menu_items: [
+    action_main_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
+      { divider: true },
+      { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
       { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
       { divider: true },
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
-      { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT },
+      { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT }
+    ],
+
+    action_optional_items: [
       { divider: true },
       { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
       { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING }
@@ -115,8 +122,18 @@ export default {
       return this.$route.name === RouterNames.TRAFFIC_DASHBOARD;
     },
 
+    actionItems() {
+      const items = [];
+      items.push(...this.action_main_items);
+      if (this.isDevUser) {
+        items.push(...this.action_optional_items);
+      }
+      return items;
+    },
+
     ...mapState('traffic', ['showFlowChart']),
-    ...mapGetters('traffic', ['getNotification'])
+    ...mapGetters('traffic', ['getNotification']),
+    ...mapGetters('auth', ['isDevUser'])
   },
 
   methods: {

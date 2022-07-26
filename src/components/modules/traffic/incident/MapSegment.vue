@@ -150,6 +150,13 @@ export default {
         this.selectMarker(marker.id);
       }
     });
+
+    this.$bus.$on('MARKER_SELECTED', id => {
+      const marker = this.markers.find(m => m.id === id);
+      if (marker) {
+        this.selectMarker(marker.id);
+      }
+    });
   },
 
   methods: {

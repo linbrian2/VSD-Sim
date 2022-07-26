@@ -10,6 +10,15 @@ const state = {
   refreshTimerStarted: false
 };
 
+const getters = {
+  isDevUser(state) {
+    return state.user && (state.user.role === 'Admin' || state.user.role === 'Dev');
+  },
+  userRole(state) {
+    return state.user ? state.user.role : '';
+  }
+};
+
 const actions = {
   login({ commit }, { email, password, errorCallback }) {
     commit('loginRequest', { email });
@@ -74,5 +83,6 @@ export default {
   namespaced: true,
   state,
   actions,
-  mutations
+  mutations,
+  getters
 };

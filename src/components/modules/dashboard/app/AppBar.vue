@@ -5,6 +5,8 @@
       :showDate="false"
       :showWeatherInfo="true"
       :showCurrentTime="true"
+      :clipLeft="false"
+      :clipRight="true"
       :actionItems="action_menu_items"
     >
       <div v-show="$vuetify.breakpoint.mdAndUp">

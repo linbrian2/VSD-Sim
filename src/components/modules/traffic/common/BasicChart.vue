@@ -93,7 +93,7 @@ export default {
 
     makeChart(chartHeight, data) {
       // Add data to series
-      let series = this.prepareSeries(data.data);
+      let series = data.series ? data.series : this.prepareSeries(data.data);
       let title = data.title || '';
       let subtitle = data.subtitle || null;
       let xAxis = data.xAxis;

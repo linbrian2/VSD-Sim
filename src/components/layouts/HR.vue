@@ -64,7 +64,7 @@ export default {
     },
 
     ...mapState(['currentDate']),
-    ...mapState('hr', ['locations', 'currentSignal'])
+    ...mapState('hr', ['locations', 'currentSignal', 'signalTimingMode'])
   },
 
   created() {
@@ -86,11 +86,12 @@ export default {
         case RouterNames.HR_PCD:
           this.$bus.$emit('GET_PCD', { marker, time });
           break;
-        case RouterNames.HR_SIGNAL:
-          this.$bus.$emit('GET_SIGNALS', { marker, time });
-          break;
-        case RouterNames.HR_SIGNAL_LIVE:
-          this.$bus.$emit('GET_LIVE_SIGNALS', { marker, time });
+        case RouterNames.HR_SIGNAL_DISPLAY:
+          if (this.signalTimingMode == 'Playback') {
+            this.$bus.$emit('GET_PLAYBACK_SIGNALS', { marker, time });
+          } else {
+            this.$bus.$emit('GET_LIVE_SIGNALS', { marker, time });
+          }
           break;
         case RouterNames.HR_PERFORMANCE_MEASURES:
           this.$bus.$emit('GET_PREF', { marker, time });

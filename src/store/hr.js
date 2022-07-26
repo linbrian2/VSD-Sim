@@ -11,7 +11,8 @@ const state = {
   multiSignals: [],
   mapProjection: null,
   currentSignalTime: null,
-  realTimeSignal: null
+  realTimeSignal: null,
+  signalTimingMode: 'Playback'
 };
 
 const mutations = {
@@ -51,6 +52,9 @@ const mutations = {
   },
   SET_CURRENT_SIGNAL_TIME(state, time) {
     state.currentSignalTime = time;
+  },
+  SET_SIGNAL_TIMING_MODE(state, mode) {
+    state.signalTimingMode = mode;
   }
 };
 

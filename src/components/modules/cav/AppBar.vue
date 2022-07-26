@@ -38,7 +38,10 @@ export default {
   },
   data: () => ({
     title: AppConstants.CAV_APP_TITLE,
-    action_menu_items: null
+    action_menu_items: [
+      { title: RouterNames.CAV_DASHBOARD, url: RouterPaths.CAV_DASHBOARD },
+      { title: RouterNames.CAV_STATUS, url: RouterPaths.CAV_STATUS }
+    ]
   }),
   computed: {
     ...mapState('cav', ['progressLoading'])

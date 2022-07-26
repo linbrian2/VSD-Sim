@@ -22,7 +22,7 @@
           </v-row>
         </v-col>
       </v-row>
-      <RightPanel name="dashboardSideBarWidth" :title="selectedTitle" :tableButton="true">
+      <RightPanel name="dashboardSideBarWidth" :title="selectedTitle" :icon="selectedIcon" :tableButton="true">
         <InfoColumn :apiInfo="apiInfo" :selectedIdx="selectedIdx" :cardData="cardData" />
       </RightPanel>
       <SelectionDialog v-model="showSelection" ref="selectionDialog" />
@@ -166,6 +166,9 @@ export default {
     },
     selectedTitle() {
       return this.selectedIdx >= 0 && this.cardData[this.selectedIdx] ? this.cardData[this.selectedIdx].title : '';
+    },
+    selectedIcon() {
+      return this.selectedIdx >= 0 && this.cardData[this.selectedIdx] ? this.cardData[this.selectedIdx].icon : '';
     },
     incidentData() {
       return this.segments != null && this.trafficIncidents != null;
