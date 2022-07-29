@@ -362,7 +362,7 @@ export default {
     },
 
     async startSimulationTask() {
-      let startTime = this.currentDate;
+      let startTime = new Date();
       if (this.simuStartTime > 0) {
         startTime = new Date(startTime.getTime() + this.simuStartTime * 1000);
       }

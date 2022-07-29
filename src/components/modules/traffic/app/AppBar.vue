@@ -92,10 +92,7 @@ export default {
       { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT }
     ],
 
-    prediction_menu_items: [
-      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
-      { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT }
-    ],
+    prediction_menu_items: [{ title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT }],
 
     action_main_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
@@ -106,8 +103,7 @@ export default {
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
       { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
       { divider: true },
-      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
-      { title: RouterNames.TRAFFIC_GTS_PREDICT, url: RouterPaths.TRAFFIC_GTS_PREDICT }
+      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT }
     ],
 
     action_optional_items: [

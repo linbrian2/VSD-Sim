@@ -18,7 +18,6 @@ import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
 import Multigraph from '@/views/traffic/Multigraph.vue';
 import TrafficRoutingDashboard from '@/views/traffic/TrafficRoutingDashboard';
 import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
-import TrafficGTSPredict from '@/views/traffic/TrafficGTSPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
 import TravelTimeMap from '@/views/traffic/TravelTimeMap.vue';
 import IncidentList from '@/views/traffic/IncidentList.vue';
@@ -93,11 +92,6 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_PREDICT,
           name: RouterNames.TRAFFIC_PREDICT,
           component: TrafficPredict
-        },
-        {
-          path: RouterPaths.TRAFFIC_GTS_PREDICT,
-          name: RouterNames.TRAFFIC_GTS_PREDICT,
-          component: TrafficGTSPredict
         },
         {
           path: RouterPaths.TRAFFIC_ANOMALY,

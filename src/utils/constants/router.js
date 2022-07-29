@@ -8,7 +8,7 @@ export const RouterNames = {
   TRAFFIC_LCM: 'Traffic LCM',
   TRAFFIC_ROUTING: 'Traffic Routing',
   TRAFFIC_PREDICT: 'Traffic Flow Prediction',
-  TRAFFIC_GTS_PREDICT: 'GTS Volume Prediction',
+
   TRAFFIC_ANOMALY: 'Traffic Anomaly Map',
   TRAFFIC_WEATHER: 'Weather Data',
   TRAFFIC_MULTIGRAPH: 'Graph Viewer',
@@ -53,7 +53,6 @@ export const RouterPaths = {
   TRAFFIC_LCM: '/flow/lcm',
   TRAFFIC_ROUTING: '/flow/routing',
   TRAFFIC_PREDICT: '/flow/predict',
-  TRAFFIC_GTS_PREDICT: '/flow/gts-predict',
   TRAFFIC_ANOMALY: '/flow/anomaly',
   TRAFFIC_WEATHER: '/flow/weather',
   TRAFFIC_MULTIGRAPH: '/flow/multigraph',

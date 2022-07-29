@@ -1,8 +1,8 @@
 <template>
   <v-menu offset-y>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn small outlined color="grey lighten-2" dark v-bind="attrs" v-on="on" class="mt-3">
-        <h3>&nbsp;&nbsp;{{ selectedItem }}&nbsp;&nbsp;</h3>
+      <v-btn small outlined plain v-bind="attrs" v-on="on" class="mt-3">
+        <h4>{{ selectedItem }}</h4>
         <span> <v-icon>mdi-chevron-down</v-icon> </span>
       </v-btn>
     </template>

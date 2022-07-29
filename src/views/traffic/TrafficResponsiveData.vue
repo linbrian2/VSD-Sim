@@ -86,7 +86,7 @@ export default {
       return !this.zoneList
         ? []
         : Object.entries(this.zoneList).map(entry => ({
-            text: entry[0] + ': ' + entry[1].title,
+            text: entry[0] + ': ' + (entry[1].title ? entry[1].title : 'No Description'),
             value: entry[0]
           }));
     },
@@ -167,7 +167,6 @@ export default {
         const data = this.parseResponse(response, false);
         if (data != null) {
           this.chartData = this.composeData(zoneId, data);
-          console.log(this.chartData);
         }
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
@@ -209,7 +208,7 @@ export default {
       data.push({ name: 'Cycle Length', color: '#fed976', data: patterns, tracking: false });
 
       // Compose a level to comdate the auto min-max scaling of highcharts
-      if (resData.levels.length > 0 && resData.patterns.length > 0) {
+      if (resData.levels && resData.levels.length > 0 && resData.patterns.length > 0) {
         const t0 = resData.patterns[0][0];
         const t1 = resData.patterns[resData.patterns.length - 1][0];
         const ll = resData.levels[resData.levels.length - 1][1];
@@ -222,11 +221,14 @@ export default {
 
       const colors = ['#023858', '#045a8d', '#2b8cbe', '#74a9cf', '#a6bddb', '#d0d1e6', '#f1eef6'];
 
-      let bands = resData.levels.map((b, idx) => ({
-        from: b[0],
-        to: b[1],
-        color: colors[0 + idx]
-      }));
+      let bands = null;
+      if (resData.levels) {
+        bands = resData.levels.map((b, idx) => ({
+          from: b[0],
+          to: b[1],
+          color: colors[0 + idx]
+        }));
+      }
 
       return { data, xAxis, yAxis, title, ymin: 0, ymax: 100, bands: bands, patterns: resData.patterns };
     }

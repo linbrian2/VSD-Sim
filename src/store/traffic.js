@@ -32,6 +32,8 @@ const state = {
   multigraphModes: ['Traffic Flow Data', 'Travel Time Data', 'Weather Data'],
   multigraphModeSelect: 'Traffic Flow Data',
   singleSelect: 'Single Select',
+  predictionModes: ['Freeway', 'Arterial'],
+  predictionMode: 'Freeway',
   activeMultigraphMarkers: [],
   mitigation: null,
   simulation: null
@@ -138,6 +140,9 @@ const mutations = {
   },
   SET_SINGLE_SELECT(state, val) {
     state.singleSelect = val;
+  },
+  SET_PREDICTION_MODE(state, mode) {
+    state.predictionMode = mode;
   }
 };
 

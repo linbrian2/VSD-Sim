@@ -14,12 +14,12 @@
             </v-tooltip>
           </span>
 
-          <div class="mt-n2 mb-n2">
-            <MenuSelector :items="multigraphModes" :selectedItem="multigraphModeSelect" @click="setMultiGraphMode" />
+          <div class="mr-3 mt-n2">
+            <MenuSelector :items="predictionModes" :selectedItem="predictionMode" @click="setPredictionMode" />
           </div>
 
-          <div class="ml-3 mt-n2 mb-n2">
-            <MenuSelector :items="selectItems" :selectedItem="singleSelect" @click="setSingleSelectMode" />
+          <div class="mt-2">
+            <span>{{ loading ? 'Loading ...' : activeTitle }}</span>
           </div>
         </div>
       </v-col>
@@ -68,10 +68,6 @@ export default {
     }
   },
 
-  data: () => ({
-    selectItems: ['Single Select', 'Multi Select']
-  }),
-
   computed: {
     activeSignal() {
       return (
@@ -82,7 +78,15 @@ export default {
       );
     },
 
-    ...mapState('traffic', ['activeMarker', 'multigraphModes', 'multigraphModeSelect', 'singleSelect'])
+    activeTitle() {
+      if (this.title !== undefined) {
+        return this.title;
+      } else {
+        return this.activeSignal.name;
+      }
+    },
+
+    ...mapState('traffic', ['activeMarker', 'predictionModes', 'predictionMode'])
   },
   methods: {
     refreshData() {
@@ -93,12 +97,8 @@ export default {
       this.$store.commit('traffic/TOGGLE_SHOW_PANEL');
     },
 
-    setMultiGraphMode(mode) {
-      this.$store.commit('traffic/SET_MULTIGRAPH_MODE_SELECT', mode);
-    },
-
-    setSingleSelectMode(mode) {
-      this.$store.commit('traffic/SET_SINGLE_SELECT', mode);
+    setPredictionMode(mode) {
+      this.$store.commit('traffic/SET_PREDICTION_MODE', mode);
     }
   }
 };
