@@ -242,7 +242,7 @@ export default {
       }
     },
     getWazeIcon(key, active) {
-      let id = key.id
+      let id = key.id;
       if (id >= 10 && id <= 13)
         // Accident
         return active ? this.icons[3] : this.icons[2];

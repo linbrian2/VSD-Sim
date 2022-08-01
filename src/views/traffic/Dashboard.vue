@@ -59,7 +59,7 @@ import AnomalySegmentInfo from '@/components/modules/traffic/dashboard/AnomalySe
 import SelectionDialog from '@/components/modules/traffic/dashboard/SelectionDialog';
 
 import Utils from '@/utils/Utils';
-import Devices from '@/utils/Devices.js';
+// import Devices from '@/utils/Devices.js';
 import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
 import DashboardInfoOverlay from '@/components/modules/dashboard/app/DashboardInfoOverlay.vue';
 import TrafficDashboardMap from '@/components/modules/traffic/dashboard/TrafficDashboardMap.vue';

@@ -50,8 +50,8 @@ import DetectionBoxes from '@/components/modules/vision/DetectionBoxes.vue';
 
 export default {
   components: {
-  //  TitleBar,
-   TitleBarReID,
+    //  TitleBar,
+    TitleBarReID,
     DetectionBoxes
   },
 

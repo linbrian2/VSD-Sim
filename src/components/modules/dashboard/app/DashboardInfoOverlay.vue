@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import Devices from '@/utils/Devices.js';
+// import Devices from '@/utils/Devices.js';
 import Constants from '@/utils/constants/dashboard.js';
 import Spinner from '@/components/common/Spinner.vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
