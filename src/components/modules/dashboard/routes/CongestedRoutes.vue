@@ -91,7 +91,7 @@
           :name="'Free Flow Run TIme'"
           :titleFontSize="singleCol ? undefined : 20"
           :valueFontSize="singleCol ? 38 : 28"
-          :value="`${currSegment.travelTime.data.freeFlowRunTimeSecs} s`"
+          :value="getDurStr(currSegment.travelTime.data.freeFlowRunTimeSecs)"
         />
       </v-col>
       <v-col :cols="12 / infoColumnCount" class="pa-1">
@@ -103,7 +103,7 @@
           :name="'Travel Time Mean'"
           :titleFontSize="singleCol ? undefined : 20"
           :valueFontSize="singleCol ? 38 : 28"
-          :value="`${currSegment.travelTime.data.meanTravelTimeSecs} s`"
+          :value="getDurStr(currSegment.travelTime.data.meanTravelTimeSecs)"
         />
       </v-col>
     </v-row>
@@ -189,6 +189,9 @@ export default {
     }
   },
   methods: {
+    getDurStr(dur) {
+      return Utils.durationToTimeStr(dur);
+    },
     getTimeStr(ts) {
       let time = new Date(ts);
       return `${Utils.formatTimeAsMinute(time)}`;

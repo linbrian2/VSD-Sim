@@ -1,209 +1,228 @@
 <template>
-  <div>
-    <!-- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: {{ waze }} -->
-    <GmapMap
-      ref="mapRef"
-      :options="options"
-      :center="position"
-      :zoom="12"
-      map-type-id="roadmap"
-      class="my-map"
-      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
-    >
-      <!-- Traffic Flow Detectors & Traffic Flow Issues -->
-      <div v-if="isMapLayerVisible(0) || selectedIdx == 1">
-        <GmapMarker
-          v-for="m in markers"
-          :key="m.id"
-          :position="m.position"
-          :title="m.name"
-          :clickable="true"
-          :icon="getDefaultMarkerIcon(m, m.id == selectedMarkerId)"
-          :options="markerOptions(m.id)"
-          @click="handleMarkerClick(0, m.id)"
+  <div id="wrapper">
+    <div id="google_map">
+      <div v-show="selectedIdx == 0">
+        <MapSegment
+          ref="mapSegmentRef"
+          :incidentSegmentLinks="incidentSegmentLinks"
+          :incidentMarkers="incidentMarkers"
+          @select="onSegmentSelected"
+          @click="onMarkerClicked"
         />
-
-        <!-- Anomaly marker id -->
-        <GmapCustomMarker
-          alignment="bottomright"
-          v-for="(m, index) in markers.filter(d => d.status > 0)"
-          :key="index + 100"
-          :offsetX="15"
-          :offsetY="0"
-          :marker="m.position"
-        >
-          <h3 style="color:white">{{ m.id }}</h3>
-        </GmapCustomMarker>
       </div>
-
-      <!-- Bluetooth Center locations -->
-      <div v-if="isMapLayerVisible(1)">
-        <GmapMarker
-          v-for="s in segments"
-          :key="`${s.id}-C`"
-          :position="s.position"
-          :title="s.name"
-          :clickable="true"
-          :icon="getSegmentMarkerIcon(s)"
-          @click="handleMarkerClick(1, s.id)"
-        />
-
-        <!-- Travel Time Display -->
-        <GmapCustomMarker
-          alignment="bottomright"
-          v-for="(s, index) in segments"
-          :key="index + 200"
-          :offsetX="12"
-          :offsetY="7"
-          :marker="s.position"
+      <!-- <div> -->
+      <div v-show="selectedIdx != 0">
+        <GmapMap
+          ref="mapRef"
+          :options="options"
+          :center="position"
+          :zoom="12"
+          map-type-id="roadmap"
+          class="my-map"
+          style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
         >
-          <div v-if="s.travelTime && s.status === 7">
-            <v-chip small :color="getSegmentChipColor(s)" outlined>{{ formatDisplay(s.travelTime) }}</v-chip>
+          <!-- Traffic Flow Detectors & Traffic Flow Issues -->
+          <div v-if="isMapLayerVisible(0) || selectedIdx == 1">
+            <GmapMarker
+              v-for="m in markers"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :clickable="true"
+              :icon="getDefaultMarkerIcon(m, m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+              @click="handleMarkerClick(0, m.id)"
+            />
+
+            <!-- Anomaly marker id -->
+            <GmapCustomMarker
+              alignment="bottomright"
+              v-for="(m, index) in markers.filter(d => d.status > 0)"
+              :key="index + 100"
+              :offsetX="15"
+              :offsetY="0"
+              :marker="m.position"
+            >
+              <h3 style="color:white">{{ m.id }}</h3>
+            </GmapCustomMarker>
           </div>
-        </GmapCustomMarker>
 
-        <!-- Bluetooth Segments -->
-        <!-- <GmapPolyline v-for="s in segments" :key="s.id" :path.sync="s.path" :options="getSegmentOptions(s)" /> -->
-      </div>
+          <!-- Bluetooth Center locations -->
+          <div v-if="isMapLayerVisible(1)">
+            <GmapMarker
+              v-for="s in segments"
+              :key="`${s.id}-C`"
+              :position="s.position"
+              :title="s.name"
+              :clickable="true"
+              :icon="getSegmentMarkerIcon(s)"
+              @click="handleMarkerClick(1, s.id)"
+            />
 
-      <!-- Weather Stations -->
-      <div v-if="isMapLayerVisible(2)">
-        <GmapMarker
-          v-for="m in weatherMarkers"
-          :key="m.id"
-          :position="m.position"
-          :title="m.name"
-          :clickable="true"
-          :icon="getWeatherMarkerIcon(m)"
-          @click="handleMarkerClick(2, m.id)"
-        />
+            <!-- Travel Time Display -->
+            <GmapCustomMarker
+              alignment="bottomright"
+              v-for="(s, index) in segments"
+              :key="index + 200"
+              :offsetX="12"
+              :offsetY="7"
+              :marker="s.position"
+            >
+              <div v-if="s.travelTime && s.status === 7">
+                <v-chip small :color="getSegmentChipColor(s)" outlined>{{ formatDisplay(s.travelTime) }}</v-chip>
+              </div>
+            </GmapCustomMarker>
 
-        <!-- Weather Station Temeperature -->
-        <GmapCustomMarker
-          alignment="topright"
-          v-for="m in weatherMarkers"
-          :key="`${m.id}-T`"
-          :offsetX="10"
-          :offsetY="-20"
-          :marker="m.position"
-        >
-          <div v-if="m.temp > -100">
-            <h3 style="color:white">{{ m.temp }}°F</h3>
+            <!-- Bluetooth Segments -->
+            <!-- <GmapPolyline v-for="s in segments" :key="s.id" :path.sync="s.path" :options="getSegmentOptions(s)" /> -->
           </div>
-        </GmapCustomMarker>
-      </div>
 
-      <!-- Travel restrictions -->
-      <div v-if="isMapLayerVisible(3)">
-        <GmapMarker
-          v-for="r in restrictions"
-          :key="r.id"
-          :position="r.position"
-          :title="r.name"
-          :clickable="true"
-          :icon="restrictionIcon"
-          @click="handleMarkerClick(3, r.id)"
-        />
-      </div>
+          <!-- Weather Stations -->
+          <div v-if="isMapLayerVisible(2)">
+            <GmapMarker
+              v-for="m in weatherMarkers"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :clickable="true"
+              :icon="getWeatherMarkerIcon(m)"
+              @click="handleMarkerClick(2, m.id)"
+            />
 
-      <!-- Anomaly Segments -->
-      <div v-if="isMapLayerVisible(4)">
-        <GmapPolyline
-          v-for="(s, idx) in ongoingAnomalySegments"
-          :key="`${s.id}-${idx}`"
-          :path.sync="s.path"
-          :options="anomalySegmentOptions"
-          @click="handleMarkerClick(4, s.id)"
-        />
-
-        <GmapCustomMarker
-          alignment="center"
-          v-for="s in ongoingAnomalySegments"
-          :key="`A-${s.id}`"
-          :offsetX="0"
-          :offsetY="0"
-          :marker="midPoint(s)"
-        >
-          <div class="pulsate-effect"></div>
-        </GmapCustomMarker>
-      </div>
-
-      <!-- Traffic Incidents -->
-      <div v-if="isMapLayerVisible(5) || selectedIdx == 0">
-        Data
-      </div>
-
-      <!-- Signal Issues -->
-      <div v-if="isMapLayerVisible(7) || selectedIdx == 2">
-        <GmapMarker
-          v-for="m in signalPerformanceIssues"
-          :key="m.id"
-          :position="m.position"
-          :title="m.name"
-          :clickable="true"
-          :icon="getHRIcons(m, m.id == selectedMarkerId)"
-          :options="markerOptions(m.id)"
-          @click="handleMarkerClick(7, m.id)"
-        />
-      </div>
-
-      <!-- Device Anomalies -->
-      <div v-if="isMapLayerVisible(8) || selectedIdx == 3">
-        <GmapMarker
-          v-for="m in deviceMarkers"
-          :key="m.id"
-          :position="m.position"
-          :title="m.name"
-          :clickable="true"
-          :icon="getMarker2Icon(m, m.id == selectedMarkerId)"
-          :options="markerOptions(m.id)"
-          @click="handleMarkerClick(7, m.id)"
-        />
-      </div>
-
-      <!-- Congested Routes -->
-      <div v-if="isMapLayerVisible(9) || selectedIdx == 4">
-        <GmapPolyline
-          v-for="s in trafficSegments"
-          :key="s.id"
-          :title="s.desc"
-          :path.sync="s.path"
-          :options="segmentOptions(s)"
-        />
-        <GmapCustomMarker
-          alignment="center"
-          v-for="s in trafficSegments"
-          :key="`L-${s.id}`"
-          :offsetX="0"
-          :offsetY="-50"
-          :marker="midPoint(s)"
-        >
-          <div v-if="s.id == selectedSegmentId">
-            <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.short }}</v-chip>
+            <!-- Weather Station Temeperature -->
+            <GmapCustomMarker
+              alignment="topright"
+              v-for="m in weatherMarkers"
+              :key="`${m.id}-T`"
+              :offsetX="10"
+              :offsetY="-20"
+              :marker="m.position"
+            >
+              <div v-if="m.temp > -100">
+                <h3 style="color:white">{{ m.temp }}°F</h3>
+              </div>
+            </GmapCustomMarker>
           </div>
-        </GmapCustomMarker>
+
+          <!-- Travel restrictions -->
+          <div v-if="isMapLayerVisible(3)">
+            <GmapMarker
+              v-for="r in restrictions"
+              :key="r.id"
+              :position="r.position"
+              :title="r.name"
+              :clickable="true"
+              :icon="restrictionIcon"
+              @click="handleMarkerClick(3, r.id)"
+            />
+          </div>
+
+          <!-- Anomaly Segments -->
+          <div v-if="isMapLayerVisible(4)">
+            <GmapPolyline
+              v-for="(s, idx) in ongoingAnomalySegments"
+              :key="`${s.id}-${idx}`"
+              :path.sync="s.path"
+              :options="anomalySegmentOptions"
+              @click="handleMarkerClick(4, s.id)"
+            />
+
+            <GmapCustomMarker
+              alignment="center"
+              v-for="s in ongoingAnomalySegments"
+              :key="`A-${s.id}`"
+              :offsetX="0"
+              :offsetY="0"
+              :marker="midPoint(s)"
+            >
+              <div class="pulsate-effect"></div>
+            </GmapCustomMarker>
+          </div>
+
+          <!-- Traffic Incidents -->
+          <div v-if="isMapLayerVisible(5) || selectedIdx == 0">
+            <MapSegment
+              ref="mapSegmentRef"
+              :incidentSegmentLinks="incidentSegmentLinks"
+              :incidentMarkers="incidentMarkers"
+              @select="onSegmentSelected"
+              @click="onMarkerClicked"
+            />
+          </div>
+
+          <!-- Signal Issues -->
+          <div v-if="isMapLayerVisible(6) || selectedIdx == 2">
+            <GmapMarker
+              v-for="m in signalPerformanceIssues"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :clickable="true"
+              :icon="getHRIcons(m, m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+              @click="handleMarkerClick(7, m.id)"
+            />
+          </div>
+
+          <!-- Device Anomalies -->
+          <div v-if="isMapLayerVisible(7) || selectedIdx == 3">
+            <GmapMarker
+              v-for="m in deviceMarkers"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :clickable="true"
+              :icon="getMarker2Icon(m, m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+              @click="handleMarkerClick(7, m.id)"
+            />
+          </div>
+
+          <!-- Congested Routes -->
+          <div v-if="isMapLayerVisible(8) || selectedIdx == 4">
+            <GmapPolyline
+              v-for="s in trafficSegments"
+              :key="s.id"
+              :title="s.desc"
+              :path.sync="s.path"
+              :options="segmentOptions(s)"
+            />
+            <GmapCustomMarker
+              alignment="center"
+              v-for="s in trafficSegments"
+              :key="`L-${s.id}`"
+              :offsetX="0"
+              :offsetY="-50"
+              :marker="midPoint(s)"
+            >
+              <div v-if="s.id == selectedSegmentId">
+                <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.short }}</v-chip>
+              </div>
+            </GmapCustomMarker>
+          </div>
+
+          <!-- Waze Alerts -->
+          <div v-if="isMapLayerVisible(10) || selectedIdx == 5">
+            <GmapMarker
+              v-for="m in waze"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :clickable="true"
+              :icon="getWazeIcon(m, m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+              @click="handleMarkerClick(7, m.id)"
+            />
+          </div>
+
+          <!-- InfoWindow -->
+          <!-- <InfoWindow :position="infoPosition" ref="infoWindow" /> -->
+
+          <!-- Heatmap layer -->
+          <!-- <GmapHeatMap :data="heatMapData" :options="{ maxIntensity: 15, dissipating: true, radius: 10 }" /> -->
+        </GmapMap>
       </div>
-
-      <!-- Waze Alerts -->
-      <div v-if="isMapLayerVisible(10) || selectedIdx == 5">
-        <GmapMarker
-          v-for="m in waze"
-          :key="m.id"
-          :position="m.position"
-          :title="m.name"
-          :clickable="true"
-          :icon="getWazeIcon(m, m.id == selectedMarkerId)"
-          :options="markerOptions(m.id)"
-          @click="handleMarkerClick(7, m.id)"
-        />
-      </div>
-
-      <!-- InfoWindow -->
-      <!-- <InfoWindow :position="infoPosition" ref="infoWindow" /> -->
-
-      <!-- Heatmap layer -->
-      <!-- <GmapHeatMap :data="heatMapData" :options="{ maxIntensity: 15, dissipating: true, radius: 10 }" /> -->
-    </GmapMap>
+    </div>
   </div>
 </template>
 
@@ -217,6 +236,7 @@ import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import { mapState } from 'vuex';
 import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
+import MapSegment from '@/components/modules/dashboard/MapSegment';
 import * as d3 from 'd3';
 
 export default {
@@ -228,7 +248,8 @@ export default {
     selectedIdx: Number
   },
   components: {
-    GmapCustomMarker
+    GmapCustomMarker,
+    MapSegment
   },
   data() {
     return {
@@ -358,6 +379,12 @@ export default {
     }
   },
   methods: {
+    onSegmentSelected(segmentId) {
+      console.log(segmentId);
+    },
+    onMarkerClicked(marker) {
+      console.log(marker);
+    },
     changeSelectedColor() {
       this.colorInterp = setInterval(() => {
         let timeVal = parseFloat((new Date().getTime() % 2000) / 1000).toFixed(2);

@@ -45,7 +45,7 @@
           :flex="singleCol"
           :valueFontSize="singleCol ? undefined : 28"
           :name="'Duration'"
-          :value="`${incidentItem.duration} min`"
+          :value="getDurStr(incidentItem.duration * 60)"
         />
       </v-col>
       <v-col :cols="12 / infoColumnCount" class="pa-1">
@@ -139,6 +139,9 @@ export default {
   },
 
   methods: {
+    getDurStr(dur) {
+      return Utils.durationToTimeStr(dur);
+    },
     getEvidenceIcon(name) {
       const ICONS = {
         flow: Constants.DEVICE_TRAFFIC_ICON,

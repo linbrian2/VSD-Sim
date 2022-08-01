@@ -194,6 +194,16 @@ export default {
 
     return result;
   },
+  durationToTimeStr(dur) {
+    let h = Math.floor(dur / 3600);
+    let m = Math.floor((dur % 3600) / 60);
+    let s = Math.floor(dur % 60);
+    let str = '';
+    if (h) str += `${h}h `;
+    if (m) str += `${m}m `;
+    if (s) str += `${s}s`;
+    return str;
+  },
   lerpDate(date1, date2, ratio) {
     const d1 = date1.getTime();
     const d2 = date2.getTime();
