@@ -108,7 +108,7 @@ export default {
     },
 
     preferences() {
-      this.$router.push({ path: RouterPaths.AUTH_PREFERENCES }).catch(() => {});
+      this.$bus.$emit('TOGGLE_SETTINGS_DIALOG', true);
     },
 
     logout() {

@@ -24,13 +24,13 @@
         </v-chip>
       </GmapCustomMarker>
     </GmapMap>
-    <PhaseSelectionTool @click="phaseSelected" v-if="showPhaseSel" />
+    <PhaseSelectionTool @click="phaseSelected" v-if="isLive" />
   </div>
 </template>
 
 <script>
 /* global google */
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 import Utils from '@/utils/Utils.js';
@@ -75,9 +75,10 @@ export default {
     position() {
       return this.$store.state.position;
     },
-    showPhaseSel() {
-      return this.$route.name === RouterNames.HR_SIGNAL_LIVE;
-    }
+    isLive() {
+      return this.$route.name === RouterNames.HR_SIGNAL_DISPLAY && this.signalTimingMode == 'Live';
+    },
+    ...mapState('hr', ['signalTimingMode'])
   },
 
   watch: {
@@ -202,7 +203,7 @@ export default {
     },
 
     getMarker(marker) {
-      if (this.$route.name !== RouterNames.HR_SIGNAL_LIVE) {
+      if (this.isLive) {
         return this.selectedKey === marker.id ? this.trafficLightIconActive : this.trafficLightIcon;
       } else {
         return this.getTrafficLightIcon(marker.permit);
@@ -220,7 +221,7 @@ export default {
     },
 
     phaseSelected(phaseId) {
-      if (this.$route.name === RouterNames.HR_SIGNAL_LIVE) {
+      if (this.isLive) {
         this.curPhaseId = phaseId;
       }
     },

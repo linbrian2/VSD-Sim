@@ -1,9 +1,9 @@
 <template>
   <div>
-    <TitleBar title="Signal Timing Playback" :loading="loading" :refresh="refreshData">
+    <SignalTimingTitleBar title="Signal Timing" :loading="loading" :refresh="refreshData">
       <div style="height:30px" class="d-flex justify-space-between align-center mt-2">
         <v-slider
-          style="width:250px"
+          style="width:160px"
           v-model="sliderValue"
           dense
           color="orange darken-3"
@@ -16,9 +16,6 @@
           @change="sliderChanged"
         />
 
-        <div class="mt-n5">
-          <MenuTimePicker ref="timePicker" @set-time="timeChanged" />
-        </div>
         <div class="ml-10">
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
@@ -38,18 +35,19 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn dark icon v-on="on" @click.stop="showTimeline">
-                <v-icon>mdi-chart-gantt</v-icon>
+                <v-icon :color="timelineVisible ? 'red' : ''">mdi-chart-gantt</v-icon>
               </v-btn>
             </template>
             <span>Show Timeline</span>
           </v-tooltip>
         </div>
       </div>
-    </TitleBar>
+    </SignalTimingTitleBar>
+
     <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" class="my-map">
       <SignalDisplay ref="signalRef" @startTask="startTimer" v-show="timing != null" />
     </GmapMap>
-    <TimingChart class="my-1" id="timing" />
+    <TimingToolbar v-show="timelineVisible" />
   </div>
 </template>
 
@@ -57,20 +55,17 @@
 /* global google */
 import Utils from '@/utils/Utils';
 import { mapState, mapActions } from 'vuex';
-//import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapStyle from '@/utils/MapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 import SignalDisplay from '@/components/modules/hr/SignalDisplay';
-import TimingChart from '@/components/modules/hr/TimingChart';
-import TitleBar from '@/components/modules/hr/TitleBar';
-import MenuTimePicker from '@/components/modules/hr/MenuTimePicker';
+import TimingToolbar from '@/components/modules/hr/TimingToolbar';
+import SignalTimingTitleBar from '@/components/modules/hr/SignalTimingTitleBar';
 
 export default {
   components: {
-    TitleBar,
-    MenuTimePicker,
+    SignalTimingTitleBar,
     SignalDisplay,
-    TimingChart
+    TimingToolbar
   },
   data: () => ({
     loading: false,
@@ -82,6 +77,7 @@ export default {
     sliderValue: 0,
     sliderMax: 864000,
     simulationStartTime: null,
+    timelineVisible: false,
     speed_items: [1, 2, 4, 8, 16],
     selectedSpeed: 1,
     homeIcon: require('@/assets/home-24.png'),
@@ -126,7 +122,7 @@ export default {
   mounted() {
     this.simulationStartTime = Utils.getSameTimeAsToday(this.currentDate);
 
-    this.$bus.$on('GET_SIGNALS', ({ marker }) => {
+    this.$bus.$on('GET_PLAYBACK_SIGNALS', ({ marker }) => {
       let start = this.getStartTime();
       this.loadAndUpdate(marker, start);
     });
@@ -247,7 +243,7 @@ export default {
     },
 
     showTimeline() {
-      this.$vuetify.goTo('#timing');
+      this.timelineVisible = !this.timelineVisible;
     },
 
     sliderChanged() {

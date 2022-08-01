@@ -8,7 +8,7 @@
       :onMarkerClick="markerClicked"
     />
 
-    <TitleBar title="GTS Volume Prediction" :showId="false" :loading="loading" :refresh="refreshData">
+    <TitleBar title="Traffic Flow Prediction" :showId="false" :loading="loading" :refresh="refreshData">
       <div class="d-flex align-items justify-space-between align-center">
         <div class="mt-1 mr-10" style="width:100px;">
           <v-select
@@ -61,7 +61,7 @@ import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPanel';
-import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TitleBar from '@/components/modules/traffic/predict/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import VolumeCard from '@/components/modules/traffic/common/VolumeCard';
 

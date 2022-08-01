@@ -1,13 +1,37 @@
 <template>
   <div>
     <TitleBar title="Performance Measures" :loading="loading" :refresh="fetchData">
-      <div style="width:280px" class="mt-2">
-        <v-combobox flat dense small-chips hide-details multiple single-line :items="phases" v-model="select">
-          <template v-slot:prepend>
-            <v-icon class="mt-n1">mdi-road</v-icon>
-          </template>
-        </v-combobox>
-      </div>
+      <v-row style="height:30px" align="center" class="mt-n2">
+        <v-col cols="9">
+          <div style="width:280px">
+            <v-combobox
+              flat
+              dense
+              small-chips
+              hide-details
+              multiple
+              single-line
+              label="Phases:"
+              :items="phases"
+              v-model="select"
+            >
+              <template v-slot:prepend>
+                <v-icon class="mt-n1" color="white">mdi-road</v-icon>
+              </template>
+            </v-combobox>
+          </div>
+        </v-col>
+        <v-col cols="3">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn dark icon small elevation="5" fab v-on="on" @click.stop="showCorridorOccupancy">
+                <v-icon>mdi-format-columns</v-icon>
+              </v-btn>
+            </template>
+            <span>Corridor Occupancy Charts</span>
+          </v-tooltip>
+        </v-col>
+      </v-row>
     </TitleBar>
     <v-container fluid :style="{ 'max-width': maxWidth }">
       <v-card class="mt-1">
@@ -189,6 +213,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import Api from '@/utils/api/hr';
+import { RouterPaths } from '@/utils/constants/router';
 import Constants from '@/utils/constants/hr';
 import TitleBar from '@/components/modules/hr/TitleBar';
 import TimingPlans from '@/components/modules/hr/TimingPlans';
@@ -416,6 +441,11 @@ export default {
           this.fetchDetectorOccupancy(id, time, this.interval, this.occType);
           break;
       }
+    },
+
+    showCorridorOccupancy() {
+      const path = RouterPaths.HR_MULTI_OCC;
+      this.$router.push({ path }).catch(() => {});
     },
 
     createSignals(deviceId, phases) {

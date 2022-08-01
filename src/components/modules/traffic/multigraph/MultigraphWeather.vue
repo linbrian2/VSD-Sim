@@ -20,13 +20,23 @@
             <v-icon>mdi-backspace</v-icon>
           </v-btn>
         </template>
+        <template v-slot:selection="{ attrs, item, parent, selected }">
+          <v-chip v-if="item === Object(item)" v-bind="attrs" :input-value="selected" label small>
+            <span class="pr-1">
+              {{ item.id }}
+            </span>
+            <v-icon small @click="parent.selectItem(item)">
+              $delete
+            </v-icon>
+          </v-chip>
+        </template>
       </v-combobox>
       <MapMultigraphSelect ref="mapSelect" :markers="markers" :icons="markerIcons" @click="markerClicked" />
     </SelectionPanel>
-    <TitleBar :isMultigraph="true" :showId="false" :loading="loading" :refresh="refreshData">
-      <div class="d-flex align-items justify-space-between align-center">
+    <TitleBar :loading="loading" :refresh="refreshData">
+      <div class="d-flex align-items justify-center align-center">
         <div class="d-flex justify-space-between">
-          <div class="mt-1 mr-6" style="width: 200px">
+          <div class="mt-1 mr-6" style="width: 140px">
             <v-select
               dark
               dense
@@ -39,10 +49,9 @@
             />
           </div>
 
-          <div class="mt-1 mr-6" style="width: 128px">
+          <div class="mt-1 mr-5" style="width: 100px">
             <v-select
               dark
-              style="width: 140px; font-size: 14px"
               dense
               v-model="interval"
               :items="intervalItems"
@@ -50,7 +59,19 @@
               item-value="value"
               @input="intervalSelected"
               hide-details
-              prepend-icon="mdi-clock-outline"
+              single-line
+            />
+          </div>
+
+          <div class="mt-1" style="width: 110px">
+            <v-select
+              dark
+              dense
+              v-model="cols"
+              :items="columnItems"
+              item-text="text"
+              item-value="value"
+              hide-details
               single-line
             />
           </div>
@@ -59,19 +80,39 @@
     </TitleBar>
     <v-container ref="myDiv">
       <v-card class="mb-8" v-if="selectedVal == valItems[0]">
-        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'temp'" @removeItem="removeItem" />
+        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'temp'" :cols="cols" @removeItem="removeItem" />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[1]">
-        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'relHumidity'" @removeItem="removeItem" />
+        <MultigraphDataEntries
+          :valuesSelected="valuesSelected"
+          :param="'relHumidity'"
+          :cols="cols"
+          @removeItem="removeItem"
+        />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[2]">
-        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'windAvg'" @removeItem="removeItem" />
+        <MultigraphDataEntries
+          :valuesSelected="valuesSelected"
+          :param="'windAvg'"
+          :cols="cols"
+          @removeItem="removeItem"
+        />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[3]">
-        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'visibility'" @removeItem="removeItem" />
+        <MultigraphDataEntries
+          :valuesSelected="valuesSelected"
+          :param="'visibility'"
+          :cols="cols"
+          @removeItem="removeItem"
+        />
       </v-card>
       <v-card class="mb-8" v-if="selectedVal == valItems[4]">
-        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'precip'" @removeItem="removeItem" />
+        <MultigraphDataEntries
+          :valuesSelected="valuesSelected"
+          :param="'precip'"
+          :cols="cols"
+          @removeItem="removeItem"
+        />
       </v-card>
     </v-container>
   </div>
@@ -83,7 +124,7 @@ import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
-import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 
 export default {
   components: {
@@ -112,18 +153,23 @@ export default {
       }
     ],
 
-    selectedVal: 'Air Temperature',
-    valItems: ['Air Temperature', 'Humidity Percentage', 'Average Wind Speed', 'Visibility', 'Precipitation'],
-
+    selectedVal: 'Temperature',
+    valItems: ['Temperature', 'Humidity', 'Wind Speed', 'Visibility', 'Precipitation'],
+    cols: 12,
     loading: false,
     height: 420,
     interval: 300000,
     title: 'Weather Data',
     intervalItems: [
       { text: '1 Hour', value: 3600000 },
-      { text: '30 mins', value: 1800000 },
-      { text: '15 mins', value: 900000 },
-      { text: '5 mins', value: 300000 }
+      { text: '30 min', value: 1800000 },
+      { text: '15 min', value: 900000 },
+      { text: '5 min', value: 300000 }
+    ],
+    columnItems: [
+      { text: '1 column', value: 12 },
+      { text: '2 column', value: 6 },
+      { text: '3 column', value: 4 }
     ],
     icons: [
       {

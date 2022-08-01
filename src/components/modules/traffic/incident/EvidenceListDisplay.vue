@@ -139,7 +139,7 @@
         <div class="card-scroll">
           <v-row>
             <v-col cols="4" v-for="(waze, i) in filteredWazeAlerts" :key="i">
-              <WazeInfo class="mx-1" :waze="waze" />
+              <WazeInfo class="mx-1" :waze="waze" @click="wazeAlertClicked" />
             </v-col>
           </v-row>
         </div>
@@ -240,6 +240,8 @@ export default {
     items: [],
 
     tab: null,
+
+    prevSelectedWaze: null,
 
     incidentTimelineSeries: [],
 
@@ -738,6 +740,7 @@ export default {
             const dist = this.formatDistance(d.dist);
             const position = { lat: d.lat, lng: d.lon };
             const [reportRating, confidence, reliability, thumbsup] = d.val.split(',').map(Number);
+            const selected = false;
             result.push({
               id,
               tt,
@@ -750,7 +753,8 @@ export default {
               confidence,
               reliability,
               thumbsup,
-              linkId
+              linkId,
+              selected
             });
           }
         });
@@ -759,6 +763,28 @@ export default {
       result.sort((a, b) => a.tt - b.tt);
 
       return result;
+    },
+
+    selectWazeAlert(id) {
+      const waze = this.wazeAlerts.find(waze => 'W' + waze.id === id);
+      if (waze) {
+        if (this.prevSelectedWaze) {
+          this.prevSelectedWaze.selected = false;
+        }
+        waze.selected = true;
+        this.prevSelectedWaze = waze;
+      }
+    },
+
+    wazeAlertClicked(waze) {
+      if (waze) {
+        if (this.prevSelectedWaze) {
+          this.prevSelectedWaze.selected = false;
+        }
+        waze.selected = true;
+        this.$bus.$emit('MARKER_SELECTED', 'W' + waze.id);
+        this.prevSelectedWaze = waze;
+      }
     },
 
     getWazeAlertType(type, subtype, WazeTypes) {

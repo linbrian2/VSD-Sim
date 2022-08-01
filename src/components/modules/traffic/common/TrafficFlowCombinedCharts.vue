@@ -170,7 +170,9 @@ export default {
       if (flowList.vo) {
         const list = this.filterByDirection(flowList.vo, direction);
         list.forEach(item => {
-          data.xmin = data.xmin ? Math.min(data.xmin, item.data[0][0]) : item.data[0][0];
+          if (item.data) {
+            data.xmin = data.xmin ? Math.min(data.xmin, item.data[0][0]) : item.data[0][0];
+          }
         });
       }
     },

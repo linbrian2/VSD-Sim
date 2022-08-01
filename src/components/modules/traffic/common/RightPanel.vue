@@ -1,16 +1,23 @@
 <template>
   <v-navigation-drawer app clipped right ref="drawer" v-model="showPanel" :width="navigationWidth">
     <v-toolbar dense flat fixed overflow @click="changeTable">
-      <v-toolbar-title class="action-title">{{ title }}</v-toolbar-title>
-
+      <v-toolbar-title class="action-title">
+        <v-icon dark class="mt-n1 mr-2" v-if="icon">{{ icon }}</v-icon>
+        {{ title }}
+      </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-icon v-if="tableButton" class="mr-10" :loading="loading">
-        {{ showTable ? 'mdi-arrow-expand-up' : 'mdi-arrow-expand-down' }}
-      </v-icon>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <slot name="buttons"></slot>
+        <v-tooltip bottom v-if="tableButton">
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon color="primary" class="mr-10" :loading="loading" v-bind="attrs" v-on="on">
+              {{ showTable ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+            </v-icon>
+          </template>
+          <span>Expand List</span>
+        </v-tooltip>
 
+        <slot name="buttons"></slot>
         <v-btn icon small @click="showPanel = false" :loading="loading"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar-items>
     </v-toolbar>
@@ -34,7 +41,11 @@ export default {
       type: String,
       default: ''
     },
-    title: String
+    title: String,
+    icon: {
+      type: String,
+      default: ''
+    }
   },
   data: () => ({
     navigation: {

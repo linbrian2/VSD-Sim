@@ -1,7 +1,7 @@
 <template>
-  <div class="title-name non-selection">
+  <div class="title-name non-selection" style="height: 48px">
     <v-row wrap no-gutters>
-      <v-col lg="4" sm="6" xs="12">
+      <v-col lg="6" sm="6" xs="12">
         <div class="d-flex mt-1">
           <span v-if="showMap">
             <v-tooltip bottom>
@@ -14,24 +14,16 @@
             </v-tooltip>
           </span>
 
-          <div class="mt-1">
-            <span class="font-weight-bold text-overline">{{ loading ? 'Loading ...' : title }}</span>
-            <span class="ml-2 mt-0" v-if="!loading">
-              <template v-if="subtitle">
-                <v-chip color="green" outlined small>
-                  <span class="white--text">{{ subtitle }}</span>
-                </v-chip>
-              </template>
-              <template v-else>
-                <v-chip color="green" outlined small v-if="showId || showUid">
-                  <span class="white--text">{{ label }}</span>
-                </v-chip>
-              </template>
-            </span>
+          <div class="mr-3 mt-n2">
+            <MenuSelector :items="predictionModes" :selectedItem="predictionMode" @click="setPredictionMode" />
+          </div>
+
+          <div class="mt-2">
+            <span>{{ loading ? 'Loading ...' : activeTitle }}</span>
           </div>
         </div>
       </v-col>
-      <v-col lg="7" sm="4" xs="12">
+      <v-col lg="5" sm="4" xs="12">
         <span><slot></slot></span>
       </v-col>
       <v-col lg="1" sm="2" xs="12">
@@ -52,19 +44,16 @@
 
 <script>
 import { mapState } from 'vuex';
+import MenuSelector from '@/components/common/MenuSelector';
 export default {
+  components: {
+    MenuSelector
+  },
+
   props: {
     title: String,
     loading: Boolean,
     refresh: Function,
-    showId: {
-      type: Boolean,
-      default: false
-    },
-    showUid: {
-      type: Boolean,
-      default: false
-    },
     showMap: {
       type: Boolean,
       default: true
@@ -89,20 +78,15 @@ export default {
       );
     },
 
-    label() {
-      const u1 = this.showId && this.activeSignal.id ? this.activeSignal.id + '' : '';
-      const u2 = this.showUid && this.activeSignal.uid ? this.activeSignal.uid + '' : '';
-      let result = u1;
-      if (u1 && u2) {
-        result = u1 + ' / ' + u2;
+    activeTitle() {
+      if (this.title !== undefined) {
+        return this.title;
       } else {
-        result = u1 + u2;
+        return this.activeSignal.name;
       }
-
-      return result;
     },
 
-    ...mapState('traffic', ['activeMarker'])
+    ...mapState('traffic', ['activeMarker', 'predictionModes', 'predictionMode'])
   },
   methods: {
     refreshData() {
@@ -111,6 +95,10 @@ export default {
 
     showPanel() {
       this.$store.commit('traffic/TOGGLE_SHOW_PANEL');
+    },
+
+    setPredictionMode(mode) {
+      this.$store.commit('traffic/SET_PREDICTION_MODE', mode);
     }
   }
 };

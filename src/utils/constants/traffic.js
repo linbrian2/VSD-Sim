@@ -33,5 +33,14 @@ export default Object.freeze({
   DATA_RESTRICTION: 4,
   DATA_WEATHER: 5,
   DATA_TRAFFIC_ALERT: 6,
-  DATA_TRAFFIC_VIDEO: 7
+  DATA_TRAFFIC_VIDEO: 7,
+
+  TRAFFIC_DEVICE_CATEGORIES: [
+    { title: 'All Detectors', value: -1 },
+    { title: 'Urban Freeway Detectors', value: 1 },
+    { title: 'Urban System Detectors', value: 2 },
+    { title: 'CAV Area Freeway Detectors', value: 3 },
+    { title: 'CAV Area System Detectors', value: 4 },
+    { title: 'Beach Area System Detectors', value: 7 }
+  ]
 });

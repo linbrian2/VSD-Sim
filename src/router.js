@@ -14,24 +14,20 @@ import Dashboard from '@/components/layouts/Dashboard.vue';
 import MainDashboard from '@/views/dashboard/MainDashboard.vue';
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
-import TrafficFlow from '@/views/traffic/TrafficFlow.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
-import TravelTimeData from '@/views/traffic/TravelTimeData.vue';
 import Multigraph from '@/views/traffic/Multigraph.vue';
 import TrafficRoutingDashboard from '@/views/traffic/TrafficRoutingDashboard';
-import WeatherData from '@/views/traffic/WeatherData.vue';
 import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
-import TrafficGTSPredict from '@/views/traffic/TrafficGTSPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
 import TravelTimeMap from '@/views/traffic/TravelTimeMap.vue';
 import IncidentList from '@/views/traffic/IncidentList.vue';
 import IncidentMitigation from '@/views/traffic/IncidentMitigation.vue';
+import TrafficResponsiveData from '@/views/traffic/TrafficResponsiveData.vue';
 
 import HRDashboard from '@/views/hr/Dashboard.vue';
 import PCD from '@/views/hr/PCD.vue';
 import TimeSpaceDiagram from '@/views/hr/TimeSpaceDiagram.vue';
-import SignalTimingPlayback from '@/views/hr/SignalTimingPlayback.vue';
-import SignalTimingLive from '@/views/hr/SignalTimingLive.vue';
+import SignalTimingDisplay from '@/views/hr/SignalTimingDisplay.vue';
 import PerformanceMeasures from '@/views/hr/PerformanceMeasures.vue';
 import MultiPCD from '@/views/hr/MultiPCD.vue';
 import MultiOcc from '@/views/hr/MultiOcc.vue';
@@ -58,7 +54,7 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      alias: '/dash',
+      alias: RouterPaths.MAIN_DASHBOARD,
       component: Dashboard,
       children: [
         {
@@ -79,14 +75,9 @@ const router = new Router({
       ]
     },
     {
-      path: '/flow',
+      path: RouterPaths.TRAFFIC_MULTIGRAPH,
       component: Traffic,
       children: [
-        {
-          path: RouterPaths.TRAFFIC_FLOW,
-          name: RouterNames.TRAFFIC_FLOW,
-          component: TrafficFlow
-        },
         {
           path: RouterPaths.TRAFFIC_LCM,
           name: RouterNames.TRAFFIC_LCM,
@@ -103,29 +94,14 @@ const router = new Router({
           component: TrafficPredict
         },
         {
-          path: RouterPaths.TRAFFIC_GTS_PREDICT,
-          name: RouterNames.TRAFFIC_GTS_PREDICT,
-          component: TrafficGTSPredict
-        },
-        {
           path: RouterPaths.TRAFFIC_ANOMALY,
           name: RouterNames.TRAFFIC_ANOMALY,
           component: AnomalyMap
         },
         {
-          path: RouterPaths.TRAFFIC_WEATHER,
-          name: RouterNames.TRAFFIC_WEATHER,
-          component: WeatherData
-        },
-        {
           path: RouterPaths.TRAFFIC_MULTIGRAPH,
           name: RouterNames.TRAFFIC_MULTIGRAPH,
           component: Multigraph
-        },
-        {
-          path: RouterPaths.TRAVEL_TIME_DATA,
-          name: RouterNames.TRAVEL_TIME_DATA,
-          component: TravelTimeData
         },
         {
           path: RouterPaths.TRAVEL_TIME_MAP,
@@ -141,6 +117,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_MITIGATION_PATH,
           name: RouterNames.TRAFFIC_MITIGATION,
           component: IncidentMitigation
+        },
+        {
+          path: RouterPaths.TRAFFIC_RESPONSIVE_DATA,
+          name: RouterNames.TRAFFIC_RESPONSIVE_DATA,
+          component: TrafficResponsiveData
         }
       ]
     },
@@ -164,14 +145,9 @@ const router = new Router({
           component: TimeSpaceDiagram
         },
         {
-          path: RouterPaths.HR_SIGNAL_LIVE,
-          name: RouterNames.HR_SIGNAL_LIVE,
-          component: SignalTimingLive
-        },
-        {
-          path: RouterPaths.HR_SIGNAL,
-          name: RouterNames.HR_SIGNAL,
-          component: SignalTimingPlayback
+          path: RouterPaths.HR_SIGNAL_DISPLAY,
+          name: RouterNames.HR_SIGNAL_DISPLAY,
+          component: SignalTimingDisplay
         },
         {
           path: RouterPaths.HR_PERFORMANCE_MEASURES,

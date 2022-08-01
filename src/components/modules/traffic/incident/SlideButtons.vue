@@ -27,6 +27,7 @@
       </v-col>
       <v-col md="3">
         <div class="d-flex justify-end mt-3 mr-2">
+          <slot></slot>
           <v-btn text color="primary" @click.stop="btnClicked" v-if="showEvidenceText">
             <div class="font-weight-bold overline ml-3 mr-1">{{ title }}</div>
           </v-btn>

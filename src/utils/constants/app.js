@@ -1,6 +1,6 @@
 export default Object.freeze({
   DASHBOARD_APP_TITLE: 'Dashboard',
-  TRAFFIC_APP_TITLE: 'Traffic Flow Data',
+  TRAFFIC_APP_TITLE: 'Traffic Data',
   HR_APP_TITLE: 'High Resolution Data',
   VISION_APP_TITLE: 'Machine Vision',
   BLUETOOTH_APP_TITLE: 'Bluetooth and Waze Data',

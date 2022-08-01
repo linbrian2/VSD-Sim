@@ -21,7 +21,16 @@
             </v-combobox>
           </div>
         </v-col>
-        <v-col cols="3"> </v-col>
+        <v-col cols="3">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn dark icon small elevation="5" fab v-on="on" @click.stop="showCorridorPCD">
+                <v-icon>mdi-format-columns</v-icon>
+              </v-btn>
+            </template>
+            <span>Corridor PCD Charts</span>
+          </v-tooltip>
+        </v-col>
       </v-row>
     </TitleBar>
     <v-container>
@@ -35,6 +44,7 @@
 <script>
 import Api from '@/utils/api/hr';
 import { mapState } from 'vuex';
+import { RouterPaths } from '@/utils/constants/router';
 import PcdChart from '@/components/modules/hr/PcdChart';
 import TitleBar from '@/components/modules/hr/TitleBar';
 
@@ -96,7 +106,8 @@ export default {
     },
 
     showCorridorPCD() {
-      this.$bus.$emit('SHOW_CORRIDOR_PCD');
+      const path = RouterPaths.HR_MULTI_PCD;
+      this.$router.push({ path }).catch(() => {});
     },
 
     showPCD() {

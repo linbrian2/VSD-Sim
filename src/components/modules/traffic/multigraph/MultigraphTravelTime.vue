@@ -17,6 +17,17 @@
           label="SELECT SEGMENTS TO SHOW"
           return-object
         >
+          <template v-slot:selection="{ attrs, item, parent, selected }">
+            <v-chip v-if="item === Object(item)" v-bind="attrs" :input-value="selected" label small>
+              <span class="pr-1">
+                {{ item.link }}
+              </span>
+              <v-icon small @click="parent.selectItem(item)">
+                $delete
+              </v-icon>
+            </v-chip>
+          </template>
+
           <template v-slot:append-outer>
             <v-btn icon @click="clear">
               <v-icon>mdi-backspace</v-icon>
@@ -54,9 +65,9 @@
     </SelectionPanel>
 
     <!-- Title bar on the top -->
-    <TitleBar :isMultigraph="true" :showId="false" :refresh="refreshData">
+    <TitleBar :refresh="refreshData">
       <div class="d-flex justify-center align-center">
-        <div class="mt-1 mr-6" style="width: 200px">
+        <div class="mt-1 mr-6" style="width: 130px">
           <v-select
             dark
             dense
@@ -68,7 +79,7 @@
             single-line
           />
         </div>
-        <div style="width: 128px; margin-top: 5px">
+        <div class="mt-1 mr-6" style="width: 100px;">
           <v-select
             dark
             dense
@@ -78,7 +89,19 @@
             item-value="value"
             @input="intervalSelected"
             hide-details
-            prepend-icon="mdi-clock-outline"
+            single-line
+          />
+        </div>
+
+        <div class="mt-1" style="width: 110px">
+          <v-select
+            dark
+            dense
+            v-model="cols"
+            :items="columnItems"
+            item-text="text"
+            item-value="value"
+            hide-details
             single-line
           />
         </div>
@@ -88,11 +111,21 @@
     <!-- Charts -->
     <v-container>
       <v-card class="mb-8" v-if="selectedVal == valItems[0]">
-        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'travelTime'" @removeItem="removeItem" />
+        <MultigraphDataEntries
+          :valuesSelected="valuesSelected"
+          :param="'travelTime'"
+          :cols="cols"
+          @removeItem="removeItem"
+        />
       </v-card>
 
       <v-card class="mb-8" v-if="selectedVal == valItems[1]">
-        <MultigraphDataEntries :valuesSelected="valuesSelected" :param="'travelSpeed'" @removeItem="removeItem" />
+        <MultigraphDataEntries
+          :valuesSelected="valuesSelected"
+          :param="'travelSpeed'"
+          :cols="cols"
+          @removeItem="removeItem"
+        />
       </v-card>
     </v-container>
   </div>
@@ -103,7 +136,7 @@ import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
-import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
 
 export default {
@@ -118,6 +151,7 @@ export default {
     category: null,
     selectedVal: 'Travel Time',
     valItems: ['Travel Time', 'Travel Speed'],
+    cols: 12,
 
     loading: false,
     title: 'Travel Time Data',
@@ -126,10 +160,16 @@ export default {
 
     intervalItems: [
       { text: '1 min', value: 60000 },
-      { text: '5 mins', value: 300000 },
-      { text: '15 mins', value: 900000 },
-      { text: '30 mins', value: 1800000 },
+      { text: '5 min', value: 300000 },
+      { text: '15 min', value: 900000 },
+      { text: '30 min', value: 1800000 },
       { text: '1 Hour', value: 3600000 }
+    ],
+
+    columnItems: [
+      { text: '1 column', value: 12 },
+      { text: '2 column', value: 6 },
+      { text: '3 column', value: 4 }
     ],
 
     icons: [
@@ -188,7 +228,7 @@ export default {
 
     items() {
       return this.markers.map(item => {
-        return { id: item.id, name: item.name, data: null };
+        return { id: item.id, link: item.short, name: item.name, data: null };
       });
     },
 
@@ -248,7 +288,7 @@ export default {
         if (action == 'remove') {
           this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name);
         } else {
-          this.valuesSelected.push({ id: marker.id, name: marker.name, data: null });
+          this.valuesSelected.push({ id: marker.id, link: marker.short, name: marker.name, data: null });
           const time = this.currentDate.getTime();
           this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
         }

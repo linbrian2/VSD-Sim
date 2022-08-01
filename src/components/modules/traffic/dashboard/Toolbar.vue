@@ -129,7 +129,8 @@ export default {
     region_menu_items: [
       { title: 'All Region', value: -1 },
       { title: 'Urban Freeway', value: 1 },
-      { title: 'CAV Area Freeway', value: 3 }
+      { title: 'CAV Area Freeway', value: 3 },
+      { title: 'CAV Area Arterial', value: 4 }
     ]
   }),
 

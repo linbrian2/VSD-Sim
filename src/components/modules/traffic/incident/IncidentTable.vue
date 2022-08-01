@@ -36,7 +36,7 @@
 
     <template v-slot:[`item.route`]="{ item }">
       {{ item.route }} {{ item.direction }}
-      <v-badge class="ml-2" color="blue" :content="item.segmentCount" bordered> </v-badge>
+      <!-- <v-badge class="ml-2" color="blue" :content="item.segmentCount" bordered> </v-badge> -->
     </template>
     <template v-slot:[`item.startTime`]="{ item }">
       {{ item.startTime | time }}
@@ -55,7 +55,7 @@
         offset-y="22"
         bordered
       >
-        <v-icon v-text="getEvidenceIcon(name)"></v-icon>
+        <v-icon small v-text="getEvidenceIcon(name)"></v-icon>
       </v-badge>
     </template>
     <template v-slot:[`item.mitigation`]="{ item }">
@@ -103,9 +103,9 @@ export default {
   filters: {
     time(time) {
       const d = new Date(time);
-      const dd = Utils.formatDate(d);
+      // const dd = Utils.formatDate(d);
       const tt = Utils.formatTimeAsMinute(d);
-      return `${dd} ${tt}`;
+      return tt; //`${dd} ${tt}`;
     }
   },
 

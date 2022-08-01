@@ -59,7 +59,7 @@ export default {
         ]
       },
       traffic: {
-        name: 'Traffic Flow Data',
+        name: 'Traffic Data',
         icon: 'flowIcon',
         settings: [{ divider: true, title: 'Flow Settings' }]
       },

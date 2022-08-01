@@ -15,23 +15,49 @@
         </v-col>
         <v-col cols="12">
           <div class="mx-4">
-            <v-tabs color="teal accent-4">
-              <v-tab v-for="(item, direction, i) in info" :key="10 + i">
-                <v-chip small>{{ direction }}</v-chip>
-              </v-tab>
-              <v-tab-item v-for="(infoItem, direction, i) in info" :key="10 + i">
-                <v-row>
-                  <v-col cols="6" v-for="(item, j) in infoItem" :key="j">
-                    <ListInfoCard :info="item" :extra="direction" class="mt-1" />
-                  </v-col>
-                </v-row>
-              </v-tab-item>
-            </v-tabs>
+            <div class="d-flex justify-space-between">
+              <div>
+                <v-tabs color="teal accent-4" v-model="tab">
+                  <v-tab v-for="(item, direction, i) in info" :key="10 + i">
+                    <v-chip small>{{ direction }}</v-chip>
+                  </v-tab>
+                </v-tabs>
+              </div>
+              <div class="mt-2 mr-1 overline gray--text">{{ infoTime }}</div>
+            </div>
+
+            <div>
+              <v-tabs-items v-model="tab" class="custom-tab-items">
+                <v-tab-item v-for="(infoItem, direction, i) in info" :key="10 + i">
+                  <v-row>
+                    <v-col cols="6" v-for="(item, j) in infoItem.basicInfo" :key="j">
+                      <ListInfoCard :info="item" :extra="direction" class="mt-0" />
+                    </v-col>
+                  </v-row>
+
+                  <v-row v-if="infoItem.predictions">
+                    <v-col cols="12">
+                      <div class="d-flex justify-space-between">
+                        <v-subheader class="pl-0 mx-4 mt-n4 font-weight-bold text-overline blue--text">
+                          <h3>Predictions</h3>
+                        </v-subheader>
+                      </div>
+                      <v-divider />
+                    </v-col>
+                    <v-col cols="12">
+                      <div class="mx-1 mt-n4">
+                        <PredictionInfoList :header="infoItem.predictHeader" :data="infoItem.predictions" />
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-tab-item>
+              </v-tabs-items>
+            </div>
           </div>
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row v-if="isSpeed">
         <v-col cols="12">
           <div class="d-flex justify-space-between">
             <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Speed</h3></v-subheader>
@@ -132,6 +158,7 @@ import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
 import ListInfoCard from '@/components/modules/traffic/common/ListInfoCard';
+import PredictionInfoList from '@/components/modules/traffic/dashboard/PredictionInfoList';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
@@ -144,6 +171,7 @@ export default {
     BasicChart,
     ListInfoCard,
     ChartDialog,
+    PredictionInfoList,
     VideoPlayerDialog
   },
 
@@ -154,9 +182,11 @@ export default {
     height: 300,
     legendY: 5,
     marginLeft: 80,
+    tab: null,
     speed: {},
     volume: {},
     occupancy: {},
+    deviceInfo: {},
     info: {},
     cameraIds: []
   }),
@@ -164,6 +194,21 @@ export default {
   computed: {
     camerasAvaliable() {
       return !Utils.isEmpty(this.cameraIds);
+    },
+
+    isSpeed() {
+      return !Utils.isEmpty(this.speed);
+    },
+
+    infoTime() {
+      if (Object.keys(this.deviceInfo).length > 0) {
+        const key = Object.keys(this.deviceInfo)[0];
+        const time = this.deviceInfo[key].flowTime;
+        const result = Utils.formatAMPMTime(time);
+        return result;
+      } else {
+        return null;
+      }
     }
   },
 
@@ -229,6 +274,7 @@ export default {
 
         let deviceInfo = this.parseResponseData(deviceInfoRes);
         if (deviceInfo) {
+          this.deviceInfo = deviceInfo;
           this.info = this.formDeviceInfoData(deviceInfo);
           this.cameraIds = this.formCameraIds(deviceInfo);
         }
@@ -257,6 +303,9 @@ export default {
     },
 
     formSpeedData(flowList) {
+      if (!flowList.speed) {
+        return {};
+      }
       let title = '';
       let xAxis = 'Time of day';
       let yAxis = 'Speed (mph)';
@@ -307,7 +356,14 @@ export default {
       let directions = ['NB', 'SB', 'EB', 'WB'];
       directions.forEach(direction => {
         if (deviceInfo.hasOwnProperty(direction)) {
-          result[direction] = this.composeInfo(deviceInfo[direction]);
+          const basicInfo = this.composeBasicInfo(deviceInfo[direction]);
+          const predictInfo = this.composePredictionInfo(deviceInfo[direction].prediction);
+          if (predictInfo) {
+            const { predictHeader, predictions } = predictInfo;
+            result[direction] = { basicInfo, predictHeader, predictions };
+          } else {
+            result[direction] = { basicInfo };
+          }
         }
       });
       return result;
@@ -326,8 +382,8 @@ export default {
       };
     },
 
-    composeInfo(i) {
-      const p2 = { speed: i.speed, volume: i.volume, occupancy: i.occupancy };
+    composeBasicInfo(i) {
+      const p2 = { Speed: i.speed ? i.speed : 'N/A', Volume: i.volume, Occupancy: i.occupancy };
       const p3 = { 'avg Speed': i.avgSpd, 'avg Volume': i.avgVol, 'avg Occupancy': i.avgOcc };
 
       const p4 = {
@@ -336,13 +392,17 @@ export default {
         '1 Hr Projected': i.volume1hrProjected
       };
 
-      const p5 = { mdist: i.mdist, severity: i.severity };
-      let statusName = 'Status';
-      if (i.anomalyStatus > 0) {
-        statusName = `Status ${i.anomalyStatus}`;
+      const p5 = {};
+      if (i.mdist != null && i.severity != null) {
+        p5['mdist'] = i.mdist;
+        p5['severity'] = i.severity;
+        let statusName = 'Status';
+        if (i.anomalyStatus > 0) {
+          statusName = `Status ${i.anomalyStatus}`;
+        }
+        const text = i.anomalyStatus > 0 ? 'Anomaly' : 'Normal';
+        p5[statusName] = i.anomalyStatus > 0 ? { text } : text;
       }
-      const text = i.anomalyStatus > 0 ? 'Anomaly' : 'Normal';
-      p5[statusName] = i.anomalyStatus > 0 ? { text } : text;
 
       const p6 = { lanes: i.lanes, stations: i.stations, 'sample Size': i.sampleSize };
 
@@ -405,6 +465,42 @@ export default {
       return result;
     },
 
+    composePredictionInfo(prediction) {
+      if (!prediction) {
+        return null;
+      }
+
+      const predictHeader = [{ text: 'Flow', value: 'item' }];
+      const predictValues = {};
+
+      Object.keys(prediction).forEach(pred => {
+        const value = prediction[pred];
+
+        Object.keys(value).forEach(type => {
+          const itemValue = value[type][0][1];
+          let values = predictValues[type];
+          if (!values) {
+            values = {};
+            predictValues[type] = values;
+          }
+          values[pred] = itemValue;
+        });
+
+        const time = value[Object.keys(value)[0]][0][0];
+        const headerItem = { text: Utils.formatAMPMTime(time), value: pred };
+        predictHeader.push(headerItem);
+      });
+
+      const predictions = [];
+      Object.keys(predictValues).forEach(item => {
+        const name = Utils.toTitleCase(item);
+        const row = { item: name, ...predictValues[item] };
+        predictions.push(row);
+      });
+
+      return { predictHeader, predictions };
+    },
+
     getStatusTextByLevel(level) {
       const statuses = ['No Delay', 'No Delay', 'No Delay', 'Minor Delay', 'Major Delay', 'Major Delay', 'Stop and Go'];
       return statuses[level];
@@ -417,3 +513,14 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.time-display {
+  margin: 18px 10px;
+  padding: 5px 10px;
+  font-size: 11pt;
+}
+.custom-tab-items {
+  background-color: transparent !important;
+}
+</style>

@@ -80,8 +80,8 @@
       </v-card>
 
       <v-card tile class="mx-4 mb-2" v-show="showIncidentTable">
-        <div style="height: 400px;">
-          <IncidentTable :height="400" :incidents="incidents" @click="handleRowClick" />
+        <div>
+          <IncidentTable :height="tableHeight" :incidents="incidents" @click="handleRowClick" />
         </div>
       </v-card>
 
@@ -155,6 +155,10 @@ export default {
       return this.showPanel ? '100%' : '85%';
     },
 
+    tableHeight() {
+      return Math.max(100, Math.min(this.incidents.length * 65, 400));
+    },
+
     isSimulation() {
       return process.env.VUE_APP_MITIGATION_MODE === 'simulation';
     },
@@ -192,12 +196,16 @@ export default {
     },
 
     onMarkerClicked(marker) {
+      console.log(marker);
       const type = marker.type;
       if (type) {
         const item = marker.item;
         this.gotoSection(`#${type}`);
         if (this.$refs.anomalySegmentDisplay) {
           this.$refs.anomalySegmentDisplay.selectEvidenceItem(type, item);
+          if (type == 'waze') {
+            this.$refs.anomalySegmentDisplay.selectWazeAlert(marker.id);
+          }
         }
       }
     },

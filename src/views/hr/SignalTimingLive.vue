@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TitleBar title="Signal Timing Live" :loading="loading" :refresh="refreshData" />
+    <SignalTimingTitleBar title="Signal Timing" :loading="loading" :refresh="refreshData" />
     <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" class="my-map">
       <SignalTiming ref="signalRef" :spat="spat" v-show="activeMarker != null" />
     </GmapMap>
@@ -14,12 +14,12 @@ import { mapState } from 'vuex';
 import MapStyle from '@/utils/MapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 import SignalTiming from '@/components/modules/hr/SignalTiming';
-import TitleBar from '@/components/modules/hr/TitleBar';
+import SignalTimingTitleBar from '@/components/modules/hr/SignalTimingTitleBar';
 import { hrWebsocketUrl } from '@/utils/websocketUrl';
 
 export default {
   components: {
-    TitleBar,
+    SignalTimingTitleBar,
     SignalTiming
   },
   data: () => ({
