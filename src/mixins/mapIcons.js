@@ -179,11 +179,97 @@ export const mapIcons = {
           fillOpacity: 0.8,
           strokeWeight: 0.4
         }
+      ],
+
+      icons2: [
+        {
+          path: 0,
+          scale: 10.0,
+          fillColor: '#fa00ff',
+          fillOpacity: 0.8,
+          strokeWeight: 0.4
+        },
+        {
+          path: 0,
+          scale: 10.0,
+          fillColor: '#00ffff',
+          fillOpacity: 0.8,
+          strokeWeight: 0.4
+        }
+      ],
+
+      wazeIcons: [
+        {
+          url: require('@/assets/waze.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-accident.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-accident-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-construction.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-construction-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-hazard.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-hazard-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-road-closed.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-road-closed-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        },
+        {
+          url: require('@/assets/waze-traffic-jam.png'),
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
+        },
+        {
+          url: require('@/assets/waze-traffic-jam-select.png'),
+          size: { width: 36, height: 36, f: 'px', b: 'px' },
+          anchor: { x: 18, y: 18 }
+        }
       ]
     };
   },
 
   methods: {
+    getHRIcons(marker, selected = false) {
+      if (marker) {
+        return marker.status > 0 || selected ? this.trafficLightIconActive : this.trafficLightIcon;
+      }
+      return this.selectedMarkerId === marker.id ? this.trafficLightIconActive : this.trafficLightIcon;
+    },
     getWeatherMarkerIcon(marker) {
       if (marker) {
         return this.getWeatherIcon(marker.code);
@@ -196,22 +282,50 @@ export const mapIcons = {
       }
     },
 
-    getDefaultMarkerIcon(marker) {
+    getDefaultMarkerIcon(marker, selected = false) {
       if (marker) {
-        return marker.status > 0 ? this.icons[1] : this.icons[0];
+        return marker.status > 0 || selected ? this.icons[1] : this.icons[0];
       }
       return this.selectedMarkerId === marker.id ? this.icons[1] : this.icons[0];
     },
 
-    getMarkerIcon(marker) {
+    getMarker2Icon(marker, selected = false) {
       if (marker) {
-        return marker.status > 0 ? this.icons[1] : this.icons[0];
+        return marker.status > 0 || !selected ? this.icons2[1] : this.icons2[0];
+      }
+      return this.selectedMarkerId === marker.id ? this.icons2[1] : this.icons2[0];
+    },
+
+    getMarkerIcon(marker, selected = false) {
+      if (marker) {
+        return marker.status > 0 || selected ? this.icons[1] : this.icons[0];
       }
       return this.selectedMarkerId === marker.id ? this.icons[1] : this.icons[0];
     },
 
     getIconByName(name) {
       return this[name];
+    },
+
+    getWazeIcon(marker, active = false) {
+      if (marker.subType == undefined) {
+        return active ? this.wazeIcons[7] : this.wazeIcons[6];
+      }
+      let id = marker.subType.id;
+      if (id >= 10 && id <= 13)
+        // Accident
+        return active ? this.wazeIcons[3] : this.wazeIcons[2];
+      else if (id >= 20 && id <= 25)
+        // Jam
+        return active ? this.wazeIcons[11] : this.wazeIcons[10];
+      else if (id >= 90 && id <= 91)
+        // Construction
+        return active ? this.wazeIcons[5] : this.wazeIcons[4];
+      else if (id >= 100 && id <= 104)
+        // Closure
+        return active ? this.wazeIcons[9] : this.wazeIcons[8];
+      // Hazard
+      else return active ? this.wazeIcons[7] : this.wazeIcons[6];
     }
   }
 };

@@ -40,7 +40,7 @@ export default {
           { id: 1100, name: 'infoColumnCount', label: 'Info Column Count', type: 'number', val: 1, min: 1, max: 5 },
           { id: 1101, name: 'limitListings', label: 'Limit Listings', type: 'number', val: 0, min: 0, max: 5 },
           { id: 1102, name: 'hideIconsRightPanel', label: 'Hide Icons on Right Panel', type: 'boolean', val: false },
-          { id: 1103, name: 'showAllOverlayCards', label: 'Show All Overlay Cards', type: 'boolean', val: false },
+          { id: 1103, name: 'showAllOverlayCards', label: 'Show All Overlay Cards', type: 'boolean', val: true },
           { divider: true, title: 'Debug' },
           {
             id: 1200,

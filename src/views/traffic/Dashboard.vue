@@ -11,6 +11,7 @@
       :deviceLocations="deviceLocations"
       :bluetoothLocations="bluetoothLocations"
       :restrictions="restrictions"
+      :selectedIdx="selectedIdx"
       @fetchSensorLocations="fetchSensorLocations"
     />
 
@@ -330,6 +331,10 @@ export default {
           marker = this.currentAnomalySegments.find(m => m.id === id);
           this.anomalySegmentClicked(marker);
           break;
+        default:
+          console.log('Unimplemented Marker Click Case');
+          // alert('Unimplemented Marker Click Case');
+          break;
       }
     },
 
@@ -405,10 +410,6 @@ export default {
       setTimeout(() => {
         this.centerSegment(segment);
       }, 500);
-    },
-
-    midPoint(s) {
-      return s && s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
     },
 
     centerSegment(segment) {

@@ -21,7 +21,6 @@
           class="map"
           :style="style"
         >
-          {{ selectedMarkers.selectedMarkers[selectedMarkers.selectedIdx] }}
           <GmapMarker
             v-for="m in markers"
             :key="m.id"
@@ -68,7 +67,6 @@ import * as d3 from 'd3';
 export default {
   components: { GmapCustomMarker, MapSegment },
   props: {
-    apiInfo: Object,
     zoom: {
       type: Number,
       default: 12

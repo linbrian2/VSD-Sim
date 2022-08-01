@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: {{ segments }} -->
+    <!-- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: {{ waze }} -->
     <GmapMap
       ref="mapRef"
       :options="options"
@@ -10,39 +10,16 @@
       class="my-map"
       style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
     >
-      <!-- Dashboard -->
-      <!-- <GmapMarker
-      v-for="m in markers"
-      :key="m.id"
-      :position="m.position"
-      :title="m.name"
-      :clickable="true"
-      :icon="getMarkerIcon(m)"
-      :options="markerOptions(m.id)"
-    />
-    <GmapPolyline v-for="s in segments" :key="s.id" :title="s.desc" :path.sync="s.path" :options="segmentOptions(s)" />
-    <GmapCustomMarker
-      alignment="center"
-      v-for="s in segments"
-      :key="`L-${s.id}`"
-      :offsetX="0"
-      :offsetY="-50"
-      :marker="midPoint(s)"
-    >
-      <div v-if="s.id == selectedSegmentId">
-        <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.short }}</v-chip>
-      </div>
-    </GmapCustomMarker> -->
-
-      <!-- Traffic FLow Detectors -->
-      <div v-if="isMapLayerVisible(0)">
+      <!-- Traffic Flow Detectors & Traffic Flow Issues -->
+      <div v-if="isMapLayerVisible(0) || selectedIdx == 1">
         <GmapMarker
           v-for="m in markers"
           :key="m.id"
           :position="m.position"
           :title="m.name"
           :clickable="true"
-          :icon="getDefaultMarkerIcon(m)"
+          :icon="getDefaultMarkerIcon(m, m.id == selectedMarkerId)"
+          :options="markerOptions(m.id)"
           @click="handleMarkerClick(0, m.id)"
         />
 
@@ -151,6 +128,76 @@
         </GmapCustomMarker>
       </div>
 
+      <!-- Traffic Incidents -->
+      <div v-if="isMapLayerVisible(5) || selectedIdx == 0">
+        Data
+      </div>
+
+      <!-- Signal Issues -->
+      <div v-if="isMapLayerVisible(7) || selectedIdx == 2">
+        <GmapMarker
+          v-for="m in signalPerformanceIssues"
+          :key="m.id"
+          :position="m.position"
+          :title="m.name"
+          :clickable="true"
+          :icon="getHRIcons(m, m.id == selectedMarkerId)"
+          :options="markerOptions(m.id)"
+          @click="handleMarkerClick(7, m.id)"
+        />
+      </div>
+
+      <!-- Device Anomalies -->
+      <div v-if="isMapLayerVisible(8) || selectedIdx == 3">
+        <GmapMarker
+          v-for="m in deviceMarkers"
+          :key="m.id"
+          :position="m.position"
+          :title="m.name"
+          :clickable="true"
+          :icon="getMarker2Icon(m, m.id == selectedMarkerId)"
+          :options="markerOptions(m.id)"
+          @click="handleMarkerClick(7, m.id)"
+        />
+      </div>
+
+      <!-- Congested Routes -->
+      <div v-if="isMapLayerVisible(9) || selectedIdx == 4">
+        <GmapPolyline
+          v-for="s in trafficSegments"
+          :key="s.id"
+          :title="s.desc"
+          :path.sync="s.path"
+          :options="segmentOptions(s)"
+        />
+        <GmapCustomMarker
+          alignment="center"
+          v-for="s in trafficSegments"
+          :key="`L-${s.id}`"
+          :offsetX="0"
+          :offsetY="-50"
+          :marker="midPoint(s)"
+        >
+          <div v-if="s.id == selectedSegmentId">
+            <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.short }}</v-chip>
+          </div>
+        </GmapCustomMarker>
+      </div>
+
+      <!-- Waze Alerts -->
+      <div v-if="isMapLayerVisible(10) || selectedIdx == 5">
+        <GmapMarker
+          v-for="m in waze"
+          :key="m.id"
+          :position="m.position"
+          :title="m.name"
+          :clickable="true"
+          :icon="getWazeIcon(m, m.id == selectedMarkerId)"
+          :options="markerOptions(m.id)"
+          @click="handleMarkerClick(7, m.id)"
+        />
+      </div>
+
       <!-- InfoWindow -->
       <!-- <InfoWindow :position="infoPosition" ref="infoWindow" /> -->
 
@@ -162,25 +209,33 @@
 
 <script>
 /* global google */
+import Utils from '@/utils/Utils';
+import Devices from '@/utils/Devices.js';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapUtils from '@/utils/MapUtils.js';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import { mapState } from 'vuex';
 import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
+import * as d3 from 'd3';
 
 export default {
   mixins: [mapIcons, weatherCode],
   props: {
     deviceLocations: Array,
     bluetoothLocations: Array,
-    restrictions: Array
+    restrictions: Array,
+    selectedIdx: Number
   },
   components: {
     GmapCustomMarker
   },
   data() {
     return {
+      colorInterp: null,
+      selectedColor: 'blue',
+      selectedSegmentId: null,
+      selectedMarkerId: null,
       map: null,
       options: {
         zoomControl: true,
@@ -196,19 +251,25 @@ export default {
         },
         styles: DarkMapStyle
       },
-      infoPosition: null
+      infoPosition: null,
+      defaultSegmentOptions: {
+        strokeColor: 'green',
+        strokeOpacity: 1.0,
+        strokeWeight: 8,
+        zIndex: 100
+      }
     };
   },
   computed: {
+    deviceMarkers() {
+      return Devices;
+    },
     anomalySegmentOptions() {
       return {
         strokeColor: '#FA8072',
         strokeOpacity: 0.8,
         strokeWeight: this.getSegmentStrokeWeight()
       };
-    },
-    getSegmentStrokeWeight() {
-      return this.map ? this.map.getZoom() / 1.5 : 10;
     },
     ongoingAnomalySegments() {
       return this.currentAnomalySegments.filter(s => s.status === 0);
@@ -229,7 +290,43 @@ export default {
     position() {
       return this.$store.state.position;
     },
+    selectedMarkers() {
+      return {
+        selectedIdx: this.selectedIdx,
+        selectedMarkers: [
+          this.selectedTrafficIncident,
+          this.markers,
+          this.selectedSignalPerformanceIssue,
+          this.selectedDetector,
+          this.selectedSegment,
+          this.selectedWazeAlert
+        ]
+      };
+    },
+
+    trafficSegments() {
+      return this.$store.state.dashboard.segments;
+    },
+
     ...mapState(['currentDate']),
+    ...mapState('dashboard', [
+      'incidentSegmentLinks',
+      'incidentMarkers',
+      'selectedTrafficIncident',
+      'selectedtrafficDevice',
+      'selectedSignalPerformanceIssue',
+      'selectedDetector',
+      'selectedSegment',
+      'selectedWazeAlert',
+      'trafficIncidents',
+      'trafficDevices',
+      'signalPerformanceIssues',
+      'flowAnomData',
+      'hrSummary',
+      'detectors',
+      // 'segments',
+      'waze'
+    ]),
     ...mapState('traffic', [
       'currentBluetoothAnomaly',
       'currentFlowAnomaly',
@@ -243,6 +340,7 @@ export default {
     ])
   },
   mounted() {
+    this.addSelectedMarker();
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$refs.mapRef.$mapPromise.then(map => {
@@ -250,8 +348,125 @@ export default {
       this.addMapControls(map);
       this.fetchSensorLocations();
     });
+    if (!this.colorInterp) {
+      this.changeSelectedColor();
+    }
+  },
+  beforeDestroy() {
+    if (this.colorInterp) {
+      clearInterval(this.colorInterp);
+    }
   },
   methods: {
+    changeSelectedColor() {
+      this.colorInterp = setInterval(() => {
+        let timeVal = parseFloat((new Date().getTime() % 2000) / 1000).toFixed(2);
+        if (timeVal > 1) {
+          timeVal = 2 - timeVal;
+        }
+        this.selectedColor = d3.interpolateLab('red', 'blue')(timeVal);
+      }, 50);
+    },
+    getChipColor(s) {
+      return this.selectedSegmentId === s.id ? 'blue' : 'white';
+    },
+    segmentOptions(segment) {
+      const color =
+        segment.id === this.selectedSegmentId ? this.selectedColor : Utils.getStrokeColor(segment.travelTime.level);
+      const zIndex = segment.id === this.selectedSegmentId ? 2 : 1;
+      return { ...this.defaultSegmentOptions, strokeColor: color, zIndex };
+    },
+    markerClicked(marker) {
+      if (marker) {
+        this.selectedMarkerId = marker.id;
+        this.$store.commit('dashboard/SET_ACTIVE_MARKER', marker);
+        this.$emit('click', marker);
+      }
+    },
+    segmentClicked(s) {
+      this.selectedSegmentId = s.id;
+      this.$emit('clicked', s);
+    },
+    addSelectedMarker() {
+      console.log(`addSelectedMarker ${this.selectedIdx}`);
+      switch (this.selectedIdx) {
+        case 0:
+          break;
+        case 1:
+          this.markerClicked(this.selectedtrafficDevice);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.markers.filter(x => x.id == this.selectedMarkerId),
+              14
+            );
+          }, 1);
+          break;
+        case 2:
+          this.markerClicked(this.selectedSignalPerformanceIssue);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.signalPerformanceIssues.filter(x => x.id == this.selectedMarkerId),
+              13
+            );
+          }, 1);
+          break;
+        case 3:
+          this.markerClicked(this.selectedDetector);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.deviceMarkers.filter(x => x.id == this.selectedMarkerId),
+              12
+            );
+          }, 1);
+          break;
+        case 4:
+          this.segmentClicked(this.selectedSegment);
+          setTimeout(() => {
+            this.centerMapSegments(
+              this.map,
+              this.trafficSegments.filter(x => x.id == this.selectedSegmentId),
+              13
+            );
+          }, 1);
+          break;
+        case 5:
+          this.markerClicked(this.selectedWazeAlert);
+          setTimeout(() => {
+            this.centerMap(
+              this.map,
+              this.waze.filter(x => x.id == this.selectedMarkerId),
+              12
+            );
+          }, 1);
+          break;
+      }
+    },
+    centerMapSegments(map, segments, zoom = null) {
+      if (segments.length > 0) {
+        const bounds = new google.maps.LatLngBounds();
+        segments.forEach(segment => {
+          segment.path.forEach(point => {
+            bounds.extend(point);
+          });
+        });
+        map.fitBounds(bounds, 0);
+        if (zoom) {
+          map.setZoom(zoom);
+        }
+        let center = this.map.getCenter();
+        this.center = { lat: center.lat(), lng: center.lng() };
+        this.$store.commit('SET_MAP_CENTER', this.center);
+      }
+    },
+    midPoint(s) {
+      return s && s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
+    },
+    getSegmentStrokeWeight() {
+      return this.map ? this.map.getZoom() / 1.5 : 10;
+    },
     getSegmentChipColor(segment) {
       return segment.status == 7 ? 'red' : 'white';
     },
@@ -263,17 +478,27 @@ export default {
       return `${minutes.toFixed(1)} min`;
     },
     handleMarkerClick(type, id) {
-      console.log(type);
-      console.log(id);
+      this.selectedMarkerId = id;
       this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type });
     },
-    centerMap(map, markers) {
-      if (map && markers.length > 0) {
-        const bounds = new google.maps.LatLngBounds();
+    centerMap(map, markers, zoom = null) {
+      if (markers && markers.length > 0) {
+        let bounds = new google.maps.LatLngBounds();
         for (let i = 0; i < markers.length; i++) {
           bounds.extend(markers[i].position);
         }
-        map.fitBounds(bounds, 0);
+        map.setCenter(bounds.getCenter());
+        if (markers.length == 0) {
+          map.setCenter({ lat: 33.907, lng: -117.7 });
+          map.setZoom(zoom ? zoom : 10);
+        } else if (markers.length == 1) {
+          map.setZoom(zoom ? zoom : 10);
+        } else {
+          map.fitBounds(bounds);
+        }
+        let center = this.map.getCenter();
+        this.center = { lat: center.lat(), lng: center.lng() };
+        this.$store.commit('SET_MAP_CENTER', this.center);
       }
     },
     getMarkerIcon(key) {
@@ -287,7 +512,7 @@ export default {
       }
     },
     markerOptions(key) {
-      const zIndex = this.selectedMarkerId == key ? 2 : 1;
+      const zIndex = this.selectedMarkerId == key ? 100 : 99;
       return { zIndex };
     },
     fetchSensorLocations() {
@@ -361,6 +586,12 @@ export default {
     }
   },
   watch: {
+    selectedMarkers: {
+      handler: function() {
+        this.addSelectedMarker();
+      },
+      deep: true
+    },
     position() {
       this.$refs.mapRef.$mapPromise.then(map => {
         map.panTo(this.position);

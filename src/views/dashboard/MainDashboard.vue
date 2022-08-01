@@ -175,7 +175,6 @@ export default {
       return this.cardElapsedTime < 0 ? 0 : (this.cardElapsedTime / 45) * 100;
     },
     ...mapState('dashboard', [
-      'pref',
       'weatherStations',
       'trafficIncidents',
       'trafficDevices',
