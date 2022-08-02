@@ -16,14 +16,6 @@ const protectedRoute = [
         },
         children: [
           {
-            path: RouterPaths.MAIN_DASHBOARD,
-            name: RouterNames.MAIN_DASHBOARD,
-            meta: {
-              title: RouterNames.MAIN_DASHBOARD,
-              icon: 'mdi-view-dashboard'
-            }
-          },
-          {
             path: RouterPaths.TRAFFIC_DASHBOARD,
             name: RouterNames.TRAFFIC_DASHBOARD,
             meta: {

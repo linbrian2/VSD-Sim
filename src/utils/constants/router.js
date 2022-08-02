@@ -1,6 +1,5 @@
 export const RouterNames = {
   DASHBOARD: 'Dashboard',
-  MAIN_DASHBOARD: 'Main',
   TRAFFIC_DASHBOARD: 'Traffic',
   BLUETOOTH_DASHBOARD: 'Bluetooth',
 
@@ -44,7 +43,6 @@ export const RouterNames = {
 
 export const RouterPaths = {
   DASHBOARD_ROOT: '/dash',
-  MAIN_DASHBOARD: '/dash/main',
   TRAFFIC_DASHBOARD: '/dash/traffic',
   BLUETOOTH_DASHBOARD: '/dash/bluetooth',
 

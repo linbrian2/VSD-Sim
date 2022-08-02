@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       app_menu_items: [
-        { title: AppConstants.DASHBOARD_APP_TITLE, url: RouterPaths.MAIN_DASHBOARD },
+        { title: AppConstants.DASHBOARD_APP_TITLE, url: RouterPaths.TRAFFIC_DASHBOARD },
         { title: AppConstants.TRAFFIC_APP_TITLE, url: RouterPaths.TRAFFIC_MULTIGRAPH },
         { title: AppConstants.HR_APP_TITLE, url: RouterPaths.HR_DASHBOARD },
         { title: AppConstants.VISION_APP_TITLE, url: RouterPaths.VISION_DASHBOARD },

@@ -239,41 +239,6 @@ export default {
       this.cardData = payload.cardData;
       this.currentTitle =
         this.selectedIdx >= 0 && this.cardData[this.selectedIdx] ? this.cardData[this.selectedIdx].title : '';
-      // switch (idx) {
-      //   case 0:
-      //     this.markers = [];
-      //     this.polylines = undefined;
-      //     this.icons = undefined;
-      //     break;
-      //   case 1:
-      //     this.markers = this.trafficDevices;
-      //     this.polylines = undefined;
-      //     this.icons = undefined;
-      //     break;
-      //   case 2:
-      //     this.markers = this.signalPerformanceIssues;
-      //     this.polylines = undefined;
-      //     this.icons = this.getHRIcons();
-      //     break;
-      //   case 3:
-      //     this.markers = Devices;
-      //     this.polylines = undefined;
-      //     this.icons = undefined;
-      //     break;
-      //   case 4:
-      //     this.markers = undefined;
-      //     this.polylines = this.segments;
-      //     this.icons = undefined;
-      //     break;
-      //   case 5:
-      //     this.markers = this.waze;
-      //     this.polylines = undefined;
-      //     this.icons = this.getWazeIcons();
-      //     break;
-      //   default:
-      //     alert('Unhandled Case');
-      //     break;
-      // }
     },
 
     getWazeIcon(key, active) {

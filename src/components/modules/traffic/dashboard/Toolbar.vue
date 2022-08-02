@@ -113,7 +113,7 @@ export default {
       { title: Constants.DEVICE_BLUETOOTH, icon: Constants.DEVICE_BLUETOOTH_ICON, id: 1 },
       { title: Constants.DEVICE_WEATHER, icon: Constants.DEVICE_WEATHER_ICON, id: 2 },
       { title: Constants.DEVICE_RESTRICTIONS, icon: Constants.DEVICE_RESTRICTIONS_ICON, id: 3 },
-      { title: Constants.DEVICE_SEGMENTS, icon: Constants.DEVICE_SEGMENTS_ICON, id: 4 },
+      { title: Constants.DEVICE_SEGMENTS, icon: Constants.DEVICE_SEGMENTS_ICON, id: 4 }
     ],
 
     tool_menu_items: [{ title: 'Map Layer Selection', icon: 'mdi-layers-triple', id: 5 }],

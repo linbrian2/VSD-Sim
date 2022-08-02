@@ -55,7 +55,6 @@ export default {
     isDashboard: true,
     title: AppConstants.DASHBOARD_APP_TITLE,
     action_menu_items: [
-      { title: RouterNames.MAIN_DASHBOARD, url: RouterPaths.MAIN_DASHBOARD },
       { title: RouterNames.TRAFFIC_DASHBOARD, url: RouterPaths.TRAFFIC_DASHBOARD },
       { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
     ]
@@ -73,10 +72,6 @@ export default {
       this.$router.push({ path }).catch(() => {});
     },
 
-    showMainDashboard() {
-      this.switchTo(RouterPaths.MAIN_DASHBOARD);
-    },
-
     showTrafficDashboard() {
       this.switchTo(RouterPaths.TRAFFIC_DASHBOARD);
     },
@@ -86,10 +81,6 @@ export default {
     },
     performTask(name) {
       switch (name) {
-        case RouterNames.MAIN_DASHBOARD:
-          this.showMainDashboard();
-          break;
-
         case RouterNames.TRAFFIC_DASHBOARD:
           this.showTrafficDashboard();
           break;
