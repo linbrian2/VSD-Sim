@@ -113,7 +113,7 @@ export default {
       { title: Constants.DEVICE_BLUETOOTH, icon: Constants.DEVICE_BLUETOOTH_ICON, id: 1 },
       { title: Constants.DEVICE_WEATHER, icon: Constants.DEVICE_WEATHER_ICON, id: 2 },
       { title: Constants.DEVICE_RESTRICTIONS, icon: Constants.DEVICE_RESTRICTIONS_ICON, id: 3 },
-      { title: Constants.DEVICE_SEGMENTS, icon: Constants.DEVICE_SEGMENTS_ICON, id: 4 }
+      { title: Constants.DEVICE_SEGMENTS, icon: Constants.DEVICE_SEGMENTS_ICON, id: 4 },
     ],
 
     tool_menu_items: [{ title: 'Map Layer Selection', icon: 'mdi-layers-triple', id: 5 }],
@@ -123,7 +123,11 @@ export default {
       { title: Constants.DEVICE_BLUETOOTH, id: Constants.LAYER_DEVICE_BLUETOOTH },
       { title: Constants.DEVICE_RESTRICTIONS, id: Constants.LAYER_DEVICE_RESTRICTIONS },
       { title: Constants.DEVICE_SEGMENTS, id: Constants.LAYER_DEVICE_SEGMENTS },
-      { title: Constants.DEVICE_WEATHER, id: Constants.LAYER_DEVICE_WEATHER }
+      { title: Constants.DEVICE_WEATHER, id: Constants.LAYER_DEVICE_WEATHER },
+      { title: 'Signals', id: 5 },
+      { title: 'Devices', id: 6 },
+      { title: 'Routes', id: 7 },
+      { title: 'Waze Alerts', id: 8 }
     ],
 
     region_menu_items: [

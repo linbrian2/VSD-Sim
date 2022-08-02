@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Right display panel -->
-    <RightPanel name="dashboardSideBarWidth" :title="currentTitle">
+    <RightPanel name="dashboardSideBarWidth" :title="currentTitle" :tableButton="true">
       <component v-if="trafficInfoShow" :is="currentComponent" v-bind="currentProperties" ref="refPanelInfo" />
       <InfoColumn v-else :selectedIdx="selectedIdx" :cardData="cardData" />
     </RightPanel>
@@ -83,7 +83,7 @@ export default {
   data: () => ({
     trafficInfoShow: false,
     cardData: null,
-    selectedIdx: 3,
+    selectedIdx: -1,
     selectedSegmentId: '',
 
     loading: false,
@@ -230,8 +230,12 @@ export default {
   methods: {
     cardClicked(payload) {
       this.trafficInfoShow = false;
-      this.showPanelIfNot();
       this.selectedIdx = payload.idx;
+      if (this.selectedIdx < 0) {
+        this.$store.commit('traffic/SHOW_PANEL', false);
+      } else {
+        this.showPanelIfNot();
+      }
       this.cardData = payload.cardData;
       this.currentTitle =
         this.selectedIdx >= 0 && this.cardData[this.selectedIdx] ? this.cardData[this.selectedIdx].title : '';

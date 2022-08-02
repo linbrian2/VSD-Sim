@@ -37,7 +37,7 @@ export default {
           { id: 1002, name: 'autoPageSwaps', label: 'Automatic Page Swaps', type: 'boolean', val: true },
           { id: 1003, name: 'swapInterval', label: 'Swap Interval (sec)', type: 'number', val: 45, min: 10, max: 60 },
           { divider: true, title: 'Miscellaneous' },
-          { id: 1100, name: 'infoColumnCount', label: 'Info Column Count', type: 'number', val: 1, min: 1, max: 5 },
+          { id: 1100, name: 'infoColumnCount', label: 'Info Column Count', type: 'number', val: 1, min: 1, max: 4 },
           { id: 1101, name: 'limitListings', label: 'Limit Listings', type: 'number', val: 0, min: 0, max: 5 },
           { id: 1102, name: 'hideIconsRightPanel', label: 'Hide Icons on Right Panel', type: 'boolean', val: false },
           { id: 1103, name: 'showAllOverlayCards', label: 'Show All Overlay Cards', type: 'boolean', val: true },
@@ -53,6 +53,13 @@ export default {
             id: 1201,
             name: 'usePrevDay',
             label: 'Use Previous Day',
+            type: 'boolean',
+            val: false
+          },
+          {
+            id: 1202,
+            name: 'addTrafficFlowIssue',
+            label: 'Add a Traffic Flow Issue',
             type: 'boolean',
             val: false
           }

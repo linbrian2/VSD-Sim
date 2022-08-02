@@ -135,9 +135,9 @@ const actions = {
       const response = await TrafficApi.fetchAnomalyDevices();
       let deviceLocations = response.data.map(obj => ({ ...obj, status: 0 }));
       // TODO: Remove outside of testing
-      deviceLocations[0].status = 1;
-      deviceLocations[1].status = 1;
-      // deviceLocations[2].status = 1;
+      if (store.getters['getSetting']('dashboard', 'addTrafficFlowIssue')) {
+        deviceLocations[0].status = 1;
+      }
       deviceLocations = deviceLocations.map(obj => ({ ...obj, state: obj.status === 0 ? 'Normal' : 'Anomaly' }));
       let sortedData = deviceLocations.sort((a, b) => (a.status > b.status ? -1 : b.status > a.status ? 1 : 0));
       commit('SET_TRAFFIC_DEVICES', sortedData);

@@ -140,7 +140,7 @@
           </div>
 
           <!-- Traffic Incidents -->
-          <div v-if="isMapLayerVisible(5) || selectedIdx == 0">
+          <div v-if="selectedIdx == 0">
             <MapSegment
               ref="mapSegmentRef"
               :incidentSegmentLinks="incidentSegmentLinks"
@@ -151,7 +151,7 @@
           </div>
 
           <!-- Signal Issues -->
-          <div v-if="isMapLayerVisible(6) || selectedIdx == 2">
+          <div v-if="isMapLayerVisible(5) || selectedIdx == 2">
             <GmapMarker
               v-for="m in signalPerformanceIssues"
               :key="m.id"
@@ -165,7 +165,7 @@
           </div>
 
           <!-- Device Anomalies -->
-          <div v-if="isMapLayerVisible(7) || selectedIdx == 3">
+          <div v-if="isMapLayerVisible(6) || selectedIdx == 3">
             <GmapMarker
               v-for="m in deviceMarkers"
               :key="m.id"
@@ -179,7 +179,7 @@
           </div>
 
           <!-- Congested Routes -->
-          <div v-if="isMapLayerVisible(8) || selectedIdx == 4">
+          <div v-if="isMapLayerVisible(7) || selectedIdx == 4">
             <GmapPolyline
               v-for="s in trafficSegments"
               :key="s.id"
@@ -202,7 +202,7 @@
           </div>
 
           <!-- Waze Alerts -->
-          <div v-if="isMapLayerVisible(10) || selectedIdx == 5">
+          <div v-if="isMapLayerVisible(8) || selectedIdx == 5">
             <GmapMarker
               v-for="m in waze"
               :key="m.id"
@@ -345,7 +345,6 @@ export default {
       'flowAnomData',
       'hrSummary',
       'detectors',
-      // 'segments',
       'waze'
     ]),
     ...mapState('traffic', [
@@ -415,7 +414,7 @@ export default {
       this.$emit('clicked', s);
     },
     addSelectedMarker() {
-      console.log(`addSelectedMarker ${this.selectedIdx}`);
+      // console.log(`addSelectedMarker ${this.selectedIdx}`);
       switch (this.selectedIdx) {
         case 0:
           break;
@@ -528,19 +527,9 @@ export default {
         this.$store.commit('SET_MAP_CENTER', this.center);
       }
     },
-    getMarkerIcon(key) {
-      let id = key.id;
-      if (this.icons.length == 12) {
-        // Waze Selected
-        let typeId = key.subType;
-        return this.selectedMarkerId == id ? this.getWazeIcon(typeId, 1) : this.getWazeIcon(typeId, 0);
-      } else {
-        return this.selectedMarkerId == id ? this.icons[1] : this.icons[0];
-      }
-    },
     markerOptions(key) {
       const zIndex = this.selectedMarkerId == key ? 100 : 99;
-      return { zIndex };
+      return { optimized: false, zIndex };
     },
     fetchSensorLocations() {
       this.$emit('fetchSensorLocations');

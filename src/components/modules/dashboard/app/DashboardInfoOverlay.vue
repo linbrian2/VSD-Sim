@@ -176,17 +176,10 @@ export default {
     showAllOverlayCards() {
       return this.getSetting('dashboard', 'showAllOverlayCards');
     },
-    selectedTitle() {
-      return this.selectedIdx >= 0 && this.cardData[this.selectedIdx] ? this.cardData[this.selectedIdx].title : '';
-    },
     incidentData() {
       return this.segments != null && this.trafficIncidents != null;
     },
-    cardProgress() {
-      return this.cardElapsedTime < 0 ? 0 : (this.cardElapsedTime / 45) * 100;
-    },
     ...mapState('dashboard', [
-      'pref',
       'weatherStations',
       'trafficIncidents',
       'trafficDevices',
@@ -204,6 +197,7 @@ export default {
   },
   destroyed() {
     window.removeEventListener('click', this.keydownListener);
+    this.stopCardSwapInterval();
   },
   mounted() {
     this.startUpdateInterval();
@@ -233,11 +227,12 @@ export default {
       if (!param.val || (param.val && (param.val == 0 || param.val == '-'))) {
         return;
       } else {
-        this.selectedIdx = i;
-        // if (this.selectedIdx == i) {
-        //   this.goToPage(link);
-        // }
-        this.$emit('cardClicked', { idx: i, cardData: this.cardData });
+        if (this.selectedIdx == i) {
+          this.selectedIdx = -1;
+        } else {
+          this.selectedIdx = i;
+        }
+        this.$emit('cardClicked', { idx: this.selectedIdx, cardData: this.cardData });
       }
     },
     goToPage(link) {
@@ -361,22 +356,6 @@ export default {
         }
       }
     },
-    createTotalSegments() {
-      const linkIds = new Set();
-      this.incidents.forEach(item => {
-        linkIds.add(item.linkId);
-      });
-
-      const segments = [];
-      linkIds.forEach(linkId => {
-        const segment = this.bluetoothSegments.find(item => item.id === linkId);
-        if (segment) {
-          segments.push(segment);
-        }
-      });
-
-      return segments;
-    },
     showSelectionDialog(type) {
       if (this.$refs.selectionDialog) {
         if (type === 0) {
@@ -424,88 +403,6 @@ export default {
         }
         this.showSelection = true;
       }
-    },
-
-    openDialog() {
-      this.showDialog = true;
-    },
-    getWazeIcons() {
-      return [
-        {
-          url: require('@/assets/waze.png'),
-          size: { width: 32, height: 32, f: 'px', b: 'px' },
-          anchor: { x: 16, y: 16 }
-        },
-        {
-          url: require('@/assets/waze-select.png'),
-          size: { width: 36, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 18, y: 18 }
-        },
-        {
-          url: require('@/assets/waze-accident.png'),
-          size: { width: 32, height: 32, f: 'px', b: 'px' },
-          anchor: { x: 16, y: 16 }
-        },
-        {
-          url: require('@/assets/waze-accident-select.png'),
-          size: { width: 36, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 18, y: 18 }
-        },
-        {
-          url: require('@/assets/waze-construction.png'),
-          size: { width: 32, height: 32, f: 'px', b: 'px' },
-          anchor: { x: 16, y: 16 }
-        },
-        {
-          url: require('@/assets/waze-construction-select.png'),
-          size: { width: 36, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 18, y: 18 }
-        },
-        {
-          url: require('@/assets/waze-hazard.png'),
-          size: { width: 32, height: 32, f: 'px', b: 'px' },
-          anchor: { x: 16, y: 16 }
-        },
-        {
-          url: require('@/assets/waze-hazard-select.png'),
-          size: { width: 36, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 18, y: 18 }
-        },
-        {
-          url: require('@/assets/waze-road-closed.png'),
-          size: { width: 32, height: 32, f: 'px', b: 'px' },
-          anchor: { x: 16, y: 16 }
-        },
-        {
-          url: require('@/assets/waze-road-closed-select.png'),
-          size: { width: 36, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 18, y: 18 }
-        },
-        {
-          url: require('@/assets/waze-traffic-jam.png'),
-          size: { width: 32, height: 32, f: 'px', b: 'px' },
-          anchor: { x: 16, y: 16 }
-        },
-        {
-          url: require('@/assets/waze-traffic-jam-select.png'),
-          size: { width: 36, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 18, y: 18 }
-        }
-      ];
-    },
-    getHRIcons() {
-      return [
-        {
-          url: require('@/assets/traffic_light_small.png'),
-          size: { width: 15, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 8, y: 18 }
-        },
-        {
-          url: require('@/assets/traffic_light_active.png'),
-          size: { width: 15, height: 36, f: 'px', b: 'px' },
-          anchor: { x: 8, y: 18 }
-        }
-      ];
     },
     ...mapActions('dashboard', [
       'fetchWeatherStations',
@@ -582,8 +479,5 @@ export default {
 
 .show-btns {
   color: rgba(255, 255, 255, 1) !important;
-}
-.show-btns-light {
-  color: rgba(0, 0, 0, 1) !important;
 }
 </style>

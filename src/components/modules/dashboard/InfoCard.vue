@@ -35,18 +35,36 @@
     <v-col v-else>
       <v-row v-if="!flex">
         <v-col :lg="wide ? 3 : 4" :class="`${wide ? 'grid-center' : 'grid-right'} pb-8`">
-          <v-icon class="pr-1" :color="iconColor" :size="iconSize">{{ icon }}</v-icon>
+          <v-icon v-if="!hideIcons" class="pr-1" :color="iconColor" :size="iconSize">{{ icon }}</v-icon>
         </v-col>
         <v-col :lg="wide ? 9 : 8" class="grid-left">
           <h3 :style="`color: ${color}; font-size:${titleFontSize}px`">{{ name }}</h3>
           <h1 :style="`color: ${color !== 'undefined' ? color : valueColor}; font-size:${valueFontSize}px`">
-            <b>{{ value }}</b>
+            <h1 :style="`color: ${color !== 'undefined' ? color : valueColor};`">
+              <div v-if="name == 'Evidence Counts' && value">
+                <v-badge
+                  class="mr-8"
+                  v-for="(count, name, index) in value"
+                  :color="getEvidenceColor(name)"
+                  :key="index"
+                  :content="count"
+                  offset-x="5"
+                  offset-y="22"
+                  bordered
+                >
+                  <v-icon v-text="getEvidenceIcon(name)"></v-icon>
+                </v-badge>
+              </div>
+              <div v-else>
+                <b>{{ value }}</b>
+              </div>
+            </h1>
           </h1>
         </v-col>
       </v-row>
       <v-row v-if="flex">
         <div style="display: flex">
-          <v-icon class="pl-8 pr-3" :color="iconColor" :size="iconSize">{{ icon }}</v-icon>
+          <v-icon v-if="!hideIcons" class="pl-8 pr-3" :color="iconColor" :size="iconSize">{{ icon }}</v-icon>
           <h3 class="pt-3 pr-3" :style="`color: ${titleColor}; font-size:${titleFontSize}px`">{{ name }}:</h3>
           <h1 :style="`color: ${color !== 'undefined' ? color : valueColor}; font-size:${valueFontSize}px`">
             <div v-if="name == 'Evidence Counts'">
@@ -83,7 +101,7 @@ export default {
     wide: { type: Boolean, default: false },
     flex: { type: Boolean, default: false },
     titleFontSize: { type: Number, default: 24 },
-    valueFontSize: { type: Number, default: 42 },
+    valueFontSize: { type: Number, default: 32 },
     cardColor: { type: String, default: undefined },
     color: { type: String, default: 'undefined' },
     titleColor: { type: String, default: '#FFC107' },
