@@ -10,7 +10,7 @@ const state = {
     reconnectCount: 0
   },
 
-  navigationWidth: 600,
+  navigationWidth: '600px',
   settings: null,
   darkMode: null,
   showDrawer: false,
@@ -124,7 +124,7 @@ const actions = {
   },
 
   loadDarkMode({ commit }) {
-    const darkMode = localStorage.getItem('Settings');
+    const darkMode = localStorage.getItem('ThemeDarkMode');
     commit('SET_DARK_MODE', darkMode ? JSON.parse(darkMode) : true);
   },
 

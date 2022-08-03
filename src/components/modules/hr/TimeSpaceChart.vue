@@ -14,7 +14,7 @@
 import Highcharts from 'highcharts';
 export default {
   props: {
-    data: Array,
+    data: [Array, Object],
     speed: { type: Number, default: 45 },
     title: { type: String, default: '' }
   },
@@ -50,6 +50,7 @@ export default {
 
   methods: {
     prepareData(data) {
+      // console.log(data);
       this.loading = true;
 
       // Add data to series
@@ -58,7 +59,7 @@ export default {
       let ticks = [];
       let start = Number.MAX_SAFE_INTEGER;
 
-      if (data) {
+      if (data && data.length != undefined) {
         // Compute total distance
         const total = data.reduce((sum, v) => (sum += v.distance), 0);
         const length = data.length;

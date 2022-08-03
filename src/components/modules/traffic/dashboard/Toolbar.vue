@@ -123,7 +123,11 @@ export default {
       { title: Constants.DEVICE_BLUETOOTH, id: Constants.LAYER_DEVICE_BLUETOOTH },
       { title: Constants.DEVICE_RESTRICTIONS, id: Constants.LAYER_DEVICE_RESTRICTIONS },
       { title: Constants.DEVICE_SEGMENTS, id: Constants.LAYER_DEVICE_SEGMENTS },
-      { title: Constants.DEVICE_WEATHER, id: Constants.LAYER_DEVICE_WEATHER }
+      { title: Constants.DEVICE_WEATHER, id: Constants.LAYER_DEVICE_WEATHER },
+      { title: 'Signals', id: 5 },
+      { title: 'Devices', id: 6 },
+      { title: 'Routes', id: 7 },
+      { title: 'Waze Alerts', id: 8 }
     ],
 
     region_menu_items: [

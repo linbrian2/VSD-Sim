@@ -1,21 +1,21 @@
 <template>
   <v-container class="pa-0 px-2">
-    <div id="traffic-incidents" v-if="dataAvailable(cardData[0]) && selectedIdx == 0">
+    <div id="traffic-incidents" v-if="cardData && dataAvailable(cardData[0]) && selectedIdx == 0">
       <TrafficIncidents class="mt-1" :infoColumnCount="infoColumnCount" :handleRowClick="handleRowClick" />
     </div>
-    <div id="traffic-flow-issues" v-if="dataAvailable(cardData[1]) && selectedIdx == 1">
+    <div id="traffic-flow-issues" v-if="cardData && dataAvailable(cardData[1]) && selectedIdx == 1">
       <TrafficFlowIssues class="mt-1" :maxItems="cardData[1].val" :infoColumnCount="infoColumnCount" />
     </div>
-    <div id="signal-performance-issues" v-if="dataAvailable(cardData[2]) && selectedIdx == 2">
+    <div id="signal-performance-issues" v-if="cardData && dataAvailable(cardData[2]) && selectedIdx == 2">
       <SignalPerformanceIssues class="mt-1" :maxItems="cardData[2].val" :infoColumnCount="infoColumnCount" />
     </div>
-    <div id="device-anomalies" v-if="dataAvailable(cardData[3]) && selectedIdx == 3">
+    <div id="device-anomalies" v-if="cardData && dataAvailable(cardData[3]) && selectedIdx == 3">
       <DeviceAnomalies class="mt-1" :maxItems="cardData[3].val" :infoColumnCount="infoColumnCount" />
     </div>
-    <div id="congested-routes" v-if="dataAvailable(cardData[4]) && selectedIdx == 4">
+    <div id="congested-routes" v-if="cardData && dataAvailable(cardData[4]) && selectedIdx == 4">
       <CongestedRoutes class="mt-1" :maxItems="cardData[4].val" :infoColumnCount="infoColumnCount" />
     </div>
-    <div id="waze-alerts" v-if="dataAvailable(cardData[5]) && selectedIdx == 5">
+    <div id="waze-alerts" v-if="cardData && dataAvailable(cardData[5]) && selectedIdx == 5">
       <WazeAlerts class="mt-1" :maxItems="cardData[5].val" :infoColumnCount="infoColumnCount" />
     </div>
   </v-container>
@@ -34,7 +34,6 @@ import { mapGetters } from 'vuex';
 
 export default {
   props: {
-    apiInfo: Object,
     selectedIdx: Number,
     cardData: Array
   },

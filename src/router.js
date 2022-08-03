@@ -11,7 +11,6 @@ import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
 import Dashboard from '@/components/layouts/Dashboard.vue';
 
-import MainDashboard from '@/views/dashboard/MainDashboard.vue';
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
@@ -54,14 +53,9 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      alias: RouterPaths.MAIN_DASHBOARD,
+      alias: RouterPaths.TRAFFIC_DASHBOARD,
       component: Dashboard,
       children: [
-        {
-          path: RouterPaths.MAIN_DASHBOARD,
-          name: RouterNames.MAIN_DASHBOARD,
-          component: MainDashboard
-        },
         {
           path: '',
           name: RouterNames.TRAFFIC_DASHBOARD,

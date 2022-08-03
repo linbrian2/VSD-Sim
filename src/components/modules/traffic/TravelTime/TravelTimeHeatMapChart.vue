@@ -2,6 +2,7 @@
   <div>
     <div class="my-0 mx-0">
       <highcharts :options="chartOptions" :callback="drawRowText" v-if="!reload"></highcharts>
+      <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
     </div>
   </div>
 </template>
@@ -314,15 +315,21 @@ export default {
           .add();
         this.customObjects.push(t);
       });
-    }
-  },
-
-  watch: {
-    '$store.state.darkMode'() {
+    },
+    refresh() {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;
       }, 1);
+    }
+  },
+
+  watch: {
+    '$store.state.navigationWidth'() {
+      this.refresh();
+    },
+    '$store.state.darkMode'() {
+      this.refresh();
     }
   }
 };
