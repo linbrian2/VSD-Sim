@@ -193,7 +193,6 @@ import RestrictionInfo from '@/components/modules/traffic/common/RestrictionInfo
 import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
 import TimingPlan from '@/components/modules/traffic/dashboard/TimingPlan';
-// import TimingPlans from '@/components/modules/traffic/dashboard/TimingPlans';
 import TrafficFlowData from '@/components/modules/traffic/incident/TrafficFlowData';
 import TravelTimeData from '@/components/modules/traffic/incident/TravelTimeData';
 

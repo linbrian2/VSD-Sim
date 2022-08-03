@@ -9,29 +9,21 @@ const protectedRoute = [
     },
     children: [
       {
-        path: RouterPaths.MAIN_DASHBOARD,
+        path: RouterPaths.TRAFFIC_DASHBOARD,
         meta: {
-          title: 'Dashboards',
+          title: 'Dashboard',
           icon: 'mdi-view-dashboard'
-        },
-        children: [
-          {
-            path: RouterPaths.TRAFFIC_DASHBOARD,
-            name: RouterNames.TRAFFIC_DASHBOARD,
-            meta: {
-              title: RouterNames.TRAFFIC_DASHBOARD,
-              icon: 'mdi-view-dashboard'
-            }
-          },
-          {
-            path: RouterPaths.BLUETOOTH_DASHBOARD,
-            name: RouterNames.BLUETOOTH_DASHBOARD,
-            meta: {
-              title: RouterNames.BLUETOOTH_DASHBOARD,
-              icon: 'mdi-view-dashboard'
-            }
-          }
-        ]
+        }
+        // children: [
+        //   {
+        //     path: RouterPaths.TRAFFIC_DASHBOARD,
+        //     name: RouterNames.TRAFFIC_DASHBOARD,
+        //     meta: {
+        //       title: RouterNames.TRAFFIC_DASHBOARD,
+        //       icon: 'mdi-view-dashboard'
+        //     }
+        //   }
+        // ]
       },
 
       //Traffic Flow
@@ -88,6 +80,14 @@ const protectedRoute = [
             meta: {
               title: RouterNames.TRAFFIC_PREDICT,
               icon: 'mdi-waveform'
+            }
+          },
+          {
+            path: RouterPaths.BLUETOOTH_DASHBOARD,
+            name: RouterNames.BLUETOOTH_DASHBOARD,
+            meta: {
+              title: RouterNames.BLUETOOTH_DASHBOARD,
+              icon: 'mdi-motion-play-outline '
             }
           },
           {

@@ -35,22 +35,8 @@
 
       <!-- notification -->
       <v-divider vertical class="ml-2" />
-      <v-menu offset-y origin="center center" class="elelvation-1" transition="scale-transition">
-        <template #activator="{ on }">
-          <v-btn slot="activator" icon text v-on="on">
-            <div v-if="getNotification.length > 0">
-              <v-badge color="red" overlap>
-                <span slot="badge">{{ getNotification.length }}</span>
-                <v-icon medium>mdi-bell</v-icon>
-              </v-badge>
-            </div>
-            <div v-else>
-              <v-icon medium>mdi-bell-outline</v-icon>
-            </div>
-          </v-btn>
-        </template>
-        <IncidentNotificationList v-show="getNotification.length > 0" :items="getNotification" />
-      </v-menu>
+      <NotificationDropdown />
+      <v-divider vertical class="ml-2" />
     </Header>
     <FlowChartDialog v-model="showFlowChart" />
   </div>
@@ -62,7 +48,7 @@ import AppConstants from '@/utils/constants/app';
 import Header from '@/components/common/Header';
 import MenuButton from '@/components/common/MenuButton';
 import FlowChartDialog from '@/components/modules/traffic/app/FlowChartDialog';
-import IncidentNotificationList from '@/components/modules/traffic/dashboard/IncidentNotificationList';
+import NotificationDropdown from '@/components/common/NotificationDropdown';
 import { mapState, mapGetters } from 'vuex';
 
 export default {
@@ -70,7 +56,7 @@ export default {
     Header,
     MenuButton,
     FlowChartDialog,
-    IncidentNotificationList
+    NotificationDropdown
   },
 
   data: () => ({
@@ -103,7 +89,9 @@ export default {
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
       { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
       { divider: true },
-      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT }
+      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
+      { divider: true },
+      { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
     ],
 
     action_optional_items: [
@@ -128,7 +116,6 @@ export default {
     },
 
     ...mapState('traffic', ['showFlowChart']),
-    ...mapGetters('traffic', ['getNotification']),
     ...mapGetters('auth', ['isDevUser'])
   },
 

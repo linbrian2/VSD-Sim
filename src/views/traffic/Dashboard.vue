@@ -203,6 +203,7 @@ export default {
     });
 
     this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type }) => {
+      console.log(id, type);
       this.handleMarkerClick(type, id);
     });
 
@@ -379,6 +380,10 @@ export default {
       setTimeout(() => {
         this.centerSegment(segment);
       }, 500);
+    },
+
+    midPoint(s) {
+      return s && s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
     },
 
     centerSegment(segment) {
