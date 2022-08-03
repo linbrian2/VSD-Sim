@@ -1,7 +1,7 @@
 <template>
   <v-menu offset-y>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn small outlined plain v-bind="attrs" v-on="on" class="mt-3">
+      <v-btn small plain :color="color" v-bind="attrs" v-on="on" class="mt-3">
         <h4>{{ selectedItem }}</h4>
         <span> <v-icon>mdi-chevron-down</v-icon> </span>
       </v-btn>
@@ -24,6 +24,10 @@
 export default {
   props: {
     selectedItem: String,
+    color: {
+      type: String,
+      default: '#567'
+    },
     items: {
       type: Array,
       default: () => []
