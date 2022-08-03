@@ -2,6 +2,7 @@
   <div>
     <div class="my-0 mx-0">
       <highcharts :options="chartOptions" v-if="!reload"></highcharts>
+      <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
     </div>
   </div>
 </template>
@@ -28,6 +29,12 @@ export default {
     }
   },
   methods: {
+    refresh() {
+      this.reload = true;
+      setTimeout(() => {
+        this.reload = false;
+      }, 1);
+    },
     tranformSeries(data) {
       if (data) {
         return data.map(item => {
@@ -240,11 +247,11 @@ export default {
     }
   },
   watch: {
+    '$store.state.navigationWidth'() {
+      this.refresh();
+    },
     '$store.state.darkMode'() {
-      this.reload = true;
-      setTimeout(() => {
-        this.reload = false;
-      }, 1);
+      this.refresh();
     }
   }
 };

@@ -13,11 +13,11 @@ export default Object.freeze({
   DEVICE_RESTRICTIONS: 'Travel Restrictions',
   DEVICE_SEGMENTS: 'Anomaly Segments',
 
-  TRAFFIC_INCIDENTS_ICON: 'mdi-vector-line',
+  TRAFFIC_INCIDENTS_ICON: 'mdi-car-multiple',
   DEVICE_TRAFFIC_ICON: 'mdi-traffic-cone',
   SIGNAL_PERFORMANCE_ISSUES_ICON: 'mdi-traffic-light',
   TRAFFIC_FLOW_ANOMALIES_ICON: 'mdi-alert-circle-outline',
-  HIGH_CONGESTION_ROUTES_ICON: 'mdi-car-multiple',
+  HIGH_CONGESTION_ROUTES_ICON: 'mdi-vector-line',
   REPORTED_WAZE_ALERTS_ICON: 'mdi-waze',
 
   DEVICE_BLUETOOTH_ICON: 'mdi-bluetooth-connect',

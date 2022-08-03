@@ -3,6 +3,7 @@
     <div class="chart-title" v-if="title">{{ title }}</div>
     <div class="my-0 mx-0">
       <highcharts class="chart" :options="chartOptions" v-if="!reload"></highcharts>
+      <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
     </div>
   </div>
 </template>
@@ -130,14 +131,20 @@ export default {
         series: series
       };
       return chart;
-    }
-  },
-  watch: {
-    '$store.state.darkMode'() {
+    },
+    refresh() {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;
       }, 1);
+    }
+  },
+  watch: {
+    '$store.state.navigationWidth'() {
+      this.refresh();
+    },
+    '$store.state.darkMode'() {
+      this.refresh();
     }
   }
 };

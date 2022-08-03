@@ -1,5 +1,7 @@
 <template>
   <v-navigation-drawer app clipped right ref="drawer" v-model="showPanel" :width="navigationWidth">
+    {{ navigationWidth }}<br />
+    {{ width }}
     <v-toolbar dense flat fixed overflow @click="changeTable">
       <v-toolbar-title class="action-title">
         <v-icon dark class="mt-n1 mr-2" v-if="icon">{{ icon }}</v-icon>
@@ -79,14 +81,11 @@ export default {
         this.$store.commit('dashboard/SHOW_TABLE', show);
       }
     },
-    sideBarWidth() {
-      return this.getSetting('general', 'sideBarWidth');
-    },
     ...mapGetters(['getSetting'])
   },
 
   mounted() {
-    this.navigationWidth = this.sideBarWidth ? this.sideBarWidth : this.width;
+    this.navigationWidth = this.width;
 
     this.setBorderWidth();
     this.setEvents();
@@ -108,9 +107,6 @@ export default {
     },
     width(width) {
       this.navigationWidth = width;
-    },
-    sideBarWidth(width) {
-      this.width = width;
     }
   },
 

@@ -5,6 +5,7 @@
     </div>
     <div class="my-0 mx-0">
       <highcharts ref="highcharts" class="chart" :options="chartOptions" v-if="!reload"></highcharts>
+      <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
     </div>
   </div>
 </template>
@@ -46,13 +47,6 @@ export default {
   },
 
   methods: {
-    refresh() {
-      this.reload = true;
-      setTimeout(() => {
-        this.reload = false;
-      }, 100);
-    },
-
     resize() {
       if (this.$refs.highcharts && this.$refs.highcharts.chart) {
         const chart = this.$refs.highcharts.chart;
@@ -196,10 +190,22 @@ export default {
         series: series
       };
       return chart;
+    },
+    refresh() {
+      this.reload = true;
+      setTimeout(() => {
+        this.reload = false;
+      }, 1);
     }
   },
+  /*       
+  <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
+  */
 
   watch: {
+    '$store.state.navigationWidth'() {
+      this.refresh();
+    },
     '$store.state.darkMode'() {
       this.refresh();
     }

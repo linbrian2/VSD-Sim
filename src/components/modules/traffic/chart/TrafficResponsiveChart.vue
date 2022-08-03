@@ -11,6 +11,7 @@
         :callback="drawText"
         v-if="!reload"
       ></highcharts>
+      <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
     </div>
   </div>
 </template>
@@ -60,7 +61,7 @@ export default {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;
-      }, 100);
+      }, 1);
     },
 
     resize() {
@@ -303,6 +304,9 @@ export default {
   },
 
   watch: {
+    '$store.state.navigationWidth'() {
+      this.refresh();
+    },
     '$store.state.darkMode'() {
       this.refresh();
     }
