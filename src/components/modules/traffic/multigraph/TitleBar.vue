@@ -19,7 +19,7 @@
           </div>
 
           <div class="ml-3 mt-n2 mb-n2">
-            <MenuSelector :items="selectItems" :selectedItem="singleSelect" @click="setSingleSelectMode" />
+            <MenuSelector color="default" :items="selectItems" :selectedItem="singleSelect" @click="setSingleSelectMode" />
           </div>
         </div>
       </v-col>

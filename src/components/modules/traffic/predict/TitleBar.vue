@@ -18,7 +18,7 @@
             <MenuSelector :items="predictionModes" :selectedItem="predictionMode" @click="setPredictionMode" />
           </div>
 
-          <div class="mt-2">
+          <div class="mt-1">
             <span>{{ loading ? 'Loading ...' : activeTitle }}</span>
           </div>
         </div>
