@@ -1,7 +1,7 @@
 export const RouterNames = {
   DASHBOARD: 'Dashboard',
   TRAFFIC_DASHBOARD: 'Traffic',
-  BLUETOOTH_DASHBOARD: 'Bluetooth',
+  BLUETOOTH_DASHBOARD: 'Traffic Data Playback',
 
   TRAFFIC_FLOW: 'Traffic Data',
   TRAFFIC_LCM: 'Traffic LCM',
@@ -10,7 +10,7 @@ export const RouterNames = {
 
   TRAFFIC_ANOMALY: 'Traffic Anomaly Map',
   TRAFFIC_WEATHER: 'Weather Data',
-  TRAFFIC_MULTIGRAPH: 'Graph Viewer',
+  TRAFFIC_MULTIGRAPH: 'Traffic Data Viewer',
   TRAVEL_TIME_DATA: 'Travel Time Data',
   TRAVEL_TIME_MAP: 'Travel Time Map',
   TRAFFIC_INCIDENT: 'Traffic Incidents',
@@ -44,7 +44,6 @@ export const RouterNames = {
 export const RouterPaths = {
   DASHBOARD_ROOT: '/dash',
   TRAFFIC_DASHBOARD: '/dash/traffic',
-  BLUETOOTH_DASHBOARD: '/dash/bluetooth',
 
   TRAFFIC_ROOT: '/flow',
   TRAFFIC_FLOW: '/flow/data',
@@ -60,6 +59,7 @@ export const RouterPaths = {
   TRAFFIC_MITIGATION_PATH: '/flow/mitigation/:id',
   TRAFFIC_MITIGATION: '/flow/mitigation',
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',
+  BLUETOOTH_DASHBOARD: '/flow/playback',
 
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',

@@ -60,11 +60,6 @@ const router = new Router({
           path: '',
           name: RouterNames.TRAFFIC_DASHBOARD,
           component: TrafficDashboard
-        },
-        {
-          path: RouterPaths.BLUETOOTH_DASHBOARD,
-          name: RouterNames.BLUETOOTH_DASHBOARD,
-          component: TrafficBTDashboard
         }
       ]
     },
@@ -106,6 +101,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_INCIDENT,
           name: RouterNames.TRAFFIC_INCIDENT,
           component: IncidentList
+        },
+        {
+          path: RouterPaths.BLUETOOTH_DASHBOARD,
+          name: RouterNames.BLUETOOTH_DASHBOARD,
+          component: TrafficBTDashboard
         },
         {
           path: RouterPaths.TRAFFIC_MITIGATION_PATH,

@@ -15,7 +15,7 @@
             <v-tooltip bottom>
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn class="mx-1" fab :color="color('dashboard')" icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                  <v-icon>mdi-view-dashboard</v-icon>
+                  <v-icon>mdi-menu</v-icon>
                 </v-btn>
               </template>
               <span>Dashboard</span>
@@ -25,13 +25,16 @@
           <v-list>
             <template v-for="(item, index) in dash_menu_items">
               <v-divider v-if="item.divider" :key="index"></v-divider>
-              <v-list-item v-else :key="index" @click="dataMenuItemClicked(item.name)">
+              <v-list-item v-else :key="index" @click="dataMenuItemClicked(item.url)">
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item>
             </template>
           </v-list>
         </v-menu>
       </div>
+      <!-- notification -->
+      <NotificationDropdown />
+      <v-divider vertical class="ml-2" />
     </Header>
   </div>
 </template>
@@ -40,23 +43,33 @@
 import { RouterNames, RouterPaths } from '@/utils/constants/router';
 import AppConstants from '@/utils/constants/app';
 import Header from '@/components/common/Header';
+import NotificationDropdown from '@/components/common/NotificationDropdown';
 
 export default {
   components: {
-    Header
+    Header,
+    NotificationDropdown
   },
 
   data: () => ({
     dash_menu_items: [
-      { title: 'Main Dashboard', name: RouterNames.MAIN_DASHBOARD },
-      { title: 'Traffic Dashboard', name: RouterNames.TRAFFIC_DASHBOARD },
-      { title: 'Bluetooth Dashboard', name: RouterNames.BLUETOOTH_DASHBOARD }
+      { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
+      { divider: true },
+      { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
+      { divider: true },
+      { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
+      { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
+      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
+      { divider: true },
+      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
+      { divider: true },
+      { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
     ],
     isDashboard: true,
     title: AppConstants.DASHBOARD_APP_TITLE,
     action_menu_items: [
-      { title: RouterNames.TRAFFIC_DASHBOARD, url: RouterPaths.TRAFFIC_DASHBOARD },
-      { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
+      // { title: RouterNames.TRAFFIC_DASHBOARD, url: RouterPaths.TRAFFIC_DASHBOARD },
+      // { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
     ]
   }),
 
@@ -91,9 +104,9 @@ export default {
       }
     },
 
-    dataMenuItemClicked(name) {
+    dataMenuItemClicked(url) {
       setTimeout(() => {
-        this.performTask(name);
+        this.switchTo(url);
       }, 100);
     }
   }
