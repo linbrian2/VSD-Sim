@@ -372,6 +372,9 @@ export default {
     this.$bus.$on('UPDATE_DARK_MODE', () => {
       this.loadPage(this.$vuetify.theme.dark);
     });
+    this.$bus.$on('CENTER_SEGMENT', segment => {
+      this.centerSegment(segment);
+    });
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$refs.mapRef.$mapPromise.then(map => {
@@ -389,6 +392,30 @@ export default {
     }
   },
   methods: {
+    getSegmentOptions(segment) {
+      const color = segment.status === 7 ? '#FA8072' : '#195f3d';
+      return {
+        strokeColor: color,
+        strokeOpacity: 0.8,
+        strokeWeight: this.map.getZoom() / 1.5
+      };
+    },
+
+    getSegmentCenter(path) {
+      let idx = Math.round(path.length / 3);
+      return path[idx];
+    },
+
+    centerSegment(segment) {
+      this.centerAndZoom(this.midPoint(segment), 14);
+    },
+
+    centerAndZoom(position, zoomLevel) {
+      if (this.map) {
+        this.map.panTo(position);
+        this.map.setZoom(zoomLevel);
+      }
+    },
     onSegmentSelected(segmentId) {
       console.log(segmentId);
     },

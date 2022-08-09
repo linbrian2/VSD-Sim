@@ -207,10 +207,6 @@ export default {
       this.handleMarkerClick(type, id);
     });
 
-    this.$bus.$on('MAP_CENTER_SEGMENT', ({ segment }) => {
-      this.centerSegment(segment);
-    });
-
     this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
       this.loadPage(darkMode);
     });
@@ -378,28 +374,8 @@ export default {
       }
 
       setTimeout(() => {
-        this.centerSegment(segment);
+        this.$bus.$emit('CENTER_SEGMENT', segment);
       }, 500);
-    },
-
-    midPoint(s) {
-      return s && s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
-    },
-
-    centerSegment(segment) {
-      this.centerAndZoom(this.midPoint(segment), 14);
-    },
-
-    centerAndZoom(position, zoomLevel) {
-      if (this.map) {
-        this.map.panTo(position);
-        this.map.setZoom(zoomLevel);
-      }
-    },
-
-    getSegmentCenter(path) {
-      let idx = Math.round(path.length / 3);
-      return path[idx];
     },
 
     showBottomSheet() {
@@ -409,15 +385,6 @@ export default {
     getStrokeColor(level) {
       const colors = ['#808080', '#0000FF', '#339900', '#00FF33', '#D7DF01', '#FFCC55', '#FF6600', '#FF0000'];
       return colors[level];
-    },
-
-    getSegmentOptions(segment) {
-      const color = segment.status === 7 ? '#FA8072' : '#195f3d';
-      return {
-        strokeColor: color,
-        strokeOpacity: 0.8,
-        strokeWeight: this.map.getZoom() / 1.5
-      };
     },
 
     updateMarkerStatus(data) {
@@ -657,13 +624,6 @@ export default {
 };
 </script>
 <style>
-/* .my-map {
-  width: 101.5%;
-  height: calc(100vh - 48px);
-  margin-top: -12px;
-  margin-left: 0px;
-  margin-right: 0px;
-} */
 .gm-style div {
   -webkit-transform: scale(1.003);
 }
