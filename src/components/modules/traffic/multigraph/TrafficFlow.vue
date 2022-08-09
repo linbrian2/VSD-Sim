@@ -227,7 +227,7 @@ export default {
 
   methods: {
     sideBarWidthChanged() {
-      this.$bus.$emit('CHART_RELOAD');
+      // this.$bus.$emit('CHART_RELOAD');
     },
 
     showDataIfEmpty() {

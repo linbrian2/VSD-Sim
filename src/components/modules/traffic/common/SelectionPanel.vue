@@ -58,6 +58,7 @@ export default {
   watch: {
     navigationWidth(value) {
       this.$emit('navigation-width-changed', value);
+      this.$bus.$emit('CHART_RELOAD');
     }
   },
 

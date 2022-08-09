@@ -101,6 +101,7 @@ export default {
   },
 
   mounted: function() {
+    this.clearData();
     setTimeout(() => {
       this.addBB();
     }, 1000);
@@ -202,8 +203,15 @@ export default {
           this.$store.dispatch('setSystemStatus', { text: notifText, color: 'info', timeout: 2500 });
         })
         .catch(err => {
-          let notifText = 'Unable to compute shortest path.';
-          this.$store.dispatch('setSystemStatus', { text: notifText, color: 'error', timeout: 2500 });
+          if (err.message == 'Network Error') {
+            this.$store.dispatch('setSystemStatus', {
+              text: `Unable to connect to ${this.RoutingUrl}`,
+              color: 'error',
+              timeout: 5000
+            });
+          } else {
+            this.$store.dispatch('setSystemStatus', { text: err, color: 'error', timeout: 5000 });
+          }
           console.log(err.message);
         });
       this.loading = false;

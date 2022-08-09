@@ -111,9 +111,20 @@ export default {
     icon: { type: String, default: 'mdi-cog' },
     name: { type: String, default: 'Placeholder' },
     value: { type: [Number, String, Object], default: '-' },
-    valueColor: { type: String, default: '#E0E0E0' }
+    valueColor: { type: String }
   },
   computed: {
+    valueColorA() {
+      if (this.valueColor) {
+        return this.valueColor;
+      } else {
+        if (this.$vuetify.theme.dark) {
+          return '#E0E0E0';
+        } else {
+          return '#303030';
+        }
+      }
+    },
     hideIcons() {
       return this.getSetting('dashboard', 'hideIconsRightPanel');
     },

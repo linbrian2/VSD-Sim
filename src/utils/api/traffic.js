@@ -4,6 +4,19 @@ import client from '@/utils/AxiosClient';
 const AxiosClient = client(process.env.VUE_APP_TRAFFIC_API_URL);
 
 export default {
+  // * HR
+  fetchHRDevices() {
+    return AxiosClient.get('hr/devices');
+  },
+
+  fetchStatusOfDevices() {
+    return AxiosClient.get('hr/status');
+  },
+  // * Status
+  fetchErrors(start) {
+    return AxiosClient.post('status/errors', { start });
+  },
+
   // * Dashboard - Routes (High Congestion)
   fetchSegments() {
     let ts = new Date().getTime();

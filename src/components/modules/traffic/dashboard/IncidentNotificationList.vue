@@ -24,7 +24,7 @@
                 <template v-slot:activator="{ on }">
                   <span v-on="on">{{ item.startTime | fromNow }}</span>
                 </template>
-                <span>{{ item.startTime | fromatTimestamp }}</span>
+                <span>{{ item.startTime | formatTimestamp }}</span>
               </v-tooltip>
             </v-list-item-action>
           </v-list-item>
@@ -55,7 +55,7 @@ export default {
   },
 
   filters: {
-    fromatTimestamp: function(date) {
+    formatTimestamp: function(date) {
       if (date) {
         return Utils.formatDateTime(date);
       } else {

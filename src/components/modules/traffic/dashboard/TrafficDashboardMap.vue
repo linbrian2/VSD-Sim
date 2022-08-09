@@ -208,11 +208,19 @@
               :key="m.id"
               :position="m.position"
               :title="m.name"
+              :icon="getWazeIcon(m, m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+            />
+            <!-- <GmapMarker
+              v-for="m in waze"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
               :clickable="true"
               :icon="getWazeIcon(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
               @click="handleMarkerClick(7, m.id)"
-            />
+            /> -->
           </div>
 
           <!-- InfoWindow -->
@@ -361,6 +369,12 @@ export default {
   },
   mounted() {
     this.addSelectedMarker();
+    this.$bus.$on('UPDATE_DARK_MODE', () => {
+      this.loadPage(this.$vuetify.theme.dark);
+    });
+    this.$bus.$on('CENTER_SEGMENT', segment => {
+      this.centerSegment(segment);
+    });
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$refs.mapRef.$mapPromise.then(map => {
@@ -378,6 +392,30 @@ export default {
     }
   },
   methods: {
+    getSegmentOptions(segment) {
+      const color = segment.status === 7 ? '#FA8072' : '#195f3d';
+      return {
+        strokeColor: color,
+        strokeOpacity: 0.8,
+        strokeWeight: this.map.getZoom() / 1.5
+      };
+    },
+
+    getSegmentCenter(path) {
+      let idx = Math.round(path.length / 3);
+      return path[idx];
+    },
+
+    centerSegment(segment) {
+      this.centerAndZoom(this.midPoint(segment), 14);
+    },
+
+    centerAndZoom(position, zoomLevel) {
+      if (this.map) {
+        this.map.panTo(position);
+        this.map.setZoom(zoomLevel);
+      }
+    },
     onSegmentSelected(segmentId) {
       console.log(segmentId);
     },
