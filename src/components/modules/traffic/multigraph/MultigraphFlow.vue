@@ -303,7 +303,7 @@ export default {
     },
 
     sideBarWidthChanged() {
-      this.$bus.$emit('CHART_RELOAD');
+      // this.$bus.$emit('CHART_RELOAD');
     },
 
     valueSelectHandler(value) {

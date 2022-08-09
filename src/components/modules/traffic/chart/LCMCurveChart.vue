@@ -34,6 +34,12 @@ export default {
     reload: false
   }),
 
+  mounted() {
+    this.$bus.$on('CHART_RELOAD', () => {
+      this.refresh(200);
+    });
+  },
+
   methods: {
     selectPoints(chart, time) {
       //const ctx = this;
@@ -215,11 +221,11 @@ export default {
       };
       return chart;
     },
-    refresh() {
+    refresh(ms = 250) {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;
-      }, 1);
+      }, ms);
     }
   },
   watch: {

@@ -5,7 +5,7 @@
     </div>
     <div class="my-0 mx-0">
       <highcharts ref="highcharts" class="chart" :options="chartOptions" v-if="!reload"></highcharts>
-      <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
+      <v-card v-else loading :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
     </div>
   </div>
 </template>
@@ -43,6 +43,7 @@ export default {
   mounted() {
     this.$bus.$on('CHART_RELOAD', () => {
       this.resize();
+      this.refresh(200);
     });
   },
 
@@ -191,11 +192,11 @@ export default {
       };
       return chart;
     },
-    refresh() {
+    refresh(ms = 250) {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;
-      }, 1);
+      }, ms);
     }
   },
   /*       

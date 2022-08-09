@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer app clipped right ref="drawer" v-model="showPanel" :width="navigationWidth">
-    {{ navigationWidth }}<br />
-    {{ width }}
+    <!-- {{ navigationWidth }}<br /> -->
+    <!-- {{ width }} -->
     <v-toolbar dense flat fixed overflow @click="changeTable">
       <v-toolbar-title class="action-title">
         <v-icon dark class="mt-n1 mr-2" v-if="icon">{{ icon }}</v-icon>
@@ -104,6 +104,7 @@ export default {
   watch: {
     navigationWidth(value) {
       this.$emit('navigation-width-changed', value);
+      this.$bus.$emit('CHART_RELOAD');
     },
     width(width) {
       this.navigationWidth = width;

@@ -316,11 +316,11 @@ export default {
         this.customObjects.push(t);
       });
     },
-    refresh() {
+    refresh(ms = 250) {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;
-      }, 1);
+      }, ms);
     }
   },
 

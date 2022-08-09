@@ -21,7 +21,7 @@
                         v-on="{ ...tooltip }"
                       >
                         <v-col class="grid-center pa-0">
-                          <v-card-title v-show="$vuetify.breakpoint.lgAndUp" class="pa-0" style="font-size:38px">
+                          <v-card-title class="pa-0" style="font-size:38px">
                             <v-icon class="pr-2" :color="colors[i]" large>{{ x.icon }}</v-icon>
                             <template v-if="x.val == null || (x.val && x.val == '-')">
                               <div class="pt-3"></div>
