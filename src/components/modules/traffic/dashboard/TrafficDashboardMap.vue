@@ -208,11 +208,19 @@
               :key="m.id"
               :position="m.position"
               :title="m.name"
+              :icon="getWazeIcon(m, m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+            />
+            <!-- <GmapMarker
+              v-for="m in waze"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
               :clickable="true"
               :icon="getWazeIcon(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
               @click="handleMarkerClick(7, m.id)"
-            />
+            /> -->
           </div>
 
           <!-- InfoWindow -->
@@ -361,6 +369,9 @@ export default {
   },
   mounted() {
     this.addSelectedMarker();
+    this.$bus.$on('UPDATE_DARK_MODE', () => {
+      this.loadPage(this.$vuetify.theme.dark);
+    });
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$refs.mapRef.$mapPromise.then(map => {

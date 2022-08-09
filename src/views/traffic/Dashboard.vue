@@ -279,6 +279,7 @@ export default {
     },
 
     handleMarkerClick(type, id) {
+      this.trafficInfoShow = true;
       let marker = null;
       switch (type) {
         case 0:
@@ -303,7 +304,6 @@ export default {
           break;
         default:
           console.log('Unimplemented Marker Click Case');
-          // alert('Unimplemented Marker Click Case');
           break;
       }
     },

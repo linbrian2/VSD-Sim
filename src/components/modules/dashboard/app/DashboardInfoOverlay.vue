@@ -22,13 +22,13 @@
                       >
                         <v-col class="grid-center pa-0">
                           <v-card-title class="pa-0" style="font-size:38px">
-                            <v-icon class="pr-2" :color="colors[i]" large>{{ x.icon }}</v-icon>
+                            <v-icon class="pr-2" color="white" large>{{ x.icon }}</v-icon>
                             <template v-if="x.val == null || (x.val && x.val == '-')">
                               <div class="pt-3"></div>
                               <Spinner />
                             </template>
                             <template v-else>
-                              {{ x.val }}
+                              <h4 :style="'color: white;'">{{ x.val }}</h4>
                             </template>
                           </v-card-title>
                         </v-col>
@@ -169,7 +169,6 @@ export default {
       ],
       selectedIdx: -1,
       transparent: 'rgba(255, 255, 255, 0)',
-      colors: ['white', 'white', 'white', 'white', 'white', 'white']
     };
   },
   computed: {
