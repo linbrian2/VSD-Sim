@@ -1,6 +1,6 @@
 <template>
   <!-- notification -->
-  <v-menu offset-y origin="center center" class="elelvation-1" transition="scale-transition">
+  <v-menu offset-y origin="center center" class="elevation-1" transition="scale-transition">
     <template #activator="{ on }">
       <v-btn slot="activator" icon text v-on="on">
         <div v-if="getNotification.length > 0">

@@ -149,6 +149,7 @@ const actions = {
   async fetchSignalPerformanceIssues({ commit, dispatch }) {
     try {
       const response = await HRApi.fetchDevices();
+      // const response = await TrafficApi.fetchDevices();
       commit('SET_HR_DATA', response.data);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
@@ -157,6 +158,7 @@ const actions = {
   async fetchStatusOfDevices({ commit, dispatch }) {
     try {
       const response = await HRApi.fetchStatusOfDevices();
+      // const response = await TrafficApi.fetchStatusOfDevices();
       let sortedData = response.data
         .map(x => ({ ...x, score: x.AoR[0] + x.AoR[1] }))
         .sort((a, b) => (a.score > b.score ? -1 : b.score > a.score ? 1 : 0));
@@ -171,6 +173,7 @@ const actions = {
     try {
       this.updatedTime = new Date();
       const response = await StatusApi.fetchErrors(date.getTime());
+      // const response = await TrafficApi.fetchErrors(date.getTime());
       if (response.data && response.data.data) {
         let data = response.data.data;
         let errCount5m = data.totalErrorCounts.filter(x => x != 0);
