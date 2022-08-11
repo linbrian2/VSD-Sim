@@ -31,6 +31,11 @@ export default {
       return chart;
     }
   },
+  mounted() {
+    this.$bus.$on('CHART_RELOAD', () => {
+      this.refresh();
+    });
+  },
   methods: {
     async showHourlyBaseline(point) {
       if (point) {
@@ -334,7 +339,7 @@ export default {
         ]
       };
     },
-    refresh(ms = 250) {
+    refresh(ms = 1000) {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;
@@ -346,7 +351,7 @@ export default {
       this.refresh();
     },
     '$store.state.darkMode'() {
-      this.refresh();
+      this.refresh(1);
     }
   }
 };

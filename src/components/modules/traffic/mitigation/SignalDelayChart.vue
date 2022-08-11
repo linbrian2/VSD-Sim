@@ -39,12 +39,12 @@ export default {
       this.refresh();
     },
     '$store.state.darkMode'() {
-      this.refresh();
+      this.refresh(1);
     }
   },
 
   methods: {
-    refresh(ms = 250) {
+    refresh(ms = 1000) {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;

@@ -17,10 +17,10 @@
       <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="onMapClick" />
     </SelectionPanel>
 
-    <TitleBar :title="title" :loading="loading" :refresh="refreshData" />
+    <TitleBar :title="title" :loading="loading" :refresh="refreshData" :showMap="false" />
 
     <v-container fluid>
-      <v-card tile class="mb-8" elevation="24">
+      <v-card tile class="mb-8" elevation="24" v-if="delayComplete">
         <TrafficResponsiveChart :data="chartData" :height="defaultHeight" />
       </v-card>
     </v-container>
@@ -46,6 +46,7 @@ export default {
   },
 
   data: () => ({
+    delayComplete: false,
     loading: false,
     defaultHeight: 650,
     title: RouterNames.TRAFFIC_RESPONSIVE_DATA,
@@ -105,6 +106,7 @@ export default {
     }
     // Load first selected data in case of no data showing
     setTimeout(() => {
+      this.delayComplete = true;
       this.showDataIfEmpty();
     }, 500);
   },

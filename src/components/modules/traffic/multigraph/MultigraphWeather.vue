@@ -226,6 +226,9 @@ export default {
   },
 
   watch: {
+    cols() {
+      this.$bus.$emit('CHART_RELOAD');
+    },
     currentDate() {
       this.refreshData();
     }
