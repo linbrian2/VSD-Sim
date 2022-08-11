@@ -16,7 +16,7 @@ const state = {
   showDrawer: false,
   snackbar: {},
   mapCenter: { lat: 39.14, lng: -75.5 },
-  position: { lat: 39.084, lng: -77.1528 },
+  position: { lat: 38.9108, lng: -75.5277 },
   currentDate: new Date()
 };
 

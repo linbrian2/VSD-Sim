@@ -33,6 +33,7 @@ export const RouterNames = {
 
   STATUS_DASHBOARD: 'Status Check',
   STATUS_QUALITY_CHECK: 'Quality Check',
+  STATUS_QUALITY_MAP: 'Detector Quality Map',
 
   AUTH_LOGIN: 'Login',
   AUTH_CHANGE_PASSWORD: 'ChangePassword',
@@ -81,6 +82,7 @@ export const RouterPaths = {
   STATUS_ROOT: '/status',
   STATUS_DASHBOARD: '/status/check',
   STATUS_QUALITY_CHECK: '/status/quality',
+  STATUS_QUALITY_MAP: '/status/map',
 
   AUTH_LOGIN: '/login',
   AUTH_CHANGE_PASSWORD: '/change-password',

@@ -39,6 +39,7 @@ import TripDataView from '@/views/cav/TripDataView.vue';
 
 import StatusDashboard from '@/views/status/Dashboard.vue';
 import QualityCheck from '@/views/status/QualityCheck.vue';
+import QualityMap from '@/views/status/QualityMap.vue';
 
 import LoginPage from '@/auth/views/LoginPage';
 import ChangePasswordPage from '@/auth/views/ChangePasswordPage';
@@ -205,6 +206,11 @@ const router = new Router({
           path: RouterPaths.STATUS_QUALITY_CHECK,
           name: RouterNames.STATUS_QUALITY_CHECK,
           component: QualityCheck
+        },
+        {
+          path: RouterPaths.STATUS_QUALITY_MAP,
+          name: RouterNames.STATUS_QUALITY_MAP,
+          component: QualityMap
         }
       ]
     },

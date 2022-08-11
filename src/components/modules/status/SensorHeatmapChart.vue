@@ -9,7 +9,12 @@
 
 <script>
 export default {
-  props: ['data', 'height'],
+  props: {
+    data: Object,
+    height: Number,
+    legend: { type: Boolean, default: true }
+  },
+
   data() {
     return {
       reload: false
@@ -139,11 +144,11 @@ export default {
 
         chart: {
           height: chartHeight,
-          spacingTop: 10,
+          spacingTop: 15,
           spacingBottom: 5,
           marginLeft: 75,
-          marginRight: 270,
-          marginBottom: 55,
+          marginRight: this.legend ? 270 : 40,
+          marginBottom: 50,
           type: 'heatmap',
           plotBorderColor: '#0000ff',
           plotBorderWidth: 2
@@ -156,6 +161,7 @@ export default {
         colorAxis: colorAxis,
 
         legend: {
+          enabled: this.legend,
           title: {
             text: 'Error Types'
           },
@@ -219,6 +225,7 @@ export default {
         ]
       };
     },
+
     refresh(ms = 250) {
       this.reload = true;
       setTimeout(() => {

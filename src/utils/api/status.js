@@ -13,5 +13,9 @@ export default {
 
   fetchSensorErrors(id, start) {
     return AxiosClient.post('api/sensorErrors', { id, start });
+  },
+
+  fetchSensorsErrorCounts(start) {
+    return AxiosClient.post('api/sensorsErrorCounts', { start });
   }
 };
