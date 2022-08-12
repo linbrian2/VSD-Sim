@@ -6,7 +6,7 @@
           <div class="d-flex justify-space-between">
             <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Basic Info</h3></v-subheader>
             <div class="mt-4 mr-3">
-              <v-chip class="ml-2 mt-n1" outlined small>
+              <v-chip class="ml-2 mt-n1" outlined small @click.stop="markerIdClicked(marker.id)">
                 <span>{{ marker.id }} / {{ marker.uid }}</span>
               </v-chip>
             </div>
@@ -15,43 +15,42 @@
         </v-col>
         <v-col cols="12">
           <div class="mx-4">
-            <div class="d-flex justify-space-between">
-              <div>
-                <v-tabs color="teal accent-4" v-model="tab">
-                  <v-tab v-for="(item, direction, i) in info" :key="10 + i">
-                    <v-chip small>{{ direction }}</v-chip>
-                  </v-tab>
-                </v-tabs>
-              </div>
-              <div class="mt-2 mr-1 overline gray--text">{{ infoTime }}</div>
-            </div>
-
-            <div>
-              <v-tabs-items v-model="tab" class="custom-tab-items">
-                <v-tab-item v-for="(infoItem, direction, i) in info" :key="10 + i">
-                  <v-row>
-                    <v-col cols="6" v-for="(item, j) in infoItem.basicInfo" :key="j">
-                      <ListInfoCard :info="item" :extra="direction" class="mt-0" />
-                    </v-col>
-                  </v-row>
-                </v-tab-item>
-              </v-tabs-items>
-            </div>
+            <v-row>
+              <v-col cols="6" v-for="(item, j) in info" :key="j">
+                <ListInfoCard :info="item" class="mt-0" />
+              </v-col>
+            </v-row>
           </div>
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12">
-          <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Error Types</h3></v-subheader>
+          <div class="d-flex justify-space-between">
+            <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Error Types</h3></v-subheader>
+            <v-tooltip left>
+              <template v-slot:activator="{ on }">
+                <v-btn small icon v-on="on" @click.stop="showLegend = !showLegend" class="mr-4 mt-2">
+                  <v-icon small>mdi-information-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Legend</span>
+            </v-tooltip>
+          </div>
           <v-divider />
         </v-col>
 
-        <v-col cols="12">
+        <v-col cols="12" v-show="showLegend">
           <div class="mx-4">
-            <v-card tile elevation="4">
-              <v-chip-group active-class="primary--text" column class="mx-4">
-                <v-chip small label v-for="{ color, name, from } in dataClasses" :key="from" :color="color">
+            <v-card tile>
+              <v-chip-group active-class="primary--text" column class="ml-6">
+                <v-chip
+                  small
+                  v-for="{ color, name, from } in dataClasses"
+                  :key="from"
+                  :color="color"
+                  class="gray--text short"
+                >
                   {{ from }}: {{ name }}
                 </v-chip>
               </v-chip-group>
@@ -63,8 +62,8 @@
       <v-row v-for="({ errorTypes }, i) in sensorErrorTypes" :key="i">
         <v-col cols="12">
           <div class="mx-4">
-            <v-card tile class="basic-chart" elevation="4">
-              <SensorHeatmapChart :data="errorTypes" :legend="false" :height="350" />
+            <v-card tile>
+              <SensorHeatmapChart :data="errorTypes" :legend="false" :height="height" />
             </v-card>
           </div>
         </v-col>
@@ -92,42 +91,14 @@ export default {
 
   data: () => ({
     loading: false,
-    showChartDialog: false,
-    showVideoPlayer: false,
-    height: 300,
-    legendY: 5,
-    marginLeft: 80,
-    tab: null,
-    speed: {},
-    volume: {},
-    occupancy: {},
-    deviceInfo: {},
-    info: {},
-    cameraIds: [],
+    showLegend: false,
+    height: 350,
+    info: [],
     sensorErrorTypes: [],
     dataClasses: []
   }),
 
   computed: {
-    camerasAvaliable() {
-      return !Utils.isEmpty(this.cameraIds);
-    },
-
-    isSpeed() {
-      return !Utils.isEmpty(this.speed);
-    },
-
-    infoTime() {
-      if (Object.keys(this.deviceInfo).length > 0) {
-        const key = Object.keys(this.deviceInfo)[0];
-        const time = this.deviceInfo[key].flowTime;
-        const result = Utils.formatAMPMTime(time);
-        return result;
-      } else {
-        return null;
-      }
-    },
-
     ...mapState(['currentDate'])
   },
 
@@ -138,48 +109,23 @@ export default {
 
   methods: {
     init(marker) {
-      this.fetchData(marker.id);
+      this.fetchSensorStatus(marker, this.currentDate);
     },
 
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
+    markerIdClicked(id) {
+      this.$emit('id-click', id);
     },
 
-    showSpeedChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Speed', this.speed);
-    },
+    async fetchSensorStatus(device, date) {
+      const deviceId = device.id;
 
-    showVolumeChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Volume', this.volume);
-    },
-
-    showOccupancyChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Occupancy', this.occupancy);
-    },
-
-    playVideo(id) {
-      const url = this.getVideoUrl(id);
-      if (url) {
-        if (this.$refs.vpRef) {
-          this.$refs.vpRef.changeVideoSource(url);
-        }
-        this.showVideoPlayer = true;
-      }
-    },
-
-    fetchData(deviceId) {
-      this.fetchSensorStatus(deviceId, this.currentDate);
-    },
-
-    async fetchSensorStatus(deviceId, date) {
       this.loading = true;
       try {
         const response = await StatusApi.fetchSensorErrors(deviceId, date.getTime());
         const allErrorTypes = this.parseResponseData(response);
         if (allErrorTypes) {
+          this.info = this.composeBasicInfo(device, allErrorTypes);
+
           const sensorErrorTypes = [];
           allErrorTypes.forEach(({ dir, types }) => {
             const errorTypes = this.composeSensorErrorTypesHeatMapData(deviceId, dir, types);
@@ -291,133 +237,68 @@ export default {
       return result;
     },
 
-    showFlowChart(params) {
-      this.$store.commit('traffic/SET_CURRENT_FLOW_CHART_PARAMS', params);
-      this.$store.commit('traffic/SHOW_FLOW_CHART', true);
+    getDominantErrorType(counts, startIdx) {
+      let max = counts[startIdx];
+      let maxIndex = startIdx;
+
+      for (var i = startIdx + 1; i < counts.length; i++) {
+        if (counts[i] > max) {
+          maxIndex = i;
+          max = counts[i];
+        }
+      }
+
+      return maxIndex;
     },
 
-    formDeviceInfoData(deviceInfo) {
-      let result = {};
-      let directions = ['NB', 'SB', 'EB', 'WB'];
-      directions.forEach(direction => {
-        if (deviceInfo.hasOwnProperty(direction)) {
-          const basicInfo = this.composeBasicInfo(deviceInfo[direction]);
-          result[direction] = { basicInfo };
+    composeBasicInfo(device, allErrorTypes) {
+      let errorCount = 0;
+      let totalCount = 0;
+      let typesCount = new Array(8).fill(0);
+      allErrorTypes.forEach(({ types }) => {
+        for (let i = 0; i < 288; i++) {
+          totalCount++;
+          if (types[i] > 0) {
+            errorCount++;
+            typesCount[types[i]]++;
+          }
         }
       });
-      return result;
-    },
 
-    formFlowChartParamInfo(i) {
-      return {
-        deviceId: i.deviceId,
-        direction: i.direction,
-        speed: i.speed,
-        volume: i.volume,
-        occupancy: i.occupancy,
-        mdist: i.mdist,
-        status: i.anomalyStatus,
-        time: i.anomalyTime
-      };
-    },
-
-    composeBasicInfo(i) {
-      const p2 = { Speed: i.speed ? i.speed : 'N/A', Volume: i.volume, Occupancy: i.occupancy };
-      const p3 = { 'avg Speed': i.avgSpd, 'avg Volume': i.avgVol, 'avg Occupancy': i.avgOcc };
-
-      const p4 = {
-        '5 Min': i.volume5MinMax,
-        '1 Hr': i.volume1hrMax,
-        '1 Hr Projected': i.volume1hrProjected
-      };
-
-      const p5 = {};
-      if (i.mdist != null && i.severity != null) {
-        p5['mdist'] = i.mdist;
-        p5['severity'] = i.severity;
-        let statusName = 'Status';
-        if (i.anomalyStatus > 0) {
-          statusName = `Status ${i.anomalyStatus}`;
-        }
-        const text = i.anomalyStatus > 0 ? 'Anomaly' : 'Normal';
-        p5[statusName] = i.anomalyStatus > 0 ? { text } : text;
-      }
-
-      const p6 = { lanes: i.lanes, stations: i.stations, 'sample Size': i.sampleSize };
-
-      // Flow status
-      const p7 = {};
-      const name = `Status ${i.flowLevel}`;
-      p7[name] = i.flowStatus;
-
-      p7['vol + occ'] = i.vo + '%';
-      if (i.breakdown) {
-        p7['Breakdown Probability'] = Math.round(i.breakdown) + '%';
+      const dominantErrorType = this.getDominantErrorType(typesCount, 1);
+      let errorPercentage = (errorCount * 100) / totalCount;
+      if (errorPercentage < 1) {
+        errorPercentage = errorPercentage.toFixed(1);
       } else {
-        p7['Flow Level'] = i.flowLevel;
+        errorPercentage = Math.round(errorPercentage);
       }
 
-      const p8 = {};
-      if (i.capacityFiveMin) {
-        p8['Percentage'] = i.capacityPercent + '%';
-        p8['5 Min'] = i.capacityFiveMin;
-        p8['Per Hour'] = i.capacityHour;
-        //p8['Per Lane per hour'] = i.capacityHourPerLane;
-      }
+      const p = {
+        'Total Errors': errorCount,
+        'Error Percentage': errorPercentage + '%',
+        'Dominant Error': dominantErrorType
+      };
 
-      const color = Constants.INFO_BAR_DEFAULT_COLOR;
+      const d = {
+        'Device Id': device.id,
+        Permit: device.uid,
+        Location: device.title
+      };
 
       const result = [];
-      if (!Utils.isValueAllEmpty(p2)) {
-        result.push({ title: 'Current Flow', color: color, items: Utils.obj2Arr(p2) });
-      }
-      if (!Utils.isValueAllEmpty(p7)) {
-        let currentColor = `level-${i.flowLevel}`;
-        result.push({ title: 'Flow Status', color: currentColor, items: Utils.obj2Arr(p7) });
-      }
-
-      if (!Utils.isValueAllEmpty(p5)) {
-        let button = null;
-        if (i.anomalyStatus > 0) {
-          const params = this.formFlowChartParamInfo(i);
-          button = { color: '#ff8080', icon: 'mdi-help-circle-outline', handler: this.showFlowChart, params: params };
-        }
-
-        let currentColor = i.anomalyStatus > 0 ? 'red lighten-2' : color;
-        result.push({ title: 'Anomaly Detection', button: button, color: currentColor, items: Utils.obj2Arr(p5) });
-      }
-
-      if (!Utils.isValueAllEmpty(p3)) {
-        result.push({ title: 'Average Flow', color: color, items: Utils.obj2Arr(p3) });
-      }
-
-      if (!Utils.isValueAllEmpty(p8)) {
-        result.push({ title: 'Throughput', color: color, items: Utils.obj2Arr(p8) });
-      }
-
-      if (!Utils.isValueAllEmpty(p4)) {
-        result.push({ title: 'Max Volume', color: color, items: Utils.obj2Arr(p4) });
-      } else if (!Utils.isValueAllEmpty(p6)) {
-        result.push({ title: 'Device Info', color: color, items: Utils.obj2Arr(p6) });
-      }
+      result.push({ title: 'Device Info', items: Utils.obj2Arr(d) });
+      result.push({ title: 'Error Statistics', items: Utils.obj2Arr(p) });
 
       return result;
-    },
-
-    getStatusTextByLevel(level) {
-      const statuses = ['No Delay', 'No Delay', 'No Delay', 'Minor Delay', 'Major Delay', 'Major Delay', 'Stop and Go'];
-      return statuses[level];
-    },
-
-    getStatusColorByLevel(level) {
-      const colors = ['#339900', '#00ff33', '#ffff00', '#ffc031', '#fa7a28', '#ff0000', '#c00000'];
-      return colors[level];
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.short {
+  min-width: 200px;
+}
 .time-display {
   margin: 18px 10px;
   padding: 5px 10px;

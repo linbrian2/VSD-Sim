@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer app clipped right ref="drawer" v-model="showPanel" :width="navigationWidth">
+    <!-- {{ navigationWidth }} -->
     <v-toolbar dense flat fixed overflow @click="changeTable">
       <v-toolbar-title class="action-title">
         <v-icon dark class="mt-n1 mr-2" v-if="icon">{{ icon }}</v-icon>

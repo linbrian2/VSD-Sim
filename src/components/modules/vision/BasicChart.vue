@@ -132,7 +132,7 @@ export default {
       };
       return chart;
     },
-    refresh(ms = 250) {
+    refresh(ms = 1000) {
       this.reload = true;
       setTimeout(() => {
         this.reload = false;

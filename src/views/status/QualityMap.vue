@@ -136,7 +136,11 @@ export default {
     },
 
     async currentDate() {
-      await this.fetchDevices();
+      if (this.devices.length == 0) {
+        await this.fetchDevices();
+      } else {
+        this.devices.forEach(device => (device.status = 0));
+      }
       await this.fetchLatestData();
     }
   },
@@ -230,6 +234,7 @@ export default {
       let marker = null;
       switch (type) {
         case 0:
+          this.selectedMarkerId = id;
           marker = this.markers.find(m => m.id === id);
           this.markerClicked(marker);
           break;
@@ -282,6 +287,14 @@ export default {
           bounds.extend(markers[i].position);
         }
         map.fitBounds(bounds, 0);
+      }
+    },
+
+    zoomSelectedMarker() {
+      const marker = this.markers.find(m => m.id == this.selectedMarkerId);
+      if (marker) {
+        this.map.panTo(marker.position);
+        this.map.setZoom(14);
       }
     },
 
