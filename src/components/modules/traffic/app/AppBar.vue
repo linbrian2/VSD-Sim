@@ -91,7 +91,7 @@ export default {
       { divider: true },
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
       { divider: true },
-      { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
+      { title: RouterNames.TRAFFIC_DATA_PLAYBACK, url: RouterPaths.TRAFFIC_DATA_PLAYBACK }
     ],
 
     action_optional_items: [

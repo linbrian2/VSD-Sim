@@ -259,6 +259,65 @@ export const mapIcons = {
           size: { width: 36, height: 36, f: 'px', b: 'px' },
           anchor: { x: 18, y: 18 }
         }
+      ],
+
+      deviceIcons: [
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#339900',
+          fillOpacity: 1.0,
+          strokeWeight: 1.2,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#00FF33',
+          fillOpacity: 1.0,
+          strokeWeight: 1.2,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FFFF00',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FFC031',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FA7A2A',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FF0000',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#C00000',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        }
       ]
     };
   },
@@ -326,6 +385,16 @@ export const mapIcons = {
         return active ? this.wazeIcons[9] : this.wazeIcons[8];
       // Hazard
       else return active ? this.wazeIcons[7] : this.wazeIcons[6];
+    },
+
+    getDeviceIcon(level) {
+      if (level == 1) return this.deviceIcons[1];
+      else if (level == 2) return this.deviceIcons[2];
+      else if (level == 3) return this.deviceIcons[3];
+      else if (level == 4) return this.deviceIcons[4];
+      else if (level == 5) return this.deviceIcons[5];
+      else if (level == 6) return this.deviceIcons[6];
+      else return this.deviceIcons[0];
     }
   }
 };

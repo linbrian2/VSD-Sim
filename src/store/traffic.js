@@ -36,7 +36,12 @@ const state = {
   predictionMode: 'Freeway',
   activeMultigraphMarkers: [],
   mitigation: null,
-  simulation: null
+  simulation: null,
+
+  segments: null,
+  waze: null,
+  btDevices: null,
+  btSensors: null
 };
 
 const mutations = {
@@ -143,7 +148,19 @@ const mutations = {
   },
   SET_PREDICTION_MODE(state, mode) {
     state.predictionMode = mode;
-  }
+  },
+  SET_SEGMENTS(state, data) {
+    state.segments = data;
+  },
+  SET_WAZE(state, data) {
+    state.waze = data;
+  },
+  SET_BT_DEVICES(state, data) {
+    state.btDevices = data;
+  },
+  SET_BT_SENSORS(state, data) {
+    state.btSensors = data;
+  },
 };
 
 const getters = {
@@ -162,6 +179,46 @@ const getters = {
 };
 
 const actions = {
+  //! Congested Routes
+  async fetchSegments({ commit, dispatch }, date) {
+    try {
+      const response = await Api.fetchSegmentsFull(date);
+      // console.log('Segments: %o', response.data);
+      commit('SET_SEGMENTS', response.data);
+    } catch (error) {
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
+    }
+  },
+  //! Waze Alerts
+  async fetchWaze({ commit, dispatch }, date) {
+    try {
+      const response = await Api.fetchWazeFull(date);
+      // console.log('Waze: %o', response.data);
+      commit('SET_WAZE', response.data);
+    } catch (error) {
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
+    }
+  },
+  //! Bluetooth Devices
+  async fetchBTDevices({ commit, dispatch }, date) {
+    try {
+      const response = await Api.fetchDevicesFull(date);
+      // console.log('Devices: %o', response.data);
+      commit('SET_BT_DEVICES', response.data);
+    } catch (error) {
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
+    }
+  },
+  // ! Bluetooth Sensors
+  async fetchBTSensors({ commit, dispatch }) {
+    try {
+      const response = await Api.fetchSensors();
+      // console.log('Sensors: %o', response.data);
+      commit('SET_BT_SENSORS', response.data);
+    } catch (error) {
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
+    }
+  },
   async fetchDevices({ state, commit, dispatch }) {
     try {
       const response = await Api.fetchDevices();
