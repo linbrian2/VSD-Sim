@@ -19,7 +19,20 @@
               :title="s.desc"
               :path.sync="s.path"
               :options="segmentOptions(s)"
+              @click="segmentClicked(0, s.id)"
             />
+            <!-- <GmapCustomMarker
+              alignment="center"
+              v-for="s in segments"
+              :key="`L-${s.id}`"
+              :offsetX="0"
+              :offsetY="-50"
+              :marker="midPoint(s)"
+            >
+              <div v-if="s.id == selectedMarkerId">
+                <v-chip small :color="getChipColor(s)">{{ s.short }}</v-chip>
+              </div>
+            </GmapCustomMarker> -->
           </div>
 
           <!-- Waze -->
@@ -33,6 +46,7 @@
                 :title="m.description"
                 :icon="getWazeIcon(m, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 20)"
+                @click="handleMarkerClick(1, m.id)"
               />
             </div>
             <!-- Traffic Jam -->
@@ -44,6 +58,7 @@
                 :title="m.description"
                 :icon="getWazeIcon(m, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 21)"
+                @click="handleMarkerClick(1, m.id)"
               />
             </div>
             <!-- Road Closed -->
@@ -55,6 +70,7 @@
                 :title="m.description"
                 :icon="getWazeIcon(m, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 22)"
+                @click="handleMarkerClick(1, m.id)"
               />
             </div>
             <!-- Accident -->
@@ -66,6 +82,7 @@
                 :title="m.description"
                 :icon="getWazeIcon(m, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 23)"
+                @click="handleMarkerClick(1, m.id)"
               />
             </div>
           </div>
@@ -86,6 +103,7 @@
                 :title="m.description"
                 :icon="getWazeIcon(m, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 100)"
+                @click="handleMarkerClick(1, m.id)"
               />
             </GmapCluster>
           </div>
@@ -98,8 +116,9 @@
                 :key="m.id"
                 :position="m.position"
                 :title="m.description"
-                :icon="getDeviceIcon(m.level)"
+                :icon="getDeviceIcon(m.level, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 10)"
+                @click="handleMarkerClick(3, m.id)"
               />
             </div>
             <div v-if="isDeviceLayerVisible(1)">
@@ -108,8 +127,9 @@
                 :key="m.id"
                 :position="m.position"
                 :title="m.description"
-                :icon="getDeviceIcon(m.level)"
+                :icon="getDeviceIcon(m.level, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 11)"
+                @click="handleMarkerClick(3, m.id)"
               />
             </div>
             <div v-if="isDeviceLayerVisible(2)">
@@ -118,8 +138,9 @@
                 :key="m.id"
                 :position="m.position"
                 :title="m.description"
-                :icon="getDeviceIcon(m.level)"
+                :icon="getDeviceIcon(m.level, m.id == selectedMarkerId)"
                 :options="markerOptions(m.id, 12)"
+                @click="handleMarkerClick(3, m.id)"
               />
             </div>
           </div>
@@ -139,16 +160,11 @@
     </div>
 
     <!-- <div class="debug">
-      <v-card class="pa-4" dense floating :style="`position: absolute; top: 80px; left: 210px; max-width: 480px;`">
-        Map Debug:<br /> -->
-        <!-- {{btLevels}} -->
-        <!-- {{ mapLayerSelection }}<br />
-        {{ wazeLayerSelection }}<br />
-        {{ deviceLayerSelection }}<br />
-        {{ waze.map(x => x.markerId) }} -->
-        <!-- {{ waze.map(x => x.subType) }} -->
-        <!-- {{ btSensors }} -->
-      <!-- </v-card>
+      <v-card class="pa-4" dense floating :style="`position: absolute; top: 80px; left: 280px; max-width: 480px;`">
+        Map Debug:<br />
+        selectedMarkerId: {{ selectedMarkerId }}<br />
+        selectedMarkerId: {{ selectedMarkerId }}
+      </v-card>
     </div> -->
   </div>
 </template>
@@ -163,11 +179,12 @@ import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
 import Constants from '@/utils/constants/bluetooth';
 import GmapCluster from 'vue2-google-maps/src/components/cluster';
-// import * as d3 from 'd3';
+// import GmapCustomMarker from 'vue2-gmap-custom-marker';
+import * as d3 from 'd3';
 
 export default {
   mixins: [mapIcons, weatherCode],
-  components: { GmapCluster },
+  components: { GmapCluster /* , GmapCustomMarker */ },
   props: {
     mapLayers: Array,
     segments: Array,
@@ -176,6 +193,8 @@ export default {
   },
   data() {
     return {
+      colorInterp: null,
+      selectedColor: 'blue',
       sensorIcon: {
         path: 0,
         scale: 4.0,
@@ -187,7 +206,6 @@ export default {
       },
       position: { lat: 39.1, lng: -75.6 },
       zoom: 9,
-      selectedSegmentId: null,
       selectedMarkerId: null,
       map: null,
       options: {
@@ -245,19 +263,41 @@ export default {
       this.map = map;
       this.addMapControls(map);
     });
+
+    if (!this.colorInterp) {
+      this.changeSelectedColor();
+    }
+  },
+  beforeDestroy() {
+    if (this.colorInterp) {
+      clearInterval(this.colorInterp);
+    }
   },
   methods: {
+    changeSelectedColor() {
+      this.colorInterp = setInterval(() => {
+        let timeVal = parseFloat((new Date().getTime() % 2000) / 1000).toFixed(2);
+        if (timeVal > 1) {
+          timeVal = 2 - timeVal;
+        }
+        this.selectedColor = d3.interpolateLab('red', 'blue')(timeVal);
+      }, 50);
+    },
+    handleMarkerClick(type, id) {
+      this.selectedMarkerId = id;
+      this.$bus.$emit('DISPLAY_DETAILS', { id, type });
+    },
     segmentOptions(segment) {
-      const color = segment.id === this.selectedSegmentId ? this.selectedColor : Utils.getStrokeColor(segment.level);
-      const zIndex = segment.id === this.selectedSegmentId ? 2 : 1;
+      const color = segment.id === this.selectedMarkerId ? this.selectedColor : Utils.getStrokeColor(segment.level);
+      const zIndex = segment.id === this.selectedMarkerId ? 2 : 1;
       return { ...this.defaultSegmentOptions, strokeColor: color, zIndex };
     },
     getChipColor(s) {
-      return this.selectedSegmentId === s.id ? 'blue' : 'white';
+      return this.selectedMarkerId === s.id ? 'blue' : 'white';
     },
-    segmentClicked(s) {
-      this.selectedSegmentId = s.id;
-      this.$emit('clicked', s);
+    segmentClicked(type, id) {
+      this.selectedMarkerId = id;
+      this.$bus.$emit('DISPLAY_DETAILS', { id, type });
     },
     centerSegment(segment) {
       this.centerAndZoom(this.midPoint(segment), 14);
@@ -307,10 +347,6 @@ export default {
       }
       let minutes = seconds / 60;
       return `${minutes.toFixed(1)} min`;
-    },
-    handleMarkerClick(type, id) {
-      this.selectedMarkerId = id;
-      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type });
     },
     centerMap(map, markers, zoom = null) {
       if (markers && markers.length > 0) {

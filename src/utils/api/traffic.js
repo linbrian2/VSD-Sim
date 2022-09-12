@@ -18,7 +18,7 @@ export default {
     return AxiosClient.get(`bluetooth/devices/full/${ts}`);
   },
   fetchSensors() {
-    return AxiosClient.get('bluetooth/sensors')
+    return AxiosClient.get('bluetooth/sensors');
   },
 
   // * HR

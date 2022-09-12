@@ -36,7 +36,6 @@ export default {
   data: () => ({
     title: AppConstants.BLUETOOTH_APP_TITLE,
     action_menu_items: [
-      { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD },
       { title: RouterNames.BLUETOOTH_MULTIGRAPH, url: RouterPaths.BLUETOOTH_MULTIGRAPH }
     ],
     menu_items: [
@@ -106,8 +105,6 @@ export default {
     },
     color(idx) {
       switch (idx) {
-        case 0:
-          return this.$route.name === RouterNames.BLUETOOTH_DASHBOARD ? 'orange' : 'teal';
         case 1:
           return this.$route.name === RouterNames.BLUETOOTH_MULTIGRAPH ? 'orange' : 'teal';
       }
@@ -115,10 +112,6 @@ export default {
 
     switchTo(path) {
       this.$router.push({ path }).catch(() => {});
-    },
-
-    showDashboard() {
-      this.switchTo(RouterPaths.BLUETOOTH_DASHBOARD);
     },
 
     showMultigraph() {

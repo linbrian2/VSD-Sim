@@ -1,12 +1,6 @@
 <template>
   <div>
-    <Header
-      :title="title"
-      :showDate="!isDashboard"
-      :clipLeft="!isDashboard"
-      :clipRight="isDashboard"
-      :actionItems="actionItems"
-    >
+    <Header :title="title" :showDate="!isDashboard" :clipLeft="false" :clipRight="true" :actionItems="actionItems">
       <div v-show="$vuetify.breakpoint.mdAndUp">
         <MenuButton
           :items="chart_menu_items"

@@ -1,12 +1,12 @@
 export const RouterNames = {
   DASHBOARD: 'Dashboard',
   TRAFFIC_DASHBOARD: 'Traffic',
+  TRAFFIC_DATA_PLAYBACK: 'Traffic Data Playback',
 
   TRAFFIC_FLOW: 'Traffic Data',
   TRAFFIC_LCM: 'Traffic LCM',
   TRAFFIC_ROUTING: 'Traffic Routing',
   TRAFFIC_PREDICT: 'Traffic Flow Prediction',
-  TRAFFIC_DATA_PLAYBACK: 'Traffic Data Playback',
 
   TRAFFIC_ANOMALY: 'Traffic Anomaly Map',
   TRAFFIC_WEATHER: 'Weather Data',
@@ -59,7 +59,7 @@ export const RouterPaths = {
   TRAFFIC_MITIGATION_PATH: '/flow/mitigation/:id',
   TRAFFIC_MITIGATION: '/flow/mitigation',
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',
-  TRAFFIC_DATA_PLAYBACK: '/flow/playback',
+  TRAFFIC_DATA_PLAYBACK: '/flow/playback-new',
 
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',

@@ -160,7 +160,7 @@ const mutations = {
   },
   SET_BT_SENSORS(state, data) {
     state.btSensors = data;
-  },
+  }
 };
 
 const getters = {
@@ -183,7 +183,7 @@ const actions = {
   async fetchSegments({ commit, dispatch }, date) {
     try {
       const response = await Api.fetchSegmentsFull(date);
-      // console.log('Segments: %o', response.data);
+      console.log('Segments: %o', response.data);
       commit('SET_SEGMENTS', response.data);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
@@ -193,7 +193,7 @@ const actions = {
   async fetchWaze({ commit, dispatch }, date) {
     try {
       const response = await Api.fetchWazeFull(date);
-      // console.log('Waze: %o', response.data);
+      console.log('Waze: %o', response.data);
       commit('SET_WAZE', response.data);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
@@ -203,7 +203,7 @@ const actions = {
   async fetchBTDevices({ commit, dispatch }, date) {
     try {
       const response = await Api.fetchDevicesFull(date);
-      // console.log('Devices: %o', response.data);
+      console.log('Devices: %o', response.data);
       commit('SET_BT_DEVICES', response.data);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });

@@ -387,13 +387,11 @@ export const mapIcons = {
       else return active ? this.wazeIcons[7] : this.wazeIcons[6];
     },
 
-    getDeviceIcon(level) {
-      if (level == 1) return this.deviceIcons[1];
-      else if (level == 2) return this.deviceIcons[2];
-      else if (level == 3) return this.deviceIcons[3];
-      else if (level == 4) return this.deviceIcons[4];
-      else if (level == 5) return this.deviceIcons[5];
-      else if (level == 6) return this.deviceIcons[6];
+    getDeviceIcon(level, active = false) {
+      if (level >= 1)
+        return active
+          ? { ...this.deviceIcons[level], strokeColor: '#FFFFFF', strokeWeight: 5.0 }
+          : this.deviceIcons[level];
       else return this.deviceIcons[0];
     }
   }
