@@ -37,6 +37,7 @@ const state = {
   activeMultigraphMarkers: [],
   mitigation: null,
   simulation: null,
+  loading: null,
 
   segments: null,
   waze: null,
@@ -160,6 +161,9 @@ const mutations = {
   },
   SET_BT_SENSORS(state, data) {
     state.btSensors = data;
+  },
+  SET_LOADING(state, loading) {
+    state.loading = loading;
   }
 };
 
@@ -202,11 +206,14 @@ const actions = {
   //! Bluetooth Devices
   async fetchBTDevices({ commit, dispatch }, date) {
     try {
+      commit('SET_LOADING', true);
       const response = await Api.fetchDevicesFull(date);
       console.log('Devices: %o', response.data);
       commit('SET_BT_DEVICES', response.data);
+      commit('SET_LOADING', false);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
+      commit('SET_LOADING', false);
     }
   },
   // ! Bluetooth Sensors

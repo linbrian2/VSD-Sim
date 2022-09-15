@@ -29,7 +29,12 @@
       >
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-badge class="mr-5" :content="waze ? waze.length : 0" :value="waze ? waze.length : 0" overlap>
+            <v-badge
+              class="mr-5"
+              :content="waze ? numFormatter(waze.length) : 0"
+              :value="waze ? numFormatter(waze.length) : 0"
+              overlap
+            >
               <v-icon v-on="on" :color="'green'" :loading="waze" :disabled="!waze" large>
                 mdi-waze
               </v-icon>
@@ -42,8 +47,8 @@
           <template v-slot:activator="{ on }">
             <v-badge
               class="mr-5"
-              :content="segmentsLength ? segmentsLength : 0"
-              :value="segmentsLength ? segmentsLength : 0"
+              :content="segmentsLength ? numFormatter(segmentsLength) : 0"
+              :value="segmentsLength ? numFormatter(segmentsLength) : 0"
               overlap
             >
               <v-icon v-on="on" :color="'green'" :loading="segments" :disabled="!segments" large>
@@ -61,8 +66,8 @@
           <template v-slot:activator="{ on }">
             <v-badge
               class="mr-5"
-              :content="devicesLength ? devicesLength : 0"
-              :value="devicesLength ? devicesLength : 0"
+              :content="devicesLength ? numFormatter(devicesLength) : 0"
+              :value="devicesLength ? numFormatter(devicesLength) : 0"
               overlap
             >
               <v-icon v-on="on" :color="'green'" :loading="btDevices" :disabled="!btDevices" large>
@@ -78,16 +83,7 @@
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn
-              class="mx-2"
-              @click="fetchApiData"
-              v-on="on"
-              fab
-              dark
-              small
-              :loading="!btDevices"
-              :disabled="!btDevices"
-            >
+            <v-btn class="mx-2" @click="fetchApiData" v-on="on" fab x-small :loading="loading">
               <v-icon>
                 mdi-refresh
               </v-icon>
@@ -171,28 +167,26 @@ export default {
     },
     segmentsLength() {
       if (this.segments && this.segments.length > 0) {
-        let total = this.segments.reduce((total, segment) => {
+        return this.segments.reduce((total, segment) => {
           if (segment.timeline) {
             return total + segment.timeline.length;
           } else {
             return total;
           }
         }, 0);
-        return total >= 1000 ? `${Math.round(total / 1000)}k` : total;
       } else {
         return 0;
       }
     },
     devicesLength() {
       if (this.btDevices && this.btDevices.length > 0) {
-        let total = this.btDevices.reduce((total, device) => {
+        return this.btDevices.reduce((total, device) => {
           if (device.flowData) {
             return total + device.flowData.length;
           } else {
             return total;
           }
         }, 0);
-        return total >= 1000 ? `${Math.round(total / 1000)}k` : total;
       } else {
         return 0;
       }
@@ -278,7 +272,7 @@ export default {
       }
     },
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['segments', 'waze', 'btDevices'])
+    ...mapState('traffic', ['segments', 'waze', 'btDevices', 'loading'])
   },
   mounted() {
     let date = Utils.getStartOfDay(this.currentDate);
@@ -291,6 +285,21 @@ export default {
     this.$store.commit('traffic/SHOW_PANEL', false);
   },
   methods: {
+    numFormatter(num) {
+      if (num < 1000) {
+        return num;
+      } else if (num < 10000) {
+        return (num / 1000).toFixed(2) + 'K';
+      } else if (num < 100000) {
+        return (num / 1000).toFixed(1) + 'K';
+      } else if (num < 100000) {
+        return (num / 1000).toFixed(0) + 'K';
+      } else if (num < 1000000) {
+        return (num / 1000).toFixed(2) + 'M';
+      } else {
+        return '>1M';
+      }
+    },
     cardClicked(payload) {
       this.trafficInfoShow = false;
       this.selectedIdx = payload.idx;
