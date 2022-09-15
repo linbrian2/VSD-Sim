@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import AreaRangeChart from '@/components/modules/bluetooth/graphs/AreaRangeChart';
+import AreaRangeChart from '@/components/modules/traffic/playback/AreaRangeChart';
 
 import Utils from '@/utils/Utils';
 import Api from '@/utils/api/bluetooth.js';

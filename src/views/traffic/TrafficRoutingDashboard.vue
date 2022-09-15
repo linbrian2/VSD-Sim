@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import BluetoothMap from '@/components/modules/bluetooth/ui/BluetoothMap';
+import BluetoothMap from '@/components/modules/traffic/playback/BluetoothMap';
 import TrafficRouting from '@/views/traffic/TrafficRouting';
 import { mapState } from 'vuex';
 

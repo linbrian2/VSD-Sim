@@ -120,7 +120,7 @@ import RightPanel from '@/components/modules/traffic/common/RightPanel';
 import PlaybackMap from '@/components/modules/traffic/playback/PlaybackMap.vue';
 import PlaybackBar from '@/components/modules/traffic/playback/PlaybackBar.vue';
 import PlaybackLayers from '@/components/modules/traffic/playback/PlaybackLayers.vue';
-import DialogTT from '@/components/modules/bluetooth/dialogs/DialogTT.vue';
+import DialogTT from '@/components/modules/traffic/playback/DialogTT.vue';
 import Utils from '@/utils/Utils';
 import { mapActions, mapState } from 'vuex';
 import PlaybackDataDisplay from '@/components/modules/traffic/playback/PlaybackDataDisplay.vue';

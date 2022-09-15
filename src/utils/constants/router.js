@@ -59,7 +59,7 @@ export const RouterPaths = {
   TRAFFIC_MITIGATION_PATH: '/flow/mitigation/:id',
   TRAFFIC_MITIGATION: '/flow/mitigation',
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',
-  TRAFFIC_DATA_PLAYBACK: '/flow/playback-new',
+  TRAFFIC_DATA_PLAYBACK: '/flow/playback',
 
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',
