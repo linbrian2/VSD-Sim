@@ -16,98 +16,87 @@
 
     <div>
       <PlaybackLayers />
-      <!-- <v-menu light bottom right offset-y :close-on-content-click="false">
-        <template v-slot:activator="{ on: menu, attrs }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
-              <v-btn
-                v-bind="attrs"
-                v-on="{ ...tooltip, ...menu }"
-                :style="`position: absolute; top: 10px; left: 490px; height: 40px`"
-              >
-                <v-icon>mdi-layers-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Map Layer</span>
-          </v-tooltip>
-        </template>
-
-        <v-list dense>
-          <v-list-item-group>
-            <v-list-item v-for="item in layerItems" :key="item.id" @click="layerItemClicked(item.id)">
-              <v-list-item-content class="mt-1 pa-2">
-                <v-checkbox hide-details :label="item.title" :value="item.id" class="mt-0" v-model="mapLayers" />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-menu> -->
     </div>
-
-    <!-- <div style="position: absolute; top: 65px; left: 26px" v-if="!waze">
-      <v-card loading class="transparent-card" height="30px">
-        <template slot="progress">
-          <v-progress-linear color="grey" indeterminate></v-progress-linear>
-        </template>
-        <h5 style="color: rgba(255, 255, 255, 0)">____</h5>
-      </v-card>
-    </div>
-    <div style="position: absolute; top: 65px; left: 20px">
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon color="green" v-bind="attrs" v-on="on" :disabled="!waze">
-            <v-icon>mdi-waze</v-icon>
-          </v-btn>
-        </template>
-        <span>Waze Data</span>
-      </v-tooltip>
-    </div>
-
-    <div style="position: absolute; top: 70px; left: 16px" v-if="!segments">
-      <v-card loading class="transparent-card" height="30px">
-        <template slot="progress">
-          <v-progress-linear color="grey" indeterminate></v-progress-linear>
-        </template>
-        <h5 style="color: rgba(255, 255, 255, 0)">____</h5>
-      </v-card>
-    </div>
-    <div style="position: absolute; top: 70px; left: 10px" v-show="segments">
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon :color="segments ? 'green' : ' rgba(255, 255, 255, 0)'" v-bind="attrs" v-on="on">
-            <v-icon>mdi-vector-line</v-icon>
-          </v-btn>
-        </template>
-        <span>Segment Data</span>
-      </v-tooltip>
-    </div> -->
-
-    <!-- <div style="position: absolute; top: 90px; right: 16px" v-if="!devicesFull">
-      <v-card loading class="transparent-card" height="30px" v-if="showFullDayAvail && apiLoading.devicesFull">
-        <template slot="progress">
-          <v-progress-linear color="grey" indeterminate></v-progress-linear>
-        </template>
-        <h5 style="color: rgba(255, 255, 255, 0)">____</h5>
-      </v-card>
-    </div>
-    <div style="position: absolute; top: 90px; right: 10px" v-show="showFullDayAvail">
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon color="green" v-bind="attrs" v-on="on" :disabled="!devicesFull">
-            <v-icon>mdi-leak</v-icon>
-          </v-btn>
-        </template>
-        <span>Traffic Flow Detector Data</span>
-      </v-tooltip>
-    </div> -->
 
     <div class="debug">
-      <v-card class="pa-4" dense floating :style="`position: absolute; top: 70px; left: 20px;`">
-        Segments: {{ segments ? segments.length : 'Loading...' }}<br />
-        Segment Instances: {{ !!segmentsLength ? segmentsLength : 'Loading...' }}<br />
-        Waze: {{ waze ? waze.length : 'Loading...' }}<br />
-        BT Devices: {{ btDevices ? btDevices.length : 'Loading...' }}<br />
-        BT Device Instances: {{ !!devicesLength ? devicesLength : 'Loading...' }}
+      <v-card
+        outlined
+        color="transparent"
+        class="pa-4"
+        dense
+        floating
+        :style="`position: absolute; top: 50px; left: 20px;`"
+      >
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-badge class="mr-5" :content="waze ? waze.length : 0" :value="waze ? waze.length : 0" overlap>
+              <v-icon v-on="on" :color="'green'" :loading="waze" :disabled="!waze" large>
+                mdi-waze
+              </v-icon>
+            </v-badge>
+          </template>
+          <span>Total waze alerts: {{ waze ? waze.length : 0 }}</span>
+        </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-badge
+              class="mr-5"
+              :content="segmentsLength ? segmentsLength : 0"
+              :value="segmentsLength ? segmentsLength : 0"
+              overlap
+            >
+              <v-icon v-on="on" :color="'green'" :loading="segments" :disabled="!segments" large>
+                mdi-vector-line
+              </v-icon>
+            </v-badge>
+          </template>
+          <span>
+            Total segments: {{ segments ? segments.length : 0 }}<br />
+            Total segment instances: {{ !!segmentsLength ? segmentsLength : 0 }}
+          </span>
+        </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-badge
+              class="mr-5"
+              :content="devicesLength ? devicesLength : 0"
+              :value="devicesLength ? devicesLength : 0"
+              overlap
+            >
+              <v-icon v-on="on" :color="'green'" :loading="btDevices" :disabled="!btDevices" large>
+                mdi-leak
+              </v-icon>
+            </v-badge>
+          </template>
+          <span>
+            Total devices: {{ btDevices ? btDevices.length : 0 }}<br />
+            Total device instances: {{ !!devicesLength ? devicesLength : 0 }}
+          </span>
+        </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              class="mx-2"
+              @click="fetchApiData"
+              v-on="on"
+              fab
+              dark
+              small
+              :loading="!btDevices"
+              :disabled="!btDevices"
+            >
+              <v-icon>
+                mdi-refresh
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>
+            Refresh
+          </span>
+        </v-tooltip>
       </v-card>
     </div>
 
@@ -182,26 +171,28 @@ export default {
     },
     segmentsLength() {
       if (this.segments && this.segments.length > 0) {
-        return this.segments.reduce((total, segment) => {
+        let total = this.segments.reduce((total, segment) => {
           if (segment.timeline) {
             return total + segment.timeline.length;
           } else {
             return total;
           }
         }, 0);
+        return total >= 1000 ? `${Math.round(total / 1000)}k` : total;
       } else {
         return 0;
       }
     },
     devicesLength() {
       if (this.btDevices && this.btDevices.length > 0) {
-        return this.btDevices.reduce((total, device) => {
+        let total = this.btDevices.reduce((total, device) => {
           if (device.flowData) {
             return total + device.flowData.length;
           } else {
             return total;
           }
         }, 0);
+        return total >= 1000 ? `${Math.round(total / 1000)}k` : total;
       } else {
         return 0;
       }
