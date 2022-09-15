@@ -54,6 +54,9 @@ export default {
 .text-danger {
   color: #ff8080;
 }
+.text-truncate {
+  text-overflow: ellipsis;
+}
 .extra-bold {
   font-size: 22px;
   font-weight: 500;

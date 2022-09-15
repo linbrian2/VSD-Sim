@@ -9,10 +9,16 @@
 
 <script>
 export default {
-  props: ['data', 'height'],
+  props: {
+    data: Object,
+    height: Number,
+    legend: { type: Boolean, default: true }
+  },
+
   data() {
     return {
-      reload: false
+      reload: false,
+      dataClasses: []
     };
   },
   computed: {
@@ -117,7 +123,12 @@ export default {
       let value = point.value;
       if (value == null || value < 0) {
         return `Time: ${hh}:${mm}`;
+      } else {
+        if (this.dataClasses.length > 0 && value < this.dataClasses.length) {
+          value = this.dataClasses[value].name;
+        }
       }
+
       return `Time: ${hh}:${mm}, Value: ${value}`;
     },
 
@@ -130,6 +141,7 @@ export default {
       let xAxis = this.getXAxisProps(data.xAxis, data.xcategories);
       let yAxis = this.getYAxisProps(data.yAxis, data.ycategories);
       let colorAxis = data.colorAxis;
+      this.dataClasses = colorAxis['dataClasses'];
 
       // Create chart instance
       return {
@@ -139,11 +151,11 @@ export default {
 
         chart: {
           height: chartHeight,
-          spacingTop: 10,
+          spacingTop: 15,
           spacingBottom: 5,
           marginLeft: 75,
-          marginRight: 270,
-          marginBottom: 55,
+          marginRight: this.legend ? 270 : 40,
+          marginBottom: 50,
           type: 'heatmap',
           plotBorderColor: '#0000ff',
           plotBorderWidth: 2
@@ -156,6 +168,7 @@ export default {
         colorAxis: colorAxis,
 
         legend: {
+          enabled: this.legend,
           title: {
             text: 'Error Types'
           },
@@ -219,6 +232,7 @@ export default {
         ]
       };
     },
+
     refresh(ms = 1000) {
       this.reload = true;
       setTimeout(() => {

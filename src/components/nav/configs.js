@@ -237,6 +237,14 @@ const protectedRoute = [
               title: RouterNames.STATUS_QUALITY_CHECK,
               icon: 'mdi-check-decagram'
             }
+          },
+          {
+            path: RouterPaths.STATUS_QUALITY_MAP,
+            name: RouterNames.STATUS_QUALITY_MAP,
+            meta: {
+              title: RouterNames.STATUS_QUALITY_MAP,
+              icon: 'mdi-map-check-outline'
+            }
           }
         ]
       }
