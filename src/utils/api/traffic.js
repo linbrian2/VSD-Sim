@@ -4,6 +4,23 @@ import client from '@/utils/AxiosClient';
 const AxiosClient = client(process.env.VUE_APP_TRAFFIC_API_URL);
 
 export default {
+  // * Bluetooth
+  fetchWazeFull(date) {
+    let ts = date.getTime();
+    return AxiosClient.get(`bluetooth/waze/full/${ts}`);
+  },
+  fetchSegmentsFull(date) {
+    let ts = date.getTime();
+    return AxiosClient.get(`bluetooth/segments/full/${ts}`);
+  },
+  fetchDevicesFull(date) {
+    let ts = date.getTime();
+    return AxiosClient.get(`bluetooth/devices/full/${ts}`);
+  },
+  fetchSensors() {
+    return AxiosClient.get('bluetooth/sensors');
+  },
+
   // * HR
   fetchHRDevices() {
     return AxiosClient.get('hr/devices');

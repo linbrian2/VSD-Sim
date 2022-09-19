@@ -226,6 +226,7 @@ export default {
 
   methods: {
     cardClicked(payload) {
+      console.log(payload);
       this.trafficInfoShow = false;
       this.selectedIdx = payload.idx;
       if (this.selectedIdx < 0) {

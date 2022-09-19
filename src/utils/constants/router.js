@@ -1,7 +1,7 @@
 export const RouterNames = {
   DASHBOARD: 'Dashboard',
   TRAFFIC_DASHBOARD: 'Traffic',
-  BLUETOOTH_DASHBOARD: 'Traffic Data Playback',
+  TRAFFIC_DATA_PLAYBACK: 'Traffic Data Playback',
 
   TRAFFIC_FLOW: 'Traffic Data',
   TRAFFIC_LCM: 'Traffic LCM',
@@ -62,7 +62,7 @@ export const RouterPaths = {
   TRAFFIC_MITIGATION: '/flow/mitigation',
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',
   TRAFFIC_SIGNALS: '/flow/signals',
-  BLUETOOTH_DASHBOARD: '/flow/playback',
+  TRAFFIC_DATA_PLAYBACK: '/flow/playback',
 
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',
@@ -107,7 +107,7 @@ export const RouterIcons = {
   TRAFFIC_INCIDENT: 'mdi-format-list-bulleted',
   TRAFFIC_RESPONSIVE_DATA: 'mdi-traffic-light-outline',
   TRAFFIC_SIGNALS: 'mdi-traffic-light-outline',
-  BLUETOOTH_DASHBOARD: 'mdi-motion-play-outline',
+  TRAFFIC_DATA_PLAYBACK: 'mdi-motion-play-outline',
 
   HR_DASHBOARD: 'mdi-clipboard-list-outline',
   HR_PCD: 'mdi-chart-areaspline',

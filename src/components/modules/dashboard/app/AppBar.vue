@@ -75,12 +75,11 @@ export default {
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP, icon: RouterIcons.TRAVEL_TIME_MAP },
       { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT, icon: RouterIcons.TRAFFIC_INCIDENT },
       { divider: true },
-      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT, icon: RouterIcons.TRAFFIC_PREDICT },
       { divider: true },
       {
-        title: RouterNames.BLUETOOTH_DASHBOARD,
-        url: RouterPaths.BLUETOOTH_DASHBOARD,
-        icon: RouterIcons.BLUETOOTH_DASHBOARD
+        title: RouterNames.TRAFFIC_DATA_PLAYBACK,
+        url: RouterPaths.TRAFFIC_DATA_PLAYBACK,
+        icon: RouterIcons.TRAFFIC_DATA_PLAYBACK
       },
       { divider: true },
       {
@@ -92,8 +91,7 @@ export default {
     isDashboard: true,
     title: AppConstants.DASHBOARD_APP_TITLE,
     action_menu_items: [
-      // { title: RouterNames.TRAFFIC_DASHBOARD, url: RouterPaths.TRAFFIC_DASHBOARD },
-      // { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
+      // { title: RouterNames.TRAFFIC_DASHBOARD, url: RouterPaths.TRAFFIC_DASHBOARD }
     ]
   }),
 

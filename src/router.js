@@ -12,7 +12,7 @@ import Status from '@/components/layouts/Status.vue';
 import Dashboard from '@/components/layouts/Dashboard.vue';
 
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
-import TrafficBTDashboard from '@/views/traffic/TrafficBTDashboard.vue';
+import TrafficDataPlayback from '@/views/traffic/TrafficDataPlayback.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
 import Multigraph from '@/views/traffic/Multigraph.vue';
 import TrafficRoutingDashboard from '@/views/traffic/TrafficRoutingDashboard';
@@ -105,9 +105,9 @@ const router = new Router({
           component: IncidentList
         },
         {
-          path: RouterPaths.BLUETOOTH_DASHBOARD,
-          name: RouterNames.BLUETOOTH_DASHBOARD,
-          component: TrafficBTDashboard
+          path: RouterPaths.TRAFFIC_DATA_PLAYBACK,
+          name: RouterNames.TRAFFIC_DATA_PLAYBACK,
+          component: TrafficDataPlayback
         },
         {
           path: RouterPaths.TRAFFIC_MITIGATION_PATH,
