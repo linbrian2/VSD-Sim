@@ -1,7 +1,7 @@
 export const RouterNames = {
   DASHBOARD: 'Dashboard',
   TRAFFIC_DASHBOARD: 'Traffic',
-  BLUETOOTH_DASHBOARD: 'Traffic Data Playback',
+  TRAFFIC_DATA_PLAYBACK: 'Traffic Data Playback',
 
   TRAFFIC_FLOW: 'Traffic Data',
   TRAFFIC_LCM: 'Traffic LCM',
@@ -60,7 +60,7 @@ export const RouterPaths = {
   TRAFFIC_MITIGATION_PATH: '/flow/mitigation/:id',
   TRAFFIC_MITIGATION: '/flow/mitigation',
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',
-  BLUETOOTH_DASHBOARD: '/flow/playback',
+  TRAFFIC_DATA_PLAYBACK: '/flow/playback',
 
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',

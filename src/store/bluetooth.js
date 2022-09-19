@@ -109,9 +109,9 @@ const actions = {
     const layers = localStorage.getItem('mapLayer');
     const wazeLayers = localStorage.getItem('wazeLayer');
     const deviceLayers = localStorage.getItem('deviceLayer');
-    const mapLayers = layers ? JSON.parse(layers) : [0, 3];
+    const mapLayers = layers ? JSON.parse(layers) : [0, 1, 3];
     const mapWazeLayers = wazeLayers ? JSON.parse(wazeLayers) : [1, 2, 3];
-    const mapDeviceLayers = deviceLayers ? JSON.parse(deviceLayers) : [0, 1, 2];
+    const mapDeviceLayers = deviceLayers ? JSON.parse(deviceLayers) : [1, 2];
     commit('SET_WAZE_LAYER', mapWazeLayers);
     commit('SET_DEVICE_LAYER', mapDeviceLayers);
     commit('SET_MAP_LAYER', mapLayers);
@@ -128,7 +128,7 @@ const actions = {
     commit('SET_PREFERENCES', prefsJSON);
   },
   saveMapLayers({ state, commit }, layers) {
-    console.log('Map:\n%o\nWaze:\n%o\nDevice:\n%o', layers.map, layers.waze, layers.device);
+    // console.log('Map:\n%o\nWaze:\n%o\nDevice:\n%o', layers.map, layers.waze, layers.device);
     commit('SET_MAP_LAYER', layers.map);
     localStorage.setItem('mapLayer', JSON.stringify(state.mapLayerSelection));
     commit('SET_WAZE_LAYER', layers.waze);

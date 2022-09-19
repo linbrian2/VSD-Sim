@@ -83,10 +83,10 @@ const protectedRoute = [
             }
           },
           {
-            path: RouterPaths.BLUETOOTH_DASHBOARD,
-            name: RouterNames.BLUETOOTH_DASHBOARD,
+            path: RouterPaths.TRAFFIC_DATA_PLAYBACK,
+            name: RouterNames.TRAFFIC_DATA_PLAYBACK,
             meta: {
-              title: RouterNames.BLUETOOTH_DASHBOARD,
+              title: RouterNames.TRAFFIC_DATA_PLAYBACK,
               icon: 'mdi-motion-play-outline '
             }
           },

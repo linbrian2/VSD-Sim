@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="ttDialog" max-width="100%" transition="scroll-x-transition">
-    <v-card>
+    <v-card v-if="!reload">
       <v-card-actions>
-        <v-card-title class="segment-title"> {{ segName }} </v-card-title>
+        <v-card-title class="segment-title"> {{ selectedSegment ? selectedSegment.desc : 'N/A' }} </v-card-title>
         <!-- Card Button Group -->
         <div class="middle-header">
           <v-btn-toggle dense mandatory>
@@ -70,8 +70,9 @@
 </template>
 
 <script>
-import AreaRangeChart from '@/components/modules/bluetooth/graphs/AreaRangeChart';
+import AreaRangeChart from '@/components/modules/traffic/playback/AreaRangeChart';
 
+import Utils from '@/utils/Utils';
 import Api from '@/utils/api/bluetooth.js';
 import { mapState } from 'vuex';
 
@@ -79,8 +80,19 @@ export default {
   components: {
     AreaRangeChart
   },
+  props: {
+    selectedLinkId: {
+      type: String,
+      default: null
+    },
+    selectedSegment: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
+      reload: false,
       graphIntervalInd: 2,
       graphInterval: [1, 2, 5, 15, 60],
       ticksLabels: ['1m', '2m', '5m', '15m', '60m'],
@@ -90,20 +102,17 @@ export default {
   watch: {
     ttDialog(val, oldVal) {
       if (val == true && oldVal == false) {
-        this.init();
+        this.fetchSegmentData();
       }
     }
   },
   methods: {
-    init() {
-      this.fetchSegmentData(this.selectedSeg.data);
-    },
     closeDialog() {
       this.$store.commit('bluetooth/SET_TT_DIALOG', false);
     },
-    fetchSegmentData(selectedSeg) {
+    fetchSegmentData() {
       this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'curr', data: null });
-      let linkId = selectedSeg.info.linkId;
+      let linkId = this.selectedLinkId;
       /* Fetch Historical Data w/ Incidents */
       Api.fetchHistoricalTTWIncidentsByLinkID(linkId).then(
         dataW => {
@@ -127,8 +136,7 @@ export default {
         }
       );
       /* Fetch Current Day Data */
-      console.log(this.currentDate);
-      let dt = this.currentDate.valueOf();
+      let dt = Utils.getEndOfDay(this.currentDate).getTime();
       Api.fetchCurrTTByLinkId(linkId, dt).then(
         dataC => {
           this.$store.commit('bluetooth/SET_SELECTED_SEG', { prop: 'curr', data: dataC });
@@ -137,6 +145,10 @@ export default {
           console.log(error);
         }
       );
+      this.reload = true;
+      setTimeout(() => {
+        this.reload = false;
+      }, 500);
     }
   },
   computed: {

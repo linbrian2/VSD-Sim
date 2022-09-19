@@ -259,6 +259,65 @@ export const mapIcons = {
           size: { width: 36, height: 36, f: 'px', b: 'px' },
           anchor: { x: 18, y: 18 }
         }
+      ],
+
+      deviceIcons: [
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#339900',
+          fillOpacity: 1.0,
+          strokeWeight: 1.2,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#00FF33',
+          fillOpacity: 1.0,
+          strokeWeight: 1.2,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FFFF00',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FFC031',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FA7A2A',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#FF0000',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        },
+        {
+          path: 0,
+          scale: 9.0,
+          fillColor: '#C00000',
+          fillOpacity: 1.0,
+          strokeWeight: 0.6,
+          strokeOpacity: 0.8
+        }
       ]
     };
   },
@@ -326,6 +385,14 @@ export const mapIcons = {
         return active ? this.wazeIcons[9] : this.wazeIcons[8];
       // Hazard
       else return active ? this.wazeIcons[7] : this.wazeIcons[6];
+    },
+
+    getDeviceIcon(level, active = false) {
+      if (level >= 1)
+        return active
+          ? { ...this.deviceIcons[level], strokeColor: '#FFFFFF', strokeWeight: 5.0 }
+          : this.deviceIcons[level];
+      else return this.deviceIcons[0];
     }
   }
 };

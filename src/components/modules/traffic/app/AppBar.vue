@@ -1,12 +1,6 @@
 <template>
   <div>
-    <Header
-      :title="title"
-      :showDate="!isDashboard"
-      :clipLeft="!isDashboard"
-      :clipRight="isDashboard"
-      :actionItems="actionItems"
-    >
+    <Header :title="title" :showDate="!isDashboard" :clipLeft="false" :clipRight="true" :actionItems="actionItems">
       <div v-show="$vuetify.breakpoint.mdAndUp">
         <MenuButton
           :items="chart_menu_items"
@@ -91,7 +85,7 @@ export default {
       { divider: true },
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
       { divider: true },
-      { title: RouterNames.BLUETOOTH_DASHBOARD, url: RouterPaths.BLUETOOTH_DASHBOARD }
+      { title: RouterNames.TRAFFIC_DATA_PLAYBACK, url: RouterPaths.TRAFFIC_DATA_PLAYBACK }
     ],
 
     action_optional_items: [
