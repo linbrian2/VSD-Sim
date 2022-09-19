@@ -4,7 +4,7 @@
       <h5 class="text-center ml-5 overline">{{ title }}</h5>
     </v-card-title>
 
-    <v-card-text class="mt-2 pb-0">
+    <div class="mt-2 pb-0 mx-0">
       <v-simple-table v-if="items && items.length > 0">
         <template v-slot:default>
           <tbody>
@@ -18,7 +18,7 @@
         </template>
       </v-simple-table>
       <slot></slot>
-    </v-card-text>
+    </div>
   </v-card>
 </template>
 

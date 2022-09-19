@@ -16,6 +16,7 @@ export const RouterNames = {
   TRAFFIC_INCIDENT: 'Traffic Incidents',
   TRAFFIC_MITIGATION: 'Incident Mitigation',
   TRAFFIC_RESPONSIVE_DATA: 'Traffic Responsive Zone',
+  TRAFFIC_SIGNALS: 'Traffic Signals',
 
   HR_DASHBOARD: "Today's Summary",
   HR_PCD: 'PCD Charts',
@@ -60,6 +61,7 @@ export const RouterPaths = {
   TRAFFIC_MITIGATION_PATH: '/flow/mitigation/:id',
   TRAFFIC_MITIGATION: '/flow/mitigation',
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',
+  TRAFFIC_SIGNALS: '/flow/signals',
   BLUETOOTH_DASHBOARD: '/flow/playback',
 
   HR_ROOT: '/hr',
@@ -89,4 +91,37 @@ export const RouterPaths = {
   AUTH_RESET_PASSWORD: '/account/reset-password',
   AUTH_FORGOT_PASSWORD: '/forgot-password',
   AUTH_PREFERENCES: '/pref'
+};
+
+export const RouterIcons = {
+  DASHBOARD_ROOT: 'mdi-view-dashboard',
+  TRAFFIC_DASHBOARD: 'mdi-view-dashboard',
+  TRAFFIC_LCM: 'mdi-chart-bell-curve',
+  TRAFFIC_ROUTING: 'mdi-vector-radius',
+  TRAFFIC_PREDICT: 'mdi-waveform',
+  TRAFFIC_ANOMALY: 'mdi-view-comfy',
+  TRAFFIC_WEATHER: 'mdi-chart-line',
+  TRAFFIC_MULTIGRAPH: 'mdi-chart-line',
+  TRAVEL_TIME_DATA: 'mdi-chart-line',
+  TRAVEL_TIME_MAP: 'mdi-view-comfy',
+  TRAFFIC_INCIDENT: 'mdi-format-list-bulleted',
+  TRAFFIC_RESPONSIVE_DATA: 'mdi-traffic-light-outline',
+  TRAFFIC_SIGNALS: 'mdi-traffic-light-outline',
+  BLUETOOTH_DASHBOARD: 'mdi-motion-play-outline',
+
+  HR_DASHBOARD: 'mdi-clipboard-list-outline',
+  HR_PCD: 'mdi-chart-areaspline',
+  HR_TIME_SPACE_DIAGRAM: 'mdi-chart-timeline',
+  HR_SIGNAL_DISPLAY: 'mdi-map-clock-outline',
+  HR_PERFORMANCE_MEASURES: 'mdi-chart-bar',
+
+  VISION_DASHBOARD: 'mdi-cctv',
+  VISION_REID: 'mdi-car-2-plus',
+
+  CAV_DASHBOARD: 'mdi-format-list-bulleted',
+  CAV_STATUS: 'mdi-truck-check-outline',
+
+  STATUS_DASHBOARD: 'mdi-list-status',
+  STATUS_QUALITY_CHECK: 'mdi-check-decagram',
+  STATUS_QUALITY_MAP: 'mdi-map-check-outline'
 };

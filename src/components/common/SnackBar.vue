@@ -1,5 +1,5 @@
 <template>
-  <v-snackbar middle rounded="pill" v-model="snackbar.showing" :color="snackbar.color" :timeout="snackbar.timeout">
+  <v-snackbar right v-model="snackbar.showing" :color="snackbar.color" :timeout="snackbar.timeout">
     <div class="text-center">{{ snackbar.text }}</div>
   </v-snackbar>
 </template>
@@ -12,3 +12,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.v-snack__wrapper {
+  max-width: none;
+}
+</style>

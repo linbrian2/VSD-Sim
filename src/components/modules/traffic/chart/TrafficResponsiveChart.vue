@@ -147,7 +147,10 @@ export default {
             });
           }
         });
-        series[2]['yAxis'] = 1;
+
+        if (this.signalPatterns) {
+          series[2]['yAxis'] = 1;
+        }
       }
       return series;
     },

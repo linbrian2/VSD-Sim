@@ -272,7 +272,27 @@ export default {
     return AxiosClient.post('solution/rampVolumes', params);
   },
 
-  fetchTrafficResponsiveData(zoneId, startDate) {
-    return AxiosClient.post('api/trafficResponsiveData', { zoneId, startDate });
+  fetchTrafficResponsiveData(zoneId, startDate, weights) {
+    if (weights) {
+      return AxiosClient.post('api/trafficResponsiveData', { zoneId, startDate, weights });
+    } else {
+      return AxiosClient.post('api/trafficResponsiveData', { zoneId, startDate });
+    }
+  },
+
+  fetchZoneDetectorWeights(zoneId) {
+    return AxiosClient.get('api/zoneDetectorWeights', { params: { zoneId } });
+  },
+
+  updateZoneDetectorWeights(weights) {
+    return AxiosClient.post('api/updateZoneDetectorWeights', { weights });
+  },
+
+  trafficSignalDevices() {
+    return AxiosClient.get('api/trafficSignalDevices');
+  },
+
+  getSignalCycleSplit(permit) {
+    return AxiosClient.get('api/getSignalCycleSplit', { params: { permit } });
   }
 };

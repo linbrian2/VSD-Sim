@@ -1,4 +1,4 @@
-import { RouterNames, RouterPaths } from '@/utils/constants/router';
+import { RouterNames, RouterPaths, RouterIcons } from '@/utils/constants/router';
 
 const protectedRoute = [
   {
@@ -12,18 +12,8 @@ const protectedRoute = [
         path: RouterPaths.TRAFFIC_DASHBOARD,
         meta: {
           title: 'Dashboard',
-          icon: 'mdi-view-dashboard'
+          icon: RouterIcons.TRAFFIC_DASHBOARD
         }
-        // children: [
-        //   {
-        //     path: RouterPaths.TRAFFIC_DASHBOARD,
-        //     name: RouterNames.TRAFFIC_DASHBOARD,
-        //     meta: {
-        //       title: RouterNames.TRAFFIC_DASHBOARD,
-        //       icon: 'mdi-view-dashboard'
-        //     }
-        //   }
-        // ]
       },
 
       //Traffic Flow
@@ -39,7 +29,15 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_MULTIGRAPH,
             meta: {
               title: RouterNames.TRAFFIC_MULTIGRAPH,
-              icon: 'mdi-chart-line'
+              icon: RouterIcons.TRAFFIC_MULTIGRAPH
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_SIGNALS,
+            name: RouterNames.TRAFFIC_SIGNALS,
+            meta: {
+              title: RouterNames.TRAFFIC_SIGNALS,
+              icon: RouterIcons.TRAFFIC_SIGNALS
             }
           },
           {
@@ -47,7 +45,7 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_RESPONSIVE_DATA,
             meta: {
               title: RouterNames.TRAFFIC_RESPONSIVE_DATA,
-              icon: 'mdi-chart-line'
+              icon: RouterIcons.TRAFFIC_RESPONSIVE_DATA
             }
           },
           {
@@ -55,7 +53,7 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_ANOMALY,
             meta: {
               title: RouterNames.TRAFFIC_ANOMALY,
-              icon: 'mdi-view-comfy'
+              icon: RouterIcons.TRAFFIC_ANOMALY
             }
           },
           {
@@ -63,7 +61,7 @@ const protectedRoute = [
             name: RouterNames.TRAVEL_TIME_MAP,
             meta: {
               title: RouterNames.TRAVEL_TIME_MAP,
-              icon: 'mdi-view-comfy'
+              icon: RouterIcons.TRAVEL_TIME_MAP
             }
           },
           {
@@ -71,7 +69,7 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_INCIDENT,
             meta: {
               title: RouterNames.TRAFFIC_INCIDENT,
-              icon: 'mdi-format-list-bulleted'
+              icon: RouterIcons.TRAFFIC_INCIDENT
             }
           },
           {
@@ -79,7 +77,7 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_PREDICT,
             meta: {
               title: RouterNames.TRAFFIC_PREDICT,
-              icon: 'mdi-waveform'
+              icon: RouterIcons.TRAFFIC_PREDICT
             }
           },
           {
@@ -87,7 +85,7 @@ const protectedRoute = [
             name: RouterNames.BLUETOOTH_DASHBOARD,
             meta: {
               title: RouterNames.BLUETOOTH_DASHBOARD,
-              icon: 'mdi-motion-play-outline '
+              icon: RouterIcons.BLUETOOTH_DASHBOARD
             }
           },
           {
@@ -95,7 +93,7 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_LCM,
             meta: {
               title: RouterNames.TRAFFIC_LCM,
-              icon: 'mdi-chart-bell-curve',
+              icon: RouterIcons.TRAFFIC_LCM,
               permissions: ['Admin', 'Dev']
             }
           },
@@ -104,7 +102,7 @@ const protectedRoute = [
             name: RouterNames.TRAFFIC_ROUTING,
             meta: {
               title: RouterNames.TRAFFIC_ROUTING,
-              icon: 'mdi-vector-radius',
+              icon: RouterIcons.TRAFFIC_ROUTING,
               permissions: ['Admin', 'Dev']
             }
           }
@@ -123,7 +121,7 @@ const protectedRoute = [
             name: RouterNames.HR_DASHBOARD,
             meta: {
               title: RouterNames.HR_DASHBOARD,
-              icon: 'mdi-clipboard-list-outline '
+              icon: RouterIcons.HR_DASHBOARD
             }
           },
           {
@@ -131,7 +129,7 @@ const protectedRoute = [
             name: RouterNames.HR_PCD,
             meta: {
               title: 'Purdue Coordination Diagram',
-              icon: 'mdi-chart-areaspline'
+              icon: RouterIcons.HR_PCD
             }
           },
           {
@@ -139,7 +137,7 @@ const protectedRoute = [
             name: RouterNames.HR_TIME_SPACE_DIAGRAM,
             meta: {
               title: RouterNames.HR_TIME_SPACE_DIAGRAM,
-              icon: 'mdi-chart-timeline'
+              icon: RouterIcons.HR_TIME_SPACE_DIAGRAM
             }
           },
           {
@@ -147,7 +145,7 @@ const protectedRoute = [
             name: RouterNames.HR_SIGNAL_DISPLAY,
             meta: {
               title: RouterNames.HR_SIGNAL_DISPLAY,
-              icon: 'mdi-map-clock-outline'
+              icon: RouterIcons.HR_SIGNAL_DISPLAY
             }
           },
           {
@@ -155,7 +153,7 @@ const protectedRoute = [
             name: RouterNames.HR_PERFORMANCE_MEASURES,
             meta: {
               title: RouterNames.HR_PERFORMANCE_MEASURES,
-              icon: 'mdi-chart-bar'
+              icon: RouterIcons.HR_PERFORMANCE_MEASURES
             }
           }
         ]
@@ -173,7 +171,7 @@ const protectedRoute = [
             name: RouterNames.VISION_DASHBOARD,
             meta: {
               title: RouterNames.VISION_DASHBOARD,
-              icon: 'mdi-cctv'
+              icon: RouterIcons.VISION_DASHBOARD
             }
           },
           {
@@ -181,7 +179,7 @@ const protectedRoute = [
             name: RouterNames.VISION_REID,
             meta: {
               title: RouterNames.VISION_REID,
-              icon: 'mdi-car-2-plus',
+              icon: RouterIcons.VISION_REID,
               permissions: ['Admin', 'Dev']
             }
           }
@@ -200,7 +198,7 @@ const protectedRoute = [
             name: RouterNames.CAV_DASHBOARD,
             meta: {
               title: RouterNames.CAV_DASHBOARD,
-              icon: 'mdi-format-list-bulleted'
+              icon: RouterIcons.CAV_DASHBOARD
             }
           },
           {
@@ -208,7 +206,7 @@ const protectedRoute = [
             name: RouterNames.CAV_STATUS,
             meta: {
               title: RouterNames.CAV_STATUS,
-              icon: 'mdi-truck-check-outline'
+              icon: RouterIcons.CAV_STATUS
             }
           }
         ]
@@ -226,7 +224,7 @@ const protectedRoute = [
             name: RouterNames.STATUS_DASHBOARD,
             meta: {
               title: RouterNames.STATUS_DASHBOARD,
-              icon: 'mdi-list-status',
+              icon: RouterIcons.STATUS_DASHBOARD,
               permissions: ['Admin', 'Dev']
             }
           },
@@ -235,7 +233,7 @@ const protectedRoute = [
             name: RouterNames.STATUS_QUALITY_CHECK,
             meta: {
               title: RouterNames.STATUS_QUALITY_CHECK,
-              icon: 'mdi-check-decagram'
+              icon: RouterIcons.STATUS_QUALITY_CHECK
             }
           },
           {
@@ -243,7 +241,7 @@ const protectedRoute = [
             name: RouterNames.STATUS_QUALITY_MAP,
             meta: {
               title: RouterNames.STATUS_QUALITY_MAP,
-              icon: 'mdi-map-check-outline'
+              icon: RouterIcons.STATUS_QUALITY_MAP
             }
           }
         ]

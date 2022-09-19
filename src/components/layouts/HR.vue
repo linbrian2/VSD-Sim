@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import Utils from '@/utils/Utils';
 import AppBar from '@/components/modules/hr/AppBar';
 import MapSelect from '@/components/modules/hr/MapSelect';
 import { RouterNames } from '@/utils/constants/router';
@@ -67,9 +66,9 @@ export default {
     ...mapState('hr', ['locations', 'currentSignal', 'signalTimingMode'])
   },
 
-  created() {
-    this.$store.commit('SET_CURRENT_DATE', Utils.yesterday());
-  },
+  // created() {
+  //   this.$store.commit('SET_CURRENT_DATE', Utils.yesterday());
+  // },
 
   methods: {
     hidePanel() {

@@ -65,7 +65,9 @@ export default {
     chart_menu_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
+      { title: RouterNames.TRAFFIC_SIGNALS, url: RouterPaths.TRAFFIC_SIGNALS },
       { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
+
       { divider: true },
       { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
       { divider: true },
@@ -83,6 +85,7 @@ export default {
     action_main_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
+      { title: RouterNames.TRAFFIC_SIGNALS, url: RouterPaths.TRAFFIC_SIGNALS },
       { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },

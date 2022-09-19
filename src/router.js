@@ -22,6 +22,7 @@ import TravelTimeMap from '@/views/traffic/TravelTimeMap.vue';
 import IncidentList from '@/views/traffic/IncidentList.vue';
 import IncidentMitigation from '@/views/traffic/IncidentMitigation.vue';
 import TrafficResponsiveData from '@/views/traffic/TrafficResponsiveData.vue';
+import TrafficSignals from '@/views/traffic/TrafficSignals.vue';
 
 import HRDashboard from '@/views/hr/Dashboard.vue';
 import PCD from '@/views/hr/PCD.vue';
@@ -117,6 +118,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_RESPONSIVE_DATA,
           name: RouterNames.TRAFFIC_RESPONSIVE_DATA,
           component: TrafficResponsiveData
+        },
+        {
+          path: RouterPaths.TRAFFIC_SIGNALS,
+          name: RouterNames.TRAFFIC_SIGNALS,
+          component: TrafficSignals
         }
       ]
     },

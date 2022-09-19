@@ -229,7 +229,15 @@ export default {
 
     getMarkerIcon(key) {
       if (this.selectedMarkerIds.length > 0) {
-        return this.selectedMarkerIds.includes(key) ? this.getActiveIcon() : this.getNormalIcon();
+        if (this.selectedMarkerIds.includes(key)) {
+          if (this.selectedMarkerId === key) {
+            return this.getSelectedIcon();
+          } else {
+            return this.getActiveIcon();
+          }
+        } else {
+          return this.getNormalIcon();
+        }
       }
       return this.selectedMarkerId === key ? this.getActiveIcon() : this.getNormalIcon();
     },
@@ -242,6 +250,10 @@ export default {
       return this.icons ? this.icons[1] : this.mapMarkerActive;
     },
 
+    getSelectedIcon() {
+      return this.icons ? this.icons[this.icons.length - 1] : this.mapMarkerActive;
+    },
+
     markerClicked(marker) {
       this.selectedMarkerIds = [];
       this.selectedMarkerId = marker.id;
@@ -249,11 +261,15 @@ export default {
       this.$emit('click', marker);
     },
 
-    selectByIds(ids) {
+    selectById(id) {
+      this.selectedMarkerId = id;
+    },
+
+    selectByIds(ids, centered = true) {
       this.selectedMarkerIds = [];
       Object.assign(this.selectedMarkerIds, ids);
 
-      if (ids.length > 0) {
+      if (ids.length > 0 && centered) {
         let id = ids[Math.floor(ids.length / 2)];
         let marker = this.markers.find(m => m.id == id);
         if (marker != null) {
