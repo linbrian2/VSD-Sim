@@ -42,5 +42,16 @@ export default Object.freeze({
     { title: 'CAV Area Freeway Detectors', value: 3 },
     { title: 'CAV Area System Detectors', value: 4 },
     { title: 'Beach Area System Detectors', value: 7 }
+  ],
+
+  SIGNAL_DEVICE_CATEGORIES: [
+    { title: 'All Signals', value: -1 },
+    { divider: true },
+    { title: 'New Castle County Signals', value: 1 },
+    { title: 'Kent County Signals', value: 2 },
+    { title: 'Sussex County Signals', value: 3 },
+    { title: 'Wilmington City Signals', value: 4 },
+    { divider: true },
+    { title: 'TR Enabled Signals', value: 11 }
   ]
 });

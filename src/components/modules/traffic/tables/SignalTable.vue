@@ -8,8 +8,8 @@
     class="elevation-1"
   >
     <template v-slot:[`item.pattern`]="{ item }">
-      <v-chip color="orange" label small>
-        <span class="font-weight-bold black--text">{{ item.pattern }}</span>
+      <v-chip :color="patternColor(item)" label small>
+        <span class="font-weight-bold white--text">{{ item.pattern }}</span>
       </v-chip>
     </template>
 
@@ -43,7 +43,8 @@
 <script>
 export default {
   props: {
-    items: Array
+    items: Array,
+    current: String
   },
 
   data: () => ({
@@ -66,7 +67,26 @@ export default {
   methods: {
     cc(mode) {
       return mode && mode > 0 ? 'red--text' : 'white--text';
+    },
+
+    patternColor(item) {
+      return item.pattern === this.current ? 'orange' : 'green darken-3';
+    },
+
+    // <!-- :item-class="itemRowBackground" -->
+    itemRowBackground(item) {
+      if (item.pattern === this.current) {
+        return 'highlighted-tr';
+      } else {
+        return '';
+      }
     }
   }
 };
 </script>
+
+<style lang="scss">
+.highlighted-tr {
+  background-color: teal;
+}
+</style>

@@ -22,6 +22,8 @@ import OutlierRemoval from '@/utils/OutlierRemoval.js';
 
 export default {
   props: ['markers', 'icons'],
+
+  // https://github.com/xkjyeah/vue-google-maps/issues/94
   data: () => ({
     mapMarker: {
       url: require('@/assets/green-icon-48.png'),
@@ -44,28 +46,22 @@ export default {
     options: {
       mapTypeControl: true,
       mapTypeControlOptions: {
-        mapTypeIds: ['roadmap', 'satellite'],
-        position: google.maps.ControlPosition.TOP_CENTER
+        mapTypeIds: ['roadmap', 'satellite']
       },
 
       streetViewControl: false,
-
       fullscreenControl: true,
-      fullscreenControlOptions: {
-        position: google.maps.ControlPosition.LEFT_TOP
-      },
-
-      zoomControl: true,
-      zoomControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_CENTER
-      }
+      zoomControl: true
     }
   }),
+
   computed: {
     position() {
       return this.$store.state.position;
     }
+    //google: gmapApi
   },
+
   watch: {
     position() {
       this.$refs.mapRef.$mapPromise.then(map => {
@@ -79,7 +75,8 @@ export default {
       });
     }
   },
-  mounted() {
+
+  async mounted() {
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$bus.$on('NAME_SELECTED', name => {
@@ -118,6 +115,7 @@ export default {
 
     this.addMapControls();
   },
+
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
@@ -140,8 +138,21 @@ export default {
 
     addMapControls() {
       this.$refs.mapRef.$mapPromise.then(map => {
+        this.setMapIconLocations(map);
         this.addHomeControl(map);
         this.addPointControl(map);
+      });
+    },
+
+    setMapIconLocations(map) {
+      map.setOptions({
+        // fullscreenControlOptions: {
+        //   position: google.maps.ControlPosition.LEFT_TOP
+        // },
+
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_CENTER
+        }
       });
     },
 

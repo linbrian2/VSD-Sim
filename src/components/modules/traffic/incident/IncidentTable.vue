@@ -46,14 +46,12 @@
     </template>
     <template v-slot:[`item.evidenceCounts`]="{ item }">
       <v-badge
-        class="mr-8"
+        class="mr-1"
         v-for="(count, name, index) in item.evidenceCounts"
         :color="getEvidenceColor(name)"
         :key="index"
         :content="count"
-        offset-x="5"
-        offset-y="22"
-        bordered
+        inline
       >
         <v-icon small v-text="getEvidenceIcon(name)"></v-icon>
       </v-badge>
@@ -91,8 +89,8 @@ export default {
       { text: 'Route', value: 'route' },
       { text: 'Region', value: 'region' },
       { text: 'Severity', value: 'severity' },
-      { text: 'Start Time', value: 'startTime' },
-      { text: 'End Time', value: 'endTime' },
+      { text: 'Start', value: 'startTime' },
+      { text: 'End', value: 'endTime' },
       { text: 'Duration', value: 'duration' },
       { text: 'Evidences', value: 'evidenceCounts' },
       { text: 'Mitigation', value: 'mitigation' }

@@ -79,7 +79,7 @@
         </div>
       </v-card>
 
-      <v-card tile class="mx-4 mb-2" v-show="showIncidentTable">
+      <v-card tile class="mx-3 mb-2" v-show="showIncidentTable">
         <div>
           <IncidentTable :height="tableHeight" :incidents="incidents" @click="handleRowClick" />
         </div>

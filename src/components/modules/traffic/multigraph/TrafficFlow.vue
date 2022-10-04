@@ -4,8 +4,9 @@
     <SelectionPanel name="trafficFlowSideBarWidth" @navigation-width-changed="sideBarWidthChanged">
       <div class="d-flex justify-space-between">
         <v-combobox
-          class="mx-2"
+          class="mx-0"
           dense
+          solo
           hide-details
           single-line
           :items="items"

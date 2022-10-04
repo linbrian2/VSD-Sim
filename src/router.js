@@ -20,6 +20,7 @@ import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
 import TravelTimeMap from '@/views/traffic/TravelTimeMap.vue';
 import IncidentList from '@/views/traffic/IncidentList.vue';
+import TrafficIncident from '@/views/traffic/TrafficIncident.vue';
 import IncidentMitigation from '@/views/traffic/IncidentMitigation.vue';
 import TrafficResponsiveData from '@/views/traffic/TrafficResponsiveData.vue';
 import TrafficSignals from '@/views/traffic/TrafficSignals.vue';
@@ -100,9 +101,14 @@ const router = new Router({
           component: TravelTimeMap
         },
         {
-          path: RouterPaths.TRAFFIC_INCIDENT,
-          name: RouterNames.TRAFFIC_INCIDENT,
+          path: RouterPaths.TRAFFIC_INCIDENT_LIST,
+          name: RouterNames.TRAFFIC_INCIDENT_LIST,
           component: IncidentList
+        },
+        {
+          path: RouterPaths.TRAFFIC_INCIDENT_PATH,
+          name: RouterNames.TRAFFIC_INCIDENT_PATH,
+          component: TrafficIncident
         },
         {
           path: RouterPaths.TRAFFIC_DATA_PLAYBACK,

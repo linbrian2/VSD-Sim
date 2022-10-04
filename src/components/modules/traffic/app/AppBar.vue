@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header :title="title" :showDate="!isDashboard" :clipLeft="false" :clipRight="true" :actionItems="actionItems">
+    <Header :title="title" :showDate="!isDashboard" :clipLeft="true" :clipRight="true" :actionItems="actionItems">
       <div v-show="$vuetify.breakpoint.mdAndUp">
         <MenuButton
           :items="chart_menu_items"
@@ -71,7 +71,7 @@ export default {
     anomaly_menu_items: [
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT }
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST }
     ],
 
     prediction_menu_items: [{ title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT }],
@@ -84,7 +84,7 @@ export default {
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST },
       { divider: true },
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
       { divider: true },

@@ -48,7 +48,6 @@
 
 <script>
 import Api from '@/utils/api/traffic';
-import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import { RouterNames } from '@/utils/constants/router';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
@@ -120,7 +119,7 @@ export default {
   },
 
   created() {
-    this.$store.commit('SET_CURRENT_DATE', Utils.yesterday());
+    //this.$store.commit('SET_CURRENT_DATE', Utils.yesterday());
     this.$store.commit('traffic/SHOW_PANEL', true);
   },
 
@@ -234,7 +233,7 @@ export default {
     async fetchTrafficResponsiveData(zoneId, startDate, weights) {
       this.loading = true;
       try {
-        const response = await Api.fetchTrafficResponsiveData(zoneId, startDate, weights);
+        const response = await Api.fetchTrafficResponsiveData(zoneId, startDate, weights, false);
         const data = this.parseResponse(response, false);
         if (data != null) {
           this.chartData = this.composeData(zoneId, data);
@@ -268,7 +267,7 @@ export default {
     },
 
     composeData(zoneId, resData) {
-      const title = `Traffic Response Plot (${zoneId})`;
+      const title = `Traffic Responsive Plot (${zoneId})`;
       const xAxis = 'Time of day';
       const yAxis = 'V + O (%)';
 

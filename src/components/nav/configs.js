@@ -65,11 +65,11 @@ const protectedRoute = [
             }
           },
           {
-            path: RouterPaths.TRAFFIC_INCIDENT,
-            name: RouterNames.TRAFFIC_INCIDENT,
+            path: RouterPaths.TRAFFIC_INCIDENT_LIST,
+            name: RouterNames.TRAFFIC_INCIDENT_LIST,
             meta: {
-              title: RouterNames.TRAFFIC_INCIDENT,
-              icon: RouterIcons.TRAFFIC_INCIDENT
+              title: RouterNames.TRAFFIC_INCIDENT_LIST,
+              icon: RouterIcons.TRAFFIC_INCIDENT_LIST
             }
           },
           {

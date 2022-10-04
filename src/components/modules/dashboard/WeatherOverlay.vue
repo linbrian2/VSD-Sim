@@ -9,9 +9,9 @@
       </b>
       <template v-if="weather">
         <v-divider vertical class="mx-6" v-if="showCurrentTime" />
-        <v-img class="mt-1 weather-icon" width="30px" height="30px" :src="weatherIcon(weather.conditionCode)" />
+        <v-img class="mt-2 mr-1 weather-icon" width="24px" height="24px" :src="weatherIcon(weather.conditionCode)" />
         <!-- <v-divider class="pl-3" vertical /> -->
-        <v-icon v-if="weather.airTemp && showTemp" :color="`${color}`" class="pl-3">mdi-thermometer</v-icon>
+        <!-- <v-icon v-if="weather.airTemp && showTemp" :color="`${color}`" class="pl-3">mdi-thermometer</v-icon> -->
         <div v-if="weather.airTemp && showTemp" :style="`color: ${color};`" class="pt-2">
           {{ formatTemperature(weather.airTemp, true) }}<sup>°F</sup>
         </div>

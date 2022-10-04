@@ -282,7 +282,9 @@ export default {
       console.log(payload);
       this.cardClicked(payload);
     });
-    this.$store.commit('traffic/SHOW_PANEL', false);
+    setTimeout(() => {
+      this.$store.commit('traffic/SHOW_PANEL', false);
+    }, 50);
   },
   methods: {
     numFormatter(num) {

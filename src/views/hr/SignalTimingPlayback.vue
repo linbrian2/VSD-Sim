@@ -91,7 +91,6 @@ export default {
 
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'satellite']
-        //position: 11 //google.maps.ControlPosition.TOP_RIGHT
       }
     }
   }),

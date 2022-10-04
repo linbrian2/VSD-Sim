@@ -73,7 +73,7 @@ export default {
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY, icon: RouterIcons.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP, icon: RouterIcons.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT, icon: RouterIcons.TRAFFIC_INCIDENT },
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST, icon: RouterIcons.TRAFFIC_INCIDENT_LIST },
       { divider: true },
       { divider: true },
       {
