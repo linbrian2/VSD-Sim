@@ -36,7 +36,8 @@ export default {
           }
         };
       }
-      return this.makeChart(this.height, this.data);
+      let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
+      return this.makeChart(height, this.data);
     }
   },
 
@@ -118,8 +119,8 @@ export default {
           height: chartHeight,
           spacingTop: 30,
           spacingBottom: 20,
-          marginLeft,
-          marginRight: 40,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : null,
+          marginRight: this.$vuetify.breakpoint.mobile ? 20 : 40,
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#DEDEDE',

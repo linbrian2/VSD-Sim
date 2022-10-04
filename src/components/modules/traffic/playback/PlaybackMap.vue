@@ -161,7 +161,7 @@
               v-for="m in trafficIncidents"
               :key="m.id"
               :position="m.location"
-              :icon="m.id == selectedMarkerId ? cautionIconActive : cautionIcon"
+              :icon="getTrafficIncidentMarker(m)"
               :options="markerOptions(m.id, 99)"
               @click="handleMarkerClick(6, m.id)"
             />
@@ -201,7 +201,9 @@ export default {
     segments: Array,
     waze: Array,
     btDevices: Array,
-    trafficIncidents: Array
+    trafficIncidents: Array,
+    startTime: Number,
+    endTime: Number
   },
   data() {
     return {
@@ -286,6 +288,23 @@ export default {
     }
   },
   methods: {
+    getTrafficIncidentMarker(marker) {
+      if (marker.id == this.selectedMarkerId) {
+        if (this.trafficIncidents && this.startTime && this.endTime) {
+          if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
+            return this.alertAnimatedIconActive;
+          } else {
+            return this.alertIconActive;
+          }
+        }
+      } else {
+        if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
+          return this.alertAnimatedIcon;
+        } else {
+          return this.alertIcon;
+        }
+      }
+    },
     changeSelectedColor() {
       this.colorInterp = setInterval(() => {
         let timeVal = parseFloat((new Date().getTime() % 2000) / 1000).toFixed(2);

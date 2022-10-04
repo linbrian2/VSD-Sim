@@ -157,10 +157,8 @@
               :key="m.id"
               :position="m.position"
               :title="m.name"
-              :clickable="true"
               :icon="getHRIcons(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
-              @click="handleMarkerClick(7, m.id)"
             />
           </div>
 
@@ -171,10 +169,8 @@
               :key="m.id"
               :position="m.position"
               :title="m.name"
-              :clickable="true"
               :icon="getMarker2Icon(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
-              @click="handleMarkerClick(7, m.id)"
             />
           </div>
 
@@ -276,7 +272,7 @@ export default {
 
         mapTypeControlOptions: {
           mapTypeIds: ['roadmap', 'hybrid'],
-          position: 2
+          position: 6
         },
         styles: DarkMapStyle
       },

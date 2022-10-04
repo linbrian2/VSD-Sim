@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex justify-space-between align-center">
-    <v-btn small icon @click.stop="prevDate" class="mr-2 material-bubble" :disabled="disablePicker">
+    <v-btn small icon @click.stop="prevDate" class="mr-2 material-bubble hidden-xs-only" :disabled="disablePicker">
       <v-icon color="white">mdi-arrow-left-bold</v-icon>
     </v-btn>
     <v-menu
@@ -26,7 +26,7 @@
           :disabled="disablePicker"
         >
           <template v-slot:prepend>
-            <v-icon class="mt-0 mr-n2" color="grey lighten-1">mdi-calendar-month</v-icon>
+            <v-icon class="mt-0 mr-n2 hidden-xs-only" color="grey lighten-1">mdi-calendar-month</v-icon>
           </template>
         </v-text-field>
       </template>
@@ -37,7 +37,7 @@
       </v-date-picker>
     </v-menu>
 
-    <v-btn small icon @click.stop="nextDate" class="ml-2 material-bubble" :disabled="disablePicker">
+    <v-btn small icon @click.stop="nextDate" class="ml-2 material-bubble hidden-xs-only" :disabled="disablePicker">
       <v-icon color="white">mdi-arrow-right-bold</v-icon>
     </v-btn>
   </div>

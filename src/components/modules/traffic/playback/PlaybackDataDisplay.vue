@@ -230,6 +230,17 @@
     <div id="incidents" v-if="currentTitle == 'Traffic Incident'">
       <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
         <InfoCard
+          :icon="'mdi-note-outline'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Incident Id'"
+          :value="selectedIncident.id"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
           :icon="'mdi-vector-line'"
           :height="cardHeight"
           :colDisplay="singleCol"
@@ -310,7 +321,9 @@
           :flex="singleCol"
           :height="cardHeight"
           :name="'Reason'"
-          :value="selectedIncident.reason.split('.')[0] ? selectedIncident.reason.split('.')[0] : selectedIncident.reason"
+          :value="
+            selectedIncident.reason.split('.')[0] ? selectedIncident.reason.split('.')[0] : selectedIncident.reason
+          "
           :wide="true"
           :valueFontSize="singleCol ? 22 : 22"
         />

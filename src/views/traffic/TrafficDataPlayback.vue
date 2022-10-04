@@ -15,8 +15,10 @@
       :segments="currSegments"
       :waze="currWaze"
       :btDevices="currDevices"
-      :trafficIncidents="currIncidents"
+      :trafficIncidents="trafficIncidents"
       :mapLayers="mapLayers"
+      :startTime="startTime"
+      :endTime="endTime"
     />
 
     <PlaybackBar :date="currentDate" :loading="!dataIsAvailable" @processTime="processTime" :duration="duration" />

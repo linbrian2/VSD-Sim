@@ -17,7 +17,7 @@
       <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="onMapClick" />
     </SelectionPanel>
 
-    <TitleBar :title="title" :loading="loading" :refresh="refreshData" :showMap="false" />
+    <TitleBar :title="title" :loading="loading" :refresh="refreshData" :showMap="true" />
 
     <v-container fluid>
       <v-card tile class="mb-8" elevation="24" v-if="delayComplete">

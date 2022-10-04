@@ -1,8 +1,11 @@
 <template>
   <div>
     <div class="chart-title" v-if="title">{{ title }}</div>
-    <div class="my-0 mx-0">
+    <div class="my-0 mx-0" v-if="!$vuetify.breakpoint.mobile">
       <highcharts class="chart" :options="chartOptions" :callback="drawPlan" v-show="info != null"></highcharts>
+    </div>
+    <div class="my-0 mx-0" v-else>
+      <highcharts class="chart" :options="chartOptions" v-show="info != null"></highcharts>
     </div>
   </div>
 </template>
@@ -106,7 +109,7 @@ export default {
         },
         chart: {
           height: chartHeight,
-          marginTop: 120,
+          marginTop: this.$vuetify.breakpoint.mobile ? 40 : 120,
           marginLeft: 90,
           marginRight: 50,
           spacingTop: 5,

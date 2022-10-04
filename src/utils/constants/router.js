@@ -57,6 +57,7 @@ export const RouterPaths = {
   TRAVEL_TIME_DATA: '/flow/travel-time-data',
   TRAVEL_TIME_MAP: '/flow/travel-time-map',
   TRAFFIC_INCIDENT: '/flow/incidents',
+  TRAFFIC_INCIDENT_PATH: '/flow/incidents/:id',
   TRAFFIC_MITIGATION_PATH: '/flow/mitigation/:id',
   TRAFFIC_MITIGATION: '/flow/mitigation',
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',

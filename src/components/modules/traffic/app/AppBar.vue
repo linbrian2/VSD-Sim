@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header :title="title" :showDate="!isDashboard" :clipLeft="false" :clipRight="true" :actionItems="actionItems">
-      <div v-show="$vuetify.breakpoint.mdAndUp">
+    <Header :title="title" :showDate="!isDashboard" :clipLeft="true" :clipRight="true" :actionItems="actionItems">
+      <div class="hidden-md-and-down">
         <MenuButton
           :items="chart_menu_items"
           tooltip="Show Charts"
@@ -28,9 +28,9 @@
       </div>
 
       <!-- notification -->
-      <v-divider vertical class="ml-2" />
+      <v-divider vertical class="ml-2 hidden-xs-only" />
       <NotificationDropdown />
-      <v-divider vertical class="ml-2" />
+      <v-divider vertical class="ml-2 hidden-xs-only" />
     </Header>
     <FlowChartDialog v-model="showFlowChart" />
   </div>

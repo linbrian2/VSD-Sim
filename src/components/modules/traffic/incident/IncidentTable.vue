@@ -109,12 +109,23 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.$route.params.id) {
+      setTimeout(() => {
+        let id = parseInt(this.$route.params.id);
+        const item = this.incidents.find(m => m.id === id);
+        this.handleRowClick(item);
+      }, 3000);
+    }
+  },
+
   methods: {
     itemRowBackground(item) {
       return item.id == this.selectedRowId ? 'table_tr_selected' : 'table_tr_normal';
     },
 
     handleRowClick(item) {
+      console.log(item);
       this.selectedRowId = item.id;
       this.$emit('click', item);
     },

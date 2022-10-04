@@ -1,5 +1,5 @@
 <template>
-  <div class="hr">
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <v-navigation-drawer app clipped v-model="showPanel" :width="420">
       <v-select
         class="mx-2"
@@ -18,6 +18,26 @@
     <AppBar />
 
     <v-main>
+      <router-view></router-view>
+    </v-main>
+  </div>
+  <div class="mobile" v-else>
+    <v-select
+      class="mx-2 mt-10 pt-2"
+      dense
+      hide-details
+      single-line
+      :items="items"
+      :value="selectedItem"
+      @input="signalSelected"
+      label="signal"
+    />
+
+    <MapSelect @click="onMapClick" />
+
+    <AppBar />
+
+    <v-main class="pt-0">
       <router-view></router-view>
     </v-main>
   </div>

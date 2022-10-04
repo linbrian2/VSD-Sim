@@ -1,7 +1,7 @@
 export default Object.freeze({
   CHART_HEIGHT: 560,
 
-  DEVICE_TRAFFIC: 'Traffic Detectors',
+  DEVICE_TRAFFIC: 'Traffic Anomaly Detectors',
   DEVICE_BLUETOOTH: 'Bluetooth Sensors',
   DEVICE_WEATHER: 'Weather Stations',
   DEVICE_RESTRICTIONS: 'Travel Restrictions',

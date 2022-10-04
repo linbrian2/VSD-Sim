@@ -1,6 +1,13 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="12" map-type-id="roadmap" class="map-select">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="12"
+      map-type-id="roadmap"
+      :class="$vuetify.breakpoint.mobile ? 'map-select-mobile' : 'map-select-desktop'"
+    >
       <GmapMarker
         v-for="m in markers"
         :key="m.id"
@@ -265,10 +272,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.map-select {
-  width: 100%;
-  height: calc(100vh - 84px);
-}
 .gm-style div {
   -webkit-transform: scale(1.005);
 }

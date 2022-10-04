@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <TitleBar title="PCD Chart" :loading="loading" :refresh="refreshData">
       <v-row style="height:30px" align="center" class="mt-n2">
         <v-col cols="9">
@@ -36,6 +36,36 @@
     <v-container>
       <v-card class="mb-8" v-for="(pcd, index) in pcds" :key="baseIndex + index">
         <PcdChart :info="pcd.info" :title="pcd.title" :date="pcd.date" :phase="pcd.phase" :height="pcd.height" />
+      </v-card>
+    </v-container>
+  </div>
+  <div class="mobile" v-else>
+    <TitleBar title="PCD Chart" :loading="loading" :showRefresh="false" :refresh="refreshData">
+      <div class="d-flex align-items justify-center align-center">
+        <div class="d-flex justify-space-between" :class="$vuetify.breakpoint.xs ? 'mt-1' : ''">
+          <div class="mt-1" style="width:210px;">
+            <v-combobox
+              flat
+              dense
+              small-chips
+              hide-details
+              multiple
+              single-line
+              label="Phases:"
+              :items="phases"
+              v-model="select"
+            >
+              <template v-slot:prepend>
+                <v-icon class="mt-n1" color="white">mdi-road</v-icon>
+              </template>
+            </v-combobox>
+          </div>
+        </div>
+      </div>
+    </TitleBar>
+    <v-container>
+      <v-card class="mb-8" v-for="(pcd, index) in pcds" :key="baseIndex + index">
+        <PcdChart :info="pcd.info" :title="pcd.title" :date="pcd.date" :phase="pcd.phase" :height="300" />
       </v-card>
     </v-container>
   </div>
