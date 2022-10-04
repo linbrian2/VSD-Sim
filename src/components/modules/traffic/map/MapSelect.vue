@@ -29,6 +29,8 @@ import OutlierRemoval from '@/utils/OutlierRemoval.js';
 
 export default {
   props: ['markers', 'icons'],
+
+  // https://github.com/xkjyeah/vue-google-maps/issues/94
   data: () => ({
     mapMarker: {
       url: require('@/assets/green-icon-48.png'),
@@ -51,28 +53,22 @@ export default {
     options: {
       mapTypeControl: true,
       mapTypeControlOptions: {
-        mapTypeIds: ['roadmap', 'satellite'],
-        position: google.maps.ControlPosition.TOP_CENTER
+        mapTypeIds: ['roadmap', 'satellite']
       },
 
       streetViewControl: false,
-
       fullscreenControl: true,
-      fullscreenControlOptions: {
-        position: google.maps.ControlPosition.LEFT_TOP
-      },
-
-      zoomControl: true,
-      zoomControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_CENTER
-      }
+      zoomControl: true
     }
   }),
+
   computed: {
     position() {
       return this.$store.state.position;
     }
+    //google: gmapApi
   },
+
   watch: {
     position() {
       this.$refs.mapRef.$mapPromise.then(map => {
@@ -86,7 +82,8 @@ export default {
       });
     }
   },
-  mounted() {
+
+  async mounted() {
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$bus.$on('NAME_SELECTED', name => {
@@ -125,6 +122,7 @@ export default {
 
     this.addMapControls();
   },
+
   methods: {
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
@@ -147,8 +145,21 @@ export default {
 
     addMapControls() {
       this.$refs.mapRef.$mapPromise.then(map => {
+        this.setMapIconLocations(map);
         this.addHomeControl(map);
         this.addPointControl(map);
+      });
+    },
+
+    setMapIconLocations(map) {
+      map.setOptions({
+        // fullscreenControlOptions: {
+        //   position: google.maps.ControlPosition.LEFT_TOP
+        // },
+
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_CENTER
+        }
       });
     },
 
@@ -236,7 +247,15 @@ export default {
 
     getMarkerIcon(key) {
       if (this.selectedMarkerIds.length > 0) {
-        return this.selectedMarkerIds.includes(key) ? this.getActiveIcon() : this.getNormalIcon();
+        if (this.selectedMarkerIds.includes(key)) {
+          if (this.selectedMarkerId === key) {
+            return this.getSelectedIcon();
+          } else {
+            return this.getActiveIcon();
+          }
+        } else {
+          return this.getNormalIcon();
+        }
       }
       return this.selectedMarkerId === key ? this.getActiveIcon() : this.getNormalIcon();
     },
@@ -249,6 +268,10 @@ export default {
       return this.icons ? this.icons[1] : this.mapMarkerActive;
     },
 
+    getSelectedIcon() {
+      return this.icons ? this.icons[this.icons.length - 1] : this.mapMarkerActive;
+    },
+
     markerClicked(marker) {
       this.selectedMarkerIds = [];
       this.selectedMarkerId = marker.id;
@@ -256,11 +279,15 @@ export default {
       this.$emit('click', marker);
     },
 
-    selectByIds(ids) {
+    selectById(id) {
+      this.selectedMarkerId = id;
+    },
+
+    selectByIds(ids, centered = true) {
       this.selectedMarkerIds = [];
       Object.assign(this.selectedMarkerIds, ids);
 
-      if (ids.length > 0) {
+      if (ids.length > 0 && centered) {
         let id = ids[Math.floor(ids.length / 2)];
         let marker = this.markers.find(m => m.id == id);
         if (marker != null) {

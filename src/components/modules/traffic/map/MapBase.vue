@@ -1,6 +1,6 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" :class="mapClass">
+    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" class="map-select">
       <slot></slot>
     </GmapMap>
   </div>
@@ -25,20 +25,10 @@ export default {
       mapTypeControl: true,
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'satellite']
-        // position: google.maps.ControlPosition.TOP_CENTER
       },
-
       streetViewControl: false,
       zoomControl: true,
-      zoomControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_CENTER
-      },
-
       fullscreenControl: true,
-      // fullscreenControlOptions: {
-      //   position: google.maps.ControlPosition.TOP_CENTER
-      // },
-
       styles: DarkMapStyle
     }
   }),
@@ -67,10 +57,13 @@ export default {
 
     this.$refs.mapRef.$mapPromise.then(map => {
       this.map = map;
+      this.setMapIconLocations(map);
+      this.addHomeControl(map);
+      this.addPointControl(map);
       this.$emit('map-ready', map);
     });
 
-    this.addMapControls();
+    //this.addMapControls();
   },
 
   methods: {
@@ -97,6 +90,22 @@ export default {
       this.$refs.mapRef.$mapPromise.then(map => {
         this.addHomeControl(map);
         this.addPointControl(map);
+      });
+    },
+
+    setMapIconLocations(map) {
+      map.setOptions({
+        // mapTypeControlOptions: {
+        //   position: google.maps.ControlPosition.TOP_CENTER
+        // },
+
+        // fullscreenControlOptions: {
+        //   position: google.maps.ControlPosition.TOP_CENTER
+        // },
+
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_CENTER
+        }
       });
     },
 

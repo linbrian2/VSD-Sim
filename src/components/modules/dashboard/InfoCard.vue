@@ -3,15 +3,15 @@
     <v-row v-if="colDisplay" class="mx-3">
       <v-col :cols="navigationWidth < 420 ? 12 : 5">
         <div style="display: flex;">
-          <v-icon v-if="!hideIcons" class="pr-1" :color="iconColor" :size="40">{{ icon }}</v-icon>
-          <h1 v-if="!(navigationWidth < 420)" :style="`color: ${titleColor}`">{{ name }}</h1>
-          <h1 v-else class="pl-2" :style="`color: ${color !== 'undefined' ? color : valueColor};`">
+          <v-icon v-if="!hideIcons" class="pr-1" :color="iconColor" :size="30">{{ icon }}</v-icon>
+          <h3 v-if="!(navigationWidth < 420)" :style="`color: ${titleColor}`">{{ name }}</h3>
+          <h3 v-else class="pl-2" :style="`color: ${color !== 'undefined' ? color : valueColor};`">
             <b>{{ value }}</b>
-          </h1>
+          </h3>
         </div>
       </v-col>
       <v-col cols="7" v-if="!(navigationWidth < 420)">
-        <h1 :style="`color: ${color !== 'undefined' ? color : valueColor};`">
+        <h3 :style="`color: ${color !== 'undefined' ? color : valueColor};`">
           <div v-if="name == 'Evidence Counts' && value">
             <v-badge
               class="mr-8"
@@ -32,7 +32,7 @@
               mdi-link
             </v-icon>
           </div>
-        </h1>
+        </h3>
       </v-col>
     </v-row>
     <v-col v-else>
@@ -42,8 +42,8 @@
         </v-col>
         <v-col :lg="wide ? 9 : 8" class="grid-left">
           <h3 :style="`color: ${color}; font-size:${titleFontSize}px`">{{ name }}</h3>
-          <h1 :style="`color: ${color !== 'undefined' ? color : valueColor}; font-size:${valueFontSize}px`">
-            <h1 :style="`color: ${color !== 'undefined' ? color : valueColor};`">
+          <h3 :style="`color: ${color !== 'undefined' ? color : valueColor}; font-size:${valueFontSize}px`">
+            <h3 :style="`color: ${color !== 'undefined' ? color : valueColor};`">
               <div v-if="name == 'Evidence Counts' && value">
                 <v-badge
                   class="mr-8"
@@ -61,15 +61,15 @@
               <div v-else>
                 <b>{{ value }}</b>
               </div>
-            </h1>
-          </h1>
+            </h3>
+          </h3>
         </v-col>
       </v-row>
       <v-row v-if="flex">
         <div style="display: flex">
           <v-icon v-if="!hideIcons" class="pl-8 pr-3" :color="iconColor" :size="iconSize">{{ icon }}</v-icon>
           <h3 class="pt-3 pr-3" :style="`color: ${titleColor}; font-size:${titleFontSize}px`">{{ name }}:</h3>
-          <h1 :style="`color: ${color !== 'undefined' ? color : valueColor}; font-size:${valueFontSize}px`">
+          <h3 :style="`color: ${color !== 'undefined' ? color : valueColor}; font-size:${valueFontSize}px`">
             <div v-if="name == 'Evidence Counts'">
               <v-badge
                 class="mr-8"
@@ -87,7 +87,7 @@
             <div v-else>
               <b>{{ value }}</b>
             </div>
-          </h1>
+          </h3>
         </div>
       </v-row>
     </v-col>

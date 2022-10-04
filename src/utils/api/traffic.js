@@ -238,6 +238,10 @@ export default {
     return AxiosClient.post('travelTime/travelTimeSegments', { route, direction });
   },
 
+  fetchIncident(id, video, path) {
+    return AxiosClient.post('api/incident', { id, video, path });
+  },
+
   fetchIncidentData(start, type, severity, duration) {
     const video = true;
     return AxiosClient.post('api/incidents', { start, type, video, severity, duration });
@@ -289,7 +293,31 @@ export default {
     return AxiosClient.post('solution/rampVolumes', params);
   },
 
-  fetchTrafficResponsiveData(zoneId, startDate) {
-    return AxiosClient.post('api/trafficResponsiveData', { zoneId, startDate });
+  fetchTrafficResponsiveData(zoneId, startDate, weights, zoneDetectors) {
+    if (weights) {
+      return AxiosClient.post('api/trafficResponsiveData', { zoneId, startDate, weights, zoneDetectors });
+    } else {
+      return AxiosClient.post('api/trafficResponsiveData', { zoneId, startDate, zoneDetectors });
+    }
+  },
+
+  fetchZoneDetectors(zoneId) {
+    return AxiosClient.get('api/zoneDetectorList', { params: { zoneId } });
+  },
+
+  fetchZoneDetectorWeights(zoneId) {
+    return AxiosClient.get('api/zoneDetectorWeights', { params: { zoneId } });
+  },
+
+  updateZoneDetectorWeights(weights) {
+    return AxiosClient.post('api/updateZoneDetectorWeights', { weights });
+  },
+
+  trafficSignalDevices() {
+    return AxiosClient.get('api/trafficSignalDevices');
+  },
+
+  getSignalCycleSplit(permit) {
+    return AxiosClient.get('api/getSignalCycleSplit', { params: { permit } });
   }
 };

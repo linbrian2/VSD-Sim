@@ -46,7 +46,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <div class="mx-4">
+        <div class="mx-1">
           <TrafficFlowData
             :infoList="flowInfoList"
             :devices="flowDevices"
@@ -66,7 +66,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <div class="mx-4">
+        <div class="mx-1">
           <TravelTimeData
             :infoList="travelTimeInfoList"
             :segments="travelTimeSegments"
@@ -118,7 +118,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <div class="mx-4">
+        <div class="mx-1">
           <IncidentVideoList
             :items="videos"
             :cameras="videoCameras"
@@ -184,7 +184,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <div class="mx-4">
+        <div class="mx-1">
           <WeatherInfo :weather="weatherInfo" />
         </div>
       </v-col>
@@ -822,7 +822,7 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   max-height: 600px;
-  margin: 8px 10px;
+  margin: 8px 4px;
 }
 
 .score-value {

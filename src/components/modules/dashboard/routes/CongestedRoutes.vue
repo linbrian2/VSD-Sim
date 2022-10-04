@@ -11,7 +11,7 @@
       :item-class="itemRowBackground"
       hide-default-footer
       @click:row="handleRowClick"
-      class="elevation-1"
+      class="elevation-1 mx-2"
     >
       <template v-slot:[`item.level`]="{ item }">
         <v-chip small :color="getStrokeColor(item.level)">
@@ -22,7 +22,7 @@
         {{ item.lastUpdated.split(' ')[1].slice(0, 5) }}
       </template>
     </v-data-table>
-    <v-row class="mt-3 ml-1 mr-7" v-if="currSegment">
+    <v-row class="mt-3 mx-1" v-if="currSegment">
       <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-vector-line'"

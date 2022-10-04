@@ -50,7 +50,6 @@ export default {
 
   methods: {
     changeApp(appURL) {
-      console.log(appURL);
       if (appURL != this.$route.path) {
         this.$router.push({ path: appURL }).catch(() => {});
       }

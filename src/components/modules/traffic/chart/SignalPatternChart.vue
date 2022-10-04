@@ -32,7 +32,6 @@ export default {
     return {
       reload: false,
       signalPatterns: [],
-      bands: [],
       customObjects: []
     };
   },
@@ -88,45 +87,17 @@ export default {
           const x0 = chart.xAxis[0].toPixels(p0[0]);
           const x1 = chart.xAxis[0].toPixels(p1[0]);
 
-          if (Math.abs(x1 - x0) > 30) {
-            const x = Math.floor((x0 + x1) / 2) - 20;
-            const y = chart.yAxis[1].toPixels(p0[1]) - 5;
+          if (Math.abs(x1 - x0) > 20) {
+            const x = Math.floor((x0 + x1) / 2) - 25;
+            const y = chart.yAxis[0].toPixels(p0[1]) - 5;
             const text = `${p0[3]} - ${p0[1]} ${p0[2]}`;
 
             const t = chart.renderer
               .text(text, x, y)
               .attr({ zIndex: 20 })
-              .css({ color: '#aaa', opacity: 1.0, fontSize: '13px', fontWeight: 'bold' })
+              .css({ color: '#fff', opacity: 1.0, fontSize: '13px', fontWeight: 'bold' })
               .add();
             this.customObjects.push(t);
-          }
-        }
-      }
-
-      if (this.bands) {
-        const xx = chart.xAxis[0].toPixels(this.signalPatterns[0][0]) + 15;
-        const n = this.bands.length;
-        for (let i = 0; i < n; i++) {
-          const y0 = chart.yAxis[0].toPixels(this.bands[i].from) - 3;
-          const y1 = chart.yAxis[0].toPixels(this.bands[i].to) + 10;
-
-          if (Math.abs(y1 - y0) > 5) {
-            const text0 = this.bands[i].from + '';
-            const text1 = this.bands[i].to + '';
-
-            const t0 = chart.renderer
-              .text(text0, xx, y0)
-              .attr({ zIndex: 20 })
-              .css({ color: '#fff', opacity: 1.0, fontSize: '10px', fontWeight: 'bold' })
-              .add();
-            this.customObjects.push(t0);
-
-            const t1 = chart.renderer
-              .text(text1, xx, y1)
-              .attr({ zIndex: 20 })
-              .css({ color: '#fff', opacity: 1.0, fontSize: '10px', fontWeight: 'bold' })
-              .add();
-            this.customObjects.push(t1);
           }
         }
       }
@@ -147,27 +118,20 @@ export default {
             });
           }
         });
-
-        if (this.signalPatterns) {
-          series[2]['yAxis'] = 1;
-        }
       }
       return series;
     },
 
     makeChart(chartHeight, data, redrawFunc) {
       this.signalPatterns = data.patterns;
-      this.bands = data.bands;
 
       // Add data to series
       let series = data.series ? data.series : this.prepareSeries(data.data);
       let title = data.title || '';
       let subtitle = data.subtitle || null;
       let xAxis = data.xAxis;
-      // let yAxis = data.yAxis;
       let ly = this.legendy || 45;
       let exporting = this.exporting === undefined ? false : this.exporting;
-      let marginLeft = this.left;
 
       let plotLines =
         data.timeSlots &&
@@ -190,8 +154,8 @@ export default {
           height: chartHeight,
           spacingTop: 30,
           spacingBottom: 20,
-          marginLeft,
-          marginRight: 40,
+          marginLeft: 80,
+          marginRight: 30,
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#DEDEDE',
@@ -227,58 +191,31 @@ export default {
           plotLines: plotLines,
           plotBands: plotBands
         },
-        yAxis: [
-          {
-            // left y axis
-            title: {
-              text: 'V + O (%)',
-              style: {
-                fontSize: 13,
-                fontWeight: 'bold'
-              },
-              x: -10
+        yAxis: {
+          title: {
+            text: 'Cycle Length (seconds)',
+            style: {
+              fontSize: 13,
+              fontWeight: 'bold'
             },
-            labels: {
-              align: 'left',
-              // x: 3,
-              // y: 16,
-              format: '{value:.,0f}'
-            },
-            // min: 0,
-            // max: 80,
-            maxPadding: 0.2,
-            plotBands: plotBands,
-            showFirstLabel: false,
-            allowDecimals: false
+            x: 0
           },
-          {
-            opposite: true,
-            title: {
-              text: 'Cycle Length (seconds)',
-              style: {
-                fontSize: 13,
-                fontWeight: 'bold'
-              }
-            },
-            labels: {
-              align: 'right',
-              x: -3,
-              y: 16,
-              format: '{value:.,0f}'
-            },
-            // min: 90,
-            // max: 180,
-            maxPadding: 0.2,
-            showFirstLabel: false,
-            allowDecimals: false
-          }
-        ],
+          labels: {
+            format: '{value:.,0f}'
+          },
+          // min: 0,
+          // max: 80,
+          maxPadding: 0.2,
+          plotBands: plotBands,
+          showFirstLabel: false,
+          allowDecimals: false
+        },
         tooltip: {
           shared: true,
           crosshairs: true
         },
         legend: {
-          enabled: series.length > 0,
+          enabled: series.length > 1,
           floating: true,
           verticalAlign: 'top',
           align: 'left',

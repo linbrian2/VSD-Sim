@@ -59,7 +59,9 @@ export default {
     chart_menu_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
+      { title: RouterNames.TRAFFIC_SIGNALS, url: RouterPaths.TRAFFIC_SIGNALS },
       { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
+
       { divider: true },
       { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
       { divider: true },
@@ -69,7 +71,7 @@ export default {
     anomaly_menu_items: [
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT }
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST }
     ],
 
     prediction_menu_items: [{ title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT }],
@@ -77,11 +79,12 @@ export default {
     action_main_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
+      { title: RouterNames.TRAFFIC_SIGNALS, url: RouterPaths.TRAFFIC_SIGNALS },
       { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
       { divider: true },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST },
       { divider: true },
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
       { divider: true },

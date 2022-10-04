@@ -25,8 +25,13 @@
           <v-list>
             <template v-for="(item, index) in dash_menu_items">
               <v-divider v-if="item.divider" :key="index"></v-divider>
-              <v-list-item v-else :key="index" @click="dataMenuItemClicked(item.url)">
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item v-else :key="index + 100" @click="dataMenuItemClicked(item.url)">
+                <v-list-item-icon>
+                  <v-icon v-text="item.icon" />
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
             </template>
           </v-list>
@@ -40,7 +45,7 @@
 </template>
 
 <script>
-import { RouterNames, RouterPaths } from '@/utils/constants/router';
+import { RouterNames, RouterPaths, RouterIcons } from '@/utils/constants/router';
 import AppConstants from '@/utils/constants/app';
 import Header from '@/components/common/Header';
 import NotificationDropdown from '@/components/common/NotificationDropdown';
@@ -53,15 +58,35 @@ export default {
 
   data: () => ({
     dash_menu_items: [
-      { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
+      {
+        title: RouterNames.TRAFFIC_MULTIGRAPH,
+        url: RouterPaths.TRAFFIC_MULTIGRAPH,
+        icon: RouterIcons.TRAFFIC_MULTIGRAPH
+      },
       { divider: true },
-      { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
+      { title: RouterNames.TRAFFIC_SIGNALS, url: RouterPaths.TRAFFIC_SIGNALS, icon: RouterIcons.TRAFFIC_SIGNALS },
+      {
+        title: RouterNames.TRAFFIC_RESPONSIVE_DATA,
+        url: RouterPaths.TRAFFIC_RESPONSIVE_DATA,
+        icon: RouterIcons.TRAFFIC_RESPONSIVE_DATA
+      },
       { divider: true },
-      { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
-      { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT, url: RouterPaths.TRAFFIC_INCIDENT },
+      { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY, icon: RouterIcons.TRAFFIC_ANOMALY },
+      { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP, icon: RouterIcons.TRAVEL_TIME_MAP },
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST, icon: RouterIcons.TRAFFIC_INCIDENT_LIST },
       { divider: true },
-      { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT }
+      { divider: true },
+      {
+        title: RouterNames.TRAFFIC_DATA_PLAYBACK,
+        url: RouterPaths.TRAFFIC_DATA_PLAYBACK,
+        icon: RouterIcons.TRAFFIC_DATA_PLAYBACK
+      },
+      { divider: true },
+      {
+        title: RouterNames.STATUS_QUALITY_MAP,
+        url: RouterPaths.STATUS_QUALITY_MAP,
+        icon: RouterIcons.STATUS_QUALITY_MAP
+      }
     ],
     isDashboard: true,
     title: AppConstants.DASHBOARD_APP_TITLE,

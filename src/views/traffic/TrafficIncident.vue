@@ -1,215 +1,169 @@
 <template>
-  <div v-if="!reload">
-    <v-card tile class="mb-2 mx-2" v-show="showIncidentTable">
-      <IncidentTable :incidents="$store.state.dashboard.trafficIncidents" @click="handleRowClick" />
-    </v-card>
-    <v-row class="mt-3 mx-1" v-if="incidentItem">
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-vector-line'"
-          :height="cardHeight"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :valueFontSize="singleCol ? undefined : 28"
-          :name="'Route'"
-          :value="incidentItem.route"
+  <div>
+    <TitleBar :showMap="false" :showRefresh="false" :title="title" :loading="loading" :refresh="refreshData" />
+
+    <v-container>
+      <v-card tile class="mx-3">
+        <MapSegment
+          ref="mapSegmentRef"
+          :segments="segmentLinks"
+          :markers="markers"
+          @select="onSegmentSelected"
+          @click="onMarkerClicked"
         />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-clock-outline'"
-          :height="cardHeight"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :valueFontSize="singleCol ? undefined : 28"
-          :name="'Start Time'"
-          :value="getTimeStr(incidentItem.startTime)"
-        />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-clock-outline'"
-          :height="cardHeight"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :valueFontSize="singleCol ? undefined : 28"
-          :name="'End Time'"
-          :value="getTimeStr(incidentItem.endTime)"
-        />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-timer-outline'"
-          :height="cardHeight"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :valueFontSize="singleCol ? undefined : 28"
-          :name="'Duration'"
-          :value="getDurStr(incidentItem.duration * 60)"
-        />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-note-outline'"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :height="cardHeight"
-          :name="'Severity'"
-          :value="incidentItem.severity"
-          :valueColor="incidentItem.severityColor"
-        />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-note-outline'"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :height="cardHeight"
-          :name="'Evidence Counts'"
-          :value="incidentItem.evidenceCounts"
-        />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-alert-circle-outline'"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :height="cardHeight"
-          :name="'Type'"
-          :value="incidentItem.type"
-        />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-note-outline'"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :height="cardHeight"
-          :name="'Reason'"
-          :value="incidentItem.reason.split('.')[0] ? incidentItem.reason.split('.')[0] : incidentItem.reason"
-          :wide="true"
-          :valueFontSize="singleCol ? 22 : 22"
-        />
-      </v-col>
-    </v-row>
+      </v-card>
+
+      <div v-if="incidentItem">
+        <EvidenceListDisplay :incident="incidentItem" @select="singleSegmentSelected" ref="anomalySegmentDisplay" />
+      </div>
+    </v-container>
   </div>
 </template>
 
 <script>
-import InfoCard from '@/components/modules/dashboard/InfoCard';
+import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
-import { mapState } from 'vuex';
-import IncidentTable from '@/components/modules/dashboard/incidents/IncidentTable';
+import { mapState, mapActions } from 'vuex';
+import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import MapSegment from '@/components/modules/traffic/incident/MapSegment';
+import EvidenceListDisplay from '@/components/modules/traffic/incident/EvidenceListDisplay';
 
 export default {
-  props: {
-    maxItems: Number,
-    infoColumnCount: Number
-  },
   components: {
-    InfoCard,
-    IncidentTable
+    TitleBar,
+    MapSegment,
+    EvidenceListDisplay
   },
 
   data: () => ({
-    reload: false,
     width: 600,
     loading: false,
-    showIncidentTable: true,
-
     segments: [],
-
-    incidentItem: null
+    markers: [],
+    segmentLinks: [],
+    incidentItem: null,
+    incidentId: -1
   }),
 
   computed: {
-    singleCol() {
-      return this.infoColumnCount == 1;
-    },
-    cardHeight() {
-      return this.singleCol ? '11vh' : undefined;
-    },
-    startTimestamp() {
-      return Utils.getStartOfDay(this.currentDate).getTime();
+    title() {
+      return `TRAFFIC INCIDENT - ${this.incidentId}`;
     },
 
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['anomalyDevices', 'weatherStations', 'bluetoothSegments', 'incidentSettings', 'showPanel'])
+    ...mapState('traffic', ['weatherStations', 'bluetoothSegments', 'incidentSettings', 'showPanel'])
+  },
+
+  created() {
+    this.$store.commit('traffic/SHOW_PANEL', true);
+  },
+
+  async mounted() {
+    if (this.bluetoothSegments.length === 0) {
+      await this.fetchBluetoothSegments();
+    }
+
+    const id = this.$route.params.id;
+    if (id && Utils.isPositiveInteger(id)) {
+      this.incidentId = parseInt(id);
+      await this.fetchIncident(this.incidentId);
+    }
   },
 
   methods: {
-    getDurStr(dur) {
-      return Utils.durationToTimeStr(dur);
-    },
-    getEvidenceIcon(name) {
-      const ICONS = {
-        flow: Constants.DEVICE_TRAFFIC_ICON,
-        bluetooth: Constants.DEVICE_BLUETOOTH_ICON,
-        waze: Constants.DEVICE_WAZE_ICON,
-        restriction: Constants.DEVICE_RESTRICTIONS_ICON,
-        weather: Constants.DEVICE_WEATHER_ICON,
-        alert: Constants.DEVICE_ALERT_ICON
-      };
-      return ICONS[name];
-    },
-
-    getEvidenceColor(name) {
-      const ICONS = {
-        flow: 'purple',
-        bluetooth: 'blue darken-4',
-        waze: 'cyan accent-4',
-        restriction: 'orange',
-        weather: 'grey',
-        alert: 'red'
-      };
-      return ICONS[name];
-    },
-
-    getTimeStr(ts) {
-      let time = new Date(ts);
-      return `${Utils.formatTimeAsMinute(time)}`;
-    },
-    getTime(ts) {
-      if (ts) {
-        let date = new Date(ts);
-        return Utils.formatTimeAsMinute(date);
-      } else {
-        return '-';
+    onSegmentSelected(segmentId) {
+      if (this.$refs.anomalySegmentDisplay) {
+        this.$refs.anomalySegmentDisplay.selectSegment(segmentId);
       }
     },
-    getStrokeColor(level) {
-      return Utils.getStrokeColor(level);
+
+    onMarkerClicked(marker) {
+      const type = marker.type;
+      if (type) {
+        const item = marker.item;
+        this.gotoSection(`#${type}`);
+        if (this.$refs.anomalySegmentDisplay) {
+          this.$refs.anomalySegmentDisplay.selectEvidenceItem(type, item);
+          if (type == 'waze') {
+            this.$refs.anomalySegmentDisplay.selectWazeAlert(marker.id);
+          }
+        }
+      }
     },
 
-    handleRowClick(item) {
-      console.log(item);
-      this.incidentItem = Object.assign({}, item);
+    singleSegmentSelected(linkId) {
+      if (this.$refs.mapSegmentRef) {
+        this.$refs.mapSegmentRef.selectLink(linkId);
+      }
+    },
+
+    setIncidentContent() {
       if (this.$refs.anomalySegmentDisplay) {
-        this.$refs.anomalySegmentDisplay.init(item);
+        this.$refs.anomalySegmentDisplay.init(this.incidentItem);
       }
 
       // Compose segment
       const segments = [];
-      item.segments.forEach(linkId => {
+      this.incidentItem.segments.forEach(linkId => {
         const segment = this.bluetoothSegments.find(bs => bs.id === linkId);
         if (segment) {
           segments.push(segment);
         }
       });
+
       if (segments.length > 0) {
-        this.$store.state.dashboard.incidentMarkers = this.createMarkers(this.incidentItem);
-        this.$store.state.dashboard.incidentSegmentLinks = segments;
+        this.markers = this.createMarkers(this.incidentItem);
+        this.segmentLinks = segments;
         setTimeout(() => {
           this.updateMap(segments);
         }, 50);
       }
     },
 
+    gotoSection(target) {
+      this.$vuetify.goTo(target);
+    },
+
     updateMap(segments) {
       if (this.$refs.mapSegmentRef) {
         this.$refs.mapSegmentRef.centerMapAndZoom(segments, true);
       }
+    },
+
+    refreshData() {
+      if (this.incidentId > 0) {
+        this.fetchIncident(this.incidentId);
+      }
+    },
+
+    async fetchIncident(id) {
+      this.loading = true;
+      try {
+        const response = await Api.fetchIncident(id, true, true);
+        const data = this.getResponseData(response);
+        this.incidentItem = data;
+        console.log('incident', data);
+        this.setIncidentContent();
+      } catch (error) {
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+      }
+      this.loading = false;
+    },
+
+    getResponseData(response) {
+      let result = null;
+      if (response.data.status === 'OK') {
+        if (response.data.data !== undefined) {
+          let data = response.data.data;
+          if (Object.keys(data).length > 0) {
+            result = data;
+          }
+        }
+      } else {
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
+      }
+      return result;
     },
 
     createMarkers(incident) {
@@ -348,7 +302,9 @@ export default {
       }
 
       return markers;
-    }
+    },
+
+    ...mapActions('traffic', ['fetchAnomalyDevices', 'fetchBluetoothSegments'])
   }
 };
 </script>

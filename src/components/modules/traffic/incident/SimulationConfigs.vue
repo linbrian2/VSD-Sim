@@ -322,11 +322,6 @@ export default {
           position: 7
         },
 
-        // fullscreenControl: true,
-        // // fullscreenControlOptions: {
-        // //   position: google.maps.ControlPosition.TOP_CENTER
-        // // },
-
         styles: DarkMapStyle
       }
     };

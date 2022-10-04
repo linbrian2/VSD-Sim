@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Left map panel -->
-    <SelectionPanel name="zoneBarWidth">
+    <SelectionPanel name="responsiveZoneBarWidth">
       <v-combobox
         class="mx-2"
         dense
@@ -11,15 +11,34 @@
         item-value="value"
         :items="zoneItems"
         :value="valueSelected"
-        @input="valueSelectHandler"
+        @input="zoneSelectionHandler"
         label="CHOOSE A ZONE TO SHOW"
       />
       <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="onMapClick" />
     </SelectionPanel>
 
-    <TitleBar :title="title" :loading="loading" :refresh="refreshData" :showMap="true" />
+    <TitleBar :title="title" :loading="loading" :refresh="refreshData" :showMap="true">
+      <div class="d-flex justify-end">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn class="mt-1" icon v-on="on" @click.stop="showSettings = !showSettings">
+              <v-icon medium color="white">mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+          <span>Adjust Weights</span>
+        </v-tooltip>
+      </div>
+    </TitleBar>
 
     <v-container fluid>
+      <div class="mb-3">
+        <WeightEditor
+          v-show="showSettings"
+          :items="zoneWeights"
+          @update-weights="onUpdateWeights"
+          @save-weights="onSaveWeights"
+        />
+      </div>
       <v-card tile class="mb-8" elevation="24" v-if="delayComplete">
         <TrafficResponsiveChart :data="chartData" :height="defaultHeight" />
       </v-card>
@@ -29,12 +48,12 @@
 
 <script>
 import Api from '@/utils/api/traffic';
-import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import { RouterNames } from '@/utils/constants/router';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapSelect from '@/components/modules/traffic/map/MapSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import WeightEditor from '@/components/modules/traffic/common/WeightEditor.vue';
 import TrafficResponsiveChart from '@/components/modules/traffic/chart/TrafficResponsiveChart';
 
 export default {
@@ -42,6 +61,7 @@ export default {
     SelectionPanel,
     MapSelect,
     TitleBar,
+    WeightEditor,
     TrafficResponsiveChart
   },
 
@@ -50,10 +70,12 @@ export default {
     loading: false,
     defaultHeight: 650,
     title: RouterNames.TRAFFIC_RESPONSIVE_DATA,
+    showSettings: false,
     chartData: {},
     currentZoneId: null,
     valueSelected: null,
     zoneList: null,
+    zoneWeights: {},
     icons: [
       {
         path: 0,
@@ -97,7 +119,8 @@ export default {
   },
 
   created() {
-    this.$store.commit('SET_CURRENT_DATE', Utils.yesterday());
+    //this.$store.commit('SET_CURRENT_DATE', Utils.yesterday());
+    this.$store.commit('traffic/SHOW_PANEL', true);
   },
 
   mounted() {
@@ -128,12 +151,15 @@ export default {
       this.currentZoneId = zoneId;
       this.valueSelected = this.zoneItems.find(item => item.value == zoneId).text;
       this.selectDetectorsByZoneId(zoneId);
+      this.fetchZoneWeights(zoneId);
       this.fetchData(zoneId);
     },
 
-    valueSelectHandler(value) {
+    zoneSelectionHandler(value) {
       const zoneId = value.value;
+      this.currentZoneId = zoneId;
       this.selectDetectorsByZoneId(zoneId);
+      this.fetchZoneWeights(zoneId);
       this.fetchData(zoneId);
     },
 
@@ -150,7 +176,21 @@ export default {
 
     fetchData(zoneId) {
       let start = this.currentDate.getTime();
-      this.fetchTrafficResponsiveData(zoneId, start);
+      this.fetchTrafficResponsiveData(zoneId, start, null);
+    },
+
+    onUpdateWeights(weights) {
+      if (this.currentZoneId) {
+        const start = this.currentDate.getTime();
+        const cutsomWeights = JSON.stringify(weights);
+        this.fetchTrafficResponsiveData(this.currentZoneId, start, cutsomWeights);
+      }
+    },
+
+    onSaveWeights(weights) {
+      if (this.updateZoneWeights(weights)) {
+        this.$store.dispatch('setSystemStatus', { text: 'Weights updated', color: 'rgba(0,255,0,0.3)', timeout: 1500 });
+      }
     },
 
     async fetchZoneList() {
@@ -162,15 +202,44 @@ export default {
       }
     },
 
-    async fetchTrafficResponsiveData(zoneId, startDate) {
+    async fetchZoneWeights(zoneId) {
+      try {
+        const response = await Api.fetchZoneDetectorWeights(zoneId);
+        const data = this.parseResponse(response, false);
+        if (data != null) {
+          this.zoneWeights = data;
+        }
+      } catch (error) {
+        this.showWarningMessage(error);
+      }
+    },
+
+    async updateZoneWeights(weights) {
+      let result = false;
+      const json = JSON.stringify(weights);
+      try {
+        const response = await Api.updateZoneDetectorWeights(json);
+        if (response.data.status === 'ERROR') {
+          this.showWarningMessage(response.data.message);
+        } else {
+          result = true;
+        }
+      } catch (error) {
+        this.showWarningMessage(error);
+      }
+      return result;
+    },
+
+    async fetchTrafficResponsiveData(zoneId, startDate, weights) {
       this.loading = true;
       try {
-        const response = await Api.fetchTrafficResponsiveData(zoneId, startDate);
+        const response = await Api.fetchTrafficResponsiveData(zoneId, startDate, weights, false);
         const data = this.parseResponse(response, false);
         if (data != null) {
           this.chartData = this.composeData(zoneId, data);
         }
       } catch (error) {
+        console.log(error);
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
       this.loading = false;
@@ -198,27 +267,29 @@ export default {
     },
 
     composeData(zoneId, resData) {
-      const title = `Traffic Response Plot (${zoneId})`;
+      const title = `Traffic Responsive Plot (${zoneId})`;
       const xAxis = 'Time of day';
       const yAxis = 'V + O (%)';
-
-      const patterns = resData.patterns.map(item => [item[0], item[1]]);
 
       let data = [];
       data.push({ name: 'NB V+O', color: '#ED561B', data: resData.NBVO, tracking: true });
       data.push({ name: 'SB V+O', color: '#50B432', data: resData.SBVO, tracking: true });
-      data.push({ name: 'Cycle Length', color: '#fed976', data: patterns, tracking: false });
 
-      // Compose a level to comdate the auto min-max scaling of highcharts
-      if (resData.levels && resData.levels.length > 0 && resData.patterns.length > 0) {
-        const t0 = resData.patterns[0][0];
-        const t1 = resData.patterns[resData.patterns.length - 1][0];
-        const ll = resData.levels[resData.levels.length - 1][1];
-        const levels = [
-          [t0, ll],
-          [t1, ll]
-        ];
-        data.push({ name: 'Max Level', color: '#DEDEDE', data: levels, tracking: false });
+      if (resData.patterns) {
+        const patterns = resData.patterns.map(item => [item[0], item[1]]);
+        data.push({ name: 'Cycle Length', color: '#fed976', data: patterns, tracking: false });
+
+        // Compose a level to comdate the auto min-max scaling of highcharts
+        if (resData.levels && resData.levels.length > 0 && resData.patterns.length > 0) {
+          const t0 = resData.patterns[0][0];
+          const t1 = resData.patterns[resData.patterns.length - 1][0];
+          const ll = resData.levels[resData.levels.length - 1][1];
+          const levels = [
+            [t0, ll],
+            [t1, ll]
+          ];
+          data.push({ name: 'Max Level', color: '#DEDEDE', data: levels, tracking: false });
+        }
       }
 
       const colors = ['#023858', '#045a8d', '#2b8cbe', '#74a9cf', '#a6bddb', '#d0d1e6', '#f1eef6'];

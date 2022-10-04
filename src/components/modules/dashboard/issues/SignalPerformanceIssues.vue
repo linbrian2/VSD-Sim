@@ -1,6 +1,7 @@
 <template>
-  <div class="signal-performance mr-4">
+  <div class="signal-performance">
     <SignalPerformanceIssuesTable
+      class="mx-2"
       :itemsPerPage="itemsPerPage"
       :summary="summary"
       :preSelect="false"
@@ -9,7 +10,7 @@
       @click="handleRowClick"
       @prepareData="prepareSignalPerformanceIssues"
     />
-    <v-row class="mt-3 ml-1 mr-7" v-if="currSignalPerformanceIssue">
+    <v-row class="mt-3 mx-1" v-if="currSignalPerformanceIssue">
       <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
           :icon="'mdi-note-outline'"

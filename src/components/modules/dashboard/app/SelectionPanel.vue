@@ -10,7 +10,7 @@ export default {
   props: {
     width: {
       type: Number,
-      default: 600
+      default: 500
     },
     name: {
       type: String,
@@ -18,7 +18,7 @@ export default {
     }
   },
   data: () => ({
-    navigationWidth: 600,
+    navigationWidth: 500,
     navigation: {
       shown: false,
       borderSize: 5

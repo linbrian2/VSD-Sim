@@ -88,8 +88,8 @@ export default {
         this.$store.commit('SET_CURRENT_DATE', new Date());
       }
 
-      if (this.$route.name !== RouterNames.TRAFFIC_INCIDENT) {
-        this.$router.push({ path: RouterPaths.TRAFFIC_INCIDENT }).catch(() => {});
+      if (this.$route.name !== RouterNames.TRAFFIC_INCIDENT_LIST) {
+        this.$router.push({ path: RouterPaths.TRAFFIC_INCIDENT_LIST }).catch(() => {});
       }
     }
   }

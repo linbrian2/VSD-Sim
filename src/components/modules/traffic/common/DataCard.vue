@@ -4,7 +4,7 @@
       <h5 class="text-center ml-5 overline">{{ title }}</h5>
     </v-card-title>
 
-    <v-card-text class="mt-2 pb-0">
+    <div class="mt-2 pb-0 mx-0">
       <v-simple-table v-if="items && items.length > 0">
         <template v-slot:default>
           <tbody>
@@ -12,13 +12,35 @@
               <td>
                 <strong>{{ item.name }}</strong>
               </td>
-              <td>{{ item.value }}</td>
+              <td>
+                <div v-if="item.button">
+                  <div v-if="item.button.tooltip">
+                    <v-tooltip bottom color="primary">
+                      <template v-slot:activator="{ on }">
+                        <v-btn icon v-on="on" @click="item.button.handler">
+                          <v-icon :color="item.button.color" v-text="item.button.icon" />
+                          <span v-if="item.button.text"> {{ item.button.text }} </span>
+                        </v-btn>
+                      </template>
+                      <span>{{ item.button.tooltip }}</span>
+                    </v-tooltip>
+                  </div>
+                  <div v-else>
+                    <v-btn icon @click="item.button.handler">
+                      <v-icon :color="item.button.color" v-text="item.button.icon" />
+                      <span v-if="item.button.text"> {{ item.button.text }} </span>
+                    </v-btn>
+                  </div>
+                </div>
+
+                <div v-else>{{ item.value }}</div>
+              </td>
             </tr>
           </tbody>
         </template>
       </v-simple-table>
       <slot></slot>
-    </v-card-text>
+    </div>
   </v-card>
 </template>
 

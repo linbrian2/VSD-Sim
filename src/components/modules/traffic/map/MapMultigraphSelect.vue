@@ -44,21 +44,11 @@ export default {
     options: {
       mapTypeControl: true,
       mapTypeControlOptions: {
-        mapTypeIds: ['roadmap', 'satellite'],
-        position: google.maps.ControlPosition.TOP_CENTER
+        mapTypeIds: ['roadmap', 'satellite']
       },
-
       streetViewControl: false,
-
       fullscreenControl: true,
-      fullscreenControlOptions: {
-        position: google.maps.ControlPosition.LEFT_TOP
-      },
-
-      zoomControl: true,
-      zoomControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_CENTER
-      }
+      zoomControl: true
     }
   }),
   computed: {
@@ -139,8 +129,25 @@ export default {
 
     addMapControls() {
       this.$refs.mapRef.$mapPromise.then(map => {
+        this.setMapIconLocations(map);
         this.addHomeControl(map);
         this.addPointControl(map);
+      });
+    },
+
+    setMapIconLocations(map) {
+      map.setOptions({
+        // mapTypeControlOptions: {
+        //   position: google.maps.ControlPosition.TOP_CENTER
+        // },
+
+        // fullscreenControlOptions: {
+        //   position: google.maps.ControlPosition.LEFT_TOP
+        // },
+
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_CENTER
+        }
       });
     },
 

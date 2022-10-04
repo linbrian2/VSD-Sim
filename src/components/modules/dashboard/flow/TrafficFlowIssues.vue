@@ -11,7 +11,7 @@
       hide-default-footer
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
-      class="elevation-1"
+      class="elevation-1 mx-2"
     >
       <template v-slot:[`item.state`]="{ item }">
         <v-chip small :color="'red'">
