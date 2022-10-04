@@ -96,7 +96,7 @@ export default {
       let yAxis = data.yAxis;
       let ly = this.legendy || 45;
       let exporting = this.exporting === undefined ? false : this.exporting;
-      let marginLeft = this.left;
+      // let marginLeft = this.left;
 
       let plotLines =
         data.timeSlots &&
