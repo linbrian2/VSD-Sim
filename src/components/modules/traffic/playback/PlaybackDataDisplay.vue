@@ -227,6 +227,108 @@
         />
       </v-col>
     </div>
+    <div id="incidents" v-if="currentTitle == 'Traffic Incident'">
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Incident Id'"
+          :value="selectedIncident.id"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-vector-line'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Route'"
+          :value="selectedIncident.route"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-clock-outline'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Start Time'"
+          :value="getTimeStr(selectedIncident.startTime)"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-clock-outline'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'End Time'"
+          :value="getTimeStr(selectedIncident.endTime)"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-timer-outline'"
+          :height="cardHeight"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :valueFontSize="singleCol ? undefined : 28"
+          :name="'Duration'"
+          :value="getDurStr(selectedIncident.duration * 60)"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Severity'"
+          :value="selectedIncident.severity"
+          :valueColor="selectedIncident.severityColor"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Evidence Counts'"
+          :value="selectedIncident.evidenceCounts"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident">
+        <InfoCard
+          :icon="'mdi-alert-circle-outline'"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Type'"
+          :value="selectedIncident.type"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedIncident && selectedIncident.reason">
+        <InfoCard
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Reason'"
+          :value="
+            selectedIncident.reason.split('.')[0] ? selectedIncident.reason.split('.')[0] : selectedIncident.reason
+          "
+          :wide="true"
+          :valueFontSize="singleCol ? 22 : 22"
+        />
+      </v-col>
+    </div>
   </div>
 </template>
 
@@ -251,6 +353,10 @@ export default {
       default: null
     },
     selectedDevice: {
+      type: Object,
+      default: null
+    },
+    selectedIncident: {
       type: Object,
       default: null
     }

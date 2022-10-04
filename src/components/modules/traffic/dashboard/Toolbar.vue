@@ -21,7 +21,7 @@
       </v-list>
     </v-menu>
 
-    <div style="width:200px">
+    <div style="width:170px">
       <v-autocomplete
         light
         dense
@@ -33,7 +33,7 @@
         hide-details
         append-icon=""
         prepend-inner-icon="mdi-magnify"
-        placeholder="Search Anything"
+        placeholder="Search"
         hide-no-data
         :search-input.sync="search"
         return-object
@@ -124,9 +124,9 @@ export default {
       { title: Constants.DEVICE_RESTRICTIONS, id: Constants.LAYER_DEVICE_RESTRICTIONS },
       { title: Constants.DEVICE_SEGMENTS, id: Constants.LAYER_DEVICE_SEGMENTS },
       { title: Constants.DEVICE_WEATHER, id: Constants.LAYER_DEVICE_WEATHER },
-      { title: 'Signals', id: 5 },
-      { title: 'Devices', id: 6 },
-      { title: 'Routes', id: 7 },
+      { title: 'High Resolution Signals', id: 5 },
+      { title: 'State-wide Detectors', id: 6 },
+      { title: 'Travel Segments', id: 7 },
       { title: 'Waze Alerts', id: 8 }
     ],
 

@@ -109,7 +109,7 @@ const actions = {
     const layers = localStorage.getItem('mapLayer');
     const wazeLayers = localStorage.getItem('wazeLayer');
     const deviceLayers = localStorage.getItem('deviceLayer');
-    const mapLayers = layers ? JSON.parse(layers) : [0, 1, 3];
+    const mapLayers = layers ? JSON.parse(layers) : [0, 1, 3, 4, 6];
     const mapWazeLayers = wazeLayers ? JSON.parse(wazeLayers) : [1, 2, 3];
     const mapDeviceLayers = deviceLayers ? JSON.parse(deviceLayers) : [1, 2];
     commit('SET_WAZE_LAYER', mapWazeLayers);

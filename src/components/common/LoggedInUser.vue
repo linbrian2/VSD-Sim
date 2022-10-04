@@ -1,7 +1,17 @@
 <template>
   <v-menu>
     <template v-slot:activator="{ on }">
-      <v-btn x-small :color="color" depressed fab v-on="on" class="white--text ml-5">
+      <v-btn x-small :color="color" depressed fab v-on="on" class="white--text ml-5 hidden-xs-only">
+        <v-avatar v-if="user.photoUrl">
+          <img :src="user.photoUrl" :alt="`${user.name} avatar`" />
+        </v-avatar>
+        <template v-else>
+          <span class="title">
+            {{ firstLetter }}
+          </span>
+        </template>
+      </v-btn>
+      <v-btn x-small :color="color" depressed fab v-on="on" class=" ml-2 white--text hidden-sm-and-up">
         <v-avatar v-if="user.photoUrl">
           <img :src="user.photoUrl" :alt="`${user.name} avatar`" />
         </v-avatar>

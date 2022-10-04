@@ -1,12 +1,12 @@
 <template>
   <div v-if="showWeatherBar">
-    <v-card color="rgba(0, 0, 0, .5)" style="display:flex;" class="px-2">
-      <!-- Increase font size -->
+    <v-card color="transparent" outlined style="display:flex;" class="px-2">
       <b v-if="showCurrentTime">
         <div :style="`color: ${color};`" class="py-2">
           {{ dateStr }}
         </div>
       </b>
+
       <template v-if="weather">
         <v-divider vertical class="mx-6" v-if="showCurrentTime" />
         <v-img class="mt-2 mr-1 weather-icon" width="24px" height="24px" :src="weatherIcon(weather.conditionCode)" />
@@ -15,16 +15,21 @@
         <div v-if="weather.airTemp && showTemp" :style="`color: ${color};`" class="pt-2">
           {{ formatTemperature(weather.airTemp, true) }}<sup>°F</sup>
         </div>
-        <v-icon v-if="weather.precip && showPrecip" :color="`${color}`" class="pl-3">mdi-water</v-icon>
+
+        <v-icon v-if="weather.precip && showPrecip" :color="`${color}`" class="pl-3">
+          mdi-water
+        </v-icon>
         <div v-if="weather.precip && showPrecip" :style="`color: ${color};`" class="pt-2">
           {{ toPercentage(weather.precip) }}%
         </div>
-        <v-icon v-if="weather.windAvg && weather.windAvgHeading && showWind" :color="`${color}`" class="pl-3 pr-1"
-          >mdi-weather-windy</v-icon
-        >
+
+        <v-icon v-if="weather.windAvg && weather.windAvgHeading && showWind" :color="`${color}`" class="pl-3 pr-1">
+          mdi-weather-windy
+        </v-icon>
         <div v-if="weather.windAvg && weather.windAvgHeading && showWind" :style="`color: ${color};`" class="pt-2">
           {{ Math.round(weather.windAvg) }}mph {{ weather.windAvgHeading }}
         </div>
+
         <v-icon v-if="weather.visibility && showVisibility" :color="`${color}`" class="pl-3 pr-1">mdi-eye</v-icon>
         <div v-if="weather.visibility && showVisibility" :style="`color: ${color};`" class="pt-2">
           {{ weather.visibility }}m

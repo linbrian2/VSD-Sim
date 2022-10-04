@@ -97,6 +97,7 @@ export default {
       { title: 'Waze Alerts', id: Constants.LAYER_WAZE },
       { title: 'Grouped Waze Alerts', id: Constants.LAYER_GROUPED_WAZE },
       { title: 'Traffic Flow Detectors', id: Constants.LAYER_DEVICES },
+      { title: 'Traffic Incidents', id: Constants.LAYER_TRAFFIC_INCIDENTS },
       { title: 'Bluetooth Sensors', id: Constants.LAYER_BLUETOOTH_SENSORS },
       { title: 'Labels', id: Constants.LAYER_LABELS }
     ],

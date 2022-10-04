@@ -7,10 +7,19 @@
         :selectedSegment="selectedSegment"
         :selectedWaze="selectedWaze"
         :selectedDevice="selectedDevice"
+        :selectedIncident="selectedIncident"
       />
     </RightPanel>
 
-    <PlaybackMap :segments="currSegments" :waze="currWaze" :btDevices="currDevices" :mapLayers="mapLayers" />
+    <PlaybackMap
+      :segments="currSegments"
+      :waze="currWaze"
+      :btDevices="currDevices"
+      :trafficIncidents="trafficIncidents"
+      :mapLayers="mapLayers"
+      :startTime="startTime"
+      :endTime="endTime"
+    />
 
     <PlaybackBar :date="currentDate" :loading="!dataIsAvailable" @processTime="processTime" :duration="duration" />
 
@@ -117,6 +126,7 @@ export default {
       selectedSegmentId: null,
       selectedWazeId: null,
       selectedDeviceId: null,
+      selectedIncidentId: null,
       currentTitle: '',
       duration: 1439,
       startTime: null,
@@ -160,6 +170,15 @@ export default {
       if (this.selectedDeviceId) {
         let val = null;
         val = this.currDevices.filter(x => x.id == this.selectedDeviceId);
+        return val[0] ? val[0] : null;
+      } else {
+        return null;
+      }
+    },
+    selectedIncident() {
+      if (this.selectedIncidentId) {
+        let val = null;
+        val = this.trafficIncidents.filter(x => x.id == this.selectedIncidentId);
         return val[0] ? val[0] : null;
       } else {
         return null;
@@ -271,15 +290,22 @@ export default {
         return null;
       }
     },
+    currIncidents() {
+      if (this.trafficIncidents && this.startTime && this.endTime) {
+        return this.trafficIncidents.filter(x => x.startTime <= this.endTime && this.endTime <= x.endTime);
+      } else {
+        return null;
+      }
+    },
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['segments', 'waze', 'btDevices', 'loading'])
+    ...mapState('traffic', ['segments', 'waze', 'btDevices', 'loading']),
+    ...mapState('dashboard', ['trafficIncidents'])
   },
   mounted() {
     let date = Utils.getStartOfDay(this.currentDate);
     this.$store.commit('SET_CURRENT_DATE', date);
 
     this.$bus.$on('DISPLAY_DETAILS', payload => {
-      console.log(payload);
       this.cardClicked(payload);
     });
     setTimeout(() => {
@@ -319,6 +345,10 @@ export default {
         case 3:
           this.currentTitle = 'Device';
           this.selectedDeviceId = payload.id;
+          break;
+        case 6:
+          this.currentTitle = 'Traffic Incident';
+          this.selectedIncidentId = payload.id;
           break;
         default:
           this.currentTitle = '';
@@ -385,8 +415,10 @@ export default {
       this.fetchWaze(this.currentDate);
       this.fetchBTDevices(this.currentDate);
       this.fetchBTSensors();
+      this.fetchTrafficIncidents(this.currentDate);
     },
-    ...mapActions('traffic', ['fetchSegments', 'fetchWaze', 'fetchBTDevices', 'fetchBTSensors'])
+    ...mapActions('traffic', ['fetchSegments', 'fetchWaze', 'fetchBTDevices', 'fetchBTSensors']),
+    ...mapActions('dashboard', ['fetchTrafficIncidents'])
   },
   watch: {
     currentDate() {

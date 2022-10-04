@@ -1,5 +1,5 @@
 <template>
-  <div class="title-name non-selection" style="height: 48px">
+  <div class="title-name non-selection">
     <v-row wrap no-gutters>
       <v-col lg="6" sm="6" xs="12">
         <div class="d-flex mt-1">

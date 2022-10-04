@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <!-- Left map panel -->
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <SelectionPanel name="trafficFlowSideBarWidth" @navigation-width-changed="sideBarWidthChanged">
       <div class="d-flex justify-space-between">
         <v-combobox
@@ -14,7 +13,6 @@
           @input="valueSelectHandler"
           label="CHOOSE A DETECTOR TO SHOW"
         />
-        <!-- Region selection menu -->
         <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
           <template v-slot:activator="{ on: menu, attrs }">
             <v-tooltip bottom>
@@ -40,7 +38,6 @@
       <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
     </SelectionPanel>
 
-    <!-- Title bar on the top -->
     <TitleBar :title="title" :loading="loading" :refresh="refreshData">
       <div class="d-flex align-items justify-center align-center">
         <div class="d-flex justify-space-between">
@@ -77,7 +74,107 @@
       </div>
     </TitleBar>
 
-    <!-- Charts -->
+    <v-container>
+      <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
+        <v-tab v-for="item in tabItems" :key="item.key" :href="`#${item.key}`">
+          {{ item.value }}
+        </v-tab>
+      </v-tabs>
+      <div>
+        <v-tabs-items v-model="tab">
+          <v-tab-item value="bound" v-if="isTabVisible('bound')">
+            <TrafficFlowCombinedCharts :data="boundData" :direction="direction" />
+          </v-tab-item>
+
+          <v-tab-item value="lane" v-if="isTabVisible('lane')">
+            <TrafficFlowCombinedCharts :data="laneData" :direction="direction" />
+          </v-tab-item>
+
+          <v-tab-item value="minute" v-if="isTabVisible('minute')">
+            <TrafficFlowCombinedCharts :data="minuteData" :direction="direction" />
+          </v-tab-item>
+        </v-tabs-items>
+      </div>
+    </v-container>
+  </div>
+  <div class="mobile" v-else>
+    <div class="d-flex justify-space-between">
+      <v-combobox
+        class="mx-2"
+        dense
+        hide-details
+        single-line
+        :items="items"
+        :value="valueSelected"
+        @input="valueSelectHandler"
+        label="CHOOSE A DETECTOR TO SHOW"
+      />
+      <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
+        <template v-slot:activator="{ on: menu, attrs }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                <v-icon dark>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <span>Region Selection</span>
+          </v-tooltip>
+        </template>
+
+        <v-list>
+          <v-list-item v-for="item in region_menu_items" :key="item.value" @click="regionMenuItemClicked(item.value)">
+            <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
+              <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
+              <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
+    <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
+
+    <TitleBar
+      :title="title"
+      :loading="loading"
+      :refresh="refreshData"
+      :showRefresh="!$vuetify.breakpoint.xs"
+      :showMap="false"
+    >
+      <div class="d-flex align-items justify-center align-center">
+        <div class="d-flex justify-space-between" :class="$vuetify.breakpoint.xs ? 'mt-1' : ''">
+          <div class="mt-1 mr-15" style="width:140px;">
+            <v-select
+              dark
+              dense
+              v-model="interval"
+              :items="intervalItems"
+              item-text="text"
+              item-value="value"
+              @input="intervalSelected"
+              hide-details
+              prepend-icon="mdi-clock-outline"
+              single-line
+            />
+          </div>
+
+          <div class="mt-1 mr-10" style="width:100px;">
+            <v-select
+              dark
+              dense
+              v-model="direction"
+              :items="directions"
+              item-text="text"
+              item-value="value"
+              @input="directionSelected"
+              hide-details
+              prepend-icon="mdi-arrow-decision-outline"
+              single-line
+            />
+          </div>
+        </div>
+      </div>
+    </TitleBar>
+
     <v-container>
       <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
         <v-tab v-for="item in tabItems" :key="item.key" :href="`#${item.key}`">

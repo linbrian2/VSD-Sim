@@ -28,6 +28,9 @@
           </div>
           <div v-else>
             <b>{{ value }}</b>
+            <v-icon class="ml-2" v-if="name == 'Incident Id'" color="blue" @click="openIncidentId(value)">
+              mdi-link
+            </v-icon>
           </div>
         </h3>
       </v-col>
@@ -139,6 +142,10 @@ export default {
     ...mapGetters(['getSetting'])
   },
   methods: {
+    openIncidentId(id) {
+      // window.open(`http://aitoms.net/flow/incidents/${id}`, '_blank');
+      window.open(`http://localhost:8080/flow/incidents/${id}`, '_blank');
+    },
     getEvidenceIcon(name) {
       const ICONS = {
         flow: Constants.DEVICE_TRAFFIC_ICON,

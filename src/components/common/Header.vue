@@ -5,7 +5,7 @@
         <v-icon>mdi-view-grid-outline</v-icon>
       </v-btn>
 
-      <div class="d-flex align-center">
+      <div class="hidden-md-and-down">
         <router-link to="/">
           <v-img
             alt="Logo"
@@ -17,19 +17,20 @@
           />
         </router-link>
       </div>
-
-      <NavDropdown :title="title" />
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <div class="hidden-sm-and-down">
+        <NavDropdown :title="title" />
+      </div>
+      <v-toolbar-title class="hidden-sm-and-down">{{ title }}</v-toolbar-title>
       <template v-if="actionItems && actionItems.length > 0">
         <NavDropdown :items="actionItems" :title="itemTitle" />
-        <v-toolbar-title class="overline">{{ itemTitle }}</v-toolbar-title>
+        <v-toolbar-title class="overline hidden-sm-and-down">{{ itemTitle }}</v-toolbar-title>
       </template>
 
       <v-spacer></v-spacer>
       <div v-if="showDate">
         <MenuDatePicker :date="currentDate" />
       </div>
-      <div v-if="showWeatherInfo">
+      <div v-if="showWeatherInfo" class="hidden-sm-and-down">
         <WeatherOverlay :center="mapCenter" :showCurrentTime="showCurrentTime" />
       </div>
 
