@@ -1,6 +1,12 @@
 <template>
   <div>
-    <TitleBar :showMap="false" :showRefresh="false" :title="title" :loading="loading" :refresh="refreshData" />
+    <TitleBar :showMap="false" :showRefresh="false" :title="title" :loading="loading" :refresh="refreshData">
+      <template v-slot:right>
+        <v-btn small icon @click.stop="goHome" class="float-right mt-2" :loading="loading">
+          <v-icon color="white">mdi-home</v-icon>
+        </v-btn>
+      </template>
+    </TitleBar>
 
     <v-container>
       <v-card tile class="mx-3">
@@ -37,7 +43,6 @@ export default {
   },
 
   data: () => ({
-    width: 600,
     loading: false,
     segments: [],
     markers: [],
@@ -50,13 +55,7 @@ export default {
     title() {
       return `TRAFFIC INCIDENT - ${this.incidentId}`;
     },
-
-    ...mapState(['currentDate']),
-    ...mapState('traffic', ['weatherStations', 'bluetoothSegments', 'incidentSettings', 'showPanel'])
-  },
-
-  created() {
-    this.$store.commit('traffic/SHOW_PANEL', true);
+    ...mapState('traffic', ['weatherStations', 'bluetoothSegments'])
   },
 
   async mounted() {
@@ -72,6 +71,10 @@ export default {
   },
 
   methods: {
+    goHome() {
+      this.$router.push('/', () => {});
+    },
+
     onSegmentSelected(segmentId) {
       if (this.$refs.anomalySegmentDisplay) {
         this.$refs.anomalySegmentDisplay.selectSegment(segmentId);
@@ -143,7 +146,6 @@ export default {
         const response = await Api.fetchIncident(id, true, true);
         const data = this.getResponseData(response);
         this.incidentItem = data;
-        console.log('incident', data);
         this.setIncidentContent();
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });

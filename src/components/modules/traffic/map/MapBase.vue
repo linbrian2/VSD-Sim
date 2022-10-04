@@ -62,8 +62,6 @@ export default {
       this.addPointControl(map);
       this.$emit('map-ready', map);
     });
-
-    //this.addMapControls();
   },
 
   methods: {
@@ -84,13 +82,6 @@ export default {
 
     getMap() {
       return this.map;
-    },
-
-    addMapControls() {
-      this.$refs.mapRef.$mapPromise.then(map => {
-        this.addHomeControl(map);
-        this.addPointControl(map);
-      });
     },
 
     setMapIconLocations(map) {

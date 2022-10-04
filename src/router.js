@@ -10,6 +10,7 @@ import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
 import Status from '@/components/layouts/Status.vue';
 import Dashboard from '@/components/layouts/Dashboard.vue';
+import Fullscreen from '@/components/layouts/Fullscreen.vue';
 
 import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficDataPlayback from '@/views/traffic/TrafficDataPlayback.vue';
@@ -106,11 +107,6 @@ const router = new Router({
           component: IncidentList
         },
         {
-          path: RouterPaths.TRAFFIC_INCIDENT_PATH,
-          name: RouterNames.TRAFFIC_INCIDENT_PATH,
-          component: TrafficIncident
-        },
-        {
           path: RouterPaths.TRAFFIC_DATA_PLAYBACK,
           name: RouterNames.TRAFFIC_DATA_PLAYBACK,
           component: TrafficDataPlayback
@@ -129,6 +125,17 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_SIGNALS,
           name: RouterNames.TRAFFIC_SIGNALS,
           component: TrafficSignals
+        }
+      ]
+    },
+    {
+      path: RouterPaths.TRAFFIC_INCIDENT_PATH,
+      component: Fullscreen,
+      children: [
+        {
+          path: RouterPaths.TRAFFIC_INCIDENT_PATH,
+          name: RouterNames.TRAFFIC_INCIDENT_PATH,
+          component: TrafficIncident
         }
       ]
     },

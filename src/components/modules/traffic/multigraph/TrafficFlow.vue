@@ -6,7 +6,6 @@
         <v-combobox
           class="mx-0"
           dense
-          solo
           hide-details
           single-line
           :items="items"

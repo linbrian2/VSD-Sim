@@ -45,6 +45,7 @@
         >
           <v-icon color="white">mdi-refresh</v-icon>
         </v-btn>
+        <slot name="right"></slot>
       </v-col>
     </v-row>
   </div>
