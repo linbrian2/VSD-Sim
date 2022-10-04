@@ -106,9 +106,14 @@ const router = new Router({
           component: IncidentList
         },
         {
-          path: RouterPaths.TRAFFIC_INCIDENT_PATH,
-          name: RouterNames.TRAFFIC_INCIDENT,
+          path: RouterPaths.TRAFFIC_INCIDENT_LIST_ID,
+          name: RouterNames.TRAFFIC_INCIDENT_LIST,
           component: IncidentList
+        },
+        {
+          path: RouterPaths.TRAFFIC_INCIDENT_PATH,
+          name: RouterNames.TRAFFIC_INCIDENT_PATH,
+          component: TrafficIncident
         },
         {
           path: RouterPaths.TRAFFIC_DATA_PLAYBACK,
