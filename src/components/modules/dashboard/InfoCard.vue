@@ -28,6 +28,9 @@
           </div>
           <div v-else>
             <b>{{ value }}</b>
+            <v-icon class="ml-2" v-if="name == 'Incident Id'" color="blue" @click="openIncidentId(value)">
+              mdi-link
+            </v-icon>
           </div>
         </h3>
       </v-col>
@@ -93,6 +96,7 @@
 
 <script>
 import Constants from '@/utils/constants/traffic';
+import { RouterNames } from '@/utils/constants/router';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -138,7 +142,14 @@ export default {
     },
     ...mapGetters(['getSetting'])
   },
+
   methods: {
+    openIncidentId(id) {
+      const r = this.$router.resolve({ name: RouterNames.TRAFFIC_INCIDENT_PATH, params: { id } });
+      console.log(r.href);
+      window.open(r.href, '_blank');
+    },
+
     getEvidenceIcon(name) {
       const ICONS = {
         flow: Constants.DEVICE_TRAFFIC_ICON,

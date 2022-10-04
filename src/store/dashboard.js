@@ -106,25 +106,36 @@ const actions = {
     }
   },
   //! Traffic Incidents
-  async fetchTrafficIncidents({ commit, dispatch }) {
+  async fetchTrafficIncidents({ commit, dispatch }, date = null) {
     const severity = 50;
     const duration = 30;
     try {
-      // TODO: Remove outside of testing
-      let useWholeDay = store.getters['getSetting']('dashboard', 'incidentsWholeDay');
-      let usePrevDay = store.getters['getSetting']('dashboard', 'usePrevDay');
-      let hours = useWholeDay ? 24 : 1;
-      const start = usePrevDay ? new Date().getTime() - 24 * 60 * 60 * 1000 : new Date().getTime();
-      const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
-      let sortedData = null;
-      if (response.data.data) {
-        sortedData = response.data.data
-          .filter(x => {
-            return new Date().getTime() - x.endTime < hours * 60 * 60 * 1000;
-          })
-          .sort((a, b) => (a.severity > b.severity ? -1 : b.severity > a.severity ? 1 : 0));
+      let start = new Date();
+      if (!date) {
+        let usePrevDay = store.getters['getSetting']('dashboard', 'usePrevDay');
+        start = usePrevDay ? new Date().getTime() - 24 * 60 * 60 * 1000 : new Date().getTime();
+      } else {
+        start = date.getTime();
       }
-      commit('SET_TRAFFIC_INCIDENTS', sortedData ? sortedData : []);
+
+      const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
+      if (response.data.data) {
+        console.log('Incident Data: %o', response.data.data);
+        if (date) {
+          commit('SET_TRAFFIC_INCIDENTS', response.data.data);
+        } else {
+          let useWholeDay = store.getters['getSetting']('dashboard', 'incidentsWholeDay');
+          let hours = useWholeDay ? 24 : 1;
+
+          let sortedData = null;
+          sortedData = response.data.data
+            .filter(x => {
+              return new Date().getTime() - x.endTime < hours * 60 * 60 * 1000;
+            })
+            .sort((a, b) => (a.severity > b.severity ? -1 : b.severity > a.severity ? 1 : 0));
+          commit('SET_TRAFFIC_INCIDENTS', sortedData ? sortedData : []);
+        }
+      }
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }

@@ -105,9 +105,21 @@ export const mapIcons = {
       },
 
       alertIconActive: {
-        url: require('@/assets/alert.png'),
-        size: { width: 60, height: 60, f: 'px', b: 'px' },
-        anchor: { x: 30, y: 30 }
+        url: require('@/assets/alert-select.png'),
+        size: { width: 64, height: 64, f: 'px', b: 'px' },
+        anchor: { x: 32, y: 32 }
+      },
+
+      alertAnimatedIcon: {
+        url: require('@/assets/alert-animated.gif'),
+        size: { width: 64, height: 64, f: 'px', b: 'px' },
+        anchor: { x: 32, y: 32 }
+      },
+
+      alertAnimatedIconActive: {
+        url: require('@/assets/alert-animated-select.gif'),
+        size: { width: 64, height: 64, f: 'px', b: 'px' },
+        anchor: { x: 32, y: 32 }
       },
 
       cautionIcon: {

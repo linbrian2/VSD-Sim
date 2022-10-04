@@ -203,7 +203,7 @@ export default {
     });
 
     this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type }) => {
-      console.log(id, type);
+      this.selectedIdx = -1;
       this.handleMarkerClick(type, id);
     });
 

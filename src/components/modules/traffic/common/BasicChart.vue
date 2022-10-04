@@ -36,7 +36,8 @@ export default {
           }
         };
       }
-      return this.makeChart(this.height, this.data);
+      let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
+      return this.makeChart(height, this.data);
     }
   },
 
@@ -95,7 +96,7 @@ export default {
       let yAxis = data.yAxis;
       let ly = this.legendy || 45;
       let exporting = this.exporting === undefined ? false : this.exporting;
-      let marginLeft = this.left;
+      // let marginLeft = this.left;
 
       let plotLines =
         data.timeSlots &&
@@ -118,8 +119,8 @@ export default {
           height: chartHeight,
           spacingTop: 30,
           spacingBottom: 20,
-          marginLeft,
-          marginRight: 40,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : null,
+          marginRight: this.$vuetify.breakpoint.mobile ? 20 : 40,
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#DEDEDE',

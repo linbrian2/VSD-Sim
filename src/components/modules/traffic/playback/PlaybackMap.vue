@@ -155,14 +155,25 @@
               :options="markerOptions(m.id, 0)"
             />
           </div>
+
+          <div v-if="isMapLayerVisible(6) && trafficIncidents">
+            <GmapMarker
+              v-for="m in trafficIncidents"
+              :key="m.id"
+              :position="m.location"
+              :icon="getTrafficIncidentMarker(m)"
+              :options="markerOptions(m.id, 99)"
+              @click="handleMarkerClick(6, m.id)"
+            />
+          </div>
         </GmapMap>
       </div>
     </div>
 
     <!-- <div class="debug">
       <v-card class="pa-4" dense floating :style="`position: absolute; top: 80px; left: 280px; max-width: 480px;`">
+        isMapLayerVisible(6): {{ isMapLayerVisible(6) }}<br />
         Map Debug:<br />
-        selectedMarkerId: {{ selectedMarkerId }}<br />
         selectedMarkerId: {{ selectedMarkerId }}
       </v-card>
     </div> -->
@@ -189,7 +200,10 @@ export default {
     mapLayers: Array,
     segments: Array,
     waze: Array,
-    btDevices: Array
+    btDevices: Array,
+    trafficIncidents: Array,
+    startTime: Number,
+    endTime: Number
   },
   data() {
     return {
@@ -274,6 +288,23 @@ export default {
     }
   },
   methods: {
+    getTrafficIncidentMarker(marker) {
+      if (marker.id == this.selectedMarkerId) {
+        if (this.trafficIncidents && this.startTime && this.endTime) {
+          if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
+            return this.alertAnimatedIconActive;
+          } else {
+            return this.alertIconActive;
+          }
+        }
+      } else {
+        if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
+          return this.alertAnimatedIcon;
+        } else {
+          return this.alertIcon;
+        }
+      }
+    },
     changeSelectedColor() {
       this.colorInterp = setInterval(() => {
         let timeVal = parseFloat((new Date().getTime() % 2000) / 1000).toFixed(2);

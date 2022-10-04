@@ -1,7 +1,7 @@
 <template>
   <div class="title-name">
     <v-row wrap no-gutters>
-      <v-col lg="4" sm="6" xs="12">
+      <v-col lg="4" sm="6" xs="6">
         <div class="d-flex mt-2">
           <span v-if="showMap">
             <v-tooltip bottom>
@@ -26,8 +26,15 @@
       <v-col lg="7" sm="4" xs="12">
         <span><slot></slot></span>
       </v-col>
-      <v-col lg="1" sm="2" xs="12">
-        <v-btn small icon @click.stop="refreshData()" class="title-btn float-right" :loading="loading">
+      <v-col lg="1" sm="2" xs="12" v-if="!$vuetify.breakpoint.mobile">
+        <v-btn
+          small
+          icon
+          @click.stop="refreshData()"
+          class="title-btn float-right"
+          :loading="loading"
+          v-if="showRefresh"
+        >
           <v-icon color="white">mdi-refresh</v-icon>
         </v-btn>
       </v-col>
@@ -42,6 +49,10 @@ export default {
     title: String,
     loading: Boolean,
     refresh: Function,
+    showRefresh: {
+      type: Boolean,
+      default: true
+    },
     showMap: {
       type: Boolean,
       default: true
