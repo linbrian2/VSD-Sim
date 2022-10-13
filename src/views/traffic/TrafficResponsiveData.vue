@@ -237,6 +237,7 @@ export default {
         const data = this.parseResponse(response, false);
         if (data != null) {
           this.chartData = this.composeData(zoneId, data);
+          console.log(zoneId, this.chartData);
         }
       } catch (error) {
         console.log(error);
@@ -271,6 +272,8 @@ export default {
       const xAxis = 'Time of day';
       const yAxis = 'V + O (%)';
 
+      const startTime = resData.NBVO ? resData.NBVO[0][0] : resData.SBVO ? resData.SBVO[0][0] : new Date().getTime();
+
       let data = [];
       data.push({ name: 'NB V+O', color: '#ED561B', data: resData.NBVO, tracking: true });
       data.push({ name: 'SB V+O', color: '#50B432', data: resData.SBVO, tracking: true });
@@ -303,7 +306,7 @@ export default {
         }));
       }
 
-      return { data, xAxis, yAxis, title, ymin: 0, ymax: 100, bands: bands, patterns: resData.patterns };
+      return { data, xAxis, yAxis, title, startTime, ymin: 0, ymax: 100, bands: bands, patterns: resData.patterns };
     }
   }
 };

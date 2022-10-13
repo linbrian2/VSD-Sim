@@ -1,7 +1,7 @@
 <template>
   <v-container class="page-login" fill-height>
     <v-row justify="center" style="margin: 40px auto">
-      <v-img alt="Logo" class="shrink" src="@/assets/logo.svg" width="450" />
+      <v-img alt="Logo" class="shrink" src="@/assets/logo.svg" width="450" height="120" />
     </v-row>
     <v-row>
       <v-col :cols="12">

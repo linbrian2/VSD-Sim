@@ -99,7 +99,7 @@ export default {
         {
           title: Constants.DEVICE_TRAFFIC,
           icon: Constants.DEVICE_TRAFFIC_ICON,
-          link: 'http://aitoms.net/dash/traffic',
+          link: 'http://aitoms.net/flow/multi-graph',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -127,7 +127,7 @@ export default {
         {
           title: Constants.TRAFFIC_FLOW_ANOMALIES,
           icon: Constants.TRAFFIC_FLOW_ANOMALIES_ICON,
-          link: 'http://aitoms.net/flow/data',
+          link: 'http://aitoms.net/status/map',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -141,7 +141,7 @@ export default {
         {
           title: Constants.HIGH_CONGESTION_ROUTES,
           icon: Constants.HIGH_CONGESTION_ROUTES_ICON,
-          link: 'http://aitoms.net/dash/bluetooth',
+          link: 'http://aitoms.net/flow/playback',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -155,7 +155,7 @@ export default {
         {
           title: Constants.REPORTED_WAZE_ALERTS,
           icon: Constants.REPORTED_WAZE_ALERTS_ICON,
-          link: 'http://aitoms.net/dash/bluetooth',
+          link: 'http://aitoms.net/flow/playback',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
