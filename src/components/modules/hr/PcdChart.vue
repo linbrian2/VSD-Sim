@@ -33,7 +33,8 @@ export default {
       }
       let color = this.darkColorScheme();
       let series = this.prepareData(this.info, color.detectorColor);
-      return this.makeChart(this.height, series, color, this.drawPlan);
+      let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
+      return this.makeChart(height, series, color, this.drawPlan);
     }
   },
   filters: {

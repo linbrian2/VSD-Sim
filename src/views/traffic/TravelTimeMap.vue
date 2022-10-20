@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <SelectionPanel name="travelTimeMapBarWidth" ref="panel">
       <v-select
         dense
@@ -72,6 +72,76 @@
 
     <!-- Popup Dialogs -->
     <TrafficFlowChartsDialog v-model="showDialog" ref="trafficFlowCharts" />
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- Title Bar -->
+    <!-- <TitleBar :showMap="false" :showRefresh="false" /> -->
+
+    <!-- Input & Map -->
+    <v-select
+      dense
+      v-model="routeDir"
+      :items="routeDirections"
+      item-text="text"
+      item-value="value"
+      hide-details
+      prepend-icon="mdi-directions"
+      single-line
+    />
+    <MapSegments ref="mapSegments" :segments="segments" @detector-clicked="detectorClicked" :smallMap="true" />
+
+    <!-- Container -->
+    <v-container>
+      <div class="d-flex justify-center align-center">
+        <div class="d-flex justify-center mt-n3" style="width: 150px;">
+          <v-select
+            style="font-size: 14px"
+            v-model="route"
+            :items="routeItems"
+            item-text="text"
+            item-value="value"
+            @input="routeSelected"
+            hide-details
+            prepend-icon="mdi-directions"
+            single-line
+          />
+        </div>
+        <div class="d-flex justify-center mt-n3" style="width: 150px; margin-left: 10px">
+          <v-select
+            style="font-size: 14px"
+            v-model="interval"
+            :items="intervalItems"
+            item-text="text"
+            item-value="value"
+            @input="intervalSelected"
+            hide-details
+            prepend-icon="mdi-clock-outline"
+            single-line
+          />
+        </div>
+      </div>
+      <v-card class="mb-10">
+        <v-container v-if="isData0Available">
+          <TravelTimeHeatMapChart
+            :data="heatMapData0"
+            :height="mapHeight(heatMapData0)"
+            :yLabelClicked="labelClicked"
+            :titleClicked="titleClicked"
+          />
+        </v-container>
+      </v-card>
+      <v-card class="mb-10">
+        <v-container v-if="isData1Available">
+          <TravelTimeHeatMapChart
+            :data="heatMapData1"
+            :height="mapHeight(heatMapData1)"
+            :yLabelClicked="labelClicked"
+            :titleClicked="titleClicked"
+          />
+        </v-container>
+      </v-card>
+    </v-container>
   </div>
 </template>
 

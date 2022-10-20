@@ -31,7 +31,8 @@ export default {
           }
         };
       }
-      let chart = this.makeChart(this.height, this.data, this.drawRowText);
+      let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
+      let chart = this.makeChart(height, this.data, this.drawRowText);
       return chart;
     }
   },
@@ -301,6 +302,9 @@ export default {
     },
 
     drawRowText(chart) {
+      if (this.$vuetify.breakpoint.mobile) {
+        return;
+      }
       if (this.customObjects.length > 0) {
         Highcharts.each(this.customObjects, function(e) {
           e.destroy();

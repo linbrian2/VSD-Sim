@@ -15,13 +15,13 @@
     </v-row>
 
     <v-row>
-      <v-col cols="4">
+      <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4">
         <DataCard title="Time" :items="incidentTime" />
       </v-col>
-      <v-col cols="4">
+      <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4">
         <DataCard title="Location" :items="incidentLoc" />
       </v-col>
-      <v-col cols="4">
+      <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4">
         <IncidentTypeCard title="Type" :item="incidentType" />
       </v-col>
     </v-row>
@@ -138,7 +138,7 @@
       <v-col cols="12">
         <div class="card-scroll">
           <v-row>
-            <v-col cols="4" v-for="(waze, i) in filteredWazeAlerts" :key="i">
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4" v-for="(waze, i) in filteredWazeAlerts" :key="i">
               <WazeInfo class="mx-1" :waze="waze" @click="wazeAlertClicked" />
             </v-col>
           </v-row>

@@ -12,8 +12,8 @@
                       <v-card
                         tile
                         class="d-flex align-center justify-center"
-                        height="65px"
-                        width="120px"
+                        :height="$vuetify.breakpoint.mobile ? '40px' : '65px'"
+                        :width="$vuetify.breakpoint.mobile ? '80px' : '120px'"
                         @click.native="cardClicked(i)"
                         :color="getColor(x)"
                         :elevation="hover ? 12 : 2"
@@ -21,8 +21,13 @@
                         v-on="{ ...tooltip }"
                       >
                         <v-col class="grid-center pa-0">
-                          <v-card-title class="pa-0" style="font-size:38px">
-                            <v-icon class="pr-2" color="white" large>{{ x.icon }}</v-icon>
+                          <v-card-title
+                            class="pa-0"
+                            :style="`font-size:${$vuetify.breakpoint.mobile ? '26px' : '38px'}`"
+                          >
+                            <v-icon class="pr-2" color="white" :large="!$vuetify.breakpoint.mobile">
+                              {{ x.icon }}
+                            </v-icon>
                             <template v-if="x.val == null || (x.val && x.val == '-')">
                               <div class="pt-3"></div>
                               <Spinner />
@@ -99,7 +104,7 @@ export default {
         {
           title: Constants.DEVICE_TRAFFIC,
           icon: Constants.DEVICE_TRAFFIC_ICON,
-          link: 'http://aitoms.net/dash/traffic',
+          link: 'http://aitoms.net/flow/multi-graph',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -127,7 +132,7 @@ export default {
         {
           title: Constants.TRAFFIC_FLOW_ANOMALIES,
           icon: Constants.TRAFFIC_FLOW_ANOMALIES_ICON,
-          link: 'http://aitoms.net/flow/data',
+          link: 'http://aitoms.net/status/map',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -141,7 +146,7 @@ export default {
         {
           title: Constants.HIGH_CONGESTION_ROUTES,
           icon: Constants.HIGH_CONGESTION_ROUTES_ICON,
-          link: 'http://aitoms.net/dash/bluetooth',
+          link: 'http://aitoms.net/flow/playback',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -155,7 +160,7 @@ export default {
         {
           title: Constants.REPORTED_WAZE_ALERTS,
           icon: Constants.REPORTED_WAZE_ALERTS_ICON,
-          link: 'http://aitoms.net/dash/bluetooth',
+          link: 'http://aitoms.net/flow/playback',
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },

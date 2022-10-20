@@ -219,6 +219,16 @@
             /> -->
           </div>
 
+          <div v-if="isMapLayerVisible(9) && trafficIncidents">
+            <GmapMarker
+              v-for="m in trafficIncidents"
+              :key="m.id"
+              :position="m.location"
+              :icon="getTrafficIncidentMarker(m)"
+              :options="markerOptions(m.id, 99)"
+            />
+          </div>
+
           <!-- InfoWindow -->
           <!-- <InfoWindow :position="infoPosition" ref="infoWindow" /> -->
 
@@ -274,7 +284,8 @@ export default {
           mapTypeIds: ['roadmap', 'hybrid'],
           position: 6
         },
-        styles: DarkMapStyle
+        styles: DarkMapStyle,
+        gestureHandling: 'greedy'
       },
       infoPosition: null,
       defaultSegmentOptions: {
@@ -388,6 +399,23 @@ export default {
     }
   },
   methods: {
+    getTrafficIncidentMarker(marker) {
+      if (marker.id == this.selectedMarkerId) {
+        if (this.trafficIncidents && this.startTime && this.endTime) {
+          if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
+            return this.alertAnimatedIconActive;
+          } else {
+            return this.alertIconActive;
+          }
+        }
+      } else {
+        if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
+          return this.alertAnimatedIcon;
+        } else {
+          return this.alertIcon;
+        }
+      }
+    },
     getSegmentOptions(segment) {
       const color = segment.status === 7 ? '#FA8072' : '#195f3d';
       return {
@@ -561,8 +589,8 @@ export default {
         this.$store.commit('SET_MAP_CENTER', this.center);
       }
     },
-    markerOptions(key) {
-      const zIndex = this.selectedMarkerId == key ? 100 : 99;
+    markerOptions(key, level = 1) {
+      const zIndex = this.selectedMarkerId == key ? 9999 : level;
       return { optimized: false, zIndex };
     },
     fetchSensorLocations() {

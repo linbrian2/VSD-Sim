@@ -36,7 +36,7 @@
         <v-card max-width :height="height" color="#333333" class="pa-6">
           <v-row class="grid-center">
             <h3>{{ i.name }}</h3>
-            <h1 style="color: #aaa; margin-top: 160px">NO DATA</h1>
+            <h1 :style="`color: #aaa; margin-top: ${marginTop}`">NO DATA</h1>
           </v-row>
         </v-card>
       </template>
@@ -47,7 +47,7 @@
         <v-card max-width :height="height" color="#333333" class="pa-6">
           <v-row class="grid-center">
             <h3>{{ i.name }}</h3>
-            <h1 style="margin-top: 160px">Loading data...</h1>
+            <h1 :style="`color: #aaa; margin-top: ${marginTop}`">Loading data...</h1>
           </v-row>
         </v-card>
       </template>
@@ -77,10 +77,13 @@ export default {
     BasicChart,
     TrafficFlowMultigraphCombinedCharts
   },
-  data() {
-    return {
-      height: 480
-    };
+  computed: {
+    height() {
+      return this.$vuetify.breakpoint.mobile ? 300 : 480;
+    },
+    marginTop() {
+      return this.$vuetify.breakpoint.mobile ? '80px' : '160px';
+    }
   },
   methods: {
     removeItem(item) {

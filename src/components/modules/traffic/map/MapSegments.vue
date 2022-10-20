@@ -1,6 +1,11 @@
 <template>
   <div>
-    <MapBase @map-ready="mapMounted" @center-map="centerMapHandler" @zoom-select="zoomSelectHandler">
+    <MapBase
+      @map-ready="mapMounted"
+      @center-map="centerMapHandler"
+      @zoom-select="zoomSelectHandler"
+      :smallMap="smallMap"
+    >
       <GmapPolyline
         v-for="s in segments"
         :key="s.id"
@@ -42,7 +47,7 @@
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapBase from '@/components/modules/traffic/map/MapBase';
 export default {
-  props: ['segments'],
+  props: ['segments', 'smallMap'],
   components: {
     GmapCustomMarker,
     MapBase

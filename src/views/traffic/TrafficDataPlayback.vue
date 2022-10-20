@@ -15,7 +15,7 @@
       :segments="currSegments"
       :waze="currWaze"
       :btDevices="currDevices"
-      :trafficIncidents="trafficIncidents"
+      :trafficIncidents="currIncidents"
       :mapLayers="mapLayers"
       :startTime="startTime"
       :endTime="endTime"

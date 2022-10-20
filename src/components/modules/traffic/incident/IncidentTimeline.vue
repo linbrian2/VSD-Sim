@@ -2,7 +2,7 @@
   <v-timeline dense>
     <v-timeline-item v-for="(item, idx) in items" :key="idx" :color="item.color" fill-dot small>
       <v-row align="center">
-        <v-col cols="2">
+        <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 2">
           <strong>{{ item.time }}</strong>
         </v-col>
         <v-col>

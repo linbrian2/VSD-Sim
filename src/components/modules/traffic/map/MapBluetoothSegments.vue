@@ -1,6 +1,11 @@
 <template>
   <div>
-    <MapBase @map-ready="mapMounted" @center-map="centerMapHandler" @zoom-select="zoomSelectHandler">
+    <MapBase
+      @map-ready="mapMounted"
+      @center-map="centerMapHandler"
+      @zoom-select="zoomSelectHandler"
+      :selectedId="selectedSegmentId"
+    >
       <GmapPolyline
         v-for="s in segments"
         :key="s.id"
@@ -72,9 +77,9 @@ export default {
   computed: {},
 
   mounted() {
-    this.$bus.$on('SELECT_FIRST', () => {
-      this.triggerFirstSegmentClick();
-    });
+    // this.$bus.$on('SELECT_FIRST', () => {
+    //   this.triggerFirstSegmentClick();
+    // });
 
     this.$bus.$on('SELECT_SEGMENT_BY_NAME', name => {
       this.selectSegmentByName(name);

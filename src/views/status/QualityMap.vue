@@ -15,7 +15,7 @@
       class="my-map"
       style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
     >
-      <!-- Traffic FLow Detectors -->
+      <!-- Traffic Flow Detectors -->
       <GmapMarker
         v-for="m in markers"
         :key="m.id"

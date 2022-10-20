@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <!-- Left map panel -->
     <SelectionPanel name="signalsBarWidth">
       <div class="d-flex justify-space-between">
@@ -79,6 +79,166 @@
               <DataCard title="ID" :items="detectorInfo['ids']" />
             </v-col>
             <v-col cols="4">
+              <DataCard title="Misc" :items="detectorInfo['misc']" />
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-if="showResponsivePlot">
+          <v-row>
+            <v-col cols="12">
+              <div class="d-flex justify-space-between">
+                <v-subheader class="pl-0 text-overline blue--text">
+                  <h3>Traffic Responsive Zone</h3>
+                </v-subheader>
+              </div>
+
+              <v-divider />
+            </v-col>
+
+            <v-col cols="12">
+              <v-card tile elevation="12" v-if="responsiveDataAvailable">
+                <TrafficResponsiveChart :data="responsiveChartData" :height="responsiveChartHeight" />
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-if="dailyPatternAvailable">
+          <v-row>
+            <v-col cols="12">
+              <div class="d-flex justify-space-between">
+                <v-subheader class="pl-0 text-overline blue--text">
+                  <h3>Daily Pattern Transition</h3>
+                </v-subheader>
+              </div>
+
+              <v-divider />
+            </v-col>
+
+            <v-col cols="12">
+              <v-card tile elevation="12" v-if="delayComplete">
+                <SignalPatternChart :data="signalChartData" :height="defaultHeight" />
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+
+        <v-row>
+          <v-col cols="12">
+            <div class="d-flex justify-space-between">
+              <v-subheader class="pl-0 text-overline blue--text">
+                <h3>Signal Cycle Patterns</h3>
+              </v-subheader>
+
+              <div v-show="currentPatternAvailable" class="mt-3">
+                <span class="overline">Current pattern started at {{ currentPatternTime }}</span>
+                <v-chip color="orange" small class="ml-3">
+                  <span class="font-weight-bold black--text"> {{ currentPatternNumber }}</span>
+                </v-chip>
+              </div>
+            </div>
+
+            <v-divider />
+          </v-col>
+
+          <v-col cols="12">
+            <v-card tile class="mt-n2" elevation="12" v-if="currentSignal">
+              <SignalTable :items="currentSignal" :current="currentPatternNumber" />
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+    </v-container>
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- TitleBar -->
+    <!-- <TitleBar
+      :loading="loading"
+      :refresh="refreshData"
+      :showRefresh="!$vuetify.breakpoint.xs"
+      :showMap="false"
+    >
+      <div :style="'height: 45px'" />
+    </TitleBar> -->
+
+    <!-- Input & Map -->
+    <div class="d-flex justify-space-between">
+      <v-combobox
+        class="mx-2"
+        dense
+        hide-details
+        single-line
+        item-text="text"
+        item-value="value"
+        :items="deviceItems"
+        :value="valueSelected"
+        @input="groupSelectionHandler"
+        label="Traffic Signals"
+      />
+
+      <!-- Region selection menu -->
+      <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
+        <template v-slot:activator="{ on: menu, attrs }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                <v-icon dark>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <span>Filter</span>
+          </v-tooltip>
+        </template>
+
+        <v-list>
+          <template v-for="(item, index) in region_menu_items">
+            <v-divider v-if="item.divider" :key="index + 100"></v-divider>
+            <v-list-item v-else :key="item.value" @click="regionMenuItemClicked(item.value)">
+              <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedFilterId }">
+                <v-icon class="mr-1" v-if="item.value === selectedFilterId">mdi-check</v-icon>
+                <span :class="{ 'ml-8': item.value !== selectedFilterId }"> {{ item.title }} </span>
+              </v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-list>
+      </v-menu>
+    </div>
+    <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="onMapClick" />
+
+    <!-- Container -->
+    <v-container>
+      <div class="mx-4">
+        <div v-if="infoAvailable">
+          <v-row>
+            <v-col cols="12">
+              <div class="d-flex justify-space-between">
+                <v-subheader class="pl-0 text-overline blue--text">
+                  <h3>Intersection Info</h3>
+                </v-subheader>
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon @click.stop="showInfo = !showInfo" v-bind="attrs" v-on="on">
+                      <v-icon small dark>mdi-chevron-down</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Hide Info</span>
+                </v-tooltip>
+              </div>
+
+              <v-divider />
+            </v-col>
+          </v-row>
+
+          <v-row v-show="showInfo">
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4">
+              <DataCard title="Basic" :items="detectorInfo['basic']" />
+            </v-col>
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4">
+              <DataCard title="ID" :items="detectorInfo['ids']" />
+            </v-col>
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4">
               <DataCard title="Misc" :items="detectorInfo['misc']" />
             </v-col>
           </v-row>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <MapSelectionPanel
       ref="mapSelectPanel"
       :markers="markers"
@@ -67,6 +67,74 @@
 
     <!-- Popup Dialogs -->
     <AnomalyBaselineDialog v-model="showDialog" ref="baselineDialog" />
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- Input & Map -->
+    <MapSelectionPanel
+      ref="mapSelectPanel"
+      :markers="markers"
+      :items="items"
+      name="anomalySideBarWidth"
+      :onMarkerClick="markerClicked"
+    />
+
+    <!-- Container -->
+    <v-container>
+      <v-card class="mb-8" v-if="isValid(anomaly1)">
+        <DrilldownHeatMapChart
+          :data="anomaly1"
+          :height="mapHeight(anomaly1)"
+          :deviceClicked="deviceClicked"
+          @baseline="showBaselineDialog"
+        />
+      </v-card>
+
+      <v-card class="mb-8" v-if="isValid(anomaly2)">
+        <DrilldownHeatMapChart
+          :data="anomaly2"
+          :height="mapHeight(anomaly2)"
+          :deviceClicked="deviceClicked"
+          @baseline="showBaselineDialog"
+        />
+      </v-card>
+
+      <v-card class="mb-8" v-if="isValid(anomaly3)">
+        <DrilldownHeatMapChart
+          :data="anomaly3"
+          :height="mapHeight(anomaly3)"
+          :deviceClicked="deviceClicked"
+          @baseline="showBaselineDialog"
+        />
+      </v-card>
+
+      <v-card class="mb-8" v-if="isValid(anomaly4)">
+        <DrilldownHeatMapChart
+          :data="anomaly4"
+          :height="mapHeight(anomaly4)"
+          :deviceClicked="deviceClicked"
+          @baseline="showBaselineDialog"
+        />
+      </v-card>
+
+      <v-card class="mb-8" v-if="isValid(anomaly5)">
+        <DrilldownHeatMapChart
+          :data="anomaly5"
+          :height="mapHeight(anomaly5)"
+          :deviceClicked="deviceClicked"
+          @baseline="showBaselineDialog"
+        />
+      </v-card>
+
+      <v-card class="mb-8" v-if="isValid(anomaly6)">
+        <DrilldownHeatMapChart
+          :data="anomaly6"
+          :height="mapHeight(anomaly6)"
+          :deviceClicked="deviceClicked"
+          @baseline="showBaselineDialog"
+        />
+      </v-card>
+    </v-container>
   </div>
 </template>
 

@@ -30,7 +30,7 @@
       <v-col lg="6" sm="4" xs="12">
         <span><slot></slot></span>
       </v-col>
-      <v-col lg="1" sm="2" xs="12">
+      <v-col lg="1" sm="2" xs="12" v-if="showRefresh">
         <v-btn small icon @click.stop="refreshData()" class="title-btn float-right" :loading="loading">
           <v-icon color="white">mdi-refresh</v-icon>
         </v-btn>
@@ -52,6 +52,10 @@ export default {
     loading: Boolean,
     refresh: Function,
     showMap: {
+      type: Boolean,
+      default: true
+    },
+    showRefresh: {
       type: Boolean,
       default: true
     }

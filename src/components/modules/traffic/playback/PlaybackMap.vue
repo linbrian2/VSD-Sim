@@ -229,12 +229,14 @@ export default {
         },
         streetViewControl: false,
         fullscreenControl: true,
+        mapTypeControl: false,
 
         mapTypeControlOptions: {
           mapTypeIds: ['roadmap', 'hybrid'],
           position: 2
         },
-        styles: DarkMapStyle
+        styles: DarkMapStyle,
+        gestureHandling: 'greedy'
       },
       defaultSegmentOptions: {
         strokeColor: 'green',

@@ -10,15 +10,11 @@
     </v-container>
 
     <v-container class="mt-2">
-      <v-card tile class="basic-chart mb-8" elevation="24" v-if="isSpeedAvailable">
-        <BasicChart :data="speed" :height="height" />
+      <v-card tile class="pa-2 mb-8" elevation="24" v-if="isSpeedAvailable">
+        <BasicChart :data="speed" :height="height" class="pb-2" />
         <div v-if="name" class="text-name">{{ name }}</div>
-      </v-card>
-      <v-card tile class="basic-chart mb-8" elevation="24" v-if="isVolumeAvailable">
-        <BasicChart :data="volume" :height="height" />
+        <BasicChart :data="volume" :height="height" class="pb-2" />
         <div v-if="name" class="text-name">{{ name }}</div>
-      </v-card>
-      <v-card tile class="basic-chart mb-8" elevation="24" v-if="isOccupancyAvailable">
         <BasicChart :data="occupancy" :height="height" />
         <div v-if="name" class="text-name">{{ name }}</div>
       </v-card>
@@ -47,11 +43,11 @@ export default {
     VosCard
   },
 
-  data: () => ({
-    height: 480
-  }),
-
   computed: {
+    height() {
+      return this.$vuetify.breakpoint.mobile ? 320 : 480;
+    },
+
     isSpeedAvailable() {
       return !Utils.isEmpty(this.speed);
     },
@@ -66,9 +62,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.basic-chart {
-  height: 500px;
-}
-</style>

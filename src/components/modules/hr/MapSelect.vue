@@ -72,7 +72,8 @@ export default {
       fullscreenControl: false,
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'satellite']
-      }
+      },
+      gestureHandling: 'greedy'
     }
   }),
   computed: {

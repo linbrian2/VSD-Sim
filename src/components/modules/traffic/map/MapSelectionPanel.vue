@@ -1,5 +1,21 @@
 <template>
-  <SelectionPanel :name="name">
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
+    <SelectionPanel :name="name">
+      <v-combobox
+        class="mx-2"
+        dense
+        hide-details
+        single-line
+        :items="items"
+        :value="valueSelected"
+        @input="valueSelectHandler"
+        label="Select ..."
+      />
+      <MapSelect ref="mapSelect" :markers="markers" :icons="markerIcons" @click="onMapClick" />
+    </SelectionPanel>
+  </div>
+
+  <div class="mobile" v-else>
     <v-combobox
       class="mx-2"
       dense
@@ -11,7 +27,7 @@
       label="Select ..."
     />
     <MapSelect ref="mapSelect" :markers="markers" :icons="markerIcons" @click="onMapClick" />
-  </SelectionPanel>
+  </div>
 </template>
 
 <script>

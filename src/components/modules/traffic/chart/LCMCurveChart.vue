@@ -25,7 +25,8 @@ export default {
           }
         };
       }
-      return this.makeChart(this.height, this.data);
+      let height = this.$vuetify.breakpoint.mobile ? 400 : this.height;
+      return this.makeChart(height, this.data);
     }
   },
 
@@ -158,7 +159,7 @@ export default {
         },
 
         legend: {
-          enabled: series && series.length > 0,
+          enabled: series && series.length > 0 && !this.$vuetify.breakpoint.mobile,
           floating: true,
           verticalAlign: 'top',
           align: 'left',

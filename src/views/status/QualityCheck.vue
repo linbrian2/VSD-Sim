@@ -1,18 +1,22 @@
 <template>
   <div>
-    <TitleBar title="Traffic Flow Data Quality Checking" :loading="loading" :refresh="refreshData">
+    <TitleBar
+      :title="$vuetify.breakpoint.mobile ? 'Data Quality' : 'Traffic Flow Data Quality Checking'"
+      :loading="loading"
+      :refresh="refreshData"
+    >
       <!-- <MenuDatePicker class="pa-0 ma-0 mt-n3" /> -->
       <div class="update" v-if="updatedTime">{{ updatedTime | date }}</div>
     </TitleBar>
 
-    <v-container fluid style="max-width: 85%">
+    <v-container fluid :style="`${$vuetify.breakpoint.mobile ? 'max-width: 100%' : 'max-width: 85%'}`">
       <v-card tile class="mt-6 mb-4">
         <v-card-title :class="panelStyle">
           <span class="title white--text font-weight-light">Total Error Counts</span>
         </v-card-title>
 
-        <div class="mt-2 mx-4" v-if="totalErrorCounts">
-          <HeatmapChart :data="totalErrorCounts" :height="600" />
+        <div class="mt-2" v-if="totalErrorCounts">
+          <HeatmapChart :data="totalErrorCounts" :height="chartHeight" />
         </div>
       </v-card>
 
@@ -21,15 +25,15 @@
           <span class="title white--text font-weight-light">Error Counts by Type and Hour </span>
         </v-card-title>
         <v-row>
-          <v-col>
-            <div class="mt-2 mx-6" v-if="errorCountsByType">
-              <PieChart :data="errorCountsByType" :height="600" />
+          <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 6">
+            <div class="mt-2" v-if="errorCountsByType">
+              <PieChart :data="errorCountsByType" :height="chartHeight" />
             </div>
           </v-col>
 
-          <v-col>
-            <div class="mt-2 mx-6" v-if="errorCountsByHour">
-              <PieChart :data="errorCountsByHour" :height="600" />
+          <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 6">
+            <div class="mt-2" v-if="errorCountsByHour">
+              <PieChart :data="errorCountsByHour" :height="chartHeight" />
             </div>
           </v-col>
         </v-row>
@@ -159,6 +163,9 @@ export default {
   }),
 
   computed: {
+    chartHeight() {
+      return this.$vuetify.breakpoint.mobile ? 360 : 600;
+    },
     panelStyle() {
       return this.darkMode ? 'pa-1 pl-3 grey darken-3' : 'pa-1 pl-3 primary';
     },

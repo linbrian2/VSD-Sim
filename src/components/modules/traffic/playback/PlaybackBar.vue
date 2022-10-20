@@ -6,7 +6,7 @@
         :disabled="loading"
         v-model="elapsedTime"
         class="mt-6"
-        style="width: 160px"
+        :style="`width: ${$vuetify.breakpoint.mobile ? '100px' : '120px'}`"
         min="0"
         :max="max"
         @input="input"
@@ -36,10 +36,10 @@
       <v-btn icon @click="setPlayStart" :disabled="loading">
         <v-icon v-text="playButtonIcon"></v-icon>
       </v-btn>
-      <v-btn icon @click="setPlayStop" :disabled="stopState || loading">
+      <v-btn v-if="!$vuetify.breakpoint.mobile" icon @click="setPlayStop" :disabled="stopState || loading">
         <v-icon>mdi-stop</v-icon>
       </v-btn>
-      <v-btn icon @click="replay" :disabled="elapsedTime == 0">
+      <v-btn v-if="!$vuetify.breakpoint.mobile" icon @click="replay" :disabled="elapsedTime == 0">
         <v-icon>mdi-replay</v-icon>
       </v-btn>
     </v-toolbar>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <MapSelectionPanel
       ref="mapSelectPanel"
       :markers="markers"
@@ -27,6 +27,48 @@
         </div>
       </div>
     </TitleBar>
+
+    <v-container>
+      <v-card class="mb-8" v-if="availability.temp">
+        <BasicChart :data="weather.temp" :height="height" />
+      </v-card>
+
+      <v-card class="mb-8" v-if="availability.relHumidity">
+        <BasicChart :data="weather.relHumidity" :height="height" />
+      </v-card>
+
+      <v-card class="mb-8" v-if="availability.windAvg">
+        <BasicChart :data="weather.windAvg" :height="height" />
+      </v-card>
+
+      <v-card class="mb-8" v-if="availability.visibility">
+        <BasicChart :data="weather.visibility" :height="height" />
+      </v-card>
+
+      <v-card class="mb-8" v-if="availability.precip">
+        <BasicChart :data="weather.precip" :height="height" />
+      </v-card>
+    </v-container>
+  </div>
+
+  <div class="mobile" v-else>
+    <TitleBar
+      :title="title"
+      :loading="loading"
+      :refresh="refreshData"
+      :showRefresh="!$vuetify.breakpoint.xs"
+      :showMap="false"
+    >
+      <div :style="'height: 45px'" />
+    </TitleBar>
+    <MapSelectionPanel
+      ref="mapSelectPanel"
+      :markers="markers"
+      :items="stationItems"
+      :icons="icons"
+      name="weatherSideBarWidth"
+      :onMarkerClick="markerClicked"
+    />
 
     <v-container>
       <v-card class="mb-8" v-if="availability.temp">
@@ -119,9 +161,9 @@ export default {
     }
 
     // Load first selected data in case of no data showing
-    setTimeout(() => {
-      this.showDataIfEmpty();
-    }, 500);
+    // setTimeout(() => {
+    //   this.showDataIfEmpty();
+    // }, 500);
   },
 
   watch: {

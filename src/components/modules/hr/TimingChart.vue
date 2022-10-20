@@ -25,7 +25,8 @@ export default {
         };
       }
       let d = this.prepareData(this.phaseTiming);
-      return this.makeChart(this.height, d.series, d.categories, d.ticks);
+      let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
+      return this.makeChart(height, d.series, d.categories, d.ticks);
     },
     ...mapState('hr', ['phaseTiming', 'currentSignalTime'])
   },

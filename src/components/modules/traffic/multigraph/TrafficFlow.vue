@@ -96,7 +96,17 @@
       </div>
     </v-container>
   </div>
+
   <div class="mobile" v-else>
+    <TitleBar
+      :title="title"
+      :loading="loading"
+      :refresh="refreshData"
+      :showRefresh="!$vuetify.breakpoint.xs"
+      :showMap="false"
+    >
+      <div :style="'height: 45px'" />
+    </TitleBar>
     <div class="d-flex justify-space-between">
       <v-combobox
         class="mx-2"
@@ -131,48 +141,6 @@
       </v-menu>
     </div>
     <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
-
-    <TitleBar
-      :title="title"
-      :loading="loading"
-      :refresh="refreshData"
-      :showRefresh="!$vuetify.breakpoint.xs"
-      :showMap="false"
-    >
-      <div class="d-flex align-items justify-center align-center">
-        <div class="d-flex justify-space-between" :class="$vuetify.breakpoint.xs ? 'mt-1' : ''">
-          <div class="mt-1 mr-15" style="width:140px;">
-            <v-select
-              dark
-              dense
-              v-model="interval"
-              :items="intervalItems"
-              item-text="text"
-              item-value="value"
-              @input="intervalSelected"
-              hide-details
-              prepend-icon="mdi-clock-outline"
-              single-line
-            />
-          </div>
-
-          <div class="mt-1 mr-10" style="width:100px;">
-            <v-select
-              dark
-              dense
-              v-model="direction"
-              :items="directions"
-              item-text="text"
-              item-value="value"
-              @input="directionSelected"
-              hide-details
-              prepend-icon="mdi-arrow-decision-outline"
-              single-line
-            />
-          </div>
-        </div>
-      </div>
-    </TitleBar>
 
     <v-container>
       <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">

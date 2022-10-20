@@ -1,6 +1,13 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" class="my-map">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="11"
+      map-type-id="roadmap"
+      :class="$vuetify.breakpoint.mobile ? 'map-select-mobile' : 'map-select-desktop'"
+    >
       <GmapMarker
         v-for="m in markers"
         :key="m.id"

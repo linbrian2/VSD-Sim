@@ -18,7 +18,7 @@
 
     <div class="mt-4" v-if="filteredVideos.length > 0">
       <v-row>
-        <v-col cols="4" v-for="(video, i) in filteredVideos" :key="i">
+        <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4" v-for="(video, i) in filteredVideos" :key="i">
           <TrafficVideo :video="video" @video-click="playVideo" />
         </v-col>
       </v-row>

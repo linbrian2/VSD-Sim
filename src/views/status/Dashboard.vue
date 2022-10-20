@@ -1,9 +1,13 @@
 <template>
   <div>
-    <TitleBar title="Service Health Check" :loading="loading" :refresh="refreshData">
+    <TitleBar
+      :title="$vuetify.breakpoint.mobile ? 'Status' : 'Service Health Check'"
+      :loading="loading"
+      :refresh="refreshData"
+    >
       <div class="update" v-if="updatedTime">{{ updatedTime | date }}</div>
     </TitleBar>
-    <v-container fluid style="max-width: 85%">
+    <v-container fluid :style="`${$vuetify.breakpoint.mobile ? 'max-width: 100%' : 'max-width: 85%'}`">
       <v-card class="rounded-0 elevation-5 mt-4 mb-10">
         <v-card-title :class="['py-1 font-weight-regular', dataCollectionLabelColor]"
           >Data Collection Services</v-card-title

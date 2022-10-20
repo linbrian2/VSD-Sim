@@ -1,4 +1,5 @@
 <template>
+  <!-- <div class="desktop" v-if="!$vuetify.breakpoint.mobile"> -->
   <div>
     <MapSelectionPanel
       ref="mapSelectPanel"
@@ -54,6 +55,47 @@
       </v-row>
     </v-container>
   </div>
+
+  <!-- <div class="mobile" v-else>
+    <MapSelectionPanel
+      ref="mapSelectPanel"
+      :markers="markers"
+      :items="items"
+      name="predictSideBarWidth"
+      :onMarkerClick="markerClicked"
+    />
+
+    <v-container ref="myDiv">
+      <v-card>
+        <v-col class="pt-0">
+          <v-row class="grid-center">
+            <MenuSelector :items="predictionModes" :selectedItem="predictionMode" @click="setPredictionMode" />
+          </v-row>
+          <v-row>
+            <template v-for="(volumeData, deviceId, index) in volumeList">
+              <v-col cols="12" :key="index">
+                <div :id="`D${deviceId}`">
+                  <div class="my-3" v-if="predictionAvail">
+                    <v-row wrap no-gutters>
+                      <template v-for="(data, idx) in predictionItems[deviceId]">
+                        <v-col :class="idx > 0 ? 'ml-2' : ''" :key="100 + idx">
+                          <VolumeCard :item="data" color="green" />
+                        </v-col>
+                      </template>
+                    </v-row>
+                  </div>
+
+                  <v-card tile elevation="24">
+                    <BasicChart :data="volumeData" :height="height" />
+                  </v-card>
+                </div>
+              </v-col>
+            </template>
+          </v-row>
+        </v-col>
+      </v-card>
+    </v-container>
+  </div> -->
 </template>
 
 <script>

@@ -1,38 +1,40 @@
 <template>
   <div>
-    <TitleBar title="Performance Measures" :loading="loading" :refresh="fetchData">
-      <v-row style="height:30px" align="center" class="mt-n2">
-        <v-col cols="9">
-          <div style="width:280px">
-            <v-combobox
-              flat
-              dense
-              small-chips
-              hide-details
-              multiple
-              single-line
-              label="Phases:"
-              :items="phases"
-              v-model="select"
-            >
-              <template v-slot:prepend>
-                <v-icon class="mt-n1" color="white">mdi-road</v-icon>
+    <div v-if="!$vuetify.breakpoint.mobile">
+      <TitleBar title="Performance Measures" :loading="loading" :refresh="fetchData">
+        <v-row style="height:30px" align="center" class="mt-n2">
+          <v-col cols="9">
+            <div style="width:280px">
+              <v-combobox
+                flat
+                dense
+                small-chips
+                hide-details
+                multiple
+                single-line
+                label="Phases:"
+                :items="phases"
+                v-model="select"
+              >
+                <template v-slot:prepend>
+                  <v-icon class="mt-n1" color="white">mdi-road</v-icon>
+                </template>
+              </v-combobox>
+            </div>
+          </v-col>
+          <v-col cols="3">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn dark icon small elevation="5" fab v-on="on" @click.stop="showCorridorOccupancy">
+                  <v-icon>mdi-format-columns</v-icon>
+                </v-btn>
               </template>
-            </v-combobox>
-          </div>
-        </v-col>
-        <v-col cols="3">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn dark icon small elevation="5" fab v-on="on" @click.stop="showCorridorOccupancy">
-                <v-icon>mdi-format-columns</v-icon>
-              </v-btn>
-            </template>
-            <span>Corridor Occupancy Charts</span>
-          </v-tooltip>
-        </v-col>
-      </v-row>
-    </TitleBar>
+              <span>Corridor Occupancy Charts</span>
+            </v-tooltip>
+          </v-col>
+        </v-row>
+      </TitleBar>
+    </div>
     <v-container fluid :style="{ 'max-width': maxWidth }">
       <v-card class="mt-1">
         <v-card-title :class="panelStyle">

@@ -29,7 +29,7 @@
           :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
-          :name="'Name'"
+          :name="'Route'"
           :titleFontSize="singleCol ? undefined : 20"
           :valueFontSize="singleCol ? undefined : 28"
           :value="currSegment.desc"
@@ -55,19 +55,7 @@
           :height="cardHeight"
           :name="'Severity'"
           :valueColor="getStrokeColor(currSegment.travelTime.level)"
-          :value="currSegment.travelTime.level"
-        />
-      </v-col>
-      <v-col :cols="12 / infoColumnCount" class="pa-1">
-        <InfoCard
-          :icon="'mdi-vector-line'"
-          :colDisplay="singleCol"
-          :flex="singleCol"
-          :height="cardHeight"
-          :name="'Distance'"
-          :titleFontSize="singleCol ? undefined : 20"
-          :valueFontSize="singleCol ? 38 : 28"
-          :value="`${currSegment.distance} mi`"
+          :value="`${currSegment.travelTime.level} / 7`"
         />
       </v-col>
       <v-col :cols="12 / infoColumnCount" class="pa-1">
@@ -88,22 +76,26 @@
           :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
-          :name="'Free Flow Run TIme'"
+          :name="'Travel Time (Current/Mean)'"
           :titleFontSize="singleCol ? undefined : 20"
           :valueFontSize="singleCol ? 38 : 28"
-          :value="getDurStr(currSegment.travelTime.data.freeFlowRunTimeSecs)"
+          :value="
+            `${getDurStr(currSegment.travelTime.data.freeFlowRunTimeSecs)} / ${getDurStr(
+              currSegment.travelTime.data.meanTravelTimeSecs
+            )}`
+          "
         />
       </v-col>
       <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
-          :icon="'mdi-timer-outline'"
+          :icon="'mdi-vector-line'"
           :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
-          :name="'Travel Time Mean'"
+          :name="'Distance'"
           :titleFontSize="singleCol ? undefined : 20"
           :valueFontSize="singleCol ? 38 : 28"
-          :value="getDurStr(currSegment.travelTime.data.meanTravelTimeSecs)"
+          :value="`${currSegment.distance} mi`"
         />
       </v-col>
     </v-row>
