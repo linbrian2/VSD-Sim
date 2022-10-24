@@ -268,7 +268,7 @@ const router = new Router({
 
 // redirect to login page if not logged in and trying to access a restricted page
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/account/reset-password', '/forgot-password'];
+  const publicPages = ['/login', '/account/reset-password', '/forgot-password', '/images'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = AuthToken.isLoggedIn();
 

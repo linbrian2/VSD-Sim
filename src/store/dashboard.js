@@ -120,7 +120,7 @@ const actions = {
 
       const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
       if (response.data.data) {
-        console.log('Incident Data: %o', response.data.data);
+        //console.log('Incident Data: %o', response.data.data);
         if (date) {
           commit('SET_TRAFFIC_INCIDENTS', response.data.data);
         } else {

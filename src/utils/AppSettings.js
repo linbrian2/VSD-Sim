@@ -9,18 +9,19 @@ export default {
         name: 'General',
         icon: 'mdi-cog',
         settings: [
+          { divider: true, title: 'Notifications' },
+          { id: 0, name: 'allowEmail', label: 'Enable email notifications', type: 'boolean', val: false },
+          { id: 1, name: 'allowSMS', label: 'Enable SMS notifications', type: 'boolean', val: false },
           { divider: true, title: 'Weather Settings' },
-          { id: 0, name: 'showWeatherBar', label: 'Show Weather Bar', type: 'boolean', val: true },
-          { id: 1, name: 'showTemp', label: 'Show Temperature', type: 'boolean', val: true },
-          { id: 2, name: 'showWind', label: 'Show Wind Speed', type: 'boolean', val: false },
-          { id: 3, name: 'showVisibility', label: 'Show Visibility', type: 'boolean', val: false },
-          { id: 4, name: 'showPrecip', label: 'Show Percipitation', type: 'boolean', val: false }
-          // { divider: true, title: 'Side Bar' },
-          // { id: 5, name: 'sideBarWidth', label: 'Side Bar Width', type: 'number', val: 700, min: 0, max: 1500 }
+          { id: 3, name: 'showWeatherBar', label: 'Show Weather Bar', type: 'boolean', val: true },
+          { id: 4, name: 'showTemp', label: 'Show Temperature', type: 'boolean', val: true },
+          { id: 5, name: 'showWind', label: 'Show Wind Speed', type: 'boolean', val: false },
+          { id: 6, name: 'showVisibility', label: 'Show Visibility', type: 'boolean', val: false },
+          { id: 7, name: 'showPrecip', label: 'Show Percipitation', type: 'boolean', val: false }
         ]
       },
       dashboard: {
-        name: 'Main Dashboard',
+        name: 'Dashboard',
         icon: 'mdi-view-dashboard',
         settings: [
           { divider: true, title: 'Updates' },
@@ -40,56 +41,56 @@ export default {
           { id: 1100, name: 'infoColumnCount', label: 'Info Column Count', type: 'number', val: 1, min: 1, max: 4 },
           { id: 1101, name: 'limitListings', label: 'Limit Listings', type: 'number', val: 0, min: 0, max: 5 },
           { id: 1102, name: 'hideIconsRightPanel', label: 'Hide Icons on Right Panel', type: 'boolean', val: false },
-          { id: 1103, name: 'showAllOverlayCards', label: 'Show All Overlay Cards', type: 'boolean', val: true },
-          { divider: true, title: 'Debug' },
-          {
-            id: 1200,
-            name: 'incidentsWholeDay',
-            label: 'Use Whole Day of Traffic Incidents',
-            type: 'boolean',
-            val: false
-          },
-          {
-            id: 1201,
-            name: 'usePrevDay',
-            label: 'Use Previous Day',
-            type: 'boolean',
-            val: false
-          },
-          {
-            id: 1202,
-            name: 'addTrafficFlowIssue',
-            label: 'Add a Traffic Flow Issue',
-            type: 'boolean',
-            val: false
-          }
+          { id: 1103, name: 'showAllOverlayCards', label: 'Show All Overlay Cards', type: 'boolean', val: true }
+          // { divider: true, title: 'Debug' },
+          // {
+          //   id: 1200,
+          //   name: 'incidentsWholeDay',
+          //   label: 'Use Whole Day of Traffic Incidents',
+          //   type: 'boolean',
+          //   val: false
+          // },
+          // {
+          //   id: 1201,
+          //   name: 'usePrevDay',
+          //   label: 'Use Previous Day',
+          //   type: 'boolean',
+          //   val: false
+          // },
+          // {
+          //   id: 1202,
+          //   name: 'addTrafficFlowIssue',
+          //   label: 'Add a Traffic Flow Issue',
+          //   type: 'boolean',
+          //   val: false
+          // }
         ]
-      },
-      traffic: {
-        name: 'Traffic Data',
-        icon: 'flowIcon',
-        settings: [{ divider: true, title: 'Flow Settings' }]
-      },
-      hr: {
-        name: 'High Resolution Data',
-        icon: 'hrIcon',
-        settings: [{ divider: true, title: 'Hr Settings' }]
-      },
-      vision: {
-        name: 'Machine Vision',
-        icon: 'visionIcon',
-        settings: [{ divider: true, title: 'Vision Settings' }]
-      },
-      cav: {
-        name: 'CAV Data',
-        icon: 'cavIcon',
-        settings: [{ divider: true, title: 'Cav Settings' }]
-      },
-      status: {
-        name: 'System Monitoring',
-        icon: 'healthIcon',
-        settings: [{ divider: true, title: 'Health Settings' }]
       }
+      // traffic: {
+      //   name: 'Traffic Data',
+      //   icon: 'flowIcon',
+      //   settings: [{ divider: true, title: 'Flow Settings' }]
+      // },
+      // hr: {
+      //   name: 'High Resolution Data',
+      //   icon: 'hrIcon',
+      //   settings: [{ divider: true, title: 'Hr Settings' }]
+      // },
+      // vision: {
+      //   name: 'Machine Vision',
+      //   icon: 'visionIcon',
+      //   settings: [{ divider: true, title: 'Vision Settings' }]
+      // },
+      // cav: {
+      //   name: 'CAV Data',
+      //   icon: 'cavIcon',
+      //   settings: [{ divider: true, title: 'Cav Settings' }]
+      // },
+      // status: {
+      //   name: 'System Monitoring',
+      //   icon: 'healthIcon',
+      //   settings: [{ divider: true, title: 'Health Settings' }]
+      // }
     };
   }
 };
