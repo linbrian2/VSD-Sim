@@ -6,7 +6,7 @@ import vuetify from './plugins/vuetify';
 import axios from 'axios';
 import VueNativeSock from 'vue-native-websocket';
 import { trafficWebsocketUrl } from './utils/websocketUrl';
-import { registerServiceWorker } from './utils/notification';
+import { registerServiceWorker } from './utils/Notification';
 
 import HighchartsVue from 'highcharts-vue';
 /* import 'material-design-icons-iconfont/dist/material-design-icons.css' */

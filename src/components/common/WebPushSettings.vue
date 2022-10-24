@@ -40,7 +40,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { subscribe, unsubscribe } from '@/utils/notification';
+import { subscribe, unsubscribe } from '@/utils/Notification';
 import Api from '@/utils/api/auth';
 
 export default {
