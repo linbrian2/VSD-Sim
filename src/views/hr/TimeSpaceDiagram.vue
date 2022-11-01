@@ -1,7 +1,7 @@
 <template>
   <div>
     <TitleBar title="Time Space Diagram" :loading="loading" :refresh="refreshData">
-      <div class="d-flex justify-space-between">
+      <div class="d-flex justify-center">
         <div style="width:160px">
           <ScrollableMenuTimePicker
             ref="timePicker"
@@ -11,20 +11,8 @@
             @next="timeChanged"
           />
         </div>
-        <div class="d-flex justify-center mt-n2" style="width:120px; margin-left:100px">
-          <v-select
-            dark
-            style="font-size: 14px"
-            v-model="speed"
-            :items="speedItems"
-            item-text="text"
-            item-value="value"
-            hide-details
-            single-line
-            prepend-icon="mdi-speedometer"
-          />
-        </div>
-        <div class="d-flex justify-center mt-n2" style="width:120px;; margin-left:100px">
+
+        <div class="d-flex justify-center mt-n2" style="width:120px; margin-left:250px">
           <v-select
             dark
             style="font-size: 14px"
@@ -51,7 +39,7 @@
       </div>
       <div v-else>
         <v-card class="mt-4">
-          <TimeSpaceChart :data="data" :speed="speed" />
+          <TimeSpaceChart :data="data" />
         </v-card>
       </div>
     </v-container>
@@ -81,15 +69,6 @@ export default {
     timeSpaceGroups: {},
     data: {},
     showChartInGroup: false,
-    speed: 45,
-    speedItems: [
-      { text: '60 MPH', value: 60 },
-      { text: '50 MPH', value: 50 },
-      { text: '45 MPH', value: 45 },
-      { text: '40 MPH', value: 40 },
-      { text: '35 MPH', value: 35 },
-      { text: '30 MPH', value: 30 }
-    ],
     overlay: 0,
     overlayItems: [
       { text: 'None', value: 0 },

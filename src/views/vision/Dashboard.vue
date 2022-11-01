@@ -31,6 +31,14 @@
               <span>Traffic Volumes Heatmap</span>
             </v-tooltip>
             <MenuTimePicker ref="timePicker" class="pa-0 ma-0 mt-n7 mr-10" />
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn icon @click="downloadClip" v-on="on" class="ml-1 mt-n2">
+                  <v-icon color="gray">mdi-download</v-icon>
+                </v-btn>
+              </template>
+              <span>Download video clip</span>
+            </v-tooltip>
           </v-row>
         </div>
       </div>
@@ -66,6 +74,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Api from '@/utils/api/vision';
 import { mapState } from 'vuex';
 import Utils from '@/utils/Utils';
@@ -222,6 +231,17 @@ export default {
       this.$store.commit('vision/SET_CURRENT_TIME', time);
     },
 
+    downloadClip() {
+      let video = this.getVideoByTime();
+      if (video) {
+        let url = video;
+        let items = video.split('/');
+        let label = items[items.length - 1];
+        let baseURL = this.info.server ? this.info.server : this.videoServer;
+        this.downloadItem({ url, baseURL, label });
+      }
+    },
+
     refreshData() {
       this.fetchData();
     },
@@ -375,6 +395,21 @@ export default {
       if (video) {
         this.changeMp4VideoSource(video);
       }
+    },
+
+    downloadItem({ url, baseURL, label }) {
+      const api = axios.create({ baseURL });
+      api
+        .get(url, { responseType: 'blob' })
+        .then(response => {
+          const blob = new Blob([response.data], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = label;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        })
+        .catch(console.error);
     }
   }
 };

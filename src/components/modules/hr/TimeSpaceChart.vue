@@ -68,6 +68,7 @@ export default {
         const P2s = [];
         const P6s = [];
         const dists = [];
+        const speeds = [];
 
         let P2Points = [];
         let P6Points = [];
@@ -94,6 +95,7 @@ export default {
           P2s.push(P2);
           P6s.push(P6);
           dists.push(item.distance);
+          speeds.push(item.speed / 2.237); // convert mph to m/s
 
           // North bound points (up direction)
           if (item.P2Points && item.P2Points.length > 0) {
@@ -121,11 +123,10 @@ export default {
         });
 
         const startIdx = 0;
-        const SPEED = this.speed / 2.237; // (m/s)
 
         // P6 - South Bound (green-ish)
         for (let i = startIdx + 1; i < P6s.length; i++) {
-          const t = Math.round((dists[i] * 1000) / SPEED);
+          const t = Math.round((dists[i] * 1000) / speeds[i]);
           const B = this.findThroughputBand(P6s[i - 1], P6s[i], t, 'SB', 'rgba(0,230,118,0.5)');
           if (B.length > 0) {
             series = series.concat(B);
@@ -135,7 +136,7 @@ export default {
         // P2 - North Bound (blue-ish)
         for (let i = P2s.length - 1; i > startIdx; i--) {
           // Calculate the time used to travel from one intersection to another intersection in milliseconds
-          const t = Math.round((dists[i] * 1000) / SPEED);
+          const t = Math.round((dists[i] * 1000) / speeds[i]);
           const B = this.findThroughputBand(P2s[i], P2s[i - 1], t, 'NB', 'rgba(0,118,230,0.5)');
           if (B.length > 0) {
             series = series.concat(B);
