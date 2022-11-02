@@ -1,7 +1,7 @@
 <template>
   <div class="traffic-data-playback">
     <!-- Right display panel -->
-    <RightPanel name="dashboardSideBarWidth" :title="currentTitle">
+    <RightPanel name="dashboardSideBarWidth" :title="currentTitle" v-if="!$vuetify.breakpoint.mobile">
       <PlaybackDataDisplay
         :currentTitle="currentTitle"
         :selectedSegment="selectedSegment"
@@ -20,12 +20,19 @@
       :startTime="startTime"
       :endTime="endTime"
     />
+    <BottomDataDisplay name="dashboardSideBarWidth" :title="currentTitle" v-if="$vuetify.breakpoint.mobile">
+      <PlaybackDataDisplay
+        :currentTitle="currentTitle"
+        :selectedSegment="selectedSegment"
+        :selectedWaze="selectedWaze"
+        :selectedDevice="selectedDevice"
+        :selectedIncident="selectedIncident"
+      />
+    </BottomDataDisplay>
 
     <PlaybackBar :date="currentDate" :loading="!dataIsAvailable" @processTime="processTime" :duration="duration" />
 
-    <div>
-      <PlaybackLayers />
-    </div>
+    <PlaybackLayers />
 
     <div class="debug">
       <v-card
@@ -118,9 +125,18 @@ import DialogTT from '@/components/modules/traffic/playback/DialogTT.vue';
 import Utils from '@/utils/Utils';
 import { mapActions, mapState } from 'vuex';
 import PlaybackDataDisplay from '@/components/modules/traffic/playback/PlaybackDataDisplay.vue';
+import BottomDataDisplay from '@/components/modules/traffic/common/BottomDataDisplay.vue';
 
 export default {
-  components: { RightPanel, PlaybackMap, PlaybackBar, PlaybackLayers, DialogTT, PlaybackDataDisplay },
+  components: {
+    RightPanel,
+    PlaybackMap,
+    PlaybackBar,
+    PlaybackLayers,
+    DialogTT,
+    PlaybackDataDisplay,
+    BottomDataDisplay
+  },
   data() {
     return {
       selectedSegmentId: null,
@@ -141,6 +157,14 @@ export default {
     };
   },
   computed: {
+    showPanel: {
+      get() {
+        return this.$store.state.traffic.showPanel;
+      },
+      set(show) {
+        this.$store.commit('traffic/SHOW_PANEL', show);
+      }
+    },
     selectedLinkId() {
       if (this.selectedSegment) {
         return this.selectedSegment.linkId;

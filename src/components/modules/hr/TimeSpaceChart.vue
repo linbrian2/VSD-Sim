@@ -533,6 +533,9 @@ export default {
 
     makeChart(chartHeight, series, categories, ticks, title, start, redrawFunc) {
       // Create chart instance
+      if (this.$vuetify.breakpoint.mobile) {
+        categories = categories.map(x => x.substr(0, 4));
+      }
       let idx = 0;
       let chart = {
         credits: {
@@ -542,7 +545,7 @@ export default {
           height: chartHeight,
           spacingTop: 20,
           spacingBottom: 30,
-          marginRight: 30,
+          marginRight: this.$vuetify.breakpoint.mobile ? 15 : 30,
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#bbb',

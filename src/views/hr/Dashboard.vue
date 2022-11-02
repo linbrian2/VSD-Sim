@@ -58,9 +58,8 @@
 
   <div class="mobile" v-else>
     <!-- TitleBar -->
-    <TitleBar title="Today's Summary" :loading="loading" :refresh="refreshData">
-      <div class="update mt-3" v-if="updatedTime">{{ updatedTime | date }}</div>
-    </TitleBar>
+    <div class="mt-6" />
+    <TitleBar title="Today's Summary" :loading="loading" :refresh="refreshData" :showMap="false"></TitleBar>
 
     <!-- Container -->
     <v-container fluid style="max-width: 95%">

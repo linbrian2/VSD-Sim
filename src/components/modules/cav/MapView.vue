@@ -324,7 +324,7 @@ export default {
   width: 101.5%;
   height: calc(100vh - 48px);
   margin-top: -12px;
-  margin-left: -12px;
+  margin-left: 0px;
   margin-right: 0px;
 }
 </style>

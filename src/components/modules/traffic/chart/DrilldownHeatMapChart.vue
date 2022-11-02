@@ -252,7 +252,7 @@ export default {
           spacingTop: 20,
           spacingBottom: 15,
           marginLeft: this.$vuetify.breakpoint.mobile ? 60 : 90,
-          marginRight: 80,
+          marginRight: this.$vuetify.breakpoint.mobile ? 20 : 80,
           marginBottom: this.$vuetify.breakpoint.mobile ? 50 : 65,
           type: 'heatmap',
           plotBorderColor: '#DEDEDE',
@@ -283,6 +283,7 @@ export default {
         },
 
         legend: {
+          enabled: this.$vuetify.breakpoint.mobile ? false : true,
           title: {
             text: 'Status'
           },

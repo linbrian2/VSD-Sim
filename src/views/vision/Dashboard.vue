@@ -93,12 +93,12 @@
               </template>
               <span>Traffic Volumes Heatmap</span>
             </v-tooltip>
-            <MenuTimePicker ref="timePicker" class="pa-0 ma-0 mt-n7 mr-10" />
+            <MenuTimePicker v-if="!$vuetify.breakpoint.mobile" ref="timePicker" class="pa-0 ma-0 mt-n7 mr-10" />
           </v-row>
         </div>
       </div>
 
-      <div>
+      <div class="mt-6">
         <v-tabs-items v-model="tab">
           <v-tab-item key="0">
             <v-card class="my-3 mx-5">
@@ -106,6 +106,7 @@
             </v-card>
           </v-tab-item>
           <v-tab-item key="1">
+            <MenuTimePicker v-if="$vuetify.breakpoint.mobile" ref="timePicker" class="pl-5 pa-0 ma-0 mt-n7 mr-10" />
             <v-card class="mt-3 mx-5" v-if="showHeatmap">
               <v-card-title class="d-flex justify-space-between">
                 <h4 class="overline">Click the heatmap cell to select video</h4>

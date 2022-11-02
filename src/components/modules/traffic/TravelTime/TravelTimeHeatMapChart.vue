@@ -75,7 +75,7 @@ export default {
             fontWeight: 'bold'
           },
           format: '{value:%H}',
-          step: 3600 / interval
+          step: this.$vuetify.breakpoint.mobile ? 7200 / interval : 3600 / interval
         }
       };
     },
@@ -94,6 +94,7 @@ export default {
           text: label
         },
         labels: {
+          enabled: !this.$vuetify.breakpoint.mobile,
           style: {
             fontSize: 11,
             fontWeight: 'bold',
@@ -217,8 +218,8 @@ export default {
           height: chartHeight,
           spacingTop: 10,
           spacingBottom: 5,
-          marginLeft: 165,
-          marginRight: 85,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 20 : 165,
+          marginRight: this.$vuetify.breakpoint.mobile ? 10 : 85,
           marginBottom: 55,
           type: 'heatmap',
           plotBorderColor: '#000000',
@@ -237,6 +238,7 @@ export default {
         colorAxis: { dataClasses: colorAxis },
 
         legend: {
+          enabled: !this.$vuetify.breakpoint.mobile,
           title: {
             text: 'Level'
           },
@@ -302,9 +304,9 @@ export default {
     },
 
     drawRowText(chart) {
-      if (this.$vuetify.breakpoint.mobile) {
-        return;
-      }
+      // if (this.$vuetify.breakpoint.mobile) {
+      //   return;
+      // }
       if (this.customObjects.length > 0) {
         Highcharts.each(this.customObjects, function(e) {
           e.destroy();
@@ -313,7 +315,8 @@ export default {
       }
 
       const startX = chart.xAxis[0].toPixels(0);
-      this.data.descriptions.forEach((row, index) => {
+      let rows = this.$vuetify.breakpoint.mobile ? this.data.ycategories : this.data.descriptions;
+      rows.forEach((row, index) => {
         const x = startX + 20;
         const y = chart.yAxis[0].toPixels(index) + 5;
         const t = chart.renderer

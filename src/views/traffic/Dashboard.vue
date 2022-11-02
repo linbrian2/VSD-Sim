@@ -1,7 +1,12 @@
 <template>
   <div>
     <!-- Right display panel -->
-    <RightPanel name="dashboardSideBarWidth" :title="currentTitle" :tableButton="true">
+    <RightPanel
+      name="dashboardSideBarWidth"
+      :title="currentTitle"
+      :tableButton="true"
+      v-if="!$vuetify.breakpoint.mobile"
+    >
       <component v-if="trafficInfoShow" :is="currentComponent" v-bind="currentProperties" ref="refPanelInfo" />
       <InfoColumn v-else :selectedIdx="selectedIdx" :cardData="cardData" />
     </RightPanel>
@@ -14,6 +19,16 @@
       :selectedIdx="selectedIdx"
       @fetchSensorLocations="fetchSensorLocations"
     />
+
+    <BottomDataDisplay
+      name="dashboardSideBarWidth"
+      :title="currentTitle"
+      :tableButton="true"
+      v-if="$vuetify.breakpoint.mobile"
+    >
+      <component v-if="trafficInfoShow" :is="currentComponent" v-bind="currentProperties" ref="refPanelInfo" />
+      <InfoColumn v-else :selectedIdx="selectedIdx" :cardData="cardData" />
+    </BottomDataDisplay>
 
     <DashboardInfoOverlay :selectedIdx="selectedIdx" :cardData="cardData" @cardClicked="cardClicked" />
 
@@ -64,6 +79,7 @@ import Utils from '@/utils/Utils';
 import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
 import DashboardInfoOverlay from '@/components/modules/dashboard/app/DashboardInfoOverlay.vue';
 import TrafficDashboardMap from '@/components/modules/traffic/dashboard/TrafficDashboardMap.vue';
+import BottomDataDisplay from '@/components/modules/traffic/common/BottomDataDisplay.vue';
 
 export default {
   components: {
@@ -77,7 +93,8 @@ export default {
     SelectionDialog,
     InfoColumn,
     TrafficDashboardMap,
-    DashboardInfoOverlay
+    DashboardInfoOverlay,
+    BottomDataDisplay
   },
 
   data: () => ({
@@ -105,6 +122,14 @@ export default {
   computed: {
     google: gmapApi,
 
+    showPanel: {
+      get() {
+        return this.$store.state.traffic.showPanel;
+      },
+      set(show) {
+        this.$store.commit('traffic/SHOW_PANEL', show);
+      }
+    },
     markers() {
       if (this.mapRegionSelection < 0) {
         return this.deviceLocations;
@@ -196,7 +221,7 @@ export default {
   },
 
   mounted() {
-    this.showScrollBar(false);
+    // this.showScrollBar(false);
 
     this.$bus.$on('SHOW_SELECTION_POPUP', id => {
       this.showSelectionDialog(id);

@@ -166,7 +166,7 @@ export default {
       let subtitle = data.subtitle || null;
       let xAxis = data.xAxis;
       // let yAxis = data.yAxis;
-      let ly = this.legendy || 45;
+      let ly = this.legendy || 50;
       let exporting = this.exporting === undefined ? false : this.exporting;
       let marginLeft = this.left;
 

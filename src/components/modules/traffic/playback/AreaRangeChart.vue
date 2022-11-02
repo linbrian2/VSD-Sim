@@ -165,10 +165,11 @@ export default {
     },
     addChart() {
       this.addTheme();
+      let height = this.$vuetify.breakpoint.mobile ? 300 : 600;
       Highcharts.chart(this.containerName, {
         chart: {
           marginBottom: 85,
-          height: this.height ? this.height : 600,
+          height: height,
           zoomType: this.multiGraph ? null : 'x',
           scrollablePlotArea: {
             minWidth: this.minWidth ? this.minWidth : 600,
@@ -177,6 +178,7 @@ export default {
         },
 
         legend: {
+          enabled: !this.$vuetify.breakpoint.mobile,
           align: 'center',
           verticalAlign: 'bottom',
           y: 0

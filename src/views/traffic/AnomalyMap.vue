@@ -10,7 +10,7 @@
     <TitleBar title="Traffic Flow Anomaly" :loading="loading" :refresh="refreshData" />
 
     <v-container>
-      <v-card class="mb-8" v-if="isValid(anomaly1)">
+      <v-card class="mb-2" v-if="isValid(anomaly1)">
         <DrilldownHeatMapChart
           :data="anomaly1"
           :height="mapHeight(anomaly1)"
@@ -19,7 +19,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly2)">
+      <v-card class="mb-2" v-if="isValid(anomaly2)">
         <DrilldownHeatMapChart
           :data="anomaly2"
           :height="mapHeight(anomaly2)"
@@ -28,7 +28,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly3)">
+      <v-card class="mb-2" v-if="isValid(anomaly3)">
         <DrilldownHeatMapChart
           :data="anomaly3"
           :height="mapHeight(anomaly3)"
@@ -37,7 +37,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly4)">
+      <v-card class="mb-2" v-if="isValid(anomaly4)">
         <DrilldownHeatMapChart
           :data="anomaly4"
           :height="mapHeight(anomaly4)"
@@ -46,7 +46,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly5)">
+      <v-card class="mb-2" v-if="isValid(anomaly5)">
         <DrilldownHeatMapChart
           :data="anomaly5"
           :height="mapHeight(anomaly5)"
@@ -55,7 +55,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly6)">
+      <v-card class="mb-2" v-if="isValid(anomaly6)">
         <DrilldownHeatMapChart
           :data="anomaly6"
           :height="mapHeight(anomaly6)"
@@ -81,7 +81,18 @@
 
     <!-- Container -->
     <v-container>
-      <v-card class="mb-8" v-if="isValid(anomaly1)">
+      <v-card class="mb-2 px-7">
+        <v-row>
+          <v-col cols="12" class="pb-1 grid-center">Status</v-col>
+          <v-col v-for="i in status" :key="i.id" cols="2" class="pt-0 px-1">
+            <v-card :color="i.color" class="grid-center">
+              <h5>{{ i.name }}</h5>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <v-card class="mb-2" v-if="isValid(anomaly1)">
         <DrilldownHeatMapChart
           :data="anomaly1"
           :height="mapHeight(anomaly1)"
@@ -90,7 +101,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly2)">
+      <v-card class="mb-2" v-if="isValid(anomaly2)">
         <DrilldownHeatMapChart
           :data="anomaly2"
           :height="mapHeight(anomaly2)"
@@ -99,7 +110,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly3)">
+      <v-card class="mb-2" v-if="isValid(anomaly3)">
         <DrilldownHeatMapChart
           :data="anomaly3"
           :height="mapHeight(anomaly3)"
@@ -108,7 +119,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly4)">
+      <v-card class="mb-2" v-if="isValid(anomaly4)">
         <DrilldownHeatMapChart
           :data="anomaly4"
           :height="mapHeight(anomaly4)"
@@ -117,7 +128,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly5)">
+      <v-card class="mb-2" v-if="isValid(anomaly5)">
         <DrilldownHeatMapChart
           :data="anomaly5"
           :height="mapHeight(anomaly5)"
@@ -126,7 +137,7 @@
         />
       </v-card>
 
-      <v-card class="mb-8" v-if="isValid(anomaly6)">
+      <v-card class="mb-2" v-if="isValid(anomaly6)">
         <DrilldownHeatMapChart
           :data="anomaly6"
           :height="mapHeight(anomaly6)"
@@ -163,7 +174,15 @@ export default {
     anomaly3: {},
     anomaly4: {},
     anomaly5: {},
-    anomaly6: {}
+    anomaly6: {},
+    status: [
+      { from: 0, to: 0, color: '#196f3d', name: '0' },
+      { from: 1, to: 1, color: '#B71C1C', name: '1' },
+      { from: 3, to: 3, color: '#E57373', name: '3' },
+      { from: 4, to: 4, color: '#FF9800', name: '4' },
+      { from: 5, to: 5, color: '#FFCC00', name: '5' },
+      { from: 6, to: 6, color: '#FDD835', name: '6' }
+    ]
   }),
   computed: {
     markers() {

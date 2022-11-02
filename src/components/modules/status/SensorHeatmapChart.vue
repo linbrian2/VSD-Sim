@@ -153,8 +153,8 @@ export default {
           height: chartHeight,
           spacingTop: 15,
           spacingBottom: 5,
-          marginLeft: 75,
-          marginRight: this.legend ? 270 : 40,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : 75,
+          marginRight: !this.$vuetify.breakpoint.mobile && this.legend ? 270 : 20,
           marginBottom: 50,
           type: 'heatmap',
           plotBorderColor: '#0000ff',
@@ -168,7 +168,7 @@ export default {
         colorAxis: colorAxis,
 
         legend: {
-          enabled: this.legend,
+          enabled: !this.$vuetify.breakpoint.mobile && this.legend,
           title: {
             text: 'Error Types'
           },

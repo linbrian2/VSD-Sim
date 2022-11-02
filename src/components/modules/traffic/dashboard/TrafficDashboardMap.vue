@@ -19,7 +19,11 @@
           :zoom="12"
           map-type-id="roadmap"
           class="my-map"
-          style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
+          :style="
+            `margin-top:-1px; width: 100%; height:${
+              $vuetify.breakpoint.mobile && showPanel ? 'calc(50vh - 48px)' : 'calc(100vh - 48px)'
+            }`
+          "
         >
           <!-- Traffic Flow Detectors & Traffic Flow Issues -->
           <div v-if="isMapLayerVisible(0) || selectedIdx == 1">
@@ -297,6 +301,14 @@ export default {
     };
   },
   computed: {
+    showPanel: {
+      get() {
+        return this.$store.state.traffic.showPanel;
+      },
+      set(show) {
+        this.$store.commit('traffic/SHOW_PANEL', show);
+      }
+    },
     deviceMarkers() {
       return Devices;
     },

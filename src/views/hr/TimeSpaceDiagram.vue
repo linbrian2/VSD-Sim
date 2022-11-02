@@ -1,6 +1,7 @@
 <template>
   <div>
-    <TitleBar title="Time Space Diagram" :loading="loading" :refresh="refreshData">
+    <div v-if="$vuetify.breakpoint.mobile" class="mt-5" />
+    <TitleBar title="Time Space Diagram" :loading="loading" :refresh="refreshData" :showMap="false">
       <div class="d-flex justify-space-between">
         <div style="width:160px">
           <ScrollableMenuTimePicker
@@ -11,7 +12,10 @@
             @next="timeChanged"
           />
         </div>
-        <div class="d-flex justify-center mt-n2" style="width:120px; margin-left:100px">
+        <div
+          class="d-flex justify-center mt-n2"
+          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '100px'}`"
+        >
           <v-select
             dark
             style="font-size: 14px"
@@ -21,10 +25,13 @@
             item-value="value"
             hide-details
             single-line
-            prepend-icon="mdi-speedometer"
+            :prepend-icon="$vuetify.breakpoint.mobile ? null : 'mdi-speedometer'"
           />
         </div>
-        <div class="d-flex justify-center mt-n2" style="width:120px;; margin-left:100px">
+        <div
+          class="d-flex justify-center mt-n2"
+          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '100px'}`"
+        >
           <v-select
             dark
             style="font-size: 14px"
@@ -35,13 +42,12 @@
             hide-details
             single-line
             @input="overlaySelected"
-            prepend-icon="mdi-content-copy"
+            :prepend-icon="$vuetify.breakpoint.mobile ? null : 'mdi-content-copy'"
           />
         </div>
       </div>
     </TitleBar>
     <v-container fluid style="max-width: 95%">
-      <!-- {{ data }} -->
       <div v-if="showChartInGroup">
         <div v-for="(data, group, index) in timeSpaceGroups" :key="index">
           <v-card class="mt-4">

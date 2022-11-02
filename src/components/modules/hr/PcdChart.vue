@@ -111,8 +111,8 @@ export default {
         chart: {
           height: chartHeight,
           marginTop: this.$vuetify.breakpoint.mobile ? 40 : 120,
-          marginLeft: 90,
-          marginRight: 50,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : 90,
+          marginRight: this.$vuetify.breakpoint.mobile ? 10 : 50,
           spacingTop: 5,
           spacingBottom: 10,
           zoomType: 'xy',
@@ -218,7 +218,7 @@ export default {
           }
         },
         legend: {
-          enabled: true,
+          enabled: !this.$vuetify.breakpoint.mobile,
           layout: 'vertical',
           align: 'right',
           verticalAlign: 'top',

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="1200px">
+  <v-dialog v-model="dialog" persistent width="1200px" :fullscreen="$vuetify.breakpoint.mobile">
     <!-- Title bar on the top -->
     <v-toolbar dark color="#607C8A" dense flat fixed overflow extension-height="0">
       <v-toolbar-title>
@@ -19,63 +19,70 @@
       </v-toolbar-items>
     </v-toolbar>
 
-    <v-tabs vertical class="tabs" v-if="settings" style="overflow-x: hidden;">
-      <template v-for="(category, key) in settings">
-        <v-tab :key="category.id">
-          <v-icon v-if="category.icon.includes('mdi')" left>{{ category.icon }}</v-icon>
-          <v-img v-else class="mr-1" :src="getIcon(category.icon)" max-width="30" />
-          {{ category.name }}
-        </v-tab>
-        <v-tab-item :key="category.id" class="pl-10 pb-10">
-          <v-row>
-            <v-col cols="12" class="py-3" v-if="key == 'general'">
-              <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
-                <h3>System</h3>
-              </v-subheader>
-              <v-divider class="mb-3" />
-              <v-btn @click="defaultSettingsDialog = true">Restore Settings to Default</v-btn>
-            </v-col>
-            <!-- <v-divider v-if="item.divider" :key="index"></v-divider> -->
-            <v-col class="py-0" :cols="setting.divider ? 12 : 6" v-for="setting in category.settings" :key="setting.id">
-              <template v-if="setting.divider">
+    <v-card>
+      <v-tabs vertical class="tabs" v-if="settings" style="overflow-x: hidden;">
+        <template v-for="(category, key) in settings">
+          <v-tab :key="category.id">
+            <v-icon v-if="category.icon.includes('mdi')" left>{{ category.icon }}</v-icon>
+            <v-img v-else class="mr-1" :src="getIcon(category.icon)" max-width="30" />
+            <template v-if="!$vuetify.breakpoint.mobile">{{ category.name }}</template>
+          </v-tab>
+          <v-tab-item :key="category.id" :class="$vuetify.breakpoint.mobile ? 'pb-10 pr-2' : 'pl-10 pb-10'">
+            <v-row>
+              <v-col cols="12" class="py-3" v-if="key == 'general'">
                 <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
-                  <h3>{{ camelCaseToWords(setting.title) }}</h3>
+                  <h3>System</h3>
                 </v-subheader>
                 <v-divider class="mb-3" />
-              </template>
-              <v-checkbox
-                v-if="setting.type == 'boolean'"
-                v-model="setting.val"
-                :label="setting.label"
-                class="mr-10"
-              ></v-checkbox>
-              <v-select
-                v-else-if="setting.type == 'select' && setting.items"
-                v-model="setting.val"
-                :label="setting.label"
-                :items="setting.items"
-                class="mr-10 mb-3"
-                dense
-                filled
-                hide-details
-              ></v-select>
-              <v-text-field
-                v-else-if="setting.type == 'number'"
-                v-model.number="setting.val"
-                :label="setting.label"
-                :min="setting.min"
-                :max="setting.max"
-                class="mr-10 mb-3"
-                type="number"
-                dense
-                filled
-                hide-details
-              ></v-text-field>
-            </v-col>
-          </v-row>
-        </v-tab-item>
-      </template>
-    </v-tabs>
+                <v-btn @click="defaultSettingsDialog = true">Restore Settings to Default</v-btn>
+              </v-col>
+              <!-- <v-divider v-if="item.divider" :key="index"></v-divider> -->
+              <v-col
+                class="py-0"
+                :cols="setting.divider || $vuetify.breakpoint.mobile ? 12 : 6"
+                v-for="setting in category.settings"
+                :key="setting.id"
+              >
+                <template v-if="setting.divider">
+                  <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
+                    <h3>{{ camelCaseToWords(setting.title) }}</h3>
+                  </v-subheader>
+                  <v-divider class="mb-3" />
+                </template>
+                <v-checkbox
+                  v-if="setting.type == 'boolean'"
+                  v-model="setting.val"
+                  :label="setting.label"
+                  :class="$vuetify.breakpoint.mobile ? null : 'mr-10'"
+                ></v-checkbox>
+                <v-select
+                  v-else-if="setting.type == 'select' && setting.items"
+                  v-model="setting.val"
+                  :label="setting.label"
+                  :items="setting.items"
+                  :class="$vuetify.breakpoint.mobile ? 'mb-3' : 'mr-10 mb-3'"
+                  dense
+                  filled
+                  hide-details
+                ></v-select>
+                <v-text-field
+                  v-else-if="setting.type == 'number'"
+                  v-model.number="setting.val"
+                  :label="setting.label"
+                  :min="setting.min"
+                  :max="setting.max"
+                  class="mr-10 mb-3"
+                  type="number"
+                  dense
+                  filled
+                  hide-details
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-tab-item>
+        </template>
+      </v-tabs>
+    </v-card>
     <v-dialog v-model="defaultSettingsDialog" width="unset" transition="scroll-x-transition" scrollable>
       <v-card>
         <v-card-title>

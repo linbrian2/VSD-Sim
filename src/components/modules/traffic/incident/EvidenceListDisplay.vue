@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container :class="$vuetify.breakpoint.mobile ? 'px-0' : null">
     <v-row>
       <v-col cols="12">
         <v-card tile class="mb-2">
@@ -33,7 +33,7 @@
       </v-col>
       <v-col cols="12">
         <v-card tile :elevation="10">
-          <div class="mx-4">
+          <div :class="$vuetify.breakpoint.mobile ? null : 'mx-4'">
             <IncidentTimeline :items="incidentTimelineSeries" ref="incidentTimeline" />
           </div>
         </v-card>

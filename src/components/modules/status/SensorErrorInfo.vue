@@ -1,75 +1,73 @@
 <template>
-  <div>
-    <v-container>
-      <v-row id="info">
-        <v-col cols="12">
-          <div class="d-flex justify-space-between">
-            <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Basic Info</h3></v-subheader>
-            <div class="mt-4 mr-3">
-              <v-chip class="ml-2 mt-n1" outlined small @click.stop="markerIdClicked(marker.id)">
-                <span>{{ marker.id }} / {{ marker.uid }}</span>
+  <v-container>
+    <v-row id="info">
+      <v-col cols="12">
+        <div class="d-flex justify-space-between">
+          <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Basic Info</h3></v-subheader>
+          <div class="mt-4 mr-3">
+            <v-chip class="ml-2 mt-n1" outlined small @click.stop="markerIdClicked(marker.id)">
+              <span>{{ marker.id }} / {{ marker.uid }}</span>
+            </v-chip>
+          </div>
+        </div>
+        <v-divider />
+      </v-col>
+      <v-col cols="12">
+        <div class="mx-4">
+          <v-row>
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 6" v-for="(item, j) in info" :key="j">
+              <ListInfoCard :info="item" class="mt-0" />
+            </v-col>
+          </v-row>
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col cols="12">
+        <div class="d-flex justify-space-between">
+          <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Error Types</h3></v-subheader>
+          <v-tooltip left>
+            <template v-slot:activator="{ on }">
+              <v-btn small icon v-on="on" @click.stop="showLegend = !showLegend" class="mr-4 mt-2">
+                <v-icon small>mdi-information-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Legend</span>
+          </v-tooltip>
+        </div>
+        <v-divider />
+      </v-col>
+
+      <v-col cols="12" v-show="showLegend">
+        <div class="mx-4">
+          <v-card tile>
+            <v-chip-group active-class="primary--text" column class="ml-6">
+              <v-chip
+                small
+                v-for="{ color, name, from } in dataClasses"
+                :key="from"
+                :color="color"
+                class="gray--text short"
+              >
+                {{ from }}: {{ name }}
               </v-chip>
-            </div>
-          </div>
-          <v-divider />
-        </v-col>
-        <v-col cols="12">
-          <div class="mx-4">
-            <v-row>
-              <v-col cols="6" v-for="(item, j) in info" :key="j">
-                <ListInfoCard :info="item" class="mt-0" />
-              </v-col>
-            </v-row>
-          </div>
-        </v-col>
-      </v-row>
+            </v-chip-group>
+          </v-card>
+        </div>
+      </v-col>
+    </v-row>
 
-      <v-row>
-        <v-col cols="12">
-          <div class="d-flex justify-space-between">
-            <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Error Types</h3></v-subheader>
-            <v-tooltip left>
-              <template v-slot:activator="{ on }">
-                <v-btn small icon v-on="on" @click.stop="showLegend = !showLegend" class="mr-4 mt-2">
-                  <v-icon small>mdi-information-outline</v-icon>
-                </v-btn>
-              </template>
-              <span>Legend</span>
-            </v-tooltip>
-          </div>
-          <v-divider />
-        </v-col>
-
-        <v-col cols="12" v-show="showLegend">
-          <div class="mx-4">
-            <v-card tile>
-              <v-chip-group active-class="primary--text" column class="ml-6">
-                <v-chip
-                  small
-                  v-for="{ color, name, from } in dataClasses"
-                  :key="from"
-                  :color="color"
-                  class="gray--text short"
-                >
-                  {{ from }}: {{ name }}
-                </v-chip>
-              </v-chip-group>
-            </v-card>
-          </div>
-        </v-col>
-      </v-row>
-
-      <v-row v-for="({ errorTypes }, i) in sensorErrorTypes" :key="i">
-        <v-col cols="12">
-          <div class="mx-4">
-            <v-card tile>
-              <SensorHeatmapChart :data="errorTypes" :legend="false" :height="height" />
-            </v-card>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+    <v-row v-for="({ errorTypes }, i) in sensorErrorTypes" :key="i">
+      <v-col cols="12">
+        <div class="mx-4">
+          <v-card tile>
+            <SensorHeatmapChart :data="errorTypes" :legend="false" :height="height" />
+          </v-card>
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

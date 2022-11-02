@@ -1,7 +1,7 @@
 <template>
   <div class="'playback-data-display'">
     <div id="congested-routes" v-if="currentTitle == 'Segment'">
-      <v-row class="mt-3 ml-1 mr-7" v-if="selectedSegment">
+      <v-row :class="$vuetify.breakpoint.mobile ? 'mt-3 ml-1 mr-1' : 'mt-3 ml-1 mr-7'" v-if="selectedSegment">
         <v-col :cols="12 / infoColumnCount" class="pa-1" v-if="selectedSegment.desc">
           <InfoCard
             :icon="'mdi-vector-line'"

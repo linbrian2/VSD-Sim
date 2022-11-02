@@ -33,10 +33,15 @@
         <div class="graph-container">
           <v-btn icon @click="removeItem(i)" class="graph-close-button"><v-icon>mdi-close</v-icon></v-btn>
         </div>
-        <v-card max-width :height="height" color="#333333" class="pa-6">
+        <v-card v-if="!$vuetify.breakpoint.mobile" max-width :height="height" color="#333333" class="pa-6">
           <v-row class="grid-center">
             <h3>{{ i.name }}</h3>
             <h1 :style="`color: #aaa; margin-top: ${marginTop}`">NO DATA</h1>
+          </v-row>
+        </v-card>
+        <v-card v-else max-width color="#333333" class="pa-6">
+          <v-row class="grid-center">
+            <h3>{{ i.name }} - (No Data)</h3>
           </v-row>
         </v-card>
       </template>

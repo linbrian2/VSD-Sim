@@ -128,7 +128,7 @@
 
       <v-card tile class="mx-3 mb-2" v-show="showIncidentTable">
         <div>
-          <IncidentTable :height="tableHeight" :incidents="incidents" @click="handleRowClick" />
+          <IncidentTable :height="500" :incidents="incidents" @click="handleRowClick" />
         </div>
       </v-card>
 

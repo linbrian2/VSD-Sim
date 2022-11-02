@@ -1,6 +1,18 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" :class="mapClass">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="11"
+      map-type-id="roadmap"
+      :class="mapClass"
+      :style="
+        `margin-top:-1px; width: 100%; height:${
+          $vuetify.breakpoint.mobile && showPanel ? 'calc(50vh - 48px)' : 'calc(100vh - 48px)'
+        }`
+      "
+    >
       <slot></slot>
     </GmapMap>
   </div>
@@ -32,6 +44,14 @@ export default {
   }),
 
   computed: {
+    showPanel: {
+      get() {
+        return this.$store.state.traffic.showPanel;
+      },
+      set(show) {
+        this.$store.commit('traffic/SHOW_PANEL', show);
+      }
+    },
     position() {
       return this.$store.state.position;
     }
