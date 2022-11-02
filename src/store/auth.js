@@ -32,7 +32,7 @@ const actions = {
       },
       error => {
         commit('loginFailure');
-        errorCallback(error.data.message);
+        errorCallback(error && error.data && error.data.message);
       }
     );
   },

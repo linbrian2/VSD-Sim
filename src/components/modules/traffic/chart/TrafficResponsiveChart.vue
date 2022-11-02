@@ -31,6 +31,7 @@ export default {
   data() {
     return {
       reload: false,
+      startTime: null,
       signalPatterns: [],
       bands: [],
       customObjects: []
@@ -105,7 +106,7 @@ export default {
       }
 
       if (this.bands) {
-        const xx = chart.xAxis[0].toPixels(this.signalPatterns[0][0]) + 15;
+        const xx = chart.xAxis[0].toPixels(this.startTime) + 15;
         const n = this.bands.length;
         for (let i = 0; i < n; i++) {
           const y0 = chart.yAxis[0].toPixels(this.bands[i].from) - 3;
@@ -159,6 +160,7 @@ export default {
     makeChart(chartHeight, data, redrawFunc) {
       this.signalPatterns = data.patterns;
       this.bands = data.bands;
+      this.startTime = data.startTime;
 
       // Add data to series
       let series = data.series ? data.series : this.prepareSeries(data.data);

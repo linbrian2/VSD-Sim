@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="1200px" :fullscreen="$vuetify.breakpoint.mobile">
+  <v-dialog v-model="dialog" persistent width="1000px" :fullscreen="$vuetify.breakpoint.mobile">
     <!-- Title bar on the top -->
-    <v-toolbar dark color="#607C8A" dense flat fixed overflow extension-height="0">
+    <v-toolbar dark color="indigo" dense flat fixed overflow extension-height="0">
       <v-toolbar-title>
         <v-btn icon class="ml-n2" @click="goBack">
           <v-icon dark>mdi-cog-outline</v-icon>
@@ -9,10 +9,7 @@
         Settings
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn small class="mt-1" @click.stop="saveData">
-        <v-icon left>mdi-content-save </v-icon>
-        <span> Save </span>
-      </v-btn>
+
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-btn icon dark @click="goBack"><v-icon>mdi-close</v-icon></v-btn>
@@ -20,26 +17,46 @@
     </v-toolbar>
 
     <v-card>
-      <v-tabs vertical class="tabs" v-if="settings" style="overflow-x: hidden;">
-        <template v-for="(category, key) in settings">
-          <v-tab :key="category.id">
+      <v-toolbar dense>
+        <v-tabs color="teal accent-4" v-model="tab">
+          <v-tab v-for="category in settings" :key="category.id">
             <v-icon v-if="category.icon.includes('mdi')" left>{{ category.icon }}</v-icon>
             <v-img v-else class="mr-1" :src="getIcon(category.icon)" max-width="30" />
-            <template v-if="!$vuetify.breakpoint.mobile">{{ category.name }}</template>
+            {{ category.name }}
           </v-tab>
-          <v-tab-item :key="category.id" :class="$vuetify.breakpoint.mobile ? 'pb-10 pr-2' : 'pl-10 pb-10'">
+        </v-tabs>
+
+        <v-spacer></v-spacer>
+
+        <v-btn small outlined @click.stop="saveData">
+          <v-icon left color="green">mdi-content-save </v-icon>
+          <span> Save </span>
+        </v-btn>
+      </v-toolbar>
+
+      <v-card-title>
+        <v-tabs-items v-model="tab">
+          <v-tab-item v-for="(category, key) in settings" :key="category.id" class="pl-10 pb-10">
             <v-row>
               <v-col cols="12" class="py-3" v-if="key == 'general'">
                 <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
                   <h3>System</h3>
                 </v-subheader>
                 <v-divider class="mb-3" />
-                <v-btn @click="defaultSettingsDialog = true">Restore Settings to Default</v-btn>
+                <v-row>
+                  <v-col cols="6">
+                    <v-btn @click="defaultSettingsDialog = true">Restore Settings to Default</v-btn>
+                  </v-col>
+
+                  <v-col cols="12">
+                    <WebPushSettings />
+                  </v-col>
+                </v-row>
               </v-col>
-              <!-- <v-divider v-if="item.divider" :key="index"></v-divider> -->
+
               <v-col
                 class="py-0"
-                :cols="setting.divider || $vuetify.breakpoint.mobile ? 12 : 6"
+                :cols="setting.divider ? 12 : 4"
                 v-for="setting in category.settings"
                 :key="setting.id"
               >
@@ -47,20 +64,20 @@
                   <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
                     <h3>{{ camelCaseToWords(setting.title) }}</h3>
                   </v-subheader>
-                  <v-divider class="mb-3" />
+                  <v-divider class="mb-1" />
                 </template>
                 <v-checkbox
                   v-if="setting.type == 'boolean'"
                   v-model="setting.val"
                   :label="setting.label"
-                  :class="$vuetify.breakpoint.mobile ? null : 'mr-10'"
+                  class="mr-10"
                 ></v-checkbox>
                 <v-select
                   v-else-if="setting.type == 'select' && setting.items"
                   v-model="setting.val"
                   :label="setting.label"
                   :items="setting.items"
-                  :class="$vuetify.breakpoint.mobile ? 'mb-3' : 'mr-10 mb-3'"
+                  class="mr-10 mb-1"
                   dense
                   filled
                   hide-details
@@ -71,7 +88,7 @@
                   :label="setting.label"
                   :min="setting.min"
                   :max="setting.max"
-                  class="mr-10 mb-3"
+                  class="mr-10 mb-1"
                   type="number"
                   dense
                   filled
@@ -80,9 +97,10 @@
               </v-col>
             </v-row>
           </v-tab-item>
-        </template>
-      </v-tabs>
+        </v-tabs-items>
+      </v-card-title>
     </v-card>
+
     <v-dialog v-model="defaultSettingsDialog" width="unset" transition="scroll-x-transition" scrollable>
       <v-card>
         <v-card-title>
@@ -105,13 +123,18 @@
 <script>
 import Settings from '@/utils/AppSettings';
 import { appIcons } from '@/mixins/appIcons';
+import WebPushSettings from '@/components/common/WebPushSettings';
 
 export default {
   mixins: [appIcons],
+  components: {
+    WebPushSettings
+  },
   data() {
     return {
       dialog: false,
       defaultSettingsDialog: false,
+      tab: null,
       settings: null,
       loading: false,
       savePanel: false,

@@ -351,6 +351,7 @@ export default {
     showResponsivePlot: true,
     responsiveChartData: {},
     signalChartData: {},
+    currentEnabledTr: false,
     currentPermit: null,
     currentGroupId: null,
     currentSignal: null,
@@ -463,6 +464,12 @@ export default {
     ...mapState(['currentDate'])
   },
 
+  watch: {
+    currentDate() {
+      this.refreshData();
+    }
+  },
+
   created() {
     this.$store.commit('traffic/SHOW_PANEL', true);
   },
@@ -548,23 +555,25 @@ export default {
     },
 
     refreshData() {
-      if (this.currentPermit) {
-        this.fetchData(this.currentPermit);
-      }
+      this.fetchResponsiveZoneData(this.currentEnabledTr, true);
     },
 
     fetchData(permit) {
       this.fetchSignalCycleSplit(permit);
     },
 
-    fetchResponsiveZoneData(trEnabledSignal) {
+    fetchResponsiveZoneData(trEnabledSignal, timeChanged) {
+      let updated = false;
       if (trEnabledSignal) {
-        if (this.zoneChanged || Utils.isEmpty(this.responsiveChartData)) {
+        if (this.zoneChanged || Utils.isEmpty(this.responsiveChartData || timeChanged)) {
           const start = this.currentDate.getTime();
           const zoneId = this.currentGroupId;
           this.fetchTrafficResponsiveData(zoneId, start);
+          updated = true;
         }
-      } else {
+      }
+
+      if (!updated) {
         this.responsiveChartData = {};
         this.showResponsivePlot = false;
       }
@@ -582,16 +591,16 @@ export default {
 
     async fetchSignalCycleSplit(permit) {
       this.loading = true;
-
       try {
         const response = await Api.getSignalCycleSplit(permit);
         const data = this.parseResponse(response, false);
         if (data != null) {
+          this.currentEnabledTr = data.device.enabledTr;
           this.detectorInfo = this.composeDetectorInfo(data.device);
           this.currentSignal = data.signal;
           this.currentPattern = data.current;
           this.signalChartData = this.composeSignalData(data.pattern);
-          this.fetchResponsiveZoneData(data.device.enabledTr);
+          this.fetchResponsiveZoneData(data.device.enabledTr, false);
         }
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
@@ -711,6 +720,8 @@ export default {
       const xAxis = 'Time of day';
       const yAxis = 'V + O (%)';
 
+      const startTime = resData.NBVO ? resData.NBVO[0][0] : resData.SBVO ? resData.SBVO[0][0] : new Date().getTime();
+
       let data = [];
       data.push({ name: 'NB V+O', color: '#ED561B', data: resData.NBVO, tracking: true });
       data.push({ name: 'SB V+O', color: '#50B432', data: resData.SBVO, tracking: true });
@@ -743,7 +754,7 @@ export default {
         }));
       }
 
-      return { data, xAxis, yAxis, title, ymin: 0, ymax: 100, bands: bands, patterns: resData.patterns };
+      return { data, xAxis, yAxis, title, startTime, ymin: 0, ymax: 100, bands: bands, patterns: resData.patterns };
     }
   }
 };

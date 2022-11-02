@@ -120,7 +120,7 @@ const actions = {
 
       const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
       if (response.data.data) {
-        console.log('Incident Data: %o', response.data.data);
+        //console.log('Incident Data: %o', response.data.data);
         if (date) {
           commit('SET_TRAFFIC_INCIDENTS', response.data.data);
         } else {
@@ -135,6 +135,8 @@ const actions = {
             .sort((a, b) => (a.severity > b.severity ? -1 : b.severity > a.severity ? 1 : 0));
           commit('SET_TRAFFIC_INCIDENTS', sortedData ? sortedData : []);
         }
+      } else {
+        commit('SET_TRAFFIC_INCIDENTS', []);
       }
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });

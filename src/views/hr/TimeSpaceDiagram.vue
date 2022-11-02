@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="$vuetify.breakpoint.mobile" class="mt-5" />
-    <TitleBar title="Time Space Diagram" :loading="loading" :refresh="refreshData" :showMap="false">
-      <div class="d-flex justify-space-between">
+    <TitleBar title="Time Space Diagram" :loading="loading" :refresh="refreshData">
+      <div class="d-flex justify-center">
         <div style="width:160px">
           <ScrollableMenuTimePicker
             ref="timePicker"
@@ -14,7 +14,7 @@
         </div>
         <div
           class="d-flex justify-center mt-n2"
-          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '100px'}`"
+          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '250px'}`"
         >
           <v-select
             dark
@@ -30,7 +30,7 @@
         </div>
         <div
           class="d-flex justify-center mt-n2"
-          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '100px'}`"
+          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '250px'}`"
         >
           <v-select
             dark
@@ -57,7 +57,7 @@
       </div>
       <div v-else>
         <v-card class="mt-4">
-          <TimeSpaceChart :data="data" :speed="speed" />
+          <TimeSpaceChart :data="data" />
         </v-card>
       </div>
     </v-container>
@@ -87,15 +87,6 @@ export default {
     timeSpaceGroups: {},
     data: {},
     showChartInGroup: false,
-    speed: 45,
-    speedItems: [
-      { text: '60 MPH', value: 60 },
-      { text: '50 MPH', value: 50 },
-      { text: '45 MPH', value: 45 },
-      { text: '40 MPH', value: 40 },
-      { text: '35 MPH', value: 35 },
-      { text: '30 MPH', value: 30 }
-    ],
     overlay: 0,
     overlayItems: [
       { text: 'None', value: 0 },

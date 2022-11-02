@@ -5,6 +5,10 @@
 npm install
 ```
 
+## Dependencies
+register-service-worker 
+workbox-webpack-plugin
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve

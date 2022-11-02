@@ -266,7 +266,7 @@ export default {
       detourFlag: true,
       detourDuration: 1800,
       detourRatio: 0.3,
-      duration: 1800,
+      duration: 3600,
       durationItems: [
         { text: '20 minutes', value: 1200 },
         { text: '30 minutes', value: 1800 },
@@ -366,11 +366,11 @@ export default {
       const params = {
         startTime: Utils.formatDateTime(startTime),
         endTime: Utils.formatDateTime(endTime),
-        incidentLocation: [this.latitude, this.longitude],
+        incidentLocation: [parseFloat(this.latitude), parseFloat(this.longitude)],
         incidentDirection: this.incidentDirection,
         blockageFlag: this.blockageFlag,
         detourFlag: this.detourFlag,
-        detourRatio: this.detourRatio,
+        detourRatio: parseFloat(this.detourRatio),
         blockageOffset: this.blockageDelayTime,
         duration: this.detourDuration
       };

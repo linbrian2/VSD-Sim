@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify';
 import axios from 'axios';
 import VueNativeSock from 'vue-native-websocket';
 import { trafficWebsocketUrl } from './utils/websocketUrl';
+import { registerServiceWorker } from './utils/Notification';
 
 import HighchartsVue from 'highcharts-vue';
 /* import 'material-design-icons-iconfont/dist/material-design-icons.css' */
@@ -29,6 +30,12 @@ Vue.use(VueNativeSock, trafficWebsocketUrl, {
 
 // Add an event bus to the root
 Vue.prototype.$bus = new Vue();
+
+// Register service worker
+registerServiceWorker((subscription, status) => {
+  store.commit('SET_NOTIFICATION_SUB', subscription);
+  store.commit('SET_NOTIFICATION_STATUS', status);
+});
 
 new Vue({
   router,

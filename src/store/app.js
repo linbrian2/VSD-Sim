@@ -17,7 +17,9 @@ const state = {
   snackbar: {},
   mapCenter: { lat: 39.14, lng: -75.5 },
   position: { lat: 38.9108, lng: -75.5277 },
-  currentDate: new Date()
+  currentDate: new Date(),
+  notificationStatus: 0,
+  subscription: null
 };
 
 const getters = {
@@ -93,6 +95,14 @@ const mutations = {
 
   SET_CURRENT_DATE(state, date) {
     state.currentDate = date;
+  },
+
+  SET_NOTIFICATION_STATUS(state, status) {
+    state.notificationStatus = status;
+  },
+
+  SET_NOTIFICATION_SUB(state, subscription) {
+    state.subscription = subscription;
   }
 };
 
