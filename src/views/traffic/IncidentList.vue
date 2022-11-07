@@ -156,7 +156,7 @@ export default {
     },
 
     tableHeight() {
-      return Math.max(100, Math.min(this.incidents.length * 65, 400));
+      return Math.max(150, Math.min(this.incidents.length * 65 + 50, 400));
     },
 
     isSimulation() {

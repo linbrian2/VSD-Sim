@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12">
-      <v-btn :disabled="isNotificationBlocked" @click="allowWebPushNotifications">
+      <v-btn :disabled="isNotificationBlocked" @click="allowWebPushNotifications" :loading="loading">
         <v-icon left :color="notificationIconColor" v-text="notificationIcon" />
         {{ notificationLabel }}
       </v-btn>
@@ -46,6 +46,7 @@ import Api from '@/utils/api/auth';
 export default {
   data() {
     return {
+      loading: false,
       alert: false,
       showInstruction: false,
       instruction: `If you are unable to see the web notifications on Windows, please open Settings > System >
@@ -127,6 +128,7 @@ export default {
     allowWebPushNotifications() {
       this.alert = false;
       this.showInstruction = false;
+      this.loading = true;
       if (this.notificationStatus == 0) {
         subscribe(process.env.VUE_APP_PUBLIC_KEY, this.subscribeCallback);
       } else if (this.notificationStatus == 1) {
@@ -138,12 +140,14 @@ export default {
       this.$store.commit('SET_NOTIFICATION_SUB', subscription);
       const subscriptionObject = this.composeSubscriptionObject(subscription);
       this.updateSubscriptionOnServer(subscriptionObject, 0);
+      this.loading = false;
     },
 
     unsubscribeCallback(subscription) {
       this.$store.commit('SET_NOTIFICATION_SUB', null);
       const subscriptionObject = this.composeSubscriptionObject(subscription);
       this.updateSubscriptionOnServer(subscriptionObject, 1);
+      this.loading = false;
     },
 
     composeSubscriptionObject(subscription) {
