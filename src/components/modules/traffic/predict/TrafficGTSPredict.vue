@@ -1,6 +1,6 @@
 <template>
-  <!-- <div class="desktop" v-if="!$vuetify.breakpoint.mobile"> -->
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
+    <!-- <div> -->
     <MapSelectionPanel
       ref="mapSelectPanel"
       :markers="markers"
@@ -25,6 +25,7 @@
             single-line
           />
         </div>
+        
         <div class="d-flex align-center justify-end mt-3">
           <div class="text-caption" v-if="timeUsed">Time used: {{ timeUsed }} ms</div>
         </div>
@@ -56,7 +57,7 @@
     </v-container>
   </div>
 
-  <!-- <div class="mobile" v-else>
+  <div class="mobile" v-else>
     <MapSelectionPanel
       ref="mapSelectPanel"
       :markers="markers"
@@ -65,37 +66,52 @@
       :onMarkerClick="markerClicked"
     />
 
-    <v-container ref="myDiv">
-      <v-card>
-        <v-col class="pt-0">
-          <v-row class="grid-center">
-            <MenuSelector :items="predictionModes" :selectedItem="predictionMode" @click="setPredictionMode" />
-          </v-row>
-          <v-row>
-            <template v-for="(volumeData, deviceId, index) in volumeList">
-              <v-col cols="12" :key="index">
-                <div :id="`D${deviceId}`">
-                  <div class="my-3" v-if="predictionAvail">
-                    <v-row wrap no-gutters>
-                      <template v-for="(data, idx) in predictionItems[deviceId]">
-                        <v-col :class="idx > 0 ? 'ml-2' : ''" :key="100 + idx">
-                          <VolumeCard :item="data" color="green" />
-                        </v-col>
-                      </template>
-                    </v-row>
-                  </div>
+    <v-container>
+      <v-row class="grid-center">
+        <MenuSelector :items="predictionModes" :selectedItem="predictionMode" @click="setPredictionMode" />
+      </v-row>
+      <div class="d-flex align-items justify-space-between align-center">
+        <div class="mt-1 mr-10" style="width:100px;">
+          <v-select
+            dark
+            dense
+            v-model="direction"
+            :items="dirItems"
+            item-text="text"
+            item-value="value"
+            @input="dirSelected"
+            hide-details
+            prepend-icon="mdi-arrow-decision-outline"
+            single-line
+          />
+        </div>
+        <div class="d-flex align-center justify-end mt-3">
+          <div class="text-caption" v-if="timeUsed">Time used: {{ timeUsed }} ms</div>
+        </div>
+      </div>
+      <v-row>
+        <template v-for="(volumeData, deviceId, index) in volumeList">
+          <v-col cols="12" :key="index">
+            <div :id="`D${deviceId}`">
+              <div class="my-3" v-if="predictionAvail">
+                <v-row wrap no-gutters>
+                  <template v-for="(data, idx) in predictionItems[deviceId]">
+                    <v-col :class="idx > 0 ? 'ml-2' : ''" :key="100 + idx">
+                      <VolumeCard :item="data" color="green" />
+                    </v-col>
+                  </template>
+                </v-row>
+              </div>
 
-                  <v-card tile elevation="24">
-                    <BasicChart :data="volumeData" :height="height" />
-                  </v-card>
-                </div>
-              </v-col>
-            </template>
-          </v-row>
-        </v-col>
-      </v-card>
+              <v-card tile elevation="24">
+                <BasicChart :data="volumeData" :height="height" />
+              </v-card>
+            </div>
+          </v-col>
+        </template>
+      </v-row>
     </v-container>
-  </div> -->
+  </div>
 </template>
 
 <script>
@@ -106,13 +122,15 @@ import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPane
 import TitleBar from '@/components/modules/traffic/predict/TitleBar';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import VolumeCard from '@/components/modules/traffic/common/VolumeCard';
+import MenuSelector from '@/components/common/MenuSelector';
 
 export default {
   components: {
     MapSelectionPanel,
     TitleBar,
     BasicChart,
-    VolumeCard
+    VolumeCard,
+    MenuSelector
   },
 
   data: () => ({
@@ -159,7 +177,7 @@ export default {
     predictionAvail() {
       return !Utils.isEmpty(this.predictionItems);
     },
-
+    ...mapState('traffic', ['activeMarker', 'predictionModes', 'predictionMode']),
     ...mapState(['currentDate'])
   },
 
@@ -183,6 +201,10 @@ export default {
   },
 
   methods: {
+    setPredictionMode(mode) {
+      this.$store.commit('traffic/SET_PREDICTION_MODE', mode);
+    },
+
     markerClicked(marker) {
       this.gotoSection(`#D${marker.sensorId}`);
     },

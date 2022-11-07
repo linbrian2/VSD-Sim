@@ -26,10 +26,6 @@
   </div>
 
   <div class="mobile" v-else>
-    <!-- <TitleBar :loading="loading" :refresh="refreshData" :showRefresh="!$vuetify.breakpoint.xs" :showMap="false">
-      <div :style="'height: 45px'" />
-    </TitleBar> -->
-
     <MapSelectionPanel
       ref="mapSelectPanel"
       :markers="markers"

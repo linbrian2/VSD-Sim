@@ -95,14 +95,7 @@
       </div>
     </SignalTimingTitleBar>
 
-    <GmapMap
-      ref="mapRef"
-      :options="options"
-      :center="position"
-      :zoom="11"
-      map-type-id="roadmap"
-      class="map-select-mobile"
-    >
+    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" class="map-mobile">
       <SignalDisplay ref="signalRef" @startTask="startTimer" v-show="timing != null" />
     </GmapMap>
     <TimingToolbar v-show="timelineVisible" />
@@ -407,5 +400,9 @@ export default {
 }
 .speed-control {
   background-color: white !important;
+}
+.map-mobile {
+  width: 100%;
+  height: calc(100vh - 162px);
 }
 </style>

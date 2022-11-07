@@ -70,15 +70,6 @@
   </div>
 
   <div class="mobile" v-else>
-    <!-- Input & Map -->
-    <MapSelectionPanel
-      ref="mapSelectPanel"
-      :markers="markers"
-      :items="items"
-      name="anomalySideBarWidth"
-      :onMarkerClick="markerClicked"
-    />
-
     <!-- Container -->
     <v-container>
       <v-card class="mb-2 px-7">

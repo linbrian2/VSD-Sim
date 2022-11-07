@@ -51,4 +51,8 @@ export default {
   width: 100%;
   height: calc(100vh - 84px);
 }
+.map-select-desktop-2 {
+  width: 100%;
+  height: calc(100vh - 64px);
+}
 </style>

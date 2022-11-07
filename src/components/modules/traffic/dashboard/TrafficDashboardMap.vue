@@ -610,7 +610,7 @@ export default {
     },
     addMapControls(map) {
       this.addHomeControl(map);
-      this.addMessageControl(map);
+      // this.addMessageControl(map);
     },
     addHomeControl(map) {
       let options = {

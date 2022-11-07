@@ -1,6 +1,6 @@
 <template>
   <div class="playback-toolbar">
-    // TODO: Fix playback having double incrTimers
+    <!-- TODO: Fix playback having double incrTimers -->
     <v-toolbar dense floating height="40" :style="`position: absolute; top: 10px; left: ${left}; height: 40px`">
       <v-chip small outlined class="ma-2 overline"> {{ timeStr }} </v-chip>
       <v-slider

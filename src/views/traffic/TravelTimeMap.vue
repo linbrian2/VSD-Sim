@@ -48,7 +48,7 @@
     </TitleBar>
 
     <v-container>
-      <v-card class="mb-10">
+      <v-card class="mb-2">
         <v-container v-if="isData0Available">
           <TravelTimeHeatMapChart
             :data="heatMapData0"
@@ -58,7 +58,7 @@
           />
         </v-container>
       </v-card>
-      <v-card class="mb-10">
+      <v-card class="mb-2">
         <v-container v-if="isData1Available">
           <TravelTimeHeatMapChart
             :data="heatMapData1"
@@ -75,18 +75,6 @@
   </div>
 
   <div class="mobile" v-else>
-    <v-select
-      dense
-      v-model="routeDir"
-      :items="routeDirections"
-      item-text="text"
-      item-value="value"
-      hide-details
-      prepend-icon="mdi-directions"
-      single-line
-    />
-    <MapSegments ref="mapSegments" :segments="segments" @detector-clicked="detectorClicked" :smallMap="true" />
-
     <!-- Container -->
     <v-container>
       <div class="d-flex justify-center align-center">
@@ -129,8 +117,8 @@
         </v-row>
       </v-card>
 
-      <v-card class="mb-10">
-        <v-container v-if="isData0Available">
+      <v-card class="mb-2">
+        <v-container v-if="isData0Available" class="pa-0">
           <TravelTimeHeatMapChart
             :data="heatMapData0"
             :height="mapHeight(heatMapData0)"
@@ -139,8 +127,8 @@
           />
         </v-container>
       </v-card>
-      <v-card class="mb-10">
-        <v-container v-if="isData1Available">
+      <v-card class="mb-2">
+        <v-container v-if="isData1Available" class="pa-0">
           <TravelTimeHeatMapChart
             :data="heatMapData1"
             :height="mapHeight(heatMapData1)"
