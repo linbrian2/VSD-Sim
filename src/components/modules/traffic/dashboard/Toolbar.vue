@@ -127,7 +127,8 @@ export default {
       { title: 'High Resolution Signals', id: 5 },
       { title: 'State-wide Detectors', id: 6 },
       { title: 'Travel Segments', id: 7 },
-      { title: 'Waze Alerts', id: 8 }
+      { title: 'Waze Alerts', id: 8 },
+      { title: 'Traffic Incidents', id: 9 }
     ],
 
     region_menu_items: [

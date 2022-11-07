@@ -12,6 +12,7 @@ const state = {
   mapProjection: null,
   currentSignalTime: null,
   realTimeSignal: null,
+  showMapForSignal: true,
   signalTimingMode: 'Playback'
 };
 
@@ -31,6 +32,9 @@ const mutations = {
   },
   SET_ACTIVE_MARKER(state, marker) {
     state.activeMarker = marker;
+  },
+  SET_SHOW_MAP_FOR_SIGNAL(state, flag) {
+    state.showMapForSignal = flag;
   },
   SET_TIMING(state, timing) {
     state.timing = timing;

@@ -7,7 +7,11 @@
       :zoom="12"
       map-type-id="roadmap"
       class="my-map"
-      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
+      :style="
+        `margin-top:-1px; width: 100%; height:${
+          $vuetify.breakpoint.mobile && showPanel ? 'calc(50vh - 48px)' : 'calc(100vh - 48px)'
+        }`
+      "
     >
       <!-- trajectory -->
       <GmapPolyline :path.sync="segment" :options="segmentOptions" />
@@ -62,7 +66,8 @@ export default {
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'hybrid'],
         position: 6
-      }
+      },
+      gestureHandling: 'greedy'
       // styles: MapStyles
     },
 
@@ -81,6 +86,14 @@ export default {
     carVisible: false
   }),
   computed: {
+    showPanel: {
+      get() {
+        return this.$store.state.cav.showPanel;
+      },
+      set(show) {
+        this.$store.commit('cav/SHOW_PANEL', show);
+      }
+    },
     position() {
       return this.$store.state.position;
     },
@@ -420,7 +433,5 @@ export default {
   width: 101.5%;
   height: calc(100vh - 48px);
   margin-top: -12px;
-  margin-left: -12px;
-  margin-right: 0px;
 }
 </style>

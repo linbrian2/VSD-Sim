@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="ttDialog" max-width="100%" transition="scroll-x-transition">
+  <v-dialog v-model="ttDialog" max-width="100%" transition="scroll-x-transition" v-if="!$vuetify.breakpoint.mobile">
     <v-card v-if="!reload">
-      <v-card-actions>
+      <v-card-actions v-if="!$vuetify.breakpoint.mobile">
         <v-card-title class="segment-title"> {{ selectedSegment ? selectedSegment.desc : 'N/A' }} </v-card-title>
         <!-- Card Button Group -->
         <div class="middle-header">

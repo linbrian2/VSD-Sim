@@ -1,6 +1,13 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="12" map-type-id="roadmap" class="map-select">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="12"
+      map-type-id="roadmap"
+      :class="$vuetify.breakpoint.mobile && selectedMarkerIds.length > 0 ? 'map-select-mobile' : 'map-select-desktop'"
+    >
       <GmapMarker
         v-for="m in markers"
         :key="m.id"
@@ -48,7 +55,8 @@ export default {
       },
       streetViewControl: false,
       fullscreenControl: true,
-      zoomControl: true
+      zoomControl: true,
+      gestureHandling: 'greedy'
     }
   }),
   computed: {
@@ -64,14 +72,12 @@ export default {
       });
     },
     markers(markers) {
-      console.log('watch - markers:\n %o', this.$refs);
       this.$refs.mapRef.$mapPromise.then(map => {
         this.centerMap(map, markers);
       });
     }
   },
   mounted() {
-    console.log('mounted:\n %o', this.$refs.mapRef);
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$bus.$on('NAME_SELECTED', selectedMarkers => {
@@ -206,7 +212,6 @@ export default {
       }
     },
     centerMap(map, markers) {
-      console.log('centerMap');
       if (markers.length > 0) {
         const outlierRemoval = new OutlierRemoval(4.0);
         const points = outlierRemoval.remove(markers.map(item => item.position));
@@ -242,8 +247,6 @@ export default {
     },
 
     markerClicked(marker, fromMap = true) {
-      console.log(marker);
-      console.log('Before: %o', this.selectedMarkerIds);
       let action = 'add';
       if (this.selectedMarkerIds.includes(marker.id)) {
         this.selectedMarkerIds = this.selectedMarkerIds.filter(x => x != marker.id);
@@ -251,7 +254,6 @@ export default {
       } else {
         this.selectedMarkerIds.push(marker.id);
       }
-      console.log('After: %o', this.selectedMarkerIds);
 
       /* this.$store.commit('traffic/SET_ACTIVE_MARKER', marker); */
       this.$emit('click', marker, action, fromMap);

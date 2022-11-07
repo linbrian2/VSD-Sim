@@ -27,7 +27,8 @@ export default {
           }
         };
       }
-      let chart = this.makeChart(this.height, this.data, this.drawGridLines);
+      let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
+      let chart = this.makeChart(height, this.data, this.drawGridLines);
       return chart;
     }
   },
@@ -250,9 +251,9 @@ export default {
           height: chartHeight,
           spacingTop: 20,
           spacingBottom: 15,
-          marginLeft: 90,
-          marginRight: 80,
-          marginBottom: 65,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : 90,
+          marginRight: this.$vuetify.breakpoint.mobile ? 20 : 80,
+          marginBottom: this.$vuetify.breakpoint.mobile ? 50 : 65,
           type: 'heatmap',
           plotBorderColor: '#DEDEDE',
           plotBorderWidth: 1,
@@ -282,6 +283,7 @@ export default {
         },
 
         legend: {
+          enabled: this.$vuetify.breakpoint.mobile ? false : true,
           title: {
             text: 'Status'
           },

@@ -108,7 +108,7 @@ export default {
 
       switch (type) {
         case 0:
-          text = 'Click to subscribe web push notifications';
+          text = 'Subscribe to web push notifications';
           break;
         case 1:
           text = 'Web push notifications subscribed';

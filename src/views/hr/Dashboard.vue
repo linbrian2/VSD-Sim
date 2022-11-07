@@ -1,8 +1,67 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <TitleBar title="Today's Summary" :loading="loading" :refresh="refreshData">
       <div class="update mt-3" v-if="updatedTime">{{ updatedTime | date }}</div>
     </TitleBar>
+    <v-container fluid style="max-width: 95%">
+      <div class="my-2 mx-2">
+        <v-data-table
+          disable-sort
+          :headers="headers"
+          :items="summary"
+          hide-default-footer
+          :loading="loading"
+          loading-text="Loading... Please wait"
+        >
+          <template v-slot:[`item.permit`]="{ item }">
+            <v-chip color="success" outlined x-small style="width:45px;">{{ item.permit }}</v-chip>
+          </template>
+          <template v-slot:[`item.power`]="{ item }">
+            <v-icon small :color="powerColor(item.power)">mdi-record</v-icon>
+          </template>
+
+          <template v-slot:[`item.control`]="{ item }">
+            <v-icon small :color="controlColor(item.control)">{{ controlType(item.control) }}</v-icon>
+          </template>
+
+          <template v-slot:[`item.AoRN`]="{ item }">
+            <FormatChip :value="item.AoR[0]" />
+          </template>
+
+          <template v-slot:[`item.AoRS`]="{ item }">
+            <FormatChip :value="item.AoR[1]" />
+          </template>
+
+          <template v-slot:[`item.simpleDelayN`]="{ item }">
+            <div>{{ item.simpleDelay[0] }}</div>
+          </template>
+
+          <template v-slot:[`item.simpleDelayS`]="{ item }">
+            <div>{{ item.simpleDelay[1] }}</div>
+          </template>
+
+          <template v-slot:[`item.approachVolumeN`]="{ item }">
+            <div>{{ item.approachVolume[0] }}</div>
+          </template>
+
+          <template v-slot:[`item.approachVolumeS`]="{ item }">
+            <div>{{ item.approachVolume[1] }}</div>
+          </template>
+
+          <template v-slot:[`item.performanceIndex`]="{ item }">
+            <v-chip outlined small color="teal">{{ getPerformanceScore(item.performanceIndex) }}</v-chip>
+          </template>
+        </v-data-table>
+      </div>
+    </v-container>
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- TitleBar -->
+    <div class="mt-6" />
+    <TitleBar title="Today's Summary" :loading="loading" :refresh="refreshData" :showMap="false"></TitleBar>
+
+    <!-- Container -->
     <v-container fluid style="max-width: 95%">
       <div class="my-2 mx-2">
         <v-data-table

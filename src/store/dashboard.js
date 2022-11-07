@@ -147,7 +147,6 @@ const actions = {
     try {
       const response = await TrafficApi.fetchAnomalyDevices();
       let deviceLocations = response.data.map(obj => ({ ...obj, status: 0 }));
-      // TODO: Remove outside of testing
       if (store.getters['getSetting']('dashboard', 'addTrafficFlowIssue')) {
         deviceLocations[0].status = 1;
       }

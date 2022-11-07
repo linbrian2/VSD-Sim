@@ -44,7 +44,8 @@ export default {
         };
       }
       let d = this.prepareData(this.data);
-      return this.makeChart(this.height, d.series, d.categories, d.ticks, this.title, d.start, this.drawLineText);
+      let height = this.$vuetify.breakpoint.mobile ? 500 : this.height;
+      return this.makeChart(height, d.series, d.categories, d.ticks, this.title, d.start, this.drawLineText);
     }
   },
 
@@ -533,6 +534,9 @@ export default {
 
     makeChart(chartHeight, series, categories, ticks, title, start, redrawFunc) {
       // Create chart instance
+      if (this.$vuetify.breakpoint.mobile) {
+        categories = categories.map(x => x.substr(0, 4));
+      }
       let idx = 0;
       let chart = {
         credits: {
@@ -542,7 +546,7 @@ export default {
           height: chartHeight,
           spacingTop: 20,
           spacingBottom: 30,
-          marginRight: 30,
+          marginRight: this.$vuetify.breakpoint.mobile ? 15 : 30,
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#bbb',

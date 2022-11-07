@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <SignalTimingTitleBar title="Signal Timing" :loading="loading" :refresh="refreshData">
       <div style="height:30px" class="d-flex justify-space-between align-center mt-2">
         <v-slider
@@ -49,6 +49,57 @@
     </GmapMap>
     <TimingToolbar v-show="timelineVisible" />
   </div>
+
+  <div class="mobile" v-else>
+    <SignalTimingTitleBar :loading="loading" :refresh="refreshData" :showRefresh="false" :showMap="false">
+      <div style="height:30px" class="d-flex justify-space-between align-center mt-2">
+        <v-slider
+          style="width:160px"
+          v-model="sliderValue"
+          dense
+          color="orange darken-3"
+          track-color="grey"
+          height="18"
+          always-dirty
+          min="0"
+          :max="sliderMax"
+          class="mt-6"
+          @change="sliderChanged"
+        />
+
+        <div class="ml-10">
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn small rounded outlined color="white" dark v-bind="attrs" v-on="on">
+                Speed: {{ selectedSpeed }}x
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item v-for="(speed, i) in speed_items" :key="i" @click="speedMenuItemSelected(speed)">
+                <v-list-item-title>SPEED: {{ speed }}X</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+        <div class="ml-12">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn dark icon v-on="on" @click.stop="showTimeline">
+                <v-icon :color="timelineVisible ? 'red' : ''">mdi-chart-gantt</v-icon>
+              </v-btn>
+            </template>
+            <span>Show Timeline</span>
+          </v-tooltip>
+        </div>
+      </div>
+    </SignalTimingTitleBar>
+
+    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" class="map-mobile">
+      <SignalDisplay ref="signalRef" @startTask="startTimer" v-show="timing != null" />
+    </GmapMap>
+    <TimingToolbar v-show="timelineVisible" />
+  </div>
 </template>
 
 <script>
@@ -88,10 +139,12 @@ export default {
       },
       streetViewControl: false,
       fullscreenControl: true,
+      mapTypeControl: false,
 
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'satellite']
-      }
+      },
+      gestureHandling: 'greedy'
     }
   }),
   computed: {
@@ -347,5 +400,9 @@ export default {
 }
 .speed-control {
   background-color: white !important;
+}
+.map-mobile {
+  width: 100%;
+  height: calc(100vh - 162px);
 }
 </style>

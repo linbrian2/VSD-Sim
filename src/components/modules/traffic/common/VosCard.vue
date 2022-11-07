@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card min-width="100%">
-      <v-card-title class="justify-center my-n2 pa-1 grey darken-3">
+      <v-card-title class="justify-center my-n2 pa-1 grey darken-3" :class="$vuetify.breakpoint.mobile ? 'pt-2' : ''">
         <v-chip class="mt-n1 mr-5" :color="color" outlined small>
           <span>{{ vos.type }}</span>
         </v-chip>

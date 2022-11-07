@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <TitleBar :loading="loading" :refresh="refreshData">
       <v-btn-toggle class="mt-1" dense dark color="teal" v-model="selectedDirection" mandatory v-if="isJetsonCamera">
         <v-btn flat>NB</v-btn>
@@ -70,6 +70,70 @@
         </v-tabs-items>
       </div>
     </div>
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- Container -->
+    <v-container>
+      <v-btn-toggle class="mt-1" dense dark color="teal" v-model="selectedDirection" mandatory v-if="isJetsonCamera">
+        <v-btn flat>NB</v-btn>
+        <v-btn flat>SB</v-btn>
+        <v-btn flat>EB</v-btn>
+        <v-btn flat>WB</v-btn>
+      </v-btn-toggle>
+      <div class="d-flex justify-space-between">
+        <div>
+          <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
+            <v-tab key="0">Live Feed</v-tab>
+            <v-tab key="1">Historical Video</v-tab>
+            <v-tab key="2">Traffic Flow</v-tab>
+          </v-tabs>
+        </div>
+        <div class="time-display">
+          <v-row v-if="tab == 1">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <div v-on="on">
+                  <v-btn outlined small dark icon class="ml-16 mr-10 mt-n2" @click="showTrafficHeatmap">
+                    <v-icon>mdi-dots-grid</v-icon>
+                  </v-btn>
+                </div>
+              </template>
+              <span>Traffic Volumes Heatmap</span>
+            </v-tooltip>
+            <MenuTimePicker v-if="!$vuetify.breakpoint.mobile" ref="timePicker" class="pa-0 ma-0 mt-n7 mr-10" />
+          </v-row>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <v-tabs-items v-model="tab">
+          <v-tab-item key="0">
+            <v-card class="my-3 mx-5">
+              <VideoPlayer ref="liveVideoPlayer" :options="livePlayerOptions" v-if="tab == 0" />
+            </v-card>
+          </v-tab-item>
+          <v-tab-item key="1">
+            <MenuTimePicker v-if="$vuetify.breakpoint.mobile" ref="timePicker" class="pl-5 pa-0 ma-0 mt-n7 mr-10" />
+            <v-card class="mt-3 mx-5" v-if="showHeatmap">
+              <v-card-title class="d-flex justify-space-between">
+                <h4 class="overline">Click the heatmap cell to select video</h4>
+                <v-btn icon @click="showHeatmap = false"><v-icon>mdi-close</v-icon></v-btn>
+              </v-card-title>
+              <HeatMapChart :data="timeSeries" :height="heatMapHeight" @cell-click="cellClicked" />
+            </v-card>
+            <v-card class="mt-3 mx-5">
+              <VideoPlayer ref="mp4VideoPlayer" :options="mp4PlayerOptions" v-if="tab == 1" />
+            </v-card>
+          </v-tab-item>
+          <v-tab-item key="2">
+            <div class="mt-3 mx-5">
+              <TrafficFlowCharts />
+            </div>
+          </v-tab-item>
+        </v-tabs-items>
+      </div>
+    </v-container>
   </div>
 </template>
 

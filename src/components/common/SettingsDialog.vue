@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="1000px">
+  <v-dialog v-model="dialog" persistent width="1000px" :fullscreen="$vuetify.breakpoint.mobile">
     <!-- Title bar on the top -->
     <v-toolbar dark color="indigo" dense flat fixed overflow extension-height="0">
       <v-toolbar-title>
@@ -18,7 +18,7 @@
 
     <v-card>
       <v-toolbar dense>
-        <v-tabs color="teal accent-4" v-model="tab">
+        <v-tabs color="teal accent-4" v-model="tab" fixed-tabs show-arrows="mobile" class="pr-1">
           <v-tab v-for="category in settings" :key="category.id">
             <v-icon v-if="category.icon.includes('mdi')" left>{{ category.icon }}</v-icon>
             <v-img v-else class="mr-1" :src="getIcon(category.icon)" max-width="30" />
@@ -34,9 +34,9 @@
         </v-btn>
       </v-toolbar>
 
-      <v-card-title>
+      <v-card-title :class="$vuetify.breakpoint.mobile ? 'pl-2 pa-0' : null">
         <v-tabs-items v-model="tab">
-          <v-tab-item v-for="(category, key) in settings" :key="category.id" class="pl-10 pb-10">
+          <v-tab-item v-for="(category, key) in settings" :key="category.id" class="pb-10">
             <v-row>
               <v-col cols="12" class="py-3" v-if="key == 'general'">
                 <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text">
@@ -56,7 +56,7 @@
 
               <v-col
                 class="py-0"
-                :cols="setting.divider ? 12 : 4"
+                :cols="setting.divider || $vuetify.breakpoint.mobile ? 12 : 4"
                 v-for="setting in category.settings"
                 :key="setting.id"
               >

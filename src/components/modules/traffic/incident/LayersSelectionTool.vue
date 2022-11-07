@@ -1,5 +1,11 @@
 <template>
-  <v-toolbar dense floating color="green" height="40" style="position: absolute; top: 49px; left:190px; width: 55px; ">
+  <v-toolbar
+    dense
+    floating
+    color="green"
+    height="40"
+    :style="`position: absolute; top: ${layerBtnTopOffset}; left: ${layerBtnLeftOffset}; width: 55px;`"
+  >
     <v-menu bottom right offset-y min-width="250" :close-on-content-click="false">
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
@@ -34,6 +40,15 @@
 export default {
   props: {
     layers: Array
+  },
+
+  computed: {
+    layerBtnLeftOffset() {
+      return this.$vuetify.breakpoint.mobile ? '220px' : '190px';
+    },
+    layerBtnTopOffset() {
+      return this.$vuetify.breakpoint.mobile ? '48px' : '49px';
+    }
   },
 
   data: () => ({

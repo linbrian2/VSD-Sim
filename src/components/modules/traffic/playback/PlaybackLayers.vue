@@ -3,11 +3,7 @@
     <template v-slot:activator="{ on: menu, attrs }">
       <v-tooltip bottom>
         <template v-slot:activator="{ on: tooltip }">
-          <v-btn
-            v-bind="attrs"
-            v-on="{ ...tooltip, ...menu }"
-            :style="`position: absolute; top: 10px; left: 490px; height: 40px`"
-          >
+          <v-btn v-bind="attrs" v-on="{ ...tooltip, ...menu }" :style="style">
             <v-icon>mdi-layers-outline</v-icon>
           </v-btn>
         </template>
@@ -122,6 +118,13 @@ export default {
     });
   },
   computed: {
+    style() {
+      if (this.$vuetify.breakpoint.mobile) {
+        return `position: absolute; top: 60px; left: 260px; height: 40px`;
+      } else {
+        return `position: absolute; top: 10px; left: 490px; height: 40px`;
+      }
+    },
     ...mapState('bluetooth', ['mapLayerSelection', 'wazeLayerSelection', 'deviceLayerSelection'])
   },
   methods: {

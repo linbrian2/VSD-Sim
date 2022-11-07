@@ -22,18 +22,23 @@
     </v-main>
   </div>
   <div class="mobile" v-else>
-    <v-select
-      class="mx-2 mt-10 pt-2"
-      dense
-      hide-details
-      single-line
-      :items="items"
-      :value="selectedItem"
-      @input="signalSelected"
-      label="signal"
-    />
+    <template v-if="$route.path != '/hr/summary' && $route.path != '/hr/tsd'">
+      <v-select
+        class="mx-2 mt-10 pt-2"
+        dense
+        hide-details
+        single-line
+        :items="items"
+        :value="selectedItem"
+        @input="signalSelected"
+        label="signal"
+      />
 
-    <MapSelect @click="onMapClick" />
+      <MapSelect @click="onMapClick" />
+    </template>
+    <template v-else>
+      <div class="mb-4" />
+    </template>
 
     <AppBar />
 
@@ -56,6 +61,9 @@ export default {
     MapSelect
   },
   computed: {
+    route() {
+      return this.$route.path || 'N/A';
+    },
     showPanel: {
       get() {
         return this.$store.state.hr.showPanel;

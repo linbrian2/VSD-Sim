@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <MapSelectionPanel
       ref="mapSelectPanel"
       :markers="markers"
@@ -24,6 +24,35 @@
       />
     </div>
   </div>
+
+  <div class="mobile" v-else>
+    <MapSelectionPanel
+      ref="mapSelectPanel"
+      :markers="markers"
+      :items="items"
+      name="predictSideBarWidth"
+      :onMarkerClick="markerClicked"
+    />
+
+    <v-container ref="myDiv">
+      <v-card>
+        <v-col class="pt-0">
+          <v-row class="grid-center">
+            <MenuSelector :items="predictionModes" :selectedItem="predictionMode" @click="setPredictionMode" />
+          </v-row>
+          <v-row>
+            <FlowChartDisplay
+              :name="selectedSensor"
+              :speed="speed0"
+              :volume="volume0"
+              :occupancy="occupancy0"
+              :vosList="vosList0"
+            />
+          </v-row>
+        </v-col>
+      </v-card>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -32,12 +61,14 @@ import Utils from '@/utils/Utils';
 import { mapState } from 'vuex';
 import MapSelectionPanel from '@/components/modules/traffic/map/MapSelectionPanel';
 import TitleBar from '@/components/modules/traffic/predict/TitleBar';
+import MenuSelector from '@/components/common/MenuSelector';
 import FlowChartDisplay from '@/components/modules/traffic/predict/FlowChartDisplay';
 
 export default {
   components: {
     MapSelectionPanel,
     TitleBar,
+    MenuSelector,
     FlowChartDisplay
   },
 
@@ -94,7 +125,7 @@ export default {
     timeUsedDisplay() {
       return this.timeUsed0;
     },
-
+    ...mapState('traffic', ['activeMarker', 'predictionModes', 'predictionMode']),
     ...mapState(['currentDate'])
   },
 
@@ -118,6 +149,10 @@ export default {
   },
 
   methods: {
+    setPredictionMode(mode) {
+      this.$store.commit('traffic/SET_PREDICTION_MODE', mode);
+    },
+
     markerClicked(marker) {
       this.fetchPredictionData(marker);
     },

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <!-- Left map panel -->
     <SelectionPanel name="travelTimeDataBarWidth">
       <div class="d-flex justify-space-between">
@@ -65,6 +65,63 @@
     </TitleBar>
 
     <!-- Charts -->
+    <v-container>
+      <v-card class="mb-8" v-if="availability.travelTime">
+        <BasicChart :data="travelTimeData" :height="height" />
+      </v-card>
+
+      <v-card class="mb-8" v-if="availability.travelSpeed">
+        <BasicChart :data="travelSpeedData" :height="height" />
+      </v-card>
+    </v-container>
+  </div>
+
+  <div class="mobile" v-else>
+    <TitleBar
+      :title="title"
+      :loading="loading"
+      :refresh="refreshData"
+      :showRefresh="!$vuetify.breakpoint.xs"
+      :showMap="false"
+    >
+      <div :style="'height: 45px'" />
+    </TitleBar>
+    <div class="d-flex justify-space-between">
+      <v-combobox
+        class="mx-2"
+        dense
+        hide-details
+        single-line
+        :items="items"
+        :value="valueSelected"
+        @input="valueSelectHandler"
+        label="CHOOSE A SEGMENT TO SHOW"
+      />
+      <!-- Region selection menu -->
+      <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
+        <template v-slot:activator="{ on: menu, attrs }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                <v-icon dark>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <span>Route Selection</span>
+          </v-tooltip>
+        </template>
+
+        <v-list dense>
+          <v-list-item v-for="item in route_menu_items" :key="item.value" @click="routeMenuItemClicked(item.value)">
+            <v-list-item-title :class="{ 'font-weight-black': item.value === selectedRoute }">
+              <v-icon class="mr-1" v-if="item.value === selectedRoute">mdi-check</v-icon>
+              <span :class="{ 'ml-8': item.value !== selectedRoute }"> {{ item.text }} </span>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
+    <MapBluetoothSegments ref="mapSegments" :segments="segments" @clicked="segmentClicked" :defaultColors="!isToday" />
+
     <v-container>
       <v-card class="mb-8" v-if="availability.travelTime">
         <BasicChart :data="travelTimeData" :height="height" />

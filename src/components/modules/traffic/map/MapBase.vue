@@ -1,6 +1,13 @@
 <template>
   <div>
-    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" class="map-select">
+    <GmapMap
+      ref="mapRef"
+      :options="options"
+      :center="position"
+      :zoom="11"
+      map-type-id="roadmap"
+      :class="smallMap || ($vuetify.breakpoint.mobile && selectedId != '') ? 'map-select-mobile' : 'map-select-desktop'"
+    >
       <slot></slot>
     </GmapMap>
   </div>
@@ -13,6 +20,8 @@ import MapUtils from '@/utils/MapUtils.js';
 
 export default {
   props: {
+    smallMap: { type: Boolean, default: false },
+    selectedId: { type: String, default: '' },
     mapClass: { type: String, default: 'map-select' }
   },
 
@@ -29,7 +38,8 @@ export default {
       streetViewControl: false,
       zoomControl: true,
       fullscreenControl: true,
-      styles: DarkMapStyle
+      styles: DarkMapStyle,
+      gestureHandling: 'greedy'
     }
   }),
 

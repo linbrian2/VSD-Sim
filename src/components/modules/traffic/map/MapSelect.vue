@@ -6,7 +6,7 @@
       :center="position"
       :zoom="12"
       map-type-id="roadmap"
-      :class="$vuetify.breakpoint.mobile ? 'map-select-mobile' : 'map-select-desktop'"
+      :class="$vuetify.breakpoint.mobile && selectedMarkerId ? 'map-select-mobile' : 'map-select-desktop'"
     >
       <GmapMarker
         v-for="m in markers"
@@ -58,7 +58,8 @@ export default {
 
       streetViewControl: false,
       fullscreenControl: true,
-      zoomControl: true
+      zoomControl: true,
+      gestureHandling: 'greedy'
     }
   }),
 
@@ -100,9 +101,9 @@ export default {
       }
     });
 
-    this.$bus.$on('SELECT_FIRST', () => {
-      this.triggerFirstMarkerClick();
-    });
+    // this.$bus.$on('SELECT_FIRST', () => {
+    //   this.triggerFirstMarkerClick();
+    // });
 
     this.$bus.$on('CENTER_MAP', () => {
       this.centerMap(this.map, this.markers);

@@ -9,7 +9,11 @@
           :zoom="zoom"
           map-type-id="roadmap"
           class="my-map"
-          style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
+          :style="
+            `margin-top:-1px; width: 100%; height:${
+              $vuetify.breakpoint.mobile && showPanel ? 'calc(50vh - 48px)' : 'calc(100vh - 48px)'
+            }`
+          "
         >
           <!-- Congested Routes -->
           <div v-if="isMapLayerVisible(0) && segments">
@@ -229,12 +233,14 @@ export default {
         },
         streetViewControl: false,
         fullscreenControl: true,
+        mapTypeControl: false,
 
         mapTypeControlOptions: {
           mapTypeIds: ['roadmap', 'hybrid'],
           position: 2
         },
-        styles: DarkMapStyle
+        styles: DarkMapStyle,
+        gestureHandling: 'greedy'
       },
       defaultSegmentOptions: {
         strokeColor: 'green',
@@ -246,6 +252,14 @@ export default {
     };
   },
   computed: {
+    showPanel: {
+      get() {
+        return this.$store.state.traffic.showPanel;
+      },
+      set(show) {
+        this.$store.commit('traffic/SHOW_PANEL', show);
+      }
+    },
     btLevels() {
       if (this.btDevices) {
         return this.btDevices.map(x => x.level);
@@ -405,7 +419,7 @@ export default {
     },
     addMapControls(map) {
       this.addHomeControl(map);
-      this.addMessageControl(map);
+      // this.addMessageControl(map);
     },
     addHomeControl(map) {
       let options = {

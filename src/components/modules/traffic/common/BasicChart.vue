@@ -117,9 +117,9 @@ export default {
 
         chart: {
           height: chartHeight,
-          spacingTop: 30,
-          spacingBottom: 20,
-          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : null,
+          spacingTop: this.$vuetify.breakpoint.mobile ? 10 : 30,
+          spacingBottom: this.$vuetify.breakpoint.mobile ? 10 : 20,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 75 : null,
           marginRight: this.$vuetify.breakpoint.mobile ? 20 : 40,
           type: 'line',
           zoomType: 'xy',
@@ -168,7 +168,7 @@ export default {
           crosshairs: true
         },
         legend: {
-          enabled: series.length > 0,
+          enabled: series.length > 0 && !this.$vuetify.breakpoint.mobile,
           floating: true,
           verticalAlign: 'top',
           align: 'left',

@@ -45,10 +45,14 @@ export default {
 <style lang="scss">
 .map-select-mobile {
   width: 100%;
-  height: calc(40vh - 84px);
+  height: calc(50vh - 84px);
 }
 .map-select-desktop {
   width: 100%;
   height: calc(100vh - 84px);
+}
+.map-select-desktop-2 {
+  width: 100%;
+  height: calc(100vh - 64px);
 }
 </style>

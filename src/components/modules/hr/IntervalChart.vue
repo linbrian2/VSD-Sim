@@ -27,7 +27,8 @@ export default {
         };
       }
       let series = this.prepareData(this.data);
-      return this.makeChart(this.height, this.title, series);
+      let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
+      return this.makeChart(height, this.title, series);
     }
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <SelectionPanel name="travelTimeMapBarWidth" ref="panel">
       <v-select
         dense
@@ -48,7 +48,7 @@
     </TitleBar>
 
     <v-container>
-      <v-card class="mb-10">
+      <v-card class="mb-2">
         <v-container v-if="isData0Available">
           <TravelTimeHeatMapChart
             :data="heatMapData0"
@@ -58,7 +58,7 @@
           />
         </v-container>
       </v-card>
-      <v-card class="mb-10">
+      <v-card class="mb-2">
         <v-container v-if="isData1Available">
           <TravelTimeHeatMapChart
             :data="heatMapData1"
@@ -72,6 +72,72 @@
 
     <!-- Popup Dialogs -->
     <TrafficFlowChartsDialog v-model="showDialog" ref="trafficFlowCharts" />
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- Container -->
+    <v-container>
+      <div class="d-flex justify-center align-center">
+        <div class="d-flex justify-center mt-n3" style="width: 150px;">
+          <v-select
+            style="font-size: 14px"
+            v-model="route"
+            :items="routeItems"
+            item-text="text"
+            item-value="value"
+            @input="routeSelected"
+            hide-details
+            prepend-icon="mdi-directions"
+            single-line
+          />
+        </div>
+        <div class="d-flex justify-center mt-n3" style="width: 150px; margin-left: 10px">
+          <v-select
+            style="font-size: 14px"
+            v-model="interval"
+            :items="intervalItems"
+            item-text="text"
+            item-value="value"
+            @input="intervalSelected"
+            hide-details
+            prepend-icon="mdi-clock-outline"
+            single-line
+          />
+        </div>
+      </div>
+
+      <v-card class="mb-2 px-7">
+        <v-row>
+          <v-col cols="12" class="pb-1 grid-center">Level</v-col>
+          <v-col v-for="i in level" :key="i.id" cols="2" class="pt-0 px-1">
+            <v-card :color="i.color" class="grid-center">
+              <h5>{{ i.name }}</h5>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <v-card class="mb-2">
+        <v-container v-if="isData0Available" class="pa-0">
+          <TravelTimeHeatMapChart
+            :data="heatMapData0"
+            :height="mapHeight(heatMapData0)"
+            :yLabelClicked="labelClicked"
+            :titleClicked="titleClicked"
+          />
+        </v-container>
+      </v-card>
+      <v-card class="mb-2">
+        <v-container v-if="isData1Available" class="pa-0">
+          <TravelTimeHeatMapChart
+            :data="heatMapData1"
+            :height="mapHeight(heatMapData1)"
+            :yLabelClicked="labelClicked"
+            :titleClicked="titleClicked"
+          />
+        </v-container>
+      </v-card>
+    </v-container>
   </div>
 </template>
 
@@ -94,6 +160,16 @@ export default {
     TrafficFlowChartsDialog
   },
   data: () => ({
+    level: [
+      { from: 1, to: 1, color: '#1B5E20', name: '1' },
+      { from: 2, to: 2, color: '#81C784', name: '2' },
+      { from: 3, to: 3, color: '#FDD835', name: '3' },
+      { from: 4, to: 4, color: '#FFCC80', name: '4' },
+      { from: 5, to: 5, color: '#FF9800', name: '5' },
+      { from: 6, to: 6, color: '#EF9A9A', name: '6' },
+      { from: 7, to: 7, color: '#F44336', name: '7' },
+      { from: 8, to: 8, color: '#B71C1C', name: '8' }
+    ],
     loading: false,
 
     showDialog: false,

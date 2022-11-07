@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <!-- Left map panel -->
     <SelectionPanel name="trafficFlowSideBarWidth" @navigation-width-changed="sideBarWidthChanged">
       <div class="d-flex justify-space-between">
@@ -114,6 +114,146 @@
 
     <!-- Charts -->
     <v-container>
+      <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
+        <v-tab v-for="item in tabItems" :key="item.key" :href="`#${item.key}`">
+          {{ item.value }}
+        </v-tab>
+      </v-tabs>
+      <div>
+        <v-tabs-items v-model="tab">
+          <v-tab-item value="bound" v-if="isTabVisible('bound')">
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'boundData'"
+              :flowParams="flowParams"
+              :cols="cols"
+              @removeItem="removeItem"
+            />
+          </v-tab-item>
+
+          <v-tab-item value="lane" v-if="isTabVisible('lane')">
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'laneData'"
+              :flowParams="flowParams"
+              :cols="cols"
+              @removeItem="removeItem"
+            />
+          </v-tab-item>
+
+          <v-tab-item value="minute" v-if="isTabVisible('minute')">
+            <MultigraphDataEntries
+              :valuesSelected="valuesSelected"
+              :param="'minuteData'"
+              :flowParams="flowParams"
+              :cols="cols"
+              @removeItem="removeItem"
+            />
+          </v-tab-item>
+        </v-tabs-items>
+      </div>
+    </v-container>
+  </div>
+
+  <div class="mobile" v-else>
+    <TitleBar :loading="loading" :refresh="refreshData" :showRefresh="!$vuetify.breakpoint.xs" :showMap="false">
+      <div :style="'height: 45px'" />
+    </TitleBar>
+
+    <div class="d-flex justify-space-between">
+      <v-combobox
+        multiple
+        small-chips
+        class="mx-2"
+        dense
+        hide-details
+        single-line
+        :items="items"
+        item-text="name"
+        v-model="valuesSelected"
+        @input="valueSelectHandler"
+        label="SELECT DETECTORS TO SHOW"
+        return-object
+      >
+        <template v-slot:selection="{ attrs, item, parent, selected }">
+          <v-chip v-if="item === Object(item)" v-bind="attrs" :input-value="selected" label small>
+            <span class="pr-1">
+              {{ item.permit }}
+            </span>
+            <v-icon small @click="parent.selectItem(item)">
+              $delete
+            </v-icon>
+          </v-chip>
+        </template>
+
+        <!-- Region selection menu -->
+        <template v-slot:append-outer>
+          <v-btn icon @click="clear">
+            <v-icon>mdi-backspace</v-icon>
+          </v-btn>
+          <!-- Region selection menu -->
+          <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
+            <template v-slot:activator="{ on: menu, attrs }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                    <v-icon dark>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <span>Region Selection</span>
+              </v-tooltip>
+            </template>
+
+            <v-list>
+              <v-list-item
+                v-for="item in region_menu_items"
+                :key="item.value"
+                @click="regionMenuItemClicked(item.value)"
+              >
+                <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
+                  <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
+                  <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+      </v-combobox>
+    </div>
+
+    <MapMultigraphSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
+
+    <v-container>
+      <div class="d-flex align-items justify-center align-center mb-3">
+        <div class="d-flex justify-space-between">
+          <div class="mt-1 ml-6 mr-6" style="width: 120px">
+            <v-select
+              filled
+              dense
+              v-model="selectedVal"
+              :items="valItems"
+              item-text="text"
+              item-value="value"
+              hide-details
+              single-line
+            />
+          </div>
+
+          <div class="mt-1 mr-6" style="width: 100px">
+            <v-select
+              filled
+              dense
+              v-model="interval"
+              :items="intervalItems"
+              item-text="text"
+              item-value="value"
+              @input="intervalSelected"
+              hide-details
+              single-line
+            />
+          </div>
+        </div>
+      </div>
       <v-tabs color="teal accent-4" v-model="tab" @change="tabChanged">
         <v-tab v-for="item in tabItems" :key="item.key" :href="`#${item.key}`">
           {{ item.value }}

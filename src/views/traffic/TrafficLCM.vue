@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <MapSelectionPanel
       ref="mapSelectPanel"
       :markers="markers"
@@ -33,6 +33,64 @@
 
     <TitleBar showId showUid title="Traffic Flow LCM" :loading="loading" :refresh="refreshData" />
 
+    <v-container fluid>
+      <v-card tile class="mb-8" elevation="24" v-if="isVisible('NB')">
+        <LCMCurveChart :data="chartDataNB" direction="NB" :height="height" :exporting="false" @click="pointClicked" />
+      </v-card>
+
+      <v-card tile elevation="24" v-if="isVisible('SB')">
+        <LCMCurveChart :data="chartDataSB" direction="SB" :height="height" :exporting="false" @click="pointClicked" />
+      </v-card>
+    </v-container>
+
+    <!-- Popup Dialogs -->
+    <SpeedVolumeChartDialog v-model="showDialog" ref="speedVolumeChartDialog" />
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- TitleBar -->
+    <!-- <TitleBar
+      :loading="loading"
+      :refresh="refreshData"
+      :showRefresh="!$vuetify.breakpoint.xs"
+      :showMap="false"
+    >
+      <div :style="'height: 45px'" />
+    </TitleBar> -->
+
+    <!-- Input & Map -->
+    <MapSelectionPanel
+      ref="mapSelectPanel"
+      :markers="markers"
+      :items="items"
+      name="lcmSideBarWidth"
+      :onMarkerClick="markerClicked"
+    >
+      <!-- Region selection menu -->
+      <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
+        <template v-slot:activator="{ on: menu, attrs }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                <v-icon dark>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <span>Region Selection</span>
+          </v-tooltip>
+        </template>
+
+        <v-list>
+          <v-list-item v-for="item in region_menu_items" :key="item.value" @click="regionMenuItemClicked(item.value)">
+            <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
+              <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
+              <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </MapSelectionPanel>
+
+    <!-- Container -->
     <v-container fluid>
       <v-card tile class="mb-8" elevation="24" v-if="isVisible('NB')">
         <LCMCurveChart :data="chartDataNB" direction="NB" :height="height" :exporting="false" @click="pointClicked" />
@@ -379,7 +437,7 @@ export default {
             verticalAlign: 'middle',
             textAlign: 'center',
             x: 10,
-            y: 150,
+            y: this.$vuetify.breakpoint.mobile ? 80 : 150,
             style: {
               color,
               fontWeight: 'normal'

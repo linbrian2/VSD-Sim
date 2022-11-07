@@ -40,11 +40,12 @@
     </v-container>
   </div>
   <div class="mobile" v-else>
-    <TitleBar title="PCD Chart" :loading="loading" :showRefresh="false" :refresh="refreshData">
+    <v-container>
       <div class="d-flex align-items justify-center align-center">
         <div class="d-flex justify-space-between" :class="$vuetify.breakpoint.xs ? 'mt-1' : ''">
-          <div class="mt-1" style="width:210px;">
+          <div class="mb-3" style="width:210px;">
             <v-combobox
+              filled
               flat
               dense
               small-chips
@@ -62,8 +63,16 @@
           </div>
         </div>
       </div>
-    </TitleBar>
-    <v-container>
+      <v-card class="mb-2 px-7">
+        <v-row>
+          <v-col cols="12" class="pb-1 grid-center">Level</v-col>
+          <v-col v-for="i in pcdLegend" :key="i.id" cols="6" class="pt-0 px-1">
+            <v-card :color="i.color" class="grid-center">
+              <h5 :style="`color: black`">{{ i.name }}</h5>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card>
       <v-card class="mb-8" v-for="(pcd, index) in pcds" :key="baseIndex + index">
         <PcdChart :info="pcd.info" :title="pcd.title" :date="pcd.date" :phase="pcd.phase" :height="300" />
       </v-card>
@@ -87,7 +96,13 @@ export default {
     loading: false,
     pcds: [],
     select: [],
-    baseIndex: 0
+    baseIndex: 0,
+    pcdLegend: [
+      { name: 'Detector Activation', color: '#fff' },
+      { name: 'Change to green', color: '#008000' },
+      { name: 'Change to yellow', color: '#FFFF00' },
+      { name: 'Change to red', color: '#FF0000' }
+    ]
   }),
   computed: {
     phases() {

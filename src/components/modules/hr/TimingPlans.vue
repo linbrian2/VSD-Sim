@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="9">
+    <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 9">
       <div class="ml-2">
         <v-tabs color="deep-purple accent-4" v-model="activeTab" show-arrows>
           <v-tab v-for="(phase, i) in phases" :key="i">
@@ -29,7 +29,7 @@
         </v-tabs>
       </div>
     </v-col>
-    <v-col cols="3">
+    <v-col cols="3" v-if="!$vuetify.breakpoint.mobile">
       <div class="phase-image">
         <v-img src="@/assets/phase.png" aspect-ratio="1.0" />
       </div>

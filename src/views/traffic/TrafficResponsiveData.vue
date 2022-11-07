@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <!-- Left map panel -->
     <SelectionPanel name="responsiveZoneBarWidth">
       <v-combobox
@@ -30,6 +30,43 @@
       </div>
     </TitleBar>
 
+    <v-container fluid>
+      <div class="mb-3">
+        <WeightEditor
+          v-show="showSettings"
+          :items="zoneWeights"
+          @update-weights="onUpdateWeights"
+          @save-weights="onSaveWeights"
+        />
+      </div>
+      <v-card tile class="mb-8" elevation="24" v-if="delayComplete">
+        <TrafficResponsiveChart :data="chartData" :height="defaultHeight" />
+      </v-card>
+    </v-container>
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- TitleBar -->
+    <!-- <TitleBar :loading="loading" :refresh="refreshData" :showRefresh="!$vuetify.breakpoint.xs" :showMap="false">
+      <div :style="'height: 45px'" />
+    </TitleBar> -->
+
+    <!-- Input & Map -->
+    <v-combobox
+      class="mx-2"
+      dense
+      hide-details
+      single-line
+      item-text="text"
+      item-value="value"
+      :items="zoneItems"
+      :value="valueSelected"
+      @input="zoneSelectionHandler"
+      label="CHOOSE A ZONE TO SHOW"
+    />
+    <MapSelect ref="mapSelect" :markers="markers" :icons="icons" @click="onMapClick" />
+
+    <!-- Container -->
     <v-container fluid>
       <div class="mb-3">
         <WeightEditor

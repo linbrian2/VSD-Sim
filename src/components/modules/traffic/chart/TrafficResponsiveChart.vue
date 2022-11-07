@@ -47,7 +47,8 @@ export default {
           }
         };
       }
-      return this.makeChart(this.height, this.data, this.drawText);
+      let height = this.$vuetify.breakpoint.mobile ? 360 : this.height;
+      return this.makeChart(height, this.data, this.drawText);
     }
   },
 
@@ -167,7 +168,7 @@ export default {
       let subtitle = data.subtitle || null;
       let xAxis = data.xAxis;
       // let yAxis = data.yAxis;
-      let ly = this.legendy || 45;
+      let ly = this.legendy || 50;
       let exporting = this.exporting === undefined ? false : this.exporting;
       let marginLeft = this.left;
 

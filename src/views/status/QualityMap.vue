@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Right display panel -->
-    <RightPanel :title="currentTitle">
+    <RightPanel :title="currentTitle" v-if="!$vuetify.breakpoint.mobile">
       <component :is="currentComponent" v-bind="currentProperties" ref="refPanelInfo" />
     </RightPanel>
 
@@ -13,9 +13,13 @@
       :zoom="10"
       map-type-id="roadmap"
       class="my-map"
-      style="margin-top:-1px; width: 100%; height:calc(100vh - 48px)"
+      :style="
+        `margin-top:-1px; width: 100%; height:${
+          $vuetify.breakpoint.mobile && showPanel ? 'calc(50vh - 48px)' : 'calc(100vh - 48px)'
+        }`
+      "
     >
-      <!-- Traffic FLow Detectors -->
+      <!-- Traffic Flow Detectors -->
       <GmapMarker
         v-for="m in markers"
         :key="m.id"
@@ -28,6 +32,13 @@
       />
     </GmapMap>
     <Toolbar @region-select="mapRegionSelect" @type-select="errorTypeSelect" />
+    <BottomDataDisplay
+      name="dashboardSideBarWidth"
+      :title="currentTitle"
+      v-if="$vuetify.breakpoint.mobile && showPanel"
+    >
+      <component :is="currentComponent" v-bind="currentProperties" ref="refPanelInfo" />
+    </BottomDataDisplay>
   </div>
 </template>
 
@@ -45,6 +56,7 @@ import { mapIcons } from '@/mixins/mapIcons';
 import RightPanel from '@/components/modules/traffic/common/RightPanel';
 import Toolbar from '@/components/modules/status/Toolbar';
 import SensorErrorInfo from '@/components/modules/status/SensorErrorInfo';
+import BottomDataDisplay from '@/components/modules/traffic/common/BottomDataDisplay.vue';
 
 export default {
   mixins: [mapIcons],
@@ -52,7 +64,8 @@ export default {
     RightPanel,
     GmapCustomMarker,
     Toolbar,
-    SensorErrorInfo
+    SensorErrorInfo,
+    BottomDataDisplay
   },
 
   data: () => ({
@@ -82,13 +95,22 @@ export default {
         mapTypeIds: ['roadmap', 'hybrid'],
         position: 2
       },
-      styles: DarkMapStyle
+      styles: DarkMapStyle,
+      gestureHandling: 'greedy'
     }
   }),
 
   computed: {
     google: gmapApi,
 
+    showPanel: {
+      get() {
+        return this.$store.state.cav.showPanel;
+      },
+      set(show) {
+        this.$store.commit('cav/SHOW_PANEL', show);
+      }
+    },
     markers() {
       if (this.mapRegionSelection < 0) {
         if (this.errorTypeSelection < 0) {
@@ -147,7 +169,7 @@ export default {
 
   mounted() {
     this.loadPage(this.$vuetify.theme.dark);
-    this.showScrollBar(false);
+    // this.showScrollBar(false);
 
     this.$refs.mapRef.$mapPromise.then(map => {
       this.errorIcons = this.createErrorTypeIcons();

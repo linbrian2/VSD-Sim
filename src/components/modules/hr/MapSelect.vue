@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="$route.name !== 'Signal Timing'">
     <GmapMap
       ref="mapRef"
       :options="options"
@@ -33,6 +33,42 @@
     </GmapMap>
     <PhaseSelectionTool @click="phaseSelected" v-if="isLive" />
   </div>
+  <div v-else>
+    <template v-if="showMapForSignal">
+      <GmapMap
+        ref="mapRef"
+        :options="options"
+        :center="position"
+        :zoom="11"
+        map-type-id="roadmap"
+        class="map-select-desktop-2"
+      >
+        <GmapMarker
+          v-for="m in markers"
+          :key="m.id"
+          :position="m.position"
+          :title="m.name"
+          :clickable="true"
+          :icon="getMarker(m)"
+          @click="markerClicked(m)"
+        />
+
+        <GmapCustomMarker
+          alignment="center"
+          v-for="m in markers"
+          :key="`LL-${m.id}`"
+          :offsetX="45"
+          :offsetY="0"
+          :marker="m.position"
+        >
+          <v-chip small :color="getChipColor(m.id)" @click="markerClicked(m)">
+            <span class="white--text font-weight-bold">{{ m.permit }}</span>
+          </v-chip>
+        </GmapCustomMarker>
+      </GmapMap>
+      <PhaseSelectionTool @click="phaseSelected" v-if="isLive" />
+    </template>
+  </div>
 </template>
 
 <script>
@@ -48,12 +84,10 @@ import PhaseSelectionTool from '@/components/modules/hr/PhaseSelectionTool';
 
 export default {
   mixins: [TrafficLightIcons],
-
   components: {
     GmapCustomMarker,
     PhaseSelectionTool
   },
-
   data: () => ({
     homeIcon: require('@/assets/home-24.png'),
 
@@ -72,7 +106,8 @@ export default {
       fullscreenControl: false,
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'satellite']
-      }
+      },
+      gestureHandling: 'greedy'
     }
   }),
   computed: {
@@ -85,7 +120,7 @@ export default {
     isLive() {
       return this.$route.name === RouterNames.HR_SIGNAL_DISPLAY && this.signalTimingMode == 'Live';
     },
-    ...mapState('hr', ['signalTimingMode'])
+    ...mapState('hr', ['signalTimingMode', 'showMapForSignal'])
   },
 
   watch: {
@@ -113,6 +148,9 @@ export default {
     this.$bus.$on('CENTER_MAP', () => {
       this.centerMap(this.map, this.markers);
     });
+    this.$bus.$on('RELOAD_SIGNAL_MAP', () => {
+      this.reload();
+    });
 
     this.$bus.$on('LIVE_UPDATE_SIGNALS', signals => {
       this.signals = signals;
@@ -136,6 +174,15 @@ export default {
   },
 
   methods: {
+    async reload() {
+      this.addControls();
+      await this.fetchLocations();
+      let selected = this.$store.state.hr.activeMarker;
+      if (selected !== null) {
+        this.selectedKey = selected.id;
+      }
+      this.loadPage(this.$vuetify.theme.dark);
+    },
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
         return;
@@ -224,6 +271,7 @@ export default {
     markerClicked(marker) {
       this.selectedKey = marker.id;
       this.$store.commit('hr/SET_ACTIVE_MARKER', marker);
+      this.$store.commit('hr/SET_SHOW_MAP_FOR_SIGNAL', false);
       this.$emit('click', marker);
     },
 

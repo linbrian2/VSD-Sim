@@ -25,12 +25,22 @@
           <div class="mt-n2 ml-4">
             <MenuSelector :items="displayModeItems" :selectedItem="signalTimingMode" @click="displayModeSelected" />
           </div>
+          <span v-if="$route.name == 'Signal Timing'">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn outlined class="mb-1 ml-5" color="teal" icon v-on="on" @click.stop="toggleMap">
+                  <v-icon color="teal accent-4">mdi-map</v-icon>
+                </v-btn>
+              </template>
+              <span>Show Signal Map</span>
+            </v-tooltip>
+          </span>
         </div>
       </v-col>
       <v-col lg="6" sm="4" xs="12">
         <span><slot></slot></span>
       </v-col>
-      <v-col lg="1" sm="2" xs="12">
+      <v-col lg="1" sm="2" xs="12" v-if="showRefresh">
         <v-btn small icon @click.stop="refreshData()" class="title-btn float-right" :loading="loading">
           <v-icon color="white">mdi-refresh</v-icon>
         </v-btn>
@@ -52,6 +62,10 @@ export default {
     loading: Boolean,
     refresh: Function,
     showMap: {
+      type: Boolean,
+      default: true
+    },
+    showRefresh: {
       type: Boolean,
       default: true
     }
@@ -81,6 +95,13 @@ export default {
     ...mapState('hr', ['currentSignal', 'signalTimingMode'])
   },
   methods: {
+    toggleMap() {
+      this.$store.commit('hr/SET_SHOW_MAP_FOR_SIGNAL', true);
+      setTimeout(() => {
+        this.$bus.$emit('RELOAD_SIGNAL_MAP');
+      }, 50);
+    },
+
     refreshData() {
       this.refresh();
     },

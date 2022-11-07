@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <!-- Left map panel -->
     <SelectionPanel :width="width" name="incidentSideBarWidth">
       <MapSegment
@@ -93,6 +93,49 @@
     <IncidentSettings v-model="showSettings" ref="settings" />
     <SimulationConfigs v-model="showSimulationConfig" ref="simu" v-if="isSimulation" />
     <GlobalSearchDialog v-model="showSearch" ref="search" @handler="searchStarted" />
+  </div>
+
+  <div class="mobile" v-else>
+    <!-- Title Bar -->
+    <!-- <TitleBar :showMap="false" :showRefresh="false" /> -->
+
+    <!-- Input & Map -->
+    <MapSegment
+      ref="mapSegmentRef"
+      :segments="segmentLinks"
+      :markers="markers"
+      @select="onSegmentSelected"
+      @click="onMarkerClicked"
+      :smallMap="true"
+    />
+
+    <!-- Container -->
+    <v-container>
+      <v-card tile class="mb-4 mx-4" v-show="showIncidentTimeline">
+        <v-card-title class="d-flex justify-space-between">
+          <h4 class="ml-4">Incident Timeline</h4>
+          <v-btn icon @click="showIncidentTimeline = false"><v-icon>mdi-close</v-icon></v-btn>
+        </v-card-title>
+        <div>
+          <IncidentHeatMapChart
+            ref="heatMapChart"
+            :data="incidentsByTime"
+            :height="400"
+            @cell-click="timeSlotClicked"
+          />
+        </div>
+      </v-card>
+
+      <v-card tile class="mx-3 mb-2" v-show="showIncidentTable">
+        <div>
+          <IncidentTable :height="500" :incidents="incidents" @click="handleRowClick" />
+        </div>
+      </v-card>
+
+      <div v-if="incidentItem">
+        <EvidenceListDisplay :incident="incidentItem" @select="singleSegmentSelected" ref="anomalySegmentDisplay" />
+      </div>
+    </v-container>
   </div>
 </template>
 

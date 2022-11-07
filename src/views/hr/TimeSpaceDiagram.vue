@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div v-if="$vuetify.breakpoint.mobile" class="mt-5" />
     <TitleBar title="Time Space Diagram" :loading="loading" :refresh="refreshData">
       <div class="d-flex justify-center">
         <div style="width:160px">
@@ -11,8 +12,26 @@
             @next="timeChanged"
           />
         </div>
-
-        <div class="d-flex justify-center mt-n2" style="width:120px; margin-left:250px">
+        <div
+          class="d-flex justify-center mt-n2"
+          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '250px'}`"
+        >
+          <v-select
+            dark
+            style="font-size: 14px"
+            v-model="speed"
+            :items="speedItems"
+            item-text="text"
+            item-value="value"
+            hide-details
+            single-line
+            :prepend-icon="$vuetify.breakpoint.mobile ? null : 'mdi-speedometer'"
+          />
+        </div>
+        <div
+          class="d-flex justify-center mt-n2"
+          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '250px'}`"
+        >
           <v-select
             dark
             style="font-size: 14px"
@@ -23,13 +42,12 @@
             hide-details
             single-line
             @input="overlaySelected"
-            prepend-icon="mdi-content-copy"
+            :prepend-icon="$vuetify.breakpoint.mobile ? null : 'mdi-content-copy'"
           />
         </div>
       </div>
     </TitleBar>
     <v-container fluid style="max-width: 95%">
-      <!-- {{ data }} -->
       <div v-if="showChartInGroup">
         <div v-for="(data, group, index) in timeSpaceGroups" :key="index">
           <v-card class="mt-4">

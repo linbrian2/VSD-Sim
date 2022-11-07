@@ -27,7 +27,12 @@
       </div>
     </div>
 
-    <MapBase @map-ready="mapMounted" @center-map="centerMapHandler" @zoom-select="zoomSelectHandler">
+    <MapBase
+      @map-ready="mapMounted"
+      @center-map="centerMapHandler"
+      @zoom-select="zoomSelectHandler"
+      :smallMap="smallMap"
+    >
       <div v-for="segment in filteredSegments" :key="segment.id">
         <GmapPolyline :path.sync="segment.path" :options="segmentOptions" :zIndex="1" />
         <GmapMarker :position="startPoint(segment)" :title="segment.startPoint" :icon="smallGreenIcon" :zIndex="0" />
@@ -58,6 +63,7 @@ import LayersSelectionTool from '@/components/modules/traffic/incident/LayersSel
 export default {
   mixins: [weatherCode, mapIcons],
   props: {
+    smallMap: Boolean,
     segments: Array,
     markers: Array
   },

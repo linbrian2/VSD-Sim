@@ -1,76 +1,153 @@
 <template>
-  <v-card class="mx-auto" elevation="0" style="position: absolute; top: 10px; left:10px; " color="rgb(0, 0, 0, 0.0)">
-    <v-toolbar light dense floating height="40">
-      <v-menu bottom left offset-y min-width="350" v-model="isMenuOpened">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on">
-            <v-app-bar-nav-icon></v-app-bar-nav-icon>
-          </v-btn>
-        </template>
-
-        <v-card style="height: 500px; width: 455px">
-          <v-card-actions class="mt-n4 d-flex justify-space-between">
-            <div style="width: 150px">
-              <DatePicker type="short" @date="dateSelected" />
-            </div>
-            <v-btn small icon @click.stop="refreshTripData" class="mr-2 mt-2" :loading="loading">
-              <v-icon>mdi-refresh</v-icon>
+  <div v-if="!$vuetify.breakpoint.mobile">
+    <v-card class="mx-auto" elevation="0" style="position: absolute; top: 10px; left:10px; " color="rgb(0, 0, 0, 0.0)">
+      <v-toolbar light dense floating height="40">
+        <v-menu bottom left offset-y min-width="350" v-model="isMenuOpened">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-app-bar-nav-icon></v-app-bar-nav-icon>
             </v-btn>
-          </v-card-actions>
-          <TripList class="mt-n3" :headers="headers" :items="items" />
-        </v-card>
-      </v-menu>
+          </template>
 
-      <v-chip small outlined class="ma-2 overline" :color="tripColor">
-        Trip <strong>{{ currentTrip.id ? currentTrip.id : '___' }}</strong>
-      </v-chip>
+          <v-card style="height: 500px; width: 455px">
+            <v-card-actions class="mt-n4 d-flex justify-space-between">
+              <div style="width: 150px">
+                <DatePicker type="short" @date="dateSelected" />
+              </div>
+              <v-btn small icon @click.stop="refreshTripData" class="mr-2 mt-2" :loading="loading">
+                <v-icon>mdi-refresh</v-icon>
+              </v-btn>
+            </v-card-actions>
+            <TripList class="mt-n3" :headers="headers" :items="items" />
+          </v-card>
+        </v-menu>
 
-      <v-slider v-model="progress" class="mt-6" style="width: 160px"></v-slider>
+        <v-chip small outlined class="ma-2 overline" :color="tripColor">
+          Trip <strong>{{ currentTrip.id ? currentTrip.id : '___' }}</strong>
+        </v-chip>
 
-      <v-menu bottom right offset-y>
-        <template v-slot:activator="{ on: menu, attrs }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
-              <span v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                <v-chip small color=""> {{ playbackSpeed }}x </v-chip>
-              </span>
-            </template>
-            <span> Playback Speed</span>
-          </v-tooltip>
-        </template>
+        <v-slider v-model="progress" class="mt-6" style="width: 160px"></v-slider>
 
-        <v-list>
-          <v-list-item v-for="item in speed_menu_items" :key="item.id" @click="speedMenuItemClicked(item.value)">
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <v-menu bottom right offset-y>
+          <template v-slot:activator="{ on: menu, attrs }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on: tooltip }">
+                <span v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                  <v-chip small color=""> {{ playbackSpeed }}x </v-chip>
+                </span>
+              </template>
+              <span> Playback Speed</span>
+            </v-tooltip>
+          </template>
 
-      <v-divider vertical class="ml-2" />
+          <v-list>
+            <v-list-item v-for="item in speed_menu_items" :key="item.id" @click="speedMenuItemClicked(item.value)">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-      <v-btn icon @click="setPlayStart" :disabled="!validTrip">
-        <v-icon v-text="playButtonIcon"></v-icon>
-      </v-btn>
-      <v-btn icon @click="setPlayStop" :disabled="!validTrip || stopState">
-        <v-icon>mdi-stop</v-icon>
-      </v-btn>
+        <v-divider vertical class="ml-2" />
 
-      <v-divider vertical class="ml-1" />
+        <v-btn icon @click="setPlayStart" :disabled="!validTrip">
+          <v-icon v-text="playButtonIcon"></v-icon>
+        </v-btn>
+        <v-btn icon @click="setPlayStop" :disabled="!validTrip || stopState">
+          <v-icon>mdi-stop</v-icon>
+        </v-btn>
 
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" @click.stop="showDetails">
-            <v-icon color="info">mdi-information-outline </v-icon>
-          </v-btn>
-        </template>
-        <span>Show Details</span>
-      </v-tooltip>
-    </v-toolbar>
+        <v-divider vertical class="ml-1" />
 
-    <v-card-text style="height: 150px;" v-if="showPanel">
-      <TripState :state="currentState" :color="stateColor" />
-    </v-card-text>
-  </v-card>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on" @click.stop="showDetails">
+              <v-icon color="info">mdi-information-outline </v-icon>
+            </v-btn>
+          </template>
+          <span>Show Details</span>
+        </v-tooltip>
+      </v-toolbar>
+
+      <v-card-text style="height: 150px;" v-if="showPanel">
+        <TripState :state="currentState" :color="stateColor" />
+      </v-card-text>
+    </v-card>
+  </div>
+  <div v-else>
+    <v-card class="mx-auto" elevation="0" style="position: absolute; top: 10px; left:10px; " color="rgb(0, 0, 0, 0.0)">
+      <v-toolbar light dense floating height="40">
+        <v-menu bottom left offset-y min-width="350" v-model="isMenuOpened">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-app-bar-nav-icon></v-app-bar-nav-icon>
+            </v-btn>
+          </template>
+
+          <v-card style="height: 500px; width: 455px">
+            <v-card-actions class="mt-n4 d-flex justify-space-between">
+              <div style="width: 150px">
+                <DatePicker type="short" @date="dateSelected" />
+              </div>
+              <v-btn small icon @click.stop="refreshTripData" class="mr-2 mt-2" :loading="loading">
+                <v-icon>mdi-refresh</v-icon>
+              </v-btn>
+            </v-card-actions>
+            <TripList class="mt-n3" :headers="headers" :items="items" />
+          </v-card>
+        </v-menu>
+
+        <v-chip small outlined class="ma-2 overline" :color="tripColor">
+          Trip <strong>{{ currentTrip.id ? currentTrip.id : '___' }}</strong>
+        </v-chip>
+
+        <v-slider v-model="progress" class="mt-6" style="width: 90px"></v-slider>
+
+        <v-menu bottom right offset-y>
+          <template v-slot:activator="{ on: menu, attrs }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on: tooltip }">
+                <span v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                  <v-chip small color=""> {{ playbackSpeed }}x </v-chip>
+                </span>
+              </template>
+              <span> Playback Speed</span>
+            </v-tooltip>
+          </template>
+
+          <v-list>
+            <v-list-item v-for="item in speed_menu_items" :key="item.id" @click="speedMenuItemClicked(item.value)">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-toolbar>
+    </v-card>
+    <v-card class="mx-auto" elevation="0" style="position: absolute; top: 55px; left:10px; " color="rgb(0, 0, 0, 0.0)">
+      <v-toolbar light dense floating height="40">
+        <v-btn icon @click="setPlayStart" :disabled="!validTrip">
+          <v-icon v-text="playButtonIcon"></v-icon>
+        </v-btn>
+        <v-btn icon @click="setPlayStop" :disabled="!validTrip || stopState">
+          <v-icon>mdi-stop</v-icon>
+        </v-btn>
+
+        <v-divider vertical class="ml-1" />
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on" @click.stop="showDetails">
+              <v-icon color="info">mdi-information-outline </v-icon>
+            </v-btn>
+          </template>
+          <span>Show Details</span>
+        </v-tooltip>
+      </v-toolbar>
+
+      <v-card-text style="height: 150px;" v-if="showPanel">
+        <TripState :state="currentState" :color="stateColor" />
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>

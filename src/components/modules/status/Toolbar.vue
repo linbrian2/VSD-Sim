@@ -1,11 +1,19 @@
 <template>
-  <v-card class="mx-auto" elevation="0" style="position: absolute; top: 10px; left:10px; " color="rgb(0, 0, 0, 0.0)">
+  <v-card class="mx-auto" elevation="0" style="position: absolute; top: 9px; left:10px; " color="rgb(0, 0, 0, 0.0)">
     <v-toolbar light dense floating height="40">
       <v-chip-group>
         <div v-for="{ color, name, from } in dataClasses" :key="from">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-chip filter small label :color="color" v-on="on" @click="classClicked(from)">
+              <v-chip
+                :class="$vuetify.breakpoint.mobile ? 'cell-mobile' : null"
+                filter
+                small
+                label
+                :color="color"
+                v-on="on"
+                @click="classClicked(from)"
+              >
                 {{ from }}
               </v-chip>
             </template>
@@ -14,7 +22,7 @@
         </div>
       </v-chip-group>
 
-      <v-divider vertical />
+      <v-divider :class="$vuetify.breakpoint.mobile ? 'ml-3' : null" vertical />
 
       <v-menu light bottom right offset-y min-width="250" :close-on-content-click="true">
         <template v-slot:activator="{ on: menu, attrs }">
@@ -147,4 +155,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.cell-mobile {
+  padding-left: 9px;
+  padding-right: 9px;
+  margin-left: 1px !important;
+  margin-right: 1px !important;
+}
+</style>
