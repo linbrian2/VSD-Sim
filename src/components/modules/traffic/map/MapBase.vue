@@ -22,7 +22,8 @@ export default {
   props: {
     smallMap: { type: Boolean, default: false },
     selectedId: { type: String, default: '' },
-    mapClass: { type: String, default: 'map-select' }
+    mapClass: { type: String, default: 'map-select' },
+    mapOptions: { type: Object, default: () => ({}) }
   },
 
   data: () => ({
@@ -72,6 +73,11 @@ export default {
       this.addPointControl(map);
       this.$emit('map-ready', map);
     });
+
+    // Merge map options
+    if (Object.keys(this.mapOptions).length > 0) {
+      this.options = { ...this.options, ...this.mapOptions };
+    }
   },
 
   methods: {

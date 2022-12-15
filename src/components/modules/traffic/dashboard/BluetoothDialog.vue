@@ -63,6 +63,8 @@ import Constants from '@/utils/constants/traffic';
 import InfoCard from '@/components/modules/traffic/common/InfoCard';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import VideoPlayer from '@/components/modules/traffic/common/VideoPlayer';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
+
 export default {
   props: {
     value: Boolean
@@ -136,7 +138,7 @@ export default {
           this.cameraIds = segment.cameras;
           if (this.cameraIds.length > 0) {
             this.cameraSelect = this.cameraIds[0];
-            this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+            this.changeVideoSource(getVideoUrl(this.cameraSelect));
           }
         }
 
@@ -156,7 +158,7 @@ export default {
     },
 
     videoUrlChanged() {
-      this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+      this.changeVideoSource(getVideoUrl(this.cameraSelect));
     },
 
     changeVideoSource(url) {
@@ -164,10 +166,6 @@ export default {
       if (this.$refs.videoPlayer) {
         this.$refs.videoPlayer.setUrl(url);
       }
-    },
-
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
     },
 
     async fetchTravelTimeData(linkId, interval, time) {

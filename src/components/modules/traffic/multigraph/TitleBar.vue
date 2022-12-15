@@ -15,7 +15,12 @@
           </span>
 
           <div class="mt-n2 mb-n2">
-            <MenuSelector :items="multigraphModes" :selectedItem="multigraphModeSelect" @click="setMultiGraphMode" />
+            <MenuSelector
+              color="blue"
+              :items="multigraphModes"
+              :selectedItem="multigraphModeSelect"
+              @click="setMultiGraphMode"
+            />
           </div>
 
           <div class="ml-3 mt-n2 mb-n2">

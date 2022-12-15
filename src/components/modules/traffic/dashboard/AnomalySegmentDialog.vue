@@ -102,6 +102,7 @@ import WazeInfo from '@/components/modules/traffic/common/WazeInfo';
 import RestrictionInfo from '@/components/modules/traffic/common/RestrictionInfo';
 import AnomalyMap from '@/components/modules/traffic/dashboard/AnomalyMap';
 import VideoPlayer from '@/components/modules/traffic/common/VideoPlayer';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
 import { mapState } from 'vuex';
 export default {
   props: {
@@ -234,7 +235,7 @@ export default {
     },
 
     videoUrlChanged() {
-      this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+      this.changeVideoSource(getVideoUrl(this.cameraSelect));
     },
 
     changeVideoSource(url) {
@@ -249,10 +250,6 @@ export default {
       if (e >= 0) {
         this.items.splice(e, 1);
       }
-    },
-
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
     },
 
     onMapClick(marker) {
@@ -272,7 +269,7 @@ export default {
         const selectedId = this.cameraIds.find(id => id === cameraId);
         if (selectedId) {
           this.cameraSelect = selectedId;
-          this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+          this.changeVideoSource(getVideoUrl(this.cameraSelect));
         }
       }
     },
@@ -328,7 +325,7 @@ export default {
         this.cameraIds = segment.info.cameras.map(c => c.id);
         if (this.cameraIds.length > 0) {
           this.cameraSelect = this.cameraIds[0];
-          this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+          this.changeVideoSource(getVideoUrl(this.cameraSelect));
         }
       } else {
         this.removeTabByName('cameras');

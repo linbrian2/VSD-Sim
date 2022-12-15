@@ -4,7 +4,7 @@
     <RightPanel
       name="dashboardSideBarWidth"
       :title="currentTitle"
-      :tableButton="true"
+      :tableButton="!trafficInfoShow"
       v-if="!$vuetify.breakpoint.mobile"
     >
       <component v-if="trafficInfoShow" :is="currentComponent" v-bind="currentProperties" ref="refPanelInfo" />
@@ -23,7 +23,7 @@
     <BottomDataDisplay
       name="dashboardSideBarWidth"
       :title="currentTitle"
-      :tableButton="true"
+      :tableButton="!trafficInfoShow"
       v-if="$vuetify.breakpoint.mobile"
     >
       <component v-if="trafficInfoShow" :is="currentComponent" v-bind="currentProperties" ref="refPanelInfo" />
@@ -221,8 +221,6 @@ export default {
   },
 
   mounted() {
-    // this.showScrollBar(false);
-
     this.$bus.$on('SHOW_SELECTION_POPUP', id => {
       this.showSelectionDialog(id);
     });

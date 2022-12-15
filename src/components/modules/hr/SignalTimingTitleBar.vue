@@ -1,7 +1,7 @@
 <template>
   <div class="title-name">
     <v-row wrap no-gutters>
-      <v-col lg="5" sm="6" xs="12">
+      <v-col lg="5" sm="12" xs="12">
         <div class="d-flex mt-2">
           <span v-if="showMap">
             <v-tooltip bottom>
@@ -15,32 +15,30 @@
           </span>
           <div class="mt-1">
             <span>{{ loading ? 'Loading ...' : activeTitle }}</span>
-            <span class="ml-2" v-if="title === undefined && !loading">
-              <v-chip class="mt-n1 white--text" color="green" outlined x-small>
-                <span class="white--text">{{ activeSignal.id }}</span>
-              </v-chip>
-            </span>
           </div>
 
           <div class="mt-n2 ml-4">
             <MenuSelector :items="displayModeItems" :selectedItem="signalTimingMode" @click="displayModeSelected" />
           </div>
-          <span v-if="$route.name == 'Signal Timing'">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn outlined class="mb-1 ml-5" color="teal" icon v-on="on" @click.stop="toggleMap">
-                  <v-icon color="teal accent-4">mdi-map</v-icon>
-                </v-btn>
-              </template>
-              <span>Show Signal Map</span>
-            </v-tooltip>
-          </span>
+
+          <!-- <div v-if="$vuetify.breakpoint.mobile">
+            <span v-if="$route.name == 'Signal Timing'">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn outlined class="mb-1 ml-5" color="teal" icon v-on="on" @click.stop="toggleMap">
+                    <v-icon color="teal accent-4">mdi-map</v-icon>
+                  </v-btn>
+                </template>
+                <span>Show Signal Map</span>
+              </v-tooltip>
+            </span>
+          </div> -->
         </div>
       </v-col>
-      <v-col lg="6" sm="4" xs="12">
+      <v-col lg="6" sm="6" xs="12">
         <span><slot></slot></span>
       </v-col>
-      <v-col lg="1" sm="2" xs="12" v-if="showRefresh">
+      <v-col lg="1" sm="6" xs="12" v-if="showRefresh">
         <v-btn small icon @click.stop="refreshData()" class="title-btn float-right" :loading="loading">
           <v-icon color="white">mdi-refresh</v-icon>
         </v-btn>
@@ -85,7 +83,7 @@ export default {
       return (
         this.currentSignal || {
           id: 6,
-          name: 'No Signal',
+          name: '',
           phases: [],
           detectors: [],
           plans: []

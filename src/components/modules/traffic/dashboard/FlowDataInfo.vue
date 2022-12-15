@@ -3,7 +3,7 @@
     <v-container>
       <v-row id="info">
         <v-col cols="12">
-          <div class="d-flex justify-space-between">
+          <div class="d-flex justify-space-between mt-n6">
             <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Current Info</h3></v-subheader>
             <div class="mt-4 mr-3">
               <v-chip class="ml-2 mt-n1" outlined small>
@@ -14,7 +14,7 @@
           <v-divider />
         </v-col>
         <v-col cols="12">
-          <div class="mx-4">
+          <div class="mx-4 mt-n3">
             <div class="d-flex justify-space-between">
               <div>
                 <v-tabs color="teal accent-4" v-model="tab">
@@ -162,6 +162,8 @@ import PredictionInfoList from '@/components/modules/traffic/dashboard/Predictio
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
+
 export default {
   props: {
     marker: Object
@@ -221,10 +223,6 @@ export default {
       this.fetchData(marker.id);
     },
 
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
-    },
-
     showSpeedChart() {
       this.showChartDialog = true;
       this.$refs.chartDialog.init('Speed', this.speed);
@@ -241,7 +239,7 @@ export default {
     },
 
     playVideo(id) {
-      const url = this.getVideoUrl(id);
+      const url = getVideoUrl(id);
       if (url) {
         if (this.$refs.vpRef) {
           this.$refs.vpRef.changeVideoSource(url);
@@ -356,8 +354,9 @@ export default {
       let directions = ['NB', 'SB', 'EB', 'WB'];
       directions.forEach(direction => {
         if (deviceInfo.hasOwnProperty(direction)) {
-          const basicInfo = this.composeBasicInfo(deviceInfo[direction]);
-          const predictInfo = this.composePredictionInfo(deviceInfo[direction].prediction);
+          const info = deviceInfo[direction];
+          const basicInfo = this.composeBasicInfo(info);
+          const predictInfo = this.composePredictionInfo(info.prediction, info.capacityFiveMin);
           if (predictInfo) {
             const { predictHeader, predictions } = predictInfo;
             result[direction] = { basicInfo, predictHeader, predictions };
@@ -465,7 +464,7 @@ export default {
       return result;
     },
 
-    composePredictionInfo(prediction) {
+    composePredictionInfo(prediction, capacityFiveMin) {
       if (!prediction) {
         return null;
       }
@@ -497,6 +496,17 @@ export default {
         const row = { item: name, ...predictValues[item] };
         predictions.push(row);
       });
+
+      //Add throughput (percentage)
+      if (capacityFiveMin) {
+        const throughputValues = {};
+        const volumes = predictValues['volume'];
+        Object.keys(volumes).forEach(key => {
+          throughputValues[key] = Math.floor((volumes[key] * 100) / capacityFiveMin) + '%';
+        });
+        const row = { item: 'Throughput', ...throughputValues };
+        predictions.push(row);
+      }
 
       return { predictHeader, predictions };
     },

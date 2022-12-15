@@ -70,6 +70,8 @@ import Constants from '@/utils/constants/traffic';
 import InfoCard from '@/components/modules/traffic/common/InfoCard';
 import VideoPlayer from '@/components/modules/traffic/common/VideoPlayer';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
+
 export default {
   props: {
     value: Boolean
@@ -149,7 +151,7 @@ export default {
     },
 
     videoUrlChanged() {
-      this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+      this.changeVideoSource(getVideoUrl(this.cameraSelect));
     },
 
     tabChanged() {},
@@ -159,10 +161,6 @@ export default {
       if (this.$refs.videoPlayer) {
         this.$refs.videoPlayer.setUrl(url);
       }
-    },
-
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
     },
 
     fetchData(deviceId) {
@@ -195,7 +193,7 @@ export default {
 
         if (this.cameraIds.length > 0) {
           this.cameraSelect = this.cameraIds[0];
-          this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+          this.changeVideoSource(getVideoUrl(this.cameraSelect));
         }
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$route.name !== 'Signal Timing'">
+  <div>
     <GmapMap
       ref="mapRef"
       :options="options"
@@ -33,7 +33,7 @@
     </GmapMap>
     <PhaseSelectionTool @click="phaseSelected" v-if="isLive" />
   </div>
-  <div v-else>
+  <!-- <div v-else> v-if="$route.name !== 'Signal Timing'"
     <template v-if="showMapForSignal">
       <GmapMap
         ref="mapRef"
@@ -68,7 +68,7 @@
       </GmapMap>
       <PhaseSelectionTool @click="phaseSelected" v-if="isLive" />
     </template>
-  </div>
+  </div> -->
 </template>
 
 <script>

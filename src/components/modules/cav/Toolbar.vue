@@ -6,12 +6,15 @@
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
               <v-app-bar-nav-icon></v-app-bar-nav-icon>
+              <v-chip small outlined class="ma-2 overline" :color="tripColor">
+                Trip <strong>{{ currentTrip.id ? currentTrip.id : '___' }}</strong>
+              </v-chip>
             </v-btn>
           </template>
 
-          <v-card style="height: 500px; width: 455px">
+          <v-card style="height: 500px; width: 425px">
             <v-card-actions class="mt-n4 d-flex justify-space-between">
-              <div style="width: 150px">
+              <div style="width: 220px">
                 <DatePicker type="short" @date="dateSelected" />
               </div>
               <v-btn small icon @click.stop="refreshTripData" class="mr-2 mt-2" :loading="loading">
@@ -22,11 +25,12 @@
           </v-card>
         </v-menu>
 
-        <v-chip small outlined class="ma-2 overline" :color="tripColor">
+        <!-- <v-chip small outlined class="ma-2 overline" :color="tripColor">
           Trip <strong>{{ currentTrip.id ? currentTrip.id : '___' }}</strong>
-        </v-chip>
+        </v-chip> -->
 
-        <v-slider v-model="progress" class="mt-6" style="width: 160px"></v-slider>
+        <v-divider vertical class="ml-13" />
+        <v-slider v-model="progress" class="ml-1 mt-6" style="width: 120px"></v-slider>
 
         <v-menu bottom right offset-y>
           <template v-slot:activator="{ on: menu, attrs }">

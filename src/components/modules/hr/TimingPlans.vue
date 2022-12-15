@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 9">
+    <v-col>
       <div class="ml-2">
         <v-tabs color="deep-purple accent-4" v-model="activeTab" show-arrows>
           <v-tab v-for="(phase, i) in phases" :key="i">
@@ -8,7 +8,7 @@
           </v-tab>
           <v-tab-item v-for="(plan, i) in plans" :key="i">
             <v-container fluid>
-              <v-data-table disable-sort :headers="headers" :items="plan" hide-default-footer>
+              <v-data-table disable-sort mobile-breakpoint="0" :headers="headers" :items="plan" hide-default-footer>
                 <template v-slot:[`item.name`]="{ item }">
                   <v-chip color="success" outlined x-small style="width:35px;">{{ item.name | simplify }}</v-chip>
                 </template>
@@ -29,12 +29,12 @@
         </v-tabs>
       </div>
     </v-col>
-    <v-col cols="3" v-if="!$vuetify.breakpoint.mobile">
+    <!-- <v-col cols="3" v-if="!$vuetify.breakpoint.mobile">
       <div class="phase-image">
         <v-img src="@/assets/phase.png" aspect-ratio="1.0" />
       </div>
       <h5 class="text-center font-italic font-weight-thin">General Nema Diagram</h5>
-    </v-col>
+    </v-col> -->
   </v-row>
 </template>
 

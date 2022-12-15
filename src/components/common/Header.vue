@@ -17,6 +17,7 @@
           />
         </router-link>
       </div>
+
       <div class="hidden-sm-and-down">
         <NavDropdown :title="title" />
       </div>

@@ -2,93 +2,107 @@
   <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <!-- Left map panel -->
     <SelectionPanel :width="width" name="incidentSideBarWidth">
-      <MapSegment
-        ref="mapSegmentRef"
-        :segments="segmentLinks"
-        :markers="markers"
-        @select="onSegmentSelected"
-        @click="onMarkerClicked"
-      />
+      <TitleBar title="INCIDENT LIST" :showMap="false" :loading="loading" :refresh="refreshData">
+        <div class="d-flex justify-space-between">
+          <v-spacer></v-spacer>
+          <div>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn class="mt-1" icon v-on="on" @click.stop="displaySearchSettings">
+                  <v-icon medium color="white">mdi-magnify</v-icon>
+                </v-btn>
+              </template>
+              <span>Global Search</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn class="mt-1" icon v-on="on" @click.stop="showSettings = !showSettings">
+                  <v-icon medium color="white">mdi-cog-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Settings</span>
+            </v-tooltip>
+
+            <v-tooltip bottom v-if="isSimulation">
+              <template v-slot:activator="{ on }">
+                <v-btn class="mt-1" icon v-on="on" @click.stop="showSimulationConfig = !showSimulationConfig">
+                  <v-icon medium color="white">mdi-traffic-light-outline </v-icon>
+                </v-btn>
+              </template>
+              <span>Simulation</span>
+            </v-tooltip>
+          </div>
+        </div>
+      </TitleBar>
+      <v-container>
+        <v-layout column style="height: 80vh">
+          <div v-for="(incident, i) in incidents" :key="i">
+            <IncidentInfo class="mx-1 mb-1" :incident="incident" @click="handleRowClick" />
+          </div>
+        </v-layout>
+      </v-container>
     </SelectionPanel>
 
-    <TitleBar title="INCIDENT LIST" :loading="loading" :refresh="refreshData">
-      <div class="d-flex justify-space-between">
-        <div class="d-flex justify-space-between ml-15 mt-2 mr-15">
-          <div class="font-weight-bold overline ml-3">totally {{ totalIncidents }} incidents</div>
-          <v-btn small icon @click.stop="showIncidentTable = !showIncidentTable">
-            <v-icon color="green" v-if="showIncidentTable">mdi-chevron-up</v-icon>
-            <v-icon color="green" v-else>mdi-chevron-down</v-icon>
-          </v-btn>
-        </div>
-
-        <div class="d-flex justify-space-between" style="width: 200px;">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn class="mt-1" icon v-on="on" @click.stop="displaySearchSettings">
-                <v-icon medium color="white">mdi-magnify</v-icon>
-              </v-btn>
-            </template>
-            <span>Global Search</span>
-          </v-tooltip>
-
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn class="mt-1" icon v-on="on" @click.stop="showIncidentTimeline = !showIncidentTimeline">
-                <v-icon medium>mdi-timetable</v-icon>
-              </v-btn>
-            </template>
-            <span>Timeline</span>
-          </v-tooltip>
-
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn class="mt-1" icon v-on="on" @click.stop="showSettings = !showSettings">
-                <v-icon medium color="white">mdi-cog-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Settings</span>
-          </v-tooltip>
-
-          <v-divider vertical />
-
-          <v-tooltip bottom v-if="isSimulation">
-            <template v-slot:activator="{ on }">
-              <v-btn class="mt-1" icon v-on="on" @click.stop="showSimulationConfig = !showSimulationConfig">
-                <v-icon medium color="white">mdi-traffic-light-outline </v-icon>
-              </v-btn>
-            </template>
-            <span>Simulation Config</span>
-          </v-tooltip>
-        </div>
+    <v-app-bar absolute fixed dense dark color="blue-grey darken-1">
+      <v-app-bar-nav-icon @click.stop="showIncidentPanel" />
+      <v-toolbar-title class="overline">{{ incidentTitle }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <div class="d-flex justify-end mt-n2">
+        <v-btn-toggle v-model="btnSelection" color="primary" dense group>
+          <div v-for="item in actionItems" :key="item.id">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on: tooltip }">
+                <v-btn
+                  small
+                  outlined
+                  color="grey"
+                  class="mx-1 mt-2"
+                  v-on="{ ...tooltip }"
+                  @click.stop="showSection(item.action)"
+                >
+                  <v-icon small color="white">{{ item.icon }}</v-icon>
+                </v-btn>
+              </template>
+              <span>{{ item.tooltip }}</span>
+            </v-tooltip>
+          </div>
+        </v-btn-toggle>
       </div>
-    </TitleBar>
+    </v-app-bar>
 
-    <v-container>
-      <v-card tile class="mb-4 mx-4" v-show="showIncidentTimeline">
-        <v-card-title class="d-flex justify-space-between">
-          <h4 class="ml-4">Incident Timeline</h4>
-          <v-btn icon @click="showIncidentTimeline = false"><v-icon>mdi-close</v-icon></v-btn>
-        </v-card-title>
-        <div>
-          <IncidentHeatMapChart
-            ref="heatMapChart"
-            :data="incidentsByTime"
-            :height="400"
-            @cell-click="timeSlotClicked"
-          />
-        </div>
-      </v-card>
-
-      <v-card tile class="mx-3 mb-2" v-show="showIncidentTable">
-        <div>
-          <IncidentTable :height="tableHeight" :incidents="incidents" @click="handleRowClick" />
-        </div>
-      </v-card>
-
+    <v-sheet class="overflow-y-auto mt-10" max-height="89vh">
       <div v-if="incidentItem">
-        <EvidenceListDisplay :incident="incidentItem" @select="singleSegmentSelected" ref="anomalySegmentDisplay" />
+        <v-row id="mapSegment">
+          <v-col cols="12">
+            <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"
+              ><h3>Incident Location</h3></v-subheader
+            >
+            <v-divider />
+          </v-col>
+          <v-col cols="12">
+            <div class="mx-3 mt-n5 mb-n5">
+              <v-card tile>
+                <MapSegment
+                  ref="mapSegmentRef"
+                  :segments="segmentLinks"
+                  :markers="markers"
+                  @select="onSegmentSelected"
+                  @click="onMarkerClicked"
+                  :smallMap="true"
+                />
+              </v-card>
+            </div>
+          </v-col>
+        </v-row>
+
+        <EvidenceListDisplay
+          :showHeader="false"
+          :incident="incidentItem"
+          @select="singleSegmentSelected"
+          ref="anomalySegmentDisplay"
+        />
       </div>
-    </v-container>
+    </v-sheet>
 
     <IncidentSettings v-model="showSettings" ref="settings" />
     <SimulationConfigs v-model="showSimulationConfig" ref="simu" v-if="isSimulation" />
@@ -96,44 +110,33 @@
   </div>
 
   <div class="mobile" v-else>
-    <!-- Title Bar -->
-    <!-- <TitleBar :showMap="false" :showRefresh="false" /> -->
-
-    <!-- Input & Map -->
-    <MapSegment
-      ref="mapSegmentRef"
-      :segments="segmentLinks"
-      :markers="markers"
-      @select="onSegmentSelected"
-      @click="onMarkerClicked"
-      :smallMap="true"
-    />
-
-    <!-- Container -->
     <v-container>
-      <v-card tile class="mb-4 mx-4" v-show="showIncidentTimeline">
-        <v-card-title class="d-flex justify-space-between">
-          <h4 class="ml-4">Incident Timeline</h4>
-          <v-btn icon @click="showIncidentTimeline = false"><v-icon>mdi-close</v-icon></v-btn>
-        </v-card-title>
-        <div>
-          <IncidentHeatMapChart
-            ref="heatMapChart"
-            :data="incidentsByTime"
-            :height="400"
-            @cell-click="timeSlotClicked"
-          />
+      <div class="my-3">
+        <div v-for="(incident, i) in incidents" :key="i">
+          <IncidentInfo class="mx-1 mb-1" :incident="incident" @click="handleRowClick" />
         </div>
-      </v-card>
-
-      <v-card tile class="mx-3 mb-2" v-show="showIncidentTable">
-        <div>
-          <IncidentTable :height="500" :incidents="incidents" @click="handleRowClick" />
-        </div>
-      </v-card>
+      </div>
 
       <div v-if="incidentItem">
-        <EvidenceListDisplay :incident="incidentItem" @select="singleSegmentSelected" ref="anomalySegmentDisplay" />
+        <v-card tile id="mapSegment">
+          <div class="mt-4">
+            <MapSegment
+              ref="mapSegmentRef"
+              :segments="segmentLinks"
+              :markers="markers"
+              @select="onSegmentSelected"
+              @click="onMarkerClicked"
+              :smallMap="true"
+            />
+          </div>
+        </v-card>
+
+        <EvidenceListDisplay
+          :showHeader="false"
+          :incident="incidentItem"
+          @select="singleSegmentSelected"
+          ref="anomalySegmentDisplay"
+        />
       </div>
     </v-container>
   </div>
@@ -147,11 +150,10 @@ import { mapState, mapActions } from 'vuex';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import MapSegment from '@/components/modules/traffic/incident/MapSegment';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
-import IncidentTable from '@/components/modules/traffic/incident/IncidentTable';
+import IncidentInfo from '@/components/modules/traffic/common/IncidentInfo';
 import IncidentSettings from '@/components/modules/traffic/incident/IncidentSettings';
 import SimulationConfigs from '@/components/modules/traffic/incident/SimulationConfigs';
 import GlobalSearchDialog from '@/components/modules/traffic/incident/GlobalSearchDialog';
-import IncidentHeatMapChart from '@/components/modules/traffic/incident/IncidentHeatMapChart';
 import EvidenceListDisplay from '@/components/modules/traffic/incident/EvidenceListDisplay';
 
 export default {
@@ -159,11 +161,10 @@ export default {
     TitleBar,
     MapSegment,
     SelectionPanel,
-    IncidentTable,
+    IncidentInfo,
     IncidentSettings,
     SimulationConfigs,
     GlobalSearchDialog,
-    IncidentHeatMapChart,
     EvidenceListDisplay
   },
 
@@ -182,7 +183,22 @@ export default {
 
     incidentsByTime: {},
     segmentLinks: [],
-    incidentItem: null
+    incidentItem: null,
+
+    btnSelection: 0,
+
+    DEFAULT_ACTION_ITEMS: [
+      { id: 1, icon: 'mdi-map', tooltip: 'Map', action: 'mapSegment' },
+      { id: 2, icon: 'mdi-timeline-clock-outline', tooltip: 'Timeline', action: 'timeline' },
+      { id: 3, icon: 'mdi-car-multiple', tooltip: 'Traffic Flow', action: 'flow' },
+      { id: 4, icon: 'mdi-bluetooth-connect', tooltip: 'Travel Time', action: 'travelTime' },
+      { id: 5, icon: 'mdi-movie', tooltip: 'Video', action: 'video' },
+      { id: 6, icon: 'mdi-waze', tooltip: 'Wazes', action: 'waze' },
+      { id: 7, icon: 'mdi-traffic-cone', tooltip: 'Restrictions', action: 'restrictions' },
+      { id: 8, icon: 'mdi-alert-decagram-outline', tooltip: 'Traffic Alerts', action: 'alerts' },
+      { id: 9, icon: 'mdi-weather-cloudy', tooltip: 'Weather', action: 'weather' }
+    ],
+    actionItems: []
   }),
 
   computed: {
@@ -204,6 +220,10 @@ export default {
 
     isSimulation() {
       return process.env.VUE_APP_MITIGATION_MODE === 'simulation';
+    },
+
+    incidentTitle() {
+      return this.incidentItem ? `INCIDENT ${this.incidentItem.id}` : 'Select incident to show';
     },
 
     ...mapState(['currentDate']),
@@ -232,6 +252,10 @@ export default {
   },
 
   methods: {
+    showIncidentPanel() {
+      this.$store.commit('traffic/TOGGLE_SHOW_PANEL');
+    },
+
     onSegmentSelected(segmentId) {
       if (this.$refs.anomalySegmentDisplay) {
         this.$refs.anomalySegmentDisplay.selectSegment(segmentId);
@@ -243,7 +267,7 @@ export default {
       const type = marker.type;
       if (type) {
         const item = marker.item;
-        this.gotoSection(`#${type}`);
+        this.gotoSection(type);
         if (this.$refs.anomalySegmentDisplay) {
           this.$refs.anomalySegmentDisplay.selectEvidenceItem(type, item);
           if (type == 'waze') {
@@ -269,6 +293,16 @@ export default {
     },
 
     handleRowClick(item) {
+      this.btnSelection = 0;
+
+      if (this.incidentItem) {
+        const prevIncident = this.incidents.find(item => item.id === this.incidentItem.id);
+        if (prevIncident != null) {
+          prevIncident.selected = false;
+        }
+      }
+      item.selected = true;
+
       this.incidentItem = Object.assign({}, item);
       if (this.$refs.anomalySegmentDisplay) {
         this.$refs.anomalySegmentDisplay.init(item);
@@ -292,8 +326,31 @@ export default {
       }
 
       setTimeout(() => {
-        this.updateIncidentTimeline(item);
+        this.gotoSection('mapSegment');
+        this.actionItems = this.createActionItems();
       }, 200);
+    },
+
+    showSection(name) {
+      setTimeout(() => {
+        this.gotoSection(name);
+      }, 200);
+    },
+
+    createActionItems() {
+      if (!this.incidentItem || !this.$refs.anomalySegmentDisplay) {
+        return this.DEFAULT_ACTION_ITEMS;
+      } else {
+        const display = this.$refs.anomalySegmentDisplay;
+        const items = [];
+        items.push(this.DEFAULT_ACTION_ITEMS[0]);
+        this.DEFAULT_ACTION_ITEMS.forEach(item => {
+          if (display.isVisible(item.action)) {
+            items.push(item);
+          }
+        });
+        return items;
+      }
     },
 
     timeSlotClicked(e) {
@@ -308,7 +365,14 @@ export default {
     },
 
     gotoSection(target) {
-      this.$vuetify.goTo(target);
+      try {
+        const elm = document.getElementById(target);
+        if (elm != null) {
+          elm.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     updateIncidentTimeline(item) {
@@ -342,18 +406,23 @@ export default {
 
     async fetchIncidentData(startTime) {
       this.loading = true;
+      this.actionItems = [];
       const { severity, duration } = this.incidentSettings;
       try {
         const start = startTime.getTime();
         const response = await Api.fetchIncidentData(start, 1, severity, duration);
         const data = this.getResponseData(response);
         if (data) {
-          this.incidents = data;
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.incidents = data.map(d => ({ ...d, selected: false }));
+
+          if (Utils.isToday(startTime)) {
+            this.incidents.sort((a, b) => a.status - b.status);
+          }
+          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = this.createTotalSegments();
         } else {
           this.incidents = [];
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = [];
         }
         this.incidentItem = null;
@@ -369,12 +438,14 @@ export default {
         const response = await Api.searchIncidentData(queryInput);
         const data = this.getResponseData(response);
         if (data) {
-          this.incidents = data;
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          this.incidents = data.map(d => ({ ...d, selected: false }));
+          //this.incidents.sort((a, b) => a.endTime - b.endTime);
+
+          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = this.createTotalSegments();
         } else {
           this.incidents = [];
-          this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
+          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = [];
         }
         this.incidentItem = null;
@@ -622,3 +693,11 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.card-scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 8px 4px;
+}
+</style>

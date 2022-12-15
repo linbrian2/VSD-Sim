@@ -6,17 +6,19 @@
       :title="evidenceText"
       :show="isEvidenceVisible"
       :callback="segmentClicked"
-      :showEvidenceText="showEvidenceText"
+      :showEvidenceText="!$vuetify.breakpoint.mobile"
       @expand="isEvidenceVisible = !isEvidenceVisible"
       ref="slideButtons"
     />
 
-    <ExpansionItems
-      :name="selectSegmentName"
-      :infoList="travelTimeListBySegment"
-      :show="isEvidenceVisible"
-      @close="hideEvidences"
-    />
+    <div v-if="!$vuetify.breakpoint.mobile">
+      <ExpansionItems
+        :name="selectSegmentName"
+        :infoList="travelTimeListBySegment"
+        :show="isEvidenceVisible"
+        @close="hideEvidences"
+      />
+    </div>
 
     <div class="mt-4" v-if="selectedSegment">
       <TravelTimeCharts

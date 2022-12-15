@@ -119,6 +119,8 @@ export default {
     async fetchData(tripId) {
       this.loading = true;
       this.$store.commit('cav/SET_PROGRESS_LOADING', true);
+      this.$store.commit('cav/SHOW_PANEL', true);
+
       try {
         // Now we await for all results, whose async processes have already been started
         const [tripDataRes, tripInfoRes] = await Promise.all([Api.fetchTripData(tripId), Api.fetchTripInfo(tripId)]);

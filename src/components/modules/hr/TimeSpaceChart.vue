@@ -537,6 +537,7 @@ export default {
       if (this.$vuetify.breakpoint.mobile) {
         categories = categories.map(x => x.substr(0, 4));
       }
+
       let idx = 0;
       let chart = {
         credits: {

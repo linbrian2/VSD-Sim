@@ -25,7 +25,7 @@
           <v-col cols="3">
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn dark icon small elevation="5" fab v-on="on" @click.stop="showCorridorOccupancy">
+                <v-btn dark icon small v-on="on" @click.stop="showCorridorOccupancy">
                   <v-icon>mdi-format-columns</v-icon>
                 </v-btn>
               </template>
@@ -50,13 +50,16 @@
         <v-card-title :class="panelStyle">
           <v-icon class="mr-2">mdi-format-list-bulleted</v-icon>
           <span class="title font-weight-light">Timing Plans</span>
+          <v-spacer />
+          <v-btn x-small icon class="mr-4" @click.stop="showNemaDiagram">
+            <v-icon>mdi-help-circle-outline </v-icon>
+          </v-btn>
           <v-btn x-small icon class="refresh-btn" @click.stop="fetchSingleData(0)" :loading="loadingPlan">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
         </v-card-title>
-        <v-card-text>
-          <TimingPlans :phases="phases" :plans="plans" />
-        </v-card-text>
+
+        <TimingPlans :phases="phases" :plans="plans" />
       </v-card>
 
       <v-card class="mt-6">
@@ -72,11 +75,10 @@
           arrive to a green light. This provides an estimate of total stops, and identifies the quality of the offsets
           between two coordinated intersections.
         </v-card-subtitle>
-        <v-card-text>
-          <div class="mb-2" v-for="(aor, index) in aors" :key="index">
-            <AorChart :data="aor.data" :title="aor.title" :height="chartHeight(aors.length)" v-if="!reload" />
-          </div>
-        </v-card-text>
+
+        <div class="mb-2" v-for="(aor, index) in aors" :key="index">
+          <AorChart :data="aor.data" :title="aor.title" :height="chartHeight(aors.length)" v-if="!reload" />
+        </div>
       </v-card>
 
       <v-card class="mt-6">
@@ -91,11 +93,10 @@
           Approach volumes provide the number of vehicles arriving at an intersection on each approach per 5 minutes
           over a 24-hour period.
         </v-card-subtitle>
-        <v-card-text>
-          <div class="mb-2" v-for="(volume, index) in volumes" :key="index">
-            <BasicChart :data="volume" :height="chartHeight(volumes.length)" v-if="!reload" />
-          </div>
-        </v-card-text>
+
+        <div class="mb-2" v-for="(volume, index) in volumes" :key="index">
+          <BasicChart :data="volume" :height="chartHeight(volumes.length)" v-if="!reload" />
+        </div>
       </v-card>
 
       <v-card class="mt-6">
@@ -109,17 +110,16 @@
         <v-card-subtitle class="mt-3 font-italic">
           Phase Interval provides cycle by cycle Red / Green / Yellow durations over a 24-hour period.
         </v-card-subtitle>
-        <v-card-text>
-          <div class="mb-2" v-for="(interval, index) in intervals" :key="index">
-            <IntervalChart
-              :data="interval.data"
-              :title="interval.title"
-              :phase="interval.phase"
-              :height="chartHeight(intervals.length)"
-              v-if="!reload"
-            />
-          </div>
-        </v-card-text>
+
+        <div class="mb-2" v-for="(interval, index) in intervals" :key="index">
+          <IntervalChart
+            :data="interval.data"
+            :title="interval.title"
+            :phase="interval.phase"
+            :height="chartHeight(intervals.length)"
+            v-if="!reload"
+          />
+        </div>
       </v-card>
 
       <v-card class="mt-6">
@@ -134,18 +134,17 @@
           Simple Approach Delay provides the time between detector actuation during the red phase and when the phase
           turns green.
         </v-card-subtitle>
-        <v-card-text>
-          <div class="mb-2" v-for="(delay, index) in delays" :key="index">
-            <BasicChart :data="delay" :height="chartHeight(delays.length)" v-if="!reload" />
-          </div>
-        </v-card-text>
+
+        <div class="mb-2" v-for="(delay, index) in delays" :key="index">
+          <BasicChart :data="delay" :height="chartHeight(delays.length)" v-if="!reload" />
+        </div>
       </v-card>
 
       <v-card class="mt-6">
         <v-card-title class="d-flex justify-space-between" :class="panelStyle">
           <div>
             <v-icon class="mr-2">mdi-percent-outline</v-icon>
-            <span class="title font-weight-light">Averaged Duration and Occupancy</span>
+            <span class="title font-weight-light">Averaged Duration/Occupancy</span>
           </div>
           <v-spacer></v-spacer>
 
@@ -163,7 +162,7 @@
             />
           </div>
 
-          <div style="width: 220px; margin-right: 30px">
+          <div style="width: 140px; margin-right: 30px">
             <v-select
               flat
               dense
@@ -197,16 +196,15 @@
           Averaged Occupancy calculates the average vehicle occupancy percentage over five minutes interval based on the
           duration between ON and OFF status of loop detectors.
         </v-card-subtitle>
-        <v-card-text>
-          <BasicChart
-            class="mb-2"
-            v-for="(occupancy, index) in occupancies"
-            :key="index"
-            ref="occCharts"
-            :data="occupancy"
-            :height="chartHeight(occupancies.length)"
-          />
-        </v-card-text>
+
+        <BasicChart
+          class="mb-2"
+          v-for="(occupancy, index) in occupancies"
+          :key="index"
+          ref="occCharts"
+          :data="occupancy"
+          :height="chartHeight(occupancies.length)"
+        />
       </v-card>
     </v-container>
   </div>
@@ -255,8 +253,8 @@ export default {
 
     occType: 0,
     typeItems: [
-      { text: 'Average duration', value: 0 },
-      { text: 'Average occupancy', value: 1 }
+      { text: 'Duration', value: 0 },
+      { text: 'Occupancy', value: 1 }
     ],
 
     select: [],
@@ -342,6 +340,8 @@ export default {
       return length == 1 ? 560 : 360;
     },
 
+    showNemaDiagram() {},
+
     setFixedYAxisRange() {
       if (this.fixedYAxisRange) {
         this.$refs.occCharts.forEach(chart => {
@@ -396,8 +396,8 @@ export default {
 
     fetchData() {
       let marker = this.activeMarker;
-      let time = this.currentDate.getTime();
       if (marker != null) {
+        let time = this.currentDate.getTime();
         this.fetchPerformanceData(marker.id, time);
       }
     },

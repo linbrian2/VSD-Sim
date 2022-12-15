@@ -32,6 +32,7 @@
       @center-map="centerMapHandler"
       @zoom-select="zoomSelectHandler"
       :smallMap="smallMap"
+      :mapOptions="mapExtraOptions"
     >
       <div v-for="segment in filteredSegments" :key="segment.id">
         <GmapPolyline :path.sync="segment.path" :options="segmentOptions" :zIndex="1" />
@@ -76,6 +77,7 @@ export default {
     map: null,
     zoom: 15,
 
+    mapExtraOptions: { scrollwheel: false },
     segmentOptions: {
       strokeColor: 'orange',
       strokeOpacity: 0.9,

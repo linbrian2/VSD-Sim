@@ -21,7 +21,7 @@
       </v-list>
     </v-menu>
 
-    <div style="width:170px">
+    <div style="width:150px">
       <v-autocomplete
         light
         dense
@@ -42,6 +42,20 @@
         item-value="id"
         @change="onSearchChange"
       />
+      <!-- <v-text-field
+        v-model.trim="searchText"
+        dense
+        filled
+        rounded
+        clearable
+        placeholder="Search"
+        prepend-inner-icon="mdi-magnify"
+        class="pt-6 shrink expanding-search"
+        :class="{ closed: searchBoxClosed && !searchText }"
+        @keyup.enter="onSearch"
+        @focus="searchBoxClosed = false"
+        @blur="searchBoxClosed = true"
+      ></v-text-field> -->
     </div>
 
     <v-divider vertical />
@@ -191,4 +205,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.v-input.expanding-search {
+  transition: max-width 0.5s;
+}
+.v-input.expanding-search.closed {
+  max-width: 70px;
+}
+</style>

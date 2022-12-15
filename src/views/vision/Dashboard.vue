@@ -166,7 +166,7 @@ export default {
     timeSeries: [],
     liveUrl: null,
     mp4Url: null,
-    videoServer: process.env.VUE_APP_VIDEO_URL,
+    videoServer: null,
     selectedDirection: 0,
     cameraType: 'normal',
     Constants: {

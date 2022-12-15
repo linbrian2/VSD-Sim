@@ -1,6 +1,6 @@
 <template>
   <v-container :class="$vuetify.breakpoint.mobile ? 'px-0' : null">
-    <v-row>
+    <v-row v-if="showHeader">
       <v-col cols="12">
         <v-card tile class="mb-2">
           <div class="grey darken-2 py-2">
@@ -211,7 +211,11 @@ import { mapState } from 'vuex';
 
 export default {
   props: {
-    incident: Object
+    incident: Object,
+    showHeader: {
+      type: Boolean,
+      default: true
+    }
   },
   components: {
     DataCard,
@@ -409,6 +413,12 @@ export default {
       }
     },
 
+    formatDate(d) {
+      const mm = Utils.formatDateLong3(new Date(d));
+      const tt = Utils.formatAMPMTime(d);
+      return `${mm}, ${tt}`;
+    },
+
     onMapClick(marker) {
       if (marker.id.startsWith('F')) {
         this.tab = 'flow';
@@ -488,13 +498,13 @@ export default {
       const weather = incident.items.find(item => item.type === Constants.DATA_WEATHER);
 
       this.incidentTime = [
-        { name: 'Start Time:', value: Utils.formatAMPMTime(incident.startTime) },
-        { name: 'End Time:', value: Utils.formatAMPMTime(incident.endTime) },
+        { name: 'Start Time:', value: this.formatDate(incident.startTime) },
+        { name: 'End Time:', value: this.formatDate(incident.endTime) },
         { name: 'Duration:', value: Utils.toHHMM(incident.duration) }
       ];
       this.incidentLoc = [
+        { name: 'Region:', value: incident.region + ' Area' },
         { name: 'Route:', value: `${incident.route} ${incident.direction}` },
-        { name: 'Address:', value: incident.address },
         { name: 'Detectors', value: incident.detectors ? incident.detectors.join() : '' }
       ];
 

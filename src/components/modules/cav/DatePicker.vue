@@ -19,7 +19,7 @@
         :style="{ color: 'grey', width: width }"
       >
         <template v-slot:prepend>
-          <v-icon class="mt-1" color="">mdi-calendar-month</v-icon>
+          <v-icon class="mt-0" color="">mdi-calendar-month</v-icon>
         </template>
       </v-text-field>
     </template>

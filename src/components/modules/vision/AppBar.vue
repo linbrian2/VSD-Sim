@@ -12,11 +12,11 @@
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(1)" icon v-on="on" @click.stop="showReID">
-            <v-icon>mdi-car-2-plus</v-icon>
+          <v-btn class="mx-1" fab :color="color(1)" icon v-on="on" @click.stop="showMultiview">
+            <v-icon>mdi-table</v-icon>
           </v-btn>
         </template>
-        <span>Vehicle Re-ID</span>
+        <span>Camera Multiview</span>
       </v-tooltip>
     </div>
   </Header>
@@ -36,7 +36,7 @@ export default {
     title: AppConstants.VISION_APP_TITLE,
     action_menu_items: [
       { title: RouterNames.VISION_DASHBOARD, url: RouterPaths.VISION_DASHBOARD },
-      { title: RouterNames.VISION_REID, url: RouterPaths.VISION_REID }
+      { title: RouterNames.VISION_MULTIVIEW, url: RouterPaths.VISION_MULTIVIEW }
     ]
   }),
 
@@ -46,7 +46,7 @@ export default {
         case 0:
           return this.$route.name === RouterNames.VISION_DASHBOARD ? 'orange' : 'teal';
         case 1:
-          return this.$route.name === RouterNames.VISION_REID ? 'orange' : 'teal';
+          return this.$route.name === RouterNames.VISION_MULTIVIEW ? 'orange' : 'teal';
       }
     },
 
@@ -58,8 +58,8 @@ export default {
       this.switchTo(RouterPaths.VISION_DASHBOARD);
     },
 
-    showReID() {
-      this.switchTo(RouterPaths.VISION_REID);
+    showMultiview() {
+      this.switchTo(RouterPaths.VISION_MULTIVIEW);
     }
   }
 };

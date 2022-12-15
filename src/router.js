@@ -35,7 +35,7 @@ import MultiPCD from '@/views/hr/MultiPCD.vue';
 import MultiOcc from '@/views/hr/MultiOcc.vue';
 
 import VisionDashboard from '@/views/vision/Dashboard.vue';
-import ReID from '@/views/vision/ReID.vue';
+import MultiView from '@/views/vision/MultiView.vue';
 
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
@@ -190,9 +190,9 @@ const router = new Router({
           component: VisionDashboard
         },
         {
-          path: RouterPaths.VISION_REID,
-          name: RouterNames.VISION_REID,
-          component: ReID
+          path: RouterPaths.VISION_MULTIVIEW,
+          name: RouterNames.VISION_MULTIVIEW,
+          component: MultiView
         }
       ]
     },

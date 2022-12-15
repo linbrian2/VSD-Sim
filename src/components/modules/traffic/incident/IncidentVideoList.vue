@@ -32,6 +32,7 @@ import Utils from '@/utils/Utils';
 import SlideButtons from '@/components/modules/traffic/incident/SlideButtons';
 import TrafficVideo from '@/components/modules/traffic/incident/TrafficVideo';
 import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
 
 export default {
   props: {
@@ -139,7 +140,7 @@ export default {
     playLiveVideo() {
       if (this.selectedCamera) {
         const cameraId = this.selectedCamera.name;
-        const url = `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
+        const url = getVideoUrl(cameraId);
         if (this.$refs.vpRef) {
           this.$refs.vpRef.changeVideoSource(url);
           this.$refs.vpRef.changeTitle(cameraId);

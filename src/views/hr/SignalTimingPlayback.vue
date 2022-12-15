@@ -70,9 +70,7 @@
         <div class="ml-10">
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn small rounded outlined color="white" dark v-bind="attrs" v-on="on">
-                Speed: {{ selectedSpeed }}x
-              </v-btn>
+              <v-btn small rounded outlined color="white" dark v-bind="attrs" v-on="on"> {{ selectedSpeed }}x </v-btn>
             </template>
 
             <v-list>
@@ -161,10 +159,11 @@ export default {
   },
   watch: {
     currentDate(value) {
-      this.simulationStartTime = Utils.getSameTimeAsToday(value);
+      this.setSimulationTime(value);
       let start = this.getStartTime();
       this.loadAndUpdate(this.activeMarker, start);
     },
+
     sliderValue(value) {
       let startTime = Utils.scale2Date(this.currentDate, value / this.sliderMax);
       startTime = Utils.roundToMinutes(startTime, 1);
@@ -172,7 +171,7 @@ export default {
     }
   },
   mounted() {
-    this.simulationStartTime = Utils.getSameTimeAsToday(this.currentDate);
+    this.setSimulationTime(this.currentDate);
 
     this.$bus.$on('GET_PLAYBACK_SIGNALS', ({ marker }) => {
       let start = this.getStartTime();
@@ -220,6 +219,13 @@ export default {
         this.$refs.mapRef.$mapPromise.then(map => {
           map.setOptions({ styles: MapStyle });
         });
+      }
+    },
+
+    setSimulationTime(date) {
+      let time = Utils.getSameTimeAsToday(date);
+      if (Utils.isToday(time)) {
+        this.simulationStartTime = Utils.addSeconds(time, -1800);
       }
     },
 

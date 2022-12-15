@@ -1,6 +1,5 @@
 <template>
   <v-data-table
-    :height="height"
     fixed-header
     :headers="headers"
     :items="incidents"
@@ -28,6 +27,7 @@
     <template v-slot:[`item.shortName`]="{ item }">
       <v-chip color="success" outlined style="width:150px;">{{ item.shortName }}</v-chip>
     </template>
+
     <template v-slot:[`item.severity`]="{ item }">
       <v-chip small :color="item.severityColor"
         ><strong class="black--text">{{ item.severity }}</strong></v-chip
@@ -38,12 +38,15 @@
       {{ item.route }} {{ item.direction }}
       <!-- <v-badge class="ml-2" color="blue" :content="item.segmentCount" bordered> </v-badge> -->
     </template>
+
     <template v-slot:[`item.startTime`]="{ item }">
       {{ item.startTime | time }}
     </template>
+
     <template v-slot:[`item.endTime`]="{ item }">
       {{ item.endTime | time }}
     </template>
+
     <template v-slot:[`item.evidenceCounts`]="{ item }">
       <v-badge
         class="mr-1"
@@ -53,7 +56,7 @@
         :content="count"
         inline
       >
-        <v-icon small v-text="getEvidenceIcon(name)"></v-icon>
+        <v-icon x-small v-text="getEvidenceIcon(name)"></v-icon>
       </v-badge>
     </template>
     <template v-slot:[`item.mitigation`]="{ item }">
@@ -86,11 +89,11 @@ export default {
     itemsPerPage: 500,
     headers: [
       { text: 'ID', value: 'id' },
-      { text: 'Route', value: 'route' },
+      // { text: 'Route', value: 'route' },
       { text: 'Region', value: 'region' },
       { text: 'Severity', value: 'severity' },
-      { text: 'Start', value: 'startTime' },
-      { text: 'End', value: 'endTime' },
+      { text: 'Start Time', value: 'startTime' },
+      { text: 'End Time', value: 'endTime' },
       { text: 'Duration', value: 'duration' },
       { text: 'Evidences', value: 'evidenceCounts' },
       { text: 'Mitigation', value: 'mitigation' }
@@ -101,9 +104,9 @@ export default {
   filters: {
     time(time) {
       const d = new Date(time);
-      // const dd = Utils.formatDate(d);
+      const dd = Utils.formatDateWOYear(d);
       const tt = Utils.formatTimeAsMinute(d);
-      return tt; //`${dd} ${tt}`;
+      return `${dd} ${tt}`;
     }
   },
 

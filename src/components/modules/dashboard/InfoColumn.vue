@@ -28,8 +28,6 @@ import DeviceAnomalies from '@/components/modules/dashboard/anomalies/DeviceAnom
 import SignalPerformanceIssues from '@/components/modules/dashboard/issues/SignalPerformanceIssues.vue';
 import CongestedRoutes from '@/components/modules/dashboard/routes/CongestedRoutes.vue';
 import WazeAlerts from '@/components/modules/dashboard/waze/WazeAlerts.vue';
-
-import Incidents from '@/utils/samples/Incidents.js';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -47,7 +45,7 @@ export default {
   },
   data() {
     return {
-      incidents: Incidents
+      incidents: null
     };
   },
   computed: {

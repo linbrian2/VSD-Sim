@@ -195,6 +195,7 @@ import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDi
 import TimingPlan from '@/components/modules/traffic/dashboard/TimingPlan';
 import TrafficFlowData from '@/components/modules/traffic/incident/TrafficFlowData';
 import TravelTimeData from '@/components/modules/traffic/incident/TravelTimeData';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
 
 export default {
   props: {
@@ -264,10 +265,6 @@ export default {
       }
     },
 
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
-    },
-
     toggleShowTiming() {
       this.planId = 'OPTCYCLE-220';
       this.simuType = 'A';
@@ -290,7 +287,7 @@ export default {
     },
 
     playVideo(id) {
-      const url = this.getVideoUrl(id);
+      const url = getVideoUrl(id);
       if (url) {
         if (this.$refs.vpRef) {
           this.$refs.vpRef.changeVideoSource(url);

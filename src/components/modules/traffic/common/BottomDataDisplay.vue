@@ -23,7 +23,7 @@
     </v-toolbar>
 
     <slot></slot>
-</div>
+  </div>
 </template>
 
 <script>
@@ -163,10 +163,12 @@ export default {
     },
 
     setBorderWidth() {
-      let i = this.$refs.drawer.$el.querySelector('.v-navigation-drawer__border');
-      i.style.width = this.navigation.borderSize + 'px';
-      i.style.cursor = 'ew-resize';
-      // i.style.backgroundColor = 'red';
+      if (this.$refs.drawer && this.$refs.drawer.$el) {
+        let i = this.$refs.drawer.$el.querySelector('.v-navigation-drawer__border');
+        i.style.width = this.navigation.borderSize + 'px';
+        i.style.cursor = 'ew-resize';
+        // i.style.backgroundColor = 'red';
+      }
     },
 
     setEvents() {

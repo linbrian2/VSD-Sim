@@ -45,11 +45,13 @@
               </v-row>
             </v-alert>
           </v-card-text>
-          <v-card-actions>
-            <v-btn text class="grey--text" @click="handleForgetPassword">
-              Forget password?
-            </v-btn>
-            <v-spacer />
+          <v-card-actions class="justify-center">
+            <template v-if="!$vuetify.breakpoint.mobile">
+              <v-btn text class="grey--text" @click="handleForgetPassword">
+                Forget password?
+              </v-btn>
+              <v-spacer />
+            </template>
             <v-btn rounded color="primary" :loading="loading" @click="handleLogin">
               <div class="mx-8">Login</div>
             </v-btn>

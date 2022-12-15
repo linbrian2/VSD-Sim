@@ -70,6 +70,7 @@
           :items="summary"
           hide-default-footer
           :loading="loading"
+          mobile-breakpoint="0"
           loading-text="Loading... Please wait"
         >
           <template v-slot:[`item.permit`]="{ item }">

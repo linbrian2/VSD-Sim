@@ -6,17 +6,19 @@
       :title="evidenceText"
       :show="isEvidenceVisible"
       :callback="deviceClicked"
-      :showEvidenceText="showEvidenceText"
+      :showEvidenceText="!$vuetify.breakpoint.mobile"
       @expand="isEvidenceVisible = !isEvidenceVisible"
       ref="slideButtons"
     />
 
-    <ExpansionItems
-      :name="selectDeviceName"
-      :infoList="trafficFlowListByDevice"
-      :show="isEvidenceVisible"
-      @close="hideEvidences"
-    />
+    <div v-if="!$vuetify.breakpoint.mobile">
+      <ExpansionItems
+        :name="selectDeviceName"
+        :infoList="trafficFlowListByDevice"
+        :show="isEvidenceVisible"
+        @close="hideEvidences"
+      />
+    </div>
 
     <div class="mt-4" v-if="selectedDevice">
       <div v-if="includePerLane">

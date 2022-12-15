@@ -31,22 +31,25 @@
           <v-btn text color="primary" @click.stop="btnClicked" v-if="showEvidenceText">
             <div class="font-weight-bold overline ml-3 mr-1">{{ title }}</div>
           </v-btn>
-          <div v-if="showEvidenceText">
-            <v-btn icon @click.stop="btnClicked" v-if="allowExpand">
-              <v-icon color="orange darken-2" v-if="show">mdi-chevron-up</v-icon>
-              <v-icon color="orange darken-2" v-else>mdi-chevron-down</v-icon>
-            </v-btn>
-          </div>
-          <div v-else>
-            <v-tooltip left>
-              <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on" @click.stop="btnClicked" v-if="allowExpand">
-                  <v-icon color="orange darken-2" v-if="show">mdi-chevron-up</v-icon>
-                  <v-icon color="orange darken-2" v-else>mdi-chevron-down</v-icon>
-                </v-btn>
-              </template>
-              <span>{{ title }}</span>
-            </v-tooltip>
+
+          <div v-if="!$vuetify.breakpoint.mobile">
+            <div v-if="showEvidenceText">
+              <v-btn icon @click.stop="btnClicked" v-if="allowExpand">
+                <v-icon color="orange darken-2" v-if="show">mdi-chevron-up</v-icon>
+                <v-icon color="orange darken-2" v-else>mdi-chevron-down</v-icon>
+              </v-btn>
+            </div>
+            <div v-else>
+              <v-tooltip left>
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on" @click.stop="btnClicked" v-if="allowExpand">
+                    <v-icon color="orange darken-2" v-if="show">mdi-chevron-up</v-icon>
+                    <v-icon color="orange darken-2" v-else>mdi-chevron-down</v-icon>
+                  </v-btn>
+                </template>
+                <span>{{ title }}</span>
+              </v-tooltip>
+            </div>
           </div>
         </div>
       </v-col>

@@ -88,7 +88,7 @@ export default {
           const x0 = chart.xAxis[0].toPixels(p0[0]);
           const x1 = chart.xAxis[0].toPixels(p1[0]);
 
-          if (Math.abs(x1 - x0) > 20) {
+          if (Math.abs(x1 - x0) > 5) {
             const x = Math.floor((x0 + x1) / 2) - 25;
             const y = chart.yAxis[0].toPixels(p0[1]) - 5;
             const text = `${p0[3]} - ${p0[1]} ${p0[2]}`;

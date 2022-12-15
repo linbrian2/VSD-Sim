@@ -28,6 +28,7 @@ export const RouterNames = {
   HR_MULTI_OCC: 'Corridor Occupancy Charts',
 
   VISION_DASHBOARD: 'Traffic Cameras',
+  VISION_MULTIVIEW: 'Camera Multiview',
   VISION_REID: 'Vehicle Re-ID',
 
   CAV_DASHBOARD: 'Trip Data',
@@ -78,6 +79,7 @@ export const RouterPaths = {
 
   VISION_ROOT: '/vision',
   VISION_DASHBOARD: '/vision/camera',
+  VISION_MULTIVIEW: '/vision/multiview',
   VISION_REID: '/vision/re-id',
 
   CAV_ROOT: '/cav',
@@ -119,6 +121,7 @@ export const RouterIcons = {
   HR_PERFORMANCE_MEASURES: 'mdi-chart-bar',
 
   VISION_DASHBOARD: 'mdi-cctv',
+  VISION_MULTIVIEW: 'mdi-table',
   VISION_REID: 'mdi-car-2-plus',
 
   CAV_DASHBOARD: 'mdi-format-list-bulleted',

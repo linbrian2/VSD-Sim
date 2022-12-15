@@ -67,6 +67,7 @@ import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import VideoPlayer from '@/components/modules/traffic/common/VideoPlayer';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
 
 export default {
   props: {
@@ -161,10 +162,6 @@ export default {
       this.fetchData(marker.id);
     },
 
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
-    },
-
     showSpeedChart() {
       this.showChartDialog = true;
       this.$refs.chartDialog.init('Speed', this.speed);
@@ -181,7 +178,7 @@ export default {
     },
 
     playVideo(id) {
-      this.url = this.getVideoUrl(id);
+      this.url = getVideoUrl(id);
       if (this.url) {
         this.changeVideoSource(this.url);
         this.showVideoPlayer = true;

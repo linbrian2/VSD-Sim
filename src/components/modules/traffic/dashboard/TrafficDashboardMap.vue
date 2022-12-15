@@ -275,6 +275,7 @@ export default {
       selectedColor: 'blue',
       selectedSegmentId: null,
       selectedMarkerId: null,
+      selectedMarkerType: -1,
       map: null,
       options: {
         zoomControl: true,
@@ -405,11 +406,13 @@ export default {
       this.changeSelectedColor();
     }
   },
+
   beforeDestroy() {
     if (this.colorInterp) {
       clearInterval(this.colorInterp);
     }
   },
+
   methods: {
     getTrafficIncidentMarker(marker) {
       if (marker.id == this.selectedMarkerId) {
@@ -476,6 +479,7 @@ export default {
       const zIndex = segment.id === this.selectedSegmentId ? 2 : 1;
       return { ...this.defaultSegmentOptions, strokeColor: color, zIndex };
     },
+
     markerClicked(marker) {
       if (marker) {
         this.selectedMarkerId = marker.id;
@@ -483,10 +487,12 @@ export default {
         this.$emit('click', marker);
       }
     },
+
     segmentClicked(s) {
       this.selectedSegmentId = s.id;
       this.$emit('clicked', s);
     },
+
     addSelectedMarker() {
       // console.log(`addSelectedMarker ${this.selectedIdx}`);
       switch (this.selectedIdx) {
@@ -544,6 +550,7 @@ export default {
           break;
       }
     },
+
     centerMapSegments(map, segments, zoom = null) {
       if (segments.length > 0) {
         const bounds = new google.maps.LatLngBounds();
@@ -561,15 +568,19 @@ export default {
         this.$store.commit('SET_MAP_CENTER', this.center);
       }
     },
+
     midPoint(s) {
       return s && s.path ? s.path[Math.round((s.path.length * 3) / 7)] : null;
     },
+
     getSegmentStrokeWeight() {
       return this.map ? this.map.getZoom() / 1.5 : 10;
     },
+
     getSegmentChipColor(segment) {
       return segment.status == 7 ? 'red' : 'white';
     },
+
     formatDisplay(seconds) {
       if (!seconds) {
         return '';
@@ -577,10 +588,13 @@ export default {
       let minutes = seconds / 60;
       return `${minutes.toFixed(1)} min`;
     },
+
     handleMarkerClick(type, id) {
+      this.selectedMarkerType = type;
       this.selectedMarkerId = id;
       this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type });
     },
+
     centerMap(map, markers, zoom = null) {
       if (markers && markers.length > 0) {
         let bounds = new google.maps.LatLngBounds();
@@ -601,17 +615,41 @@ export default {
         this.$store.commit('SET_MAP_CENTER', this.center);
       }
     },
+
+    zoomSelectMarker(map) {
+      const markers = [
+        this.markers,
+        this.segments,
+        this.weatherMarkers,
+        this.restrictions,
+        this.ongoingAnomalySegments
+      ];
+
+      const type = this.selectedMarkerType;
+      if (this.selectedMarkerId && type >= 0 && type < markers.length) {
+        const marker = markers[type].find(m => m.id == this.selectedMarkerId);
+        if (marker) {
+          map.panTo(marker.position);
+          map.setZoom(16);
+        }
+      }
+    },
+
     markerOptions(key, level = 1) {
       const zIndex = this.selectedMarkerId == key ? 9999 : level;
       return { optimized: false, zIndex };
     },
+
     fetchSensorLocations() {
       this.$emit('fetchSensorLocations');
     },
+
     addMapControls(map) {
       this.addHomeControl(map);
+      this.addPointControl(map);
       // this.addMessageControl(map);
     },
+
     addHomeControl(map) {
       let options = {
         position: 'top_right',
@@ -627,6 +665,28 @@ export default {
         events: {
           click: () => {
             this.centerMap(map, this.markers);
+          }
+        }
+      };
+      MapUtils.addControl(map, options);
+    },
+
+    addPointControl(map) {
+      let options = {
+        position: 'right',
+        content: `<div class="non-selection" style="margin:-5px 4px;"><img src="${this.zoomIcon}"/></div>`,
+        title: 'Click to zoom in the selected marker',
+        style: {
+          width: '40px',
+          height: '40px',
+          margin: '10px',
+          padding: '12px 3px',
+          border: 'solid 1px #717B87',
+          background: '#fff'
+        },
+        events: {
+          click: () => {
+            this.zoomSelectMarker(map);
           }
         }
       };
@@ -653,10 +713,12 @@ export default {
       };
       MapUtils.addControl(map, options);
     },
+
     isMapLayerVisible(id) {
       const entry = this.mapLayersSelection.find(m => m === id);
       return entry !== undefined;
     },
+
     loadPage(darkMode) {
       if (this.$refs.mapRef == null) {
         return;
@@ -675,6 +737,7 @@ export default {
       return this.$refs.mapRef;
     }
   },
+
   watch: {
     selectedMarkers: {
       handler: function() {

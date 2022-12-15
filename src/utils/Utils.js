@@ -2,11 +2,17 @@ export default {
   capitalize(s) {
     return s && s[0].toUpperCase() + s.slice(1);
   },
+
   addDay(date, days) {
     const result = new Date();
     result.setDate(date.getDate() + days);
     return result;
   },
+
+  addSeconds(date, seconds) {
+    return new Date(date.getTime() + seconds * 1000);
+  },
+
   dateFromString(str, hms) {
     let y = str.substr(0, 4),
       m = str.substr(5, 2) - 1,
@@ -26,14 +32,7 @@ export default {
     let date = new Date(y, m, d, hh, mm, 0);
     return date;
   },
-  /* CAV */
-  /* dateFromString(str) {
-    let y = str.substr(0, 4),
-      m = str.substr(5, 2) - 1,
-      d = str.substr(8, 2);
-    let date = new Date(y, m, d, 2, 2, 2);
-    return date;
-  }, */
+
   dateFromTimeString(date, timeStr) {
     const Y = date.getFullYear();
     const M = date.getMonth();
@@ -56,15 +55,23 @@ export default {
 
     return new Date(Y, M, D, hh, mm, ss);
   },
+
   formatDate(d) {
     let s = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
     return s;
   },
+
+  formatDateWOYear(d) {
+    let s = ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    return s;
+  },
+
   formatDateTime(d) {
     let dd = this.formatDate(d);
     let tt = this.formatTime(d);
     return dd + ' ' + tt;
   },
+
   formatDateLong(d) {
     let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return d.toLocaleDateString('en-US', options);
@@ -73,6 +80,12 @@ export default {
     let options = { year: 'numeric', month: 'long', day: 'numeric' };
     return d.toLocaleDateString('en-US', options);
   },
+
+  formatDateLong3(d) {
+    let options = { month: 'short', day: 'numeric' };
+    return d.toLocaleDateString('en-US', options);
+  },
+
   formatTime(d) {
     const h = d.getHours();
     const m = d.getMinutes();

@@ -175,12 +175,11 @@ const protectedRoute = [
             }
           },
           {
-            path: RouterPaths.VISION_REID,
-            name: RouterNames.VISION_REID,
+            path: RouterPaths.VISION_MULTIVIEW,
+            name: RouterNames.VISION_MULTIVIEW,
             meta: {
-              title: RouterNames.VISION_REID,
-              icon: RouterIcons.VISION_REID,
-              permissions: ['Admin', 'Dev']
+              title: RouterNames.VISION_MULTIVIEW,
+              icon: RouterIcons.VISION_MULTIVIEW
             }
           }
         ]

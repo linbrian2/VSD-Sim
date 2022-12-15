@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-dialog scrollable v-model="show" persistent max-width="700px">
+    <v-dialog scrollable v-model="show" persistent max-width="900px">
       <v-card>
         <v-app-bar dark :color="color" dense>
           <v-icon small class="mr-2" v-text="icon"></v-icon>

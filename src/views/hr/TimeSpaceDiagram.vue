@@ -12,29 +12,11 @@
             @next="timeChanged"
           />
         </div>
-        <div
-          class="d-flex justify-center mt-n2"
-          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '250px'}`"
-        >
+
+        <div class="d-flex justify-center mt-n2" style="`width:110px; margin-right: 30px; margin-left:100px;`">
           <v-select
             dark
-            style="font-size: 14px"
-            v-model="speed"
-            :items="speedItems"
-            item-text="text"
-            item-value="value"
-            hide-details
-            single-line
-            :prepend-icon="$vuetify.breakpoint.mobile ? null : 'mdi-speedometer'"
-          />
-        </div>
-        <div
-          class="d-flex justify-center mt-n2"
-          :style="`width:120px; margin-left:${$vuetify.breakpoint.mobile ? '10px' : '250px'}`"
-        >
-          <v-select
-            dark
-            style="font-size: 14px"
+            style="max-width: 120px;font-size: 14px"
             v-model="overlay"
             :items="overlayItems"
             item-text="text"
@@ -42,7 +24,7 @@
             hide-details
             single-line
             @input="overlaySelected"
-            :prepend-icon="$vuetify.breakpoint.mobile ? null : 'mdi-content-copy'"
+            prepend-icon="mdi-content-copy"
           />
         </div>
       </div>
@@ -112,7 +94,7 @@ export default {
     }, 100);
     this.refreshData();
 
-    this.setStartTime(this.currentDate, true);
+    this.setInitialStartTime();
   },
 
   beforeDestroy() {
@@ -134,6 +116,14 @@ export default {
       // Convert time string to date object
       let startTime = Utils.dateFromDateAndTimeString(this.currentDate, time);
       this.setStartTime(startTime, false);
+    },
+
+    setInitialStartTime() {
+      let time = Utils.getSameTimeAsToday(this.currentDate);
+      if (Utils.isToday(time)) {
+        time = Utils.addSeconds(time, -1800);
+      }
+      this.setStartTime(time, true);
     },
 
     setStartTime(time, updateUI) {
@@ -179,8 +169,6 @@ export default {
         Api.fetchTimeSpaceData(ids, start, duration, overlay).then(response => {
           if (response.data.status === 'OK') {
             const data = response.data.data;
-            console.log('Data: %o', data);
-
             if (this.showChartInGroup) {
               // Group the data by group
               const groups = data.reduce((r, item) => {

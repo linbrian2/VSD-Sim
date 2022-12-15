@@ -160,7 +160,7 @@
 <script>
 import Api from '@/utils/api/traffic';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
-import WeatherInfo from '@/components/modules/traffic/common/WeatherInfo';
+import WeatherInfo from '@/components/modules/traffic/common/WeatherInfoSm';
 import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 export default {
   props: {

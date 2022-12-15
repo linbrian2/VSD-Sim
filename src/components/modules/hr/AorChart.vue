@@ -50,10 +50,12 @@ export default {
         },
         chart: {
           height: chartHeight,
-          spacingTop: 10,
-          spacingBottom: 15,
-          marginLeft: 90,
-          marginRight: 30,
+
+          spacingTop: this.$vuetify.breakpoint.mobile ? 10 : 30,
+          spacingBottom: this.$vuetify.breakpoint.mobile ? 10 : 15,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 70 : 90,
+          marginRight: this.$vuetify.breakpoint.mobile ? 20 : 30,
+
           type: 'line',
           zoomType: 'xy',
           plotBorderColor: '#DEDEDE',

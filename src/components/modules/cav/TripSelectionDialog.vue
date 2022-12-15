@@ -8,7 +8,7 @@
 
           <v-spacer></v-spacer>
 
-          <div class="mr-12">
+          <div class="mr-10">
             <DatePicker @date="dateSelected" />
           </div>
 

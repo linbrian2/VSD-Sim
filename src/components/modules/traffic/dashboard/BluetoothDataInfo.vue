@@ -105,6 +105,7 @@ import ListInfoCard from '@/components/modules/traffic/common/ListInfoCard';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
+import { getVideoUrl } from '@/utils/DeldotVideoUrl';
 
 export default {
   props: {
@@ -162,7 +163,7 @@ export default {
     },
 
     videoUrlChanged() {
-      this.changeVideoSource(this.getVideoUrl(this.cameraSelect));
+      this.changeVideoSource(getVideoUrl(this.cameraSelect));
     },
 
     changeVideoSource(url) {
@@ -170,10 +171,6 @@ export default {
       if (this.$refs.videoPlayer) {
         this.$refs.videoPlayer.setUrl(url);
       }
-    },
-
-    getVideoUrl(cameraId) {
-      return `http://167.21.72.35:1935/live/${cameraId}.stream/playlist.m3u8`;
     },
 
     showTrafficSpeedChart() {
@@ -187,7 +184,7 @@ export default {
     },
 
     playVideo(id) {
-      const url = this.getVideoUrl(id);
+      const url = getVideoUrl(id);
       if (url) {
         if (this.$refs.vpRef) {
           this.$refs.vpRef.changeVideoSource(url);

@@ -12,6 +12,7 @@
       <v-card tile class="mx-3">
         <MapSegment
           ref="mapSegmentRef"
+          :smallMap="$vuetify.breakpoint.mobile"
           :segments="segmentLinks"
           :markers="markers"
           @select="onSegmentSelected"
@@ -53,6 +54,9 @@ export default {
 
   computed: {
     title() {
+      if (this.$vuetify.breakpoint.mobile) {
+        return `INCIDENT ${this.incidentId}`;
+      }
       return `TRAFFIC INCIDENT - ${this.incidentId}`;
     },
     ...mapState('traffic', ['weatherStations', 'bluetoothSegments'])

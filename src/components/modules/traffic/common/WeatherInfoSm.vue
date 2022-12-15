@@ -1,7 +1,7 @@
 <template>
   <v-card tile>
     <v-row>
-      <v-col lg="5" md="6" sm="12">
+      <v-col lg="12" md="12" sm="12">
         <div class="d-flex justify-center align-center">
           <div class="d-flex flex-column align-center">
             <div class="condition-text">{{ weather.conditionText }}</div>
@@ -14,38 +14,38 @@
         </div>
       </v-col>
 
-      <v-col lg="7" md="6" sm="12">
-        <v-row>
-          <v-col lg="4" md="6" sm="6">
+      <v-col lg="12" md="12" sm="12">
+        <v-row class="mx-7">
+          <v-col lg="6" md="6" sm="6">
             <v-icon color="orange lighten-3" class="mr-1">mdi-thermometer</v-icon>
             Temp: <strong>{{ formatTemperature(weather.minTemp) }} / {{ formatTemperature(weather.maxTemp) }}</strong>
           </v-col>
-          <v-col lg="4" md="6" sm="6">
+          <v-col lg="6" md="6" sm="6">
             <v-icon color="orange lighten-3" class="mr-1">mdi-weather-pouring</v-icon>
             Precipitation: <strong v-if="weather.precip">{{ toPercentage(weather.precip) }}%</strong>
           </v-col>
-          <v-col lg="4" md="6" sm="6">
+          <v-col lg="6" md="6" sm="6">
             <v-icon color="orange lighten-3" class="mr-1">mdi-water</v-icon>
             Humidity: <strong>{{ weather.relHumidity }}%</strong>
           </v-col>
-          <v-col lg="4" md="6" sm="6" v-if="weather.roadSurface">
+          <v-col lg="6" md="6" sm="6" v-if="weather.roadSurface">
             <v-icon color="orange lighten-3" class="mr-1">mdi-waves</v-icon>
             Surface: <strong>{{ weather.roadSurface }}</strong>
           </v-col>
-          <v-col lg="4" md="6" sm="6">
+          <v-col lg="6" md="6" sm="6">
             <v-icon color="orange lighten-3" class="mr-1">mdi-weather-windy</v-icon>
             Wind: <strong>{{ Math.round(weather.windAvg) }}mph {{ weather.windAvgHeading }}</strong>
           </v-col>
-          <v-col lg="4" md="6" sm="6">
+          <v-col lg="6" md="6" sm="6">
             <v-icon color="orange lighten-3" class="mr-1">mdi-eye-outline</v-icon>
             Visibility: <strong v-if="weather.visibility">{{ weather.visibility }}m</strong>
           </v-col>
-          <v-col lg="4" md="6" sm="6">
+          <v-col lg="6" md="6" sm="6">
             <v-icon color="orange lighten-3" class="mr-1">mdi-weather-sunset-up</v-icon>
             Sunrise:
             <strong>{{ weather.sunrise }}</strong>
           </v-col>
-          <v-col lg="4" md="6" sm="6">
+          <v-col lg="6" md="6" sm="6">
             <v-icon color="orange lighten-3" class="mr-1">mdi-weather-sunset-down</v-icon>
             Sunset:
             <strong>{{ weather.sunset }}</strong>
