@@ -146,7 +146,6 @@ export default {
   methods: {
     openIncidentId(id) {
       const r = this.$router.resolve({ name: RouterNames.TRAFFIC_INCIDENT_PATH, params: { id } });
-      console.log(r.href);
       window.open(r.href, '_blank');
     },
 

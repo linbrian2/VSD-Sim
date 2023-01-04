@@ -431,6 +431,9 @@ export default {
       if (!Utils.isValueAllEmpty(p2)) {
         result.push({ title: 'Current Flow', color: color, items: Utils.obj2Arr(p2) });
       }
+      if (!Utils.isValueAllEmpty(p3)) {
+        result.push({ title: 'Average Flow', color: color, items: Utils.obj2Arr(p3) });
+      }
       if (!Utils.isValueAllEmpty(p7)) {
         let currentColor = `level-${i.flowLevel}`;
         result.push({ title: 'Flow Status', color: currentColor, items: Utils.obj2Arr(p7) });
@@ -445,10 +448,6 @@ export default {
 
         let currentColor = i.anomalyStatus > 0 ? 'red lighten-2' : color;
         result.push({ title: 'Anomaly Detection', button: button, color: currentColor, items: Utils.obj2Arr(p5) });
-      }
-
-      if (!Utils.isValueAllEmpty(p3)) {
-        result.push({ title: 'Average Flow', color: color, items: Utils.obj2Arr(p3) });
       }
 
       if (!Utils.isValueAllEmpty(p8)) {

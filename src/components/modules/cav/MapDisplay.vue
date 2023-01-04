@@ -44,6 +44,7 @@ export default {
   },
   data: () => ({
     homeIcon: require('@/assets/home-24.png'),
+    InfoIcon: require('@/assets/info-24.png'),
     startIcon: {
       url: require('@/assets/start.png'),
       size: { width: 32, height: 32, f: 'px', b: 'px' }
@@ -142,6 +143,7 @@ export default {
     this.$refs.mapRef.$mapPromise.then(map => {
       this.map = map;
       this.addHomeControlToMap(map);
+      this.addInfoControl(map);
     });
 
     this.$bus.$on('PLAYBACK_PROGRESS_CHANGED', progress => {
@@ -193,6 +195,28 @@ export default {
         events: {
           click: () => {
             this.centerMap(map, this.segment);
+          }
+        }
+      };
+      MapUtils.addControl(map, options);
+    },
+
+    addInfoControl(map) {
+      let options = {
+        position: 'right',
+        content: `<div class="non-selection" style="margin:-5px 4px;"><img src="${this.InfoIcon}"/></div>`,
+        title: 'Toggle trip info',
+        style: {
+          width: '40px',
+          height: '40px',
+          margin: '10px',
+          padding: '12px 3px',
+          border: 'solid 1px #717B87',
+          background: '#fff'
+        },
+        events: {
+          click: () => {
+            this.$store.commit('cav/TOGGLE_SHOW_PANEL');
           }
         }
       };

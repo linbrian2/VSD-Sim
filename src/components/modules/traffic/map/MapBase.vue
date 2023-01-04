@@ -1,13 +1,6 @@
 <template>
   <div>
-    <GmapMap
-      ref="mapRef"
-      :options="options"
-      :center="position"
-      :zoom="11"
-      map-type-id="roadmap"
-      :class="smallMap || ($vuetify.breakpoint.mobile && selectedId != '') ? 'map-select-mobile' : 'map-select-desktop'"
-    >
+    <GmapMap ref="mapRef" :options="options" :center="position" :zoom="11" map-type-id="roadmap" :class="mapClass">
       <slot></slot>
     </GmapMap>
   </div>
@@ -22,7 +15,7 @@ export default {
   props: {
     smallMap: { type: Boolean, default: false },
     selectedId: { type: String, default: '' },
-    mapClass: { type: String, default: 'map-select' },
+    mapStyle: { type: String, default: '' },
     mapOptions: { type: Object, default: () => ({}) }
   },
 
@@ -45,6 +38,16 @@ export default {
   }),
 
   computed: {
+    mapClass() {
+      if (this.mapStyle) {
+        return this.mapStyle;
+      } else {
+        return this.smallMap || (this.$vuetify.breakpoint.mobile && this.selectedId != '')
+          ? 'map-select-mobile'
+          : 'map-select-desktop';
+      }
+    },
+
     position() {
       return this.$store.state.position;
     }
@@ -178,32 +181,4 @@ export default {
   -webkit-user-select: none;
   user-select: none;
 }
-
-// .custom-control {
-//   cursor: pointer;
-//   direction: ltr;
-//   overflow: hidden;
-//   text-align: center;
-//   position: relative;
-//   color: rgb(0, 0, 0);
-//   font-family: 'Roboto', Arial, sans-serif;
-//   -webkit-user-select: none;
-//   font-size: 11px !important;
-//   background-color: rgb(255, 255, 255);
-//   padding: 1px 6px;
-//   border-bottom-left-radius: 2px;
-//   border-top-left-radius: 2px;
-//   -webkit-background-clip: padding-box;
-//   background-clip: padding-box;
-//   border: 1px solid rgba(0, 0, 0, 0.14902);
-//   -webkit-box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
-//   box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
-//   min-width: 28px;
-//   font-weight: 500;
-// }
-
-// .custom-control:hover {
-//   font-weight: 900 !important;
-//   background-color: rgb(255, 0, 0);
-// }
 </style>

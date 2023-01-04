@@ -55,4 +55,8 @@ export default {
   width: 100%;
   height: calc(100vh - 64px);
 }
+.map-select-desktop-3 {
+  width: 100%;
+  height: calc(100vh - 130px);
+}
 </style>

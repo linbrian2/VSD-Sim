@@ -37,7 +37,12 @@
       <v-container>
         <v-layout column style="height: 80vh">
           <div v-for="(incident, i) in incidents" :key="i">
-            <IncidentInfo class="mx-1 mb-1" :incident="incident" @click="handleRowClick" />
+            <IncidentInfo
+              class="mx-1 mb-1"
+              :incident="incident"
+              @click="handleRowClick"
+              @mitigation="handleMitigationClick"
+            />
           </div>
         </v-layout>
       </v-container>
@@ -107,6 +112,7 @@
     <IncidentSettings v-model="showSettings" ref="settings" />
     <SimulationConfigs v-model="showSimulationConfig" ref="simu" v-if="isSimulation" />
     <GlobalSearchDialog v-model="showSearch" ref="search" @handler="searchStarted" />
+    <MitigationSolutionDialog v-model="showMitigation" ref="mitigationRef" />
   </div>
 
   <div class="mobile" v-else>
@@ -153,6 +159,7 @@ import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import IncidentInfo from '@/components/modules/traffic/common/IncidentInfo';
 import IncidentSettings from '@/components/modules/traffic/incident/IncidentSettings';
 import SimulationConfigs from '@/components/modules/traffic/incident/SimulationConfigs';
+import MitigationSolutionDialog from '@/components/modules/traffic/incident/MitigationSolutionDialog';
 import GlobalSearchDialog from '@/components/modules/traffic/incident/GlobalSearchDialog';
 import EvidenceListDisplay from '@/components/modules/traffic/incident/EvidenceListDisplay';
 
@@ -165,7 +172,8 @@ export default {
     IncidentSettings,
     SimulationConfigs,
     GlobalSearchDialog,
-    EvidenceListDisplay
+    EvidenceListDisplay,
+    MitigationSolutionDialog
   },
 
   data: () => ({
@@ -176,6 +184,7 @@ export default {
     showSettings: false,
     showSearch: false,
     showSimulationConfig: false,
+    showMitigation: false,
 
     segments: [],
     markers: [],
@@ -263,7 +272,6 @@ export default {
     },
 
     onMarkerClicked(marker) {
-      console.log(marker);
       const type = marker.type;
       if (type) {
         const item = marker.item;
@@ -290,6 +298,11 @@ export default {
       if (this.$refs.mapSegmentRef) {
         this.$refs.mapSegmentRef.selectLink(linkId);
       }
+    },
+
+    handleMitigationClick(id) {
+      this.$refs.mitigationRef.init(id);
+      this.showMitigation = true;
     },
 
     handleRowClick(item) {
@@ -418,11 +431,9 @@ export default {
           if (Utils.isToday(startTime)) {
             this.incidents.sort((a, b) => a.status - b.status);
           }
-          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = this.createTotalSegments();
         } else {
           this.incidents = [];
-          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = [];
         }
         this.incidentItem = null;
@@ -441,11 +452,9 @@ export default {
           this.incidents = data.map(d => ({ ...d, selected: false }));
           //this.incidents.sort((a, b) => a.endTime - b.endTime);
 
-          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = this.createTotalSegments();
         } else {
           this.incidents = [];
-          //this.incidentsByTime = this.composeIncidentHeatMapData(this.incidents);
           this.segments = [];
         }
         this.incidentItem = null;
@@ -485,70 +494,6 @@ export default {
       });
 
       return segments;
-    },
-
-    composeIncidentHeatMapData(incidents) {
-      let xcategories = [];
-      let ycategories = [];
-
-      let startTime = Utils.getStartOfDay(this.currentDate).getTime();
-
-      const rowCount = 12;
-      const colCount = 24;
-
-      for (let i = 0; i < rowCount; i++) {
-        ycategories.push(i * 5);
-      }
-      for (let i = 0; i < colCount; i++) {
-        xcategories.push(startTime + 3600000 * i);
-      }
-
-      const counts = [];
-      for (let i = 0; i < rowCount * colCount; i++) {
-        counts.push(0);
-      }
-
-      if (incidents.length > 0) {
-        incidents.forEach(incident => {
-          const start = incident.startTime;
-          const end = incident.endTime;
-          const idx0 = Utils.get5MinIndex(startTime, start);
-          const idx1 = Utils.get5MinIndex(startTime, end);
-          for (let i = idx0; i <= idx1; i++) {
-            counts[i] = counts[i] + 1;
-          }
-        });
-      }
-
-      // Create a series
-      let series = [];
-      for (let x = 0; x < colCount; x++) {
-        for (let y = 0; y < rowCount; y++) {
-          series.push([x, y, counts[x * rowCount + y]]);
-        }
-      }
-
-      const dataClasses = [
-        { from: 0, to: 0, color: '#43A047', name: '0' },
-        { from: 1, to: 1, color: '#F44336', name: '1' },
-        { from: 2, to: 2, color: '#D32F2F', name: '2' },
-        { from: 3, to: 50, color: '#B71C1C', name: '3+' }
-      ];
-
-      const colorAxis = {
-        dataClasses
-      };
-
-      let result = {};
-      result.title = '';
-      result.xAxis = 'Time of day (hour)';
-      result.yAxis = 'Time of hour (min)';
-      result.xcategories = xcategories;
-      result.ycategories = ycategories;
-      result.data = series;
-      result.colorAxis = colorAxis;
-
-      return result;
     },
 
     createMarkers(incident) {

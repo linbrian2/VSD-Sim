@@ -489,8 +489,10 @@ export default {
     },
 
     segmentClicked(s) {
-      this.selectedSegmentId = s.id;
-      this.$emit('clicked', s);
+      if (s) {
+        this.selectedSegmentId = s.id;
+        this.$emit('clicked', s);
+      }
     },
 
     addSelectedMarker() {

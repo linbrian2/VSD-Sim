@@ -59,17 +59,6 @@
         <v-btn icon @click="setPlayStop" :disabled="!validTrip || stopState">
           <v-icon>mdi-stop</v-icon>
         </v-btn>
-
-        <v-divider vertical class="ml-1" />
-
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click.stop="showDetails">
-              <v-icon color="info">mdi-information-outline </v-icon>
-            </v-btn>
-          </template>
-          <span>Show Details</span>
-        </v-tooltip>
       </v-toolbar>
 
       <v-card-text style="height: 150px;" v-if="showPanel">
@@ -134,17 +123,6 @@
         <v-btn icon @click="setPlayStop" :disabled="!validTrip || stopState">
           <v-icon>mdi-stop</v-icon>
         </v-btn>
-
-        <v-divider vertical class="ml-1" />
-
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click.stop="showDetails">
-              <v-icon color="info">mdi-information-outline </v-icon>
-            </v-btn>
-          </template>
-          <span>Show Details</span>
-        </v-tooltip>
       </v-toolbar>
 
       <v-card-text style="height: 150px;" v-if="showPanel">

@@ -47,7 +47,7 @@ export default {
       return this.$vuetify.breakpoint.mobile ? '220px' : '190px';
     },
     layerBtnTopOffset() {
-      return this.$vuetify.breakpoint.mobile ? '48px' : '49px';
+      return '48px';
     }
   },
 

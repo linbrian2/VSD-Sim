@@ -84,9 +84,10 @@ export default {
 
   mounted() {
     this.navigationWidth = this.width;
-
-    this.setBorderWidth();
-    this.setEvents();
+    // this.setBorderWidth();
+    // setTimeout(() => {
+    //   this.setEvents();
+    // }, 300);
   },
 
   created() {

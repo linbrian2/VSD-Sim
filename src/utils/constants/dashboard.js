@@ -2,9 +2,9 @@ export default Object.freeze({
   CHART_HEIGHT: 560,
 
   TRAFFIC_INCIDENTS: 'Traffic Incidents',
-  DEVICE_TRAFFIC: 'Traffic Flow Issues',
+  TRAFFIC_FLOW_ISSUES: 'Traffic Flow Issues',
   SIGNAL_PERFORMANCE_ISSUES: 'Signal Issues',
-  TRAFFIC_FLOW_ANOMALIES: 'Device Anomalies',
+  DEVICE_ANOMALIES: 'Device Anomalies',
   HIGH_CONGESTION_ROUTES: 'Congested Routes',
   REPORTED_WAZE_ALERTS: 'Waze Alerts',
 
@@ -19,6 +19,8 @@ export default Object.freeze({
   TRAFFIC_FLOW_ANOMALIES_ICON: 'mdi-alert-circle-outline',
   HIGH_CONGESTION_ROUTES_ICON: 'mdi-vector-line',
   REPORTED_WAZE_ALERTS_ICON: 'mdi-waze',
+  DEVICE_CABINET_ICON: 'mdi-file-cabinet ',
+  TRAFFIC_FLOW_ISSUES_ICON: 'mdi-road-variant',
 
   DEVICE_BLUETOOTH_ICON: 'mdi-bluetooth-connect',
   DEVICE_WEATHER_ICON: 'mdi-weather-cloudy',

@@ -95,9 +95,11 @@ export default {
       });
 
     this.$bus.$on('INCIDENT_ITEM_SELECTED', item => {
-      const marker = this.markers.find(m => m.item === item.name);
-      if (marker) {
-        this.selectMarker(marker.id);
+      if (this.markers) {
+        const marker = this.markers.find(m => m.item === item.name);
+        if (marker) {
+          this.selectMarker(marker.id);
+        }
       }
     });
   },

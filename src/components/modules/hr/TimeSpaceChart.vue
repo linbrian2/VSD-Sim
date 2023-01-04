@@ -4,7 +4,7 @@
       ref="highcharts"
       class="chart"
       :options="chartOptions"
-      :callback="drawLineText"
+      :callback="drawItems"
       v-show="dataAvailable"
     ></highcharts>
   </div>
@@ -45,7 +45,7 @@ export default {
       }
       let d = this.prepareData(this.data);
       let height = this.$vuetify.breakpoint.mobile ? 500 : this.height;
-      return this.makeChart(height, d.series, d.categories, d.ticks, this.title, d.start, this.drawLineText);
+      return this.makeChart(height, d.series, d.categories, d.ticks, this.title, d.start, this.drawItems);
     }
   },
 
@@ -508,6 +508,11 @@ export default {
       };
     },
 
+    drawItems(chart) {
+      this.drawLineText(chart);
+      this.drawBandwidthEfficiency(chart, this.data);
+    },
+
     drawLineText(chart) {
       if (this.customObjects.length > 0) {
         Highcharts.each(this.customObjects, function(e) {
@@ -530,6 +535,99 @@ export default {
           this.customObjects.push(t);
         }
       });
+    },
+
+    getEfficiencyColorByValue(value) {
+      // Poor:  #ED561B
+      // Fair:  #DDDF00
+      // Good:  #058DC7
+      // Great: #50B432
+      const COLORS = ['#ED561B', '#DDDF00', '#058DC7', '#50B432'];
+
+      let idx = 3;
+      if (value <= 0.12) {
+        idx = 0;
+      } else if (value <= 0.24) {
+        idx = 1;
+      } else if (value <= 0.36) {
+        idx = 2;
+      } else {
+        idx = 3;
+      }
+      return COLORS[idx];
+    },
+
+    drawBandwidthEfficiency(chart, data) {
+      if (data && data.length > 1 && data[1].efficiency) {
+        // Compute total distance
+        const total = data.reduce((sum, v) => (sum += v.distance), 0);
+        const length = data.length;
+        const heights = new Array(data.length);
+        let h = 0;
+        for (let i = 0; i < data.length; i++) {
+          h += (data[i].distance * length) / total;
+          heights[i] = h;
+        }
+
+        // Start time
+        let start = Number.MAX_SAFE_INTEGER;
+        if (data[0].P2 && data[0].P2.length > 0) {
+          const ts = data[0].P2[0].filter(item => item > 0);
+          start = Math.min(start, ...ts);
+        }
+
+        // Calculate the start X
+        const startX = chart.xAxis[0].toPixels(start) - 50;
+
+        for (let i = 1; i < data.length; i++) {
+          const height = (heights[i - 1] + heights[i]) / 2;
+          const value = data[i].efficiency.toFixed(2);
+          const color = this.getEfficiencyColorByValue(value);
+          const y = chart.yAxis[0].toPixels(height) + 5;
+          this.drawBoundingText(chart, value, color, startX, y);
+        }
+      }
+    },
+
+    drawBoundingText(chart, text, fillColor, x, y) {
+      const x0 = x - 10;
+      const y0 = y - 14;
+      const w = 46;
+      const h = 20;
+
+      // Draw rectangle
+      let r = chart.renderer
+        .rect(x0, y0, w, h, 1)
+        .attr({
+          'stroke-width': 1,
+          stroke: '#fff',
+          fill: fillColor,
+          zIndex: 4
+        })
+        .add();
+      // .on('mouseover', function() {
+      //   // var index = parseInt(this.getAttribute('id'));
+      //   // var point = chart.series[0].points[index];
+      //   //chart.tooltip.refresh([x0, y0]);
+      //   var label = chart.tooltip.getLabel();
+      //   label.attr({
+      //     text: 'custom tooltip'
+      //   });
+      //   chart.tooltip.move(x0, y0);
+      // })
+      // .on('mouseout', function() {
+      //   chart.tooltip.hide();
+      // })
+
+      this.customObjects.push(r);
+
+      // Draw text
+      const t = chart.renderer
+        .text(text, x, y)
+        .attr({ zIndex: 20 })
+        .css({ color: 'black', opacity: 1.0, fontSize: '13px', fontWeight: 'bold' })
+        .add();
+      this.customObjects.push(t);
     },
 
     makeChart(chartHeight, series, categories, ticks, title, start, redrawFunc) {

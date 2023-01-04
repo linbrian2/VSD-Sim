@@ -12,10 +12,6 @@
         </div>
       </v-card-title>
 
-      <!-- <v-card-text>
-      
-      </v-card-text> -->
-
       <v-card-actions class="mt-n5">
         <v-list-item class="grow">
           <v-list-item-content class="ml-n2">
@@ -55,7 +51,6 @@
 <script>
 import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
-import { RouterPaths } from '@/utils/constants/router';
 export default {
   props: {
     incident: Object
@@ -118,7 +113,7 @@ export default {
       const mm2 = Utils.formatDateWOYear(d2);
       const tt2 = Utils.formatTimeAsMinute(d2);
 
-      let endTime = 'ongoing';
+      let endTime = '';
       if (incident.status === 1) {
         endTime = mm1 === mm2 ? tt2 : `${mm2} ${tt2}`;
       }
@@ -128,8 +123,7 @@ export default {
 
     showMitigationSolutions(item) {
       const id = item.id;
-      const path = RouterPaths.TRAFFIC_MITIGATION;
-      this.$router.push({ path: `${path}/${id}` }).catch(() => {});
+      this.$emit('mitigation', id);
     }
   }
 };

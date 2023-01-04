@@ -34,11 +34,8 @@ export default {
     map: null,
     options: {
       mapTypeControl: false,
-
       streetViewControl: false,
-
       fullscreenControl: true,
-
       styles: DarkMapStyle
     }
   }),

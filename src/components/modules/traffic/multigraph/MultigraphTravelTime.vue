@@ -61,7 +61,12 @@
           </template>
         </v-combobox>
       </div>
-      <MapMultigraphSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
+      <MapSegmentsMultigraphSelect
+        ref="mapSelect"
+        :segments="segments"
+        @click="segmentClicked"
+        :defaultColors="!isToday"
+      />
     </SelectionPanel>
 
     <!-- Title bar on the top -->
@@ -191,7 +196,12 @@
       </v-combobox>
     </div>
 
-    <MapMultigraphSelect ref="mapSelect" :markers="markers" :icons="icons" @click="markerClicked" />
+    <MapSegmentsMultigraphSelect
+      ref="mapSelect"
+      :segments="segments"
+      @click="segmentClicked"
+      :defaultColors="!isToday"
+    />
 
     <v-container>
       <div class="d-flex align-items justify-center align-center mb-3">
@@ -243,17 +253,18 @@
 </template>
 
 <script>
+import Utils from '@/utils/Utils';
 import Api from '@/utils/api/traffic';
 import { mapState, mapActions } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
-import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
+import MapSegmentsMultigraphSelect from '@/components/modules/traffic/map/MapSegmentsMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
 
 export default {
   components: {
     SelectionPanel,
-    MapMultigraphSelect,
+    MapSegmentsMultigraphSelect,
     TitleBar,
     MultigraphDataEntries
   },
@@ -325,20 +336,19 @@ export default {
     selectedRoute: ''
   }),
   computed: {
-    markers() {
-      if (!this.startDelay) {
-        if (!this.selectedRoute) {
-          return this.bluetoothSegments;
-        } else {
-          return this.bluetoothSegments.filter(segment => segment.route === this.selectedRoute);
-        }
+    isToday() {
+      return Utils.isToday(this.currentDate);
+    },
+    segments() {
+      if (!this.selectedRoute) {
+        return this.bluetoothSegments;
       } else {
-        return [];
+        return this.bluetoothSegments.filter(segment => segment.route === this.selectedRoute);
       }
     },
 
     items() {
-      return this.markers.map(item => {
+      return this.segments.map(item => {
         return { id: item.id, link: item.short, name: item.name, data: null };
       });
     },
@@ -359,9 +369,14 @@ export default {
     setTimeout(() => {
       this.startDelay = false;
     }, 100);
+
     if (this.bluetoothSegments.length === 0) {
       this.fetchBluetoothSegments();
     }
+
+    setTimeout(() => {
+      this.$bus.$emit('CENTER_MAP');
+    }, 500);
   },
 
   watch: {
@@ -380,31 +395,31 @@ export default {
   methods: {
     clear() {
       this.valuesSelected = [];
-      this.$bus.$emit('NAME_SELECTED', []);
+      this.$bus.$emit('SEGMENT_SELECTED', []);
     },
 
     removeItem(item) {
       this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != item.name);
-      this.$bus.$emit('NAME_SELECTED', this.valuesSelected);
+      this.$bus.$emit('SEGMENT_SELECTED', this.valuesSelected);
     },
 
     valueSelectHandler(value) {
       if (value && value.length > 0 && value[value.length - 1]) {
-        let marker = this.markers.find(m => m.name === value[value.length - 1].name);
+        let segment = this.segments.find(m => m.name === value[value.length - 1].name);
         const time = this.currentDate.getTime();
-        this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
-        this.$bus.$emit('NAME_SELECTED', value);
+        this.fetchTravelTimeData(segment.id, this.interval, time, segment.name);
+        this.$bus.$emit('SEGMENT_SELECTED', value);
       }
     },
 
-    markerClicked(marker, action, fromMap = true) {
+    segmentClicked(segment, action, fromMap = true) {
       if (fromMap) {
         if (action == 'remove') {
-          this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != marker.name);
+          this.valuesSelected = this.valuesSelected.filter(x => x.name && x.name != segment.name);
         } else {
-          this.valuesSelected.push({ id: marker.id, link: marker.short, name: marker.name, data: null });
+          this.valuesSelected.push({ id: segment.id, link: segment.short, name: segment.name, data: null });
           const time = this.currentDate.getTime();
-          this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
+          this.fetchTravelTimeData(segment.id, this.interval, time, segment.name);
         }
       }
     },
@@ -430,10 +445,9 @@ export default {
 
     fetchData() {
       const time = this.currentDate.getTime();
-
       this.valuesSelected.forEach(x => {
-        let marker = this.markers.find(m => m.name === x.name);
-        this.fetchTravelTimeData(marker.id, this.interval, time, marker.name);
+        let segment = this.segments.find(m => m.name === x.name);
+        this.fetchTravelTimeData(segment.id, this.interval, time, segment.name);
       });
     },
 

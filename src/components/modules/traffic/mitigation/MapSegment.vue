@@ -2,16 +2,21 @@
   <div>
     <div class="ml-2">
       <div class="segment-title d-flex">
-        <div class="mr-4">
+        <!-- <div class="mr-4">
           <v-icon>mdi-chart-timeline-variant</v-icon>
-        </div>
+        </div> -->
         <div>
           <h4 class="text-truncate">{{ segmentTitle }}</h4>
         </div>
       </div>
     </div>
 
-    <MapBase @map-ready="mapMounted" @center-map="centerMapHandler" @zoom-select="zoomSelectHandler">
+    <MapBase
+      mapStyle="map-select-desktop-3"
+      @map-ready="mapMounted"
+      @center-map="centerMapHandler"
+      @zoom-select="zoomSelectHandler"
+    >
       <div v-for="segment in filteredSegments" :key="segment.id">
         <GmapPolyline :path.sync="segment.path" :options="segmentOptions" :zIndex="1" />
         <GmapMarker :position="startPoint(segment)" :title="segment.startPoint" :icon="smallGreenIcon" :zIndex="0" />
@@ -156,9 +161,11 @@ export default {
       });
 
     this.$bus.$on('INCIDENT_ITEM_SELECTED', item => {
-      const marker = this.markers.find(m => m.item === item.name);
-      if (marker) {
-        this.selectMarker(marker.id);
+      if (this.markers) {
+        const marker = this.markers.find(m => m.item === item.name);
+        if (marker) {
+          this.selectMarker(marker.id);
+        }
       }
     });
   },

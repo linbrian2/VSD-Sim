@@ -139,8 +139,7 @@ export default {
 
   watch: {
     markers(markers) {
-      this.layers = this.composeMapLayers(markers);
-      this.selectedLayers = this.layers.map(layer => layer.key);
+      this.updateLayers(markers);
     }
   },
 
@@ -153,9 +152,11 @@ export default {
       });
 
     this.$bus.$on('INCIDENT_ITEM_SELECTED', item => {
-      const marker = this.markers.find(m => m.item === item.name);
-      if (marker) {
-        this.selectMarker(marker.id);
+      if (this.markers) {
+        const marker = this.markers.find(m => m.item === item.name);
+        if (marker) {
+          this.selectMarker(marker.id);
+        }
       }
     });
 
@@ -165,9 +166,18 @@ export default {
         this.selectMarker(marker.id);
       }
     });
+
+    this.updateLayers(this.markers);
   },
 
   methods: {
+    updateLayers(markers) {
+      if (markers) {
+        this.layers = this.composeMapLayers(markers);
+        this.selectedLayers = this.layers.map(layer => layer.key);
+      }
+    },
+
     getIcon(marker) {
       const iconName = marker.id === this.selectedMarkerId ? `${marker.icon}Active` : marker.icon;
       return this.getIconByName(iconName);

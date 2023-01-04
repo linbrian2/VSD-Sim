@@ -93,6 +93,7 @@
 // import Devices from '@/utils/Devices.js';
 import Constants from '@/utils/constants/dashboard.js';
 import Spinner from '@/components/common/Spinner.vue';
+import { RouterPaths } from '@/utils/constants/router';
 import { mapActions, mapGetters, mapState } from 'vuex';
 
 export default {
@@ -121,7 +122,7 @@ export default {
         {
           title: Constants.TRAFFIC_INCIDENTS,
           icon: Constants.TRAFFIC_INCIDENTS_ICON,
-          link: 'http://aitoms.net/flow/incidents',
+          link: RouterPaths.TRAFFIC_INCIDENT_LIST,
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -133,9 +134,9 @@ export default {
           ]
         },
         {
-          title: Constants.DEVICE_TRAFFIC,
-          icon: Constants.DEVICE_TRAFFIC_ICON,
-          link: 'http://aitoms.net/flow/multi-graph',
+          title: Constants.TRAFFIC_FLOW_ISSUES,
+          icon: Constants.TRAFFIC_FLOW_ISSUES_ICON,
+          link: RouterPaths.TRAFFIC_MULTIGRAPH,
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -149,7 +150,7 @@ export default {
         {
           title: Constants.SIGNAL_PERFORMANCE_ISSUES,
           icon: Constants.SIGNAL_PERFORMANCE_ISSUES_ICON,
-          link: 'http://aitoms.net/hr/summary',
+          link: RouterPaths.HR_DASHBOARD,
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -161,9 +162,9 @@ export default {
           ]
         },
         {
-          title: Constants.TRAFFIC_FLOW_ANOMALIES,
-          icon: Constants.TRAFFIC_FLOW_ANOMALIES_ICON,
-          link: 'http://aitoms.net/status/map',
+          title: Constants.DEVICE_ANOMALIES,
+          icon: Constants.DEVICE_CABINET_ICON,
+          link: RouterPaths.STATUS_QUALITY_MAP,
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -177,7 +178,7 @@ export default {
         {
           title: Constants.HIGH_CONGESTION_ROUTES,
           icon: Constants.HIGH_CONGESTION_ROUTES_ICON,
-          link: 'http://aitoms.net/flow/playback',
+          link: RouterPaths.TRAFFIC_DATA_PLAYBACK,
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -191,7 +192,7 @@ export default {
         {
           title: Constants.REPORTED_WAZE_ALERTS,
           icon: Constants.REPORTED_WAZE_ALERTS_ICON,
-          link: 'http://aitoms.net/flow/playback',
+          link: RouterPaths.TRAFFIC_DATA_PLAYBACK,
           val: '-',
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
@@ -247,7 +248,6 @@ export default {
       this.handleMarkerClick(id, type);
     });
     this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type }) => {
-      console.log(`id: ${id}, type: ${type}`);
       this.selectedIdx = -1;
     });
     this.$bus.$on('SET_DASHBOARD_MARKERS', markers => {
@@ -274,9 +274,13 @@ export default {
         this.$emit('cardClicked', { idx: this.selectedIdx, cardData: this.cardData });
       }
     },
+
     goToPage(link) {
-      window.open(link, '_blank');
+      const route = window.location.origin + link;
+      //console.log(route);
+      window.open(route, '_blank');
     },
+
     getColor(param) {
       if (param.val == '-') {
         return 'black';
