@@ -14,7 +14,7 @@
     <v-list>
       <template v-for="(item, index) in items">
         <v-divider v-if="item.divider" :key="index"></v-divider>
-        <v-list-item v-else :key="index" @click="menuItemClicked(item.url)">
+        <v-list-item v-else :key="index + 100" @click="menuItemClicked(item.url)">
           <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
       </template>

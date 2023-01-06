@@ -44,7 +44,8 @@ export default {
   },
 
   fetchTimeSpaceData(ids, start, duration, overlay) {
-    return AxiosClient.post('api/timeSpaceData', { ids, start, duration, overlay });
+    const efficiency = 1;
+    return AxiosClient.post('api/timeSpaceData', { ids, start, duration, overlay, efficiency });
   },
 
   fetchVolumeSet(series, start) {

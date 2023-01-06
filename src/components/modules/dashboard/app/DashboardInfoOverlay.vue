@@ -247,7 +247,7 @@ export default {
     this.$bus.$on('DISPLAY_MARKER_DETAILS_DASHBOARD', ({ id, type }) => {
       this.handleMarkerClick(id, type);
     });
-    this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type }) => {
+    this.$bus.$on('DISPLAY_MARKER_DETAILS', () => {
       this.selectedIdx = -1;
     });
     this.$bus.$on('SET_DASHBOARD_MARKERS', markers => {

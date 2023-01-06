@@ -580,11 +580,13 @@ export default {
         const startX = chart.xAxis[0].toPixels(start) - 50;
 
         for (let i = 1; i < data.length; i++) {
-          const height = (heights[i - 1] + heights[i]) / 2;
-          const value = data[i].efficiency.toFixed(2);
-          const color = this.getEfficiencyColorByValue(value);
-          const y = chart.yAxis[0].toPixels(height) + 5;
-          this.drawBoundingText(chart, value, color, startX, y);
+          if (data[i].efficiency) {
+            const height = (heights[i - 1] + heights[i]) / 2;
+            const value = data[i].efficiency.toFixed(2);
+            const color = this.getEfficiencyColorByValue(value);
+            const y = chart.yAxis[0].toPixels(height) + 5;
+            this.drawBoundingText(chart, value, color, startX, y);
+          }
         }
       }
     },
@@ -600,25 +602,11 @@ export default {
         .rect(x0, y0, w, h, 1)
         .attr({
           'stroke-width': 1,
-          stroke: '#fff',
+          stroke: fillColor,
           fill: fillColor,
           zIndex: 4
         })
         .add();
-      // .on('mouseover', function() {
-      //   // var index = parseInt(this.getAttribute('id'));
-      //   // var point = chart.series[0].points[index];
-      //   //chart.tooltip.refresh([x0, y0]);
-      //   var label = chart.tooltip.getLabel();
-      //   label.attr({
-      //     text: 'custom tooltip'
-      //   });
-      //   chart.tooltip.move(x0, y0);
-      // })
-      // .on('mouseout', function() {
-      //   chart.tooltip.hide();
-      // })
-
       this.customObjects.push(r);
 
       // Draw text

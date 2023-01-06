@@ -332,7 +332,14 @@ export default {
       this.fetchPerformanceData(marker.id, time);
     });
     this.presetPhase();
-    this.fetchData();
+
+    const id = this.$route.params.id;
+    if (id) {
+      const time = this.currentDate.getTime();
+      this.fetchPerformanceData(id, time);
+    } else {
+      this.fetchData();
+    }
   },
 
   methods: {

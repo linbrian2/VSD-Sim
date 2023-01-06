@@ -146,6 +146,10 @@ export default {
     return api.post('api/simulate', params);
   },
 
+  fetchSensorQualityReport(deviceId, direction, start) {
+    return AxiosClient.post('api/sensorQualityReport', { deviceId, direction, start });
+  },
+
   fetchAnomalyDevices() {
     return AxiosClient.get('api/anomalyDevices');
   },

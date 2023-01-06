@@ -25,7 +25,6 @@
 import Utils from '@/utils/Utils';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
-import OutlierRemoval from '@/utils/OutlierRemoval.js';
 
 export default {
   props: ['segments', 'defaultColors'],

@@ -21,6 +21,7 @@
         :volume="volume0"
         :occupancy="occupancy0"
         :vosList="vosList0"
+        :quality="sensorQuality0"
       />
     </div>
   </div>
@@ -47,6 +48,7 @@
               :volume="volume0"
               :occupancy="occupancy0"
               :vosList="vosList0"
+              :quality="sensorQuality0"
             />
           </v-row>
         </v-col>
@@ -79,6 +81,7 @@ export default {
     tabItems: [],
     tab: null,
 
+    sensorQuality0: {},
     vosList0: [],
     speed0: {},
     volume0: {},
@@ -90,6 +93,7 @@ export default {
     volume1: {},
     occupancy1: {},
     timeUsed1: 0,
+    selectedSensor: '',
 
     colors: ['#ED561B', '#058DC7', '#50B432', '#DD8800', '#BDBDBD'],
 
@@ -104,14 +108,6 @@ export default {
   computed: {
     markers() {
       return this.locations;
-    },
-
-    selectedSensor() {
-      if (!this.$refs.mapSelectPanel) {
-        return null;
-      }
-      const sensor = this.$refs.mapSelectPanel.getSelectedMarker();
-      return `${sensor.sensorId}-${sensor.dir}`;
     },
 
     items() {
@@ -154,6 +150,7 @@ export default {
     },
 
     markerClicked(marker) {
+      this.selectedSensor = marker.name;
       this.fetchPredictionData(marker);
     },
 
@@ -199,15 +196,15 @@ export default {
         let endTime = Utils.formatDateTime(Utils.getEndOfDay(time));
 
         const requests = [];
-        //requests.push(Api.fetchFlowData(id, dir, time.getTime()));
         requests.push(Api.fetchTrafficFlowAndBaselineData(id, dir, 300000, time.getTime()));
         requests.push(Api.fetchAnomalyTimeList(id, dir, time.getTime()));
+        requests.push(Api.fetchSensorQualityReport(id, dir, time.getTime()));
         methods.forEach(method => {
           requests.push(Api.fetchPredictions(this.baseURL, id, dir, startTime, endTime, method));
         });
 
         // Now we await for both results, whose async processes have already been started
-        const [flow, timeList, ...predicts] = await Promise.all(requests);
+        const [flow, timeList, quality, ...predicts] = await Promise.all(requests);
 
         // Verify the flow data is avaialble
         let flowList = this.getResponseData(flow);
@@ -215,6 +212,13 @@ export default {
           this.$store.dispatch('setSystemStatus', { text: 'No traffic flow data available', color: 'info' });
           this.loading = false;
           return;
+        }
+
+        const sensorQuality = this.getResponseData(quality);
+        if (sensorQuality != null) {
+          this.sensorQuality0 = sensorQuality;
+        } else {
+          this.sensorQuality0 = { total: 0 };
         }
 
         const anomalyTimeList = this.getResponseData(timeList);
@@ -273,7 +277,6 @@ export default {
         anomalyTimeList.forEach(time => {
           result.add(time);
         });
-        console.log('excluded list=', result.size);
       }
       return result;
     },

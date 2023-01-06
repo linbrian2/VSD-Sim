@@ -25,7 +25,7 @@
             single-line
           />
         </div>
-        
+
         <div class="d-flex align-center justify-end mt-3">
           <div class="text-caption" v-if="timeUsed">Time used: {{ timeUsed }} ms</div>
         </div>

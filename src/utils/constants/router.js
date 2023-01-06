@@ -73,7 +73,7 @@ export const RouterPaths = {
   HR_PCD: '/hr/pcd',
   HR_TIME_SPACE_DIAGRAM: '/hr/tsd',
   HR_SIGNAL_DISPLAY: '/hr/signal',
-  HR_PERFORMANCE_MEASURES: '/hr/measures',
+  HR_PERFORMANCE_MEASURES: '/hr/measures/:id?',
   HR_MULTI_PCD: '/hr/pcds',
   HR_MULTI_OCC: '/hr/occs',
 

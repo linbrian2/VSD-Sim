@@ -42,6 +42,23 @@
           <TimeSpaceChart :data="data" />
         </v-card>
       </div>
+
+      <v-card tile class="mt-4">
+        <div class="d-flex align-center">
+          <h4 class="mx-4 overline">PASSER II Efficiency Assessment:</h4>
+          <v-chip-group active-class="primary--text" column class="ml-6">
+            <v-chip
+              small
+              v-for="{ color, name, range } in efficiencyClasses"
+              :key="name"
+              :color="color"
+              class="black--text mr-3"
+            >
+              {{ range }}: {{ name }}
+            </v-chip>
+          </v-chip-group>
+        </div>
+      </v-card>
     </v-container>
   </div>
 </template>
@@ -74,6 +91,12 @@ export default {
       { text: 'None', value: 0 },
       { text: 'Transit', value: 1 },
       { text: 'Cav', value: 2 }
+    ],
+    efficiencyClasses: [
+      { range: '0.00 - 0.12', color: '#ED561B', name: 'Poor Progression' },
+      { range: '0.13 - 0.24', color: '#DDDF00', name: 'Fair Progression' },
+      { range: '0.25 - 0.36', color: '#058DC7', name: 'Good Progression' },
+      { range: '0.37 - 1.00', color: '#50B432', name: 'Great Progression' }
     ]
   }),
 

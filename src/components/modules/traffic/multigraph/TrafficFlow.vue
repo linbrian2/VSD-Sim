@@ -82,6 +82,10 @@
       <div>
         <v-tabs-items v-model="tab">
           <v-tab-item value="bound" v-if="isTabVisible('bound')">
+            <div class="mt-3">
+              <DataQualityIssues :quality="quality" />
+            </div>
+
             <TrafficFlowCombinedCharts :data="boundData" :direction="direction" />
           </v-tab-item>
 
@@ -151,6 +155,7 @@
       <div>
         <v-tabs-items v-model="tab">
           <v-tab-item value="bound" v-if="isTabVisible('bound')">
+            <DataQualityIssues :quality="quality" />
             <TrafficFlowCombinedCharts :data="boundData" :direction="direction" />
           </v-tab-item>
 
@@ -175,6 +180,7 @@ import { mapState } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapSelect from '@/components/modules/traffic/map/MapSelect';
 import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
+import DataQualityIssues from '@/components/modules/traffic/common/DataQualityIssues';
 import TrafficFlowCombinedCharts from '@/components/modules/traffic/common/TrafficFlowCombinedCharts';
 
 export default {
@@ -182,6 +188,7 @@ export default {
     SelectionPanel,
     MapSelect,
     TitleBar,
+    DataQualityIssues,
     TrafficFlowCombinedCharts
   },
   data: () => ({
@@ -228,6 +235,7 @@ export default {
     selectedRegionId: -1,
 
     devices: [],
+    quality: { total: 0 },
     boundData: {},
     laneData: {},
     minuteData: {}
@@ -353,11 +361,12 @@ export default {
       this.loading = true;
       try {
         // Now we await for all results, whose async processes have already been started
-        const [baselineRes, perBoundRes, perLaneRes, perMinRes] = await Promise.all([
+        const [baselineRes, perBoundRes, perLaneRes, perMinRes, qualityRes] = await Promise.all([
           Api.fetchTrafficFlowBaselineData(id, null, interval, time, null),
           Api.fetchTrafficFlowData(id, null, interval, time, null),
           Api.fetchTrafficFlowPerLaneData(id, uid, null, interval, time, null),
-          Api.fetchTrafficFlowPerMinuteData(id, null, interval, time, null)
+          Api.fetchTrafficFlowPerMinuteData(id, null, interval, time, null),
+          Api.fetchSensorQualityReport(id, '', time)
         ]);
 
         const dataList = [];
@@ -368,6 +377,13 @@ export default {
         this.boundData = dataList[0] ? dataList[0] : {};
         this.laneData = dataList[1] ? dataList[1] : {};
         this.minuteData = dataList[2] ? dataList[2] : {};
+
+        const quality = this.getResponseData(qualityRes, false);
+        if (quality != null) {
+          this.quality = quality;
+        } else {
+          this.quality = { total: 0 };
+        }
 
         const baselineData = this.getResponseData(baselineRes, false);
         if (baselineData && !Utils.isEmpty(baselineData)) {

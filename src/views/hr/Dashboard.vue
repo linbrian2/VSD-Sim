@@ -12,6 +12,8 @@
           hide-default-footer
           :loading="loading"
           loading-text="Loading... Please wait"
+          :item-class="itemRowBackground"
+          @click:row="handleRowClick"
         >
           <template v-slot:[`item.permit`]="{ item }">
             <v-chip color="success" outlined x-small style="width:45px;">{{ item.permit }}</v-chip>
@@ -72,6 +74,8 @@
           :loading="loading"
           mobile-breakpoint="0"
           loading-text="Loading... Please wait"
+          :item-class="itemRowBackground"
+          @click:row="handleRowClick"
         >
           <template v-slot:[`item.permit`]="{ item }">
             <v-chip color="success" outlined x-small style="width:45px;">{{ item.permit }}</v-chip>
@@ -177,6 +181,17 @@ export default {
     controlType(type) {
       return type > 0 ? 'mdi-alpha-a-circle-outline' : 'mdi-alpha-m-circle-outline';
     },
+
+    itemRowBackground(item) {
+      return item.id == this.selectedRowId ? 'table_tr_selected' : 'table_tr_normal';
+    },
+
+    handleRowClick(item) {
+      console.log(item);
+    //  this.selectedRowId = item.id;
+      this.$emit('click', item);
+    },
+
     refreshData() {
       this.fetchStatus();
     },
@@ -208,7 +223,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .update {
   font-size: 11px !important;
   position: absolute;
@@ -243,4 +258,12 @@ export default {
   border-color: red;
   background-color: rgba(255, 0, 0, 0.4);
 }
+.table_tr_normal {
+  background-color: transparent !important;
+}
+
+.table_tr_selected {
+  background-color: #bfd707;
+}
+
 </style>
