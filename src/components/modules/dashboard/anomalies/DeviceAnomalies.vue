@@ -196,7 +196,6 @@ export default {
 
   methods: {
     getDirErrorCount(data) {
-      console.log(data);
       return data.errorTypes.data.reduce((x, y) => x + y[2], 0);
     },
 

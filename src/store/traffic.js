@@ -13,6 +13,7 @@ const state = {
   activeMarker: null,
 
   devices: [],
+  trafficCameras: [],
   anomalyDevices: [],
   weatherStations: [],
 
@@ -113,6 +114,9 @@ const mutations = {
   },
   SET_ANOMALY_DEVICES(state, devices) {
     state.anomalyDevices = devices;
+  },
+  SET_TRAFFIC_CAMERAS(state, cameras) {
+    state.trafficCameras = cameras;
   },
   SET_WEATHER_STATIONS(state, stations) {
     state.weatherStations = stations;
@@ -255,6 +259,15 @@ const actions = {
       if (state.weatherStations.length > 0) {
         commit('SET_ACTIVE_MARKER', state.weatherStations[0]);
       }
+    } catch (error) {
+      dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
+    }
+  },
+
+  async fetchTrafficCameras({ commit, dispatch }) {
+    try {
+      const response = await Api.fetchTrafficCameras();
+      commit('SET_TRAFFIC_CAMERAS', response.data);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }

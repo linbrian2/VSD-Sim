@@ -188,13 +188,14 @@ export default {
 
     handleRowClick(item) {
       console.log(item);
-    //  this.selectedRowId = item.id;
+      //  this.selectedRowId = item.id;
       this.$emit('click', item);
     },
 
     refreshData() {
       this.fetchStatus();
     },
+
     async fetchStatus() {
       this.loading = true;
       try {
@@ -265,5 +266,4 @@ export default {
 .table_tr_selected {
   background-color: #bfd707;
 }
-
 </style>

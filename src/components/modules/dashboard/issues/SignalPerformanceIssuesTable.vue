@@ -92,6 +92,14 @@ export default {
     if (this.showTable) {
       this.expandTable();
     }
+
+    this.$bus.$on('SELECT_TABLE_ROW', dir => {
+      if (dir > 0) {
+        this.selectNext();
+      } else {
+        this.selectPrev();
+      }
+    });
   },
 
   methods: {
@@ -113,9 +121,34 @@ export default {
       }
     },
 
+    selectNext() {
+      if (this.summary.length > 0) {
+        const currentIndex = this.summary.findIndex(item => item.id === this.selectedRowId);
+        const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % this.summary.length;
+        this.handleRowClick(this.summary[nextIndex]);
+      }
+    },
+
+    selectPrev() {
+      if (this.summary.length > 0) {
+        const currentIndex = this.summary.findIndex(item => item.id === this.selectedRowId);
+        let prevIndex = 0;
+        if (currentIndex === -1) {
+          prevIndex = this.summary.length - 1;
+        } else {
+          prevIndex = currentIndex - 1;
+          if (prevIndex < 0) {
+            prevIndex = this.summary.length + prevIndex;
+          }
+        }
+        this.handleRowClick(this.summary[prevIndex]);
+      }
+    },
+
     itemRowBackground(item) {
       return item.id == this.selectedRowId ? 'table_tr_selected' : 'table_tr_normal';
     },
+
     handleRowClick(item) {
       this.selectedRowId = item.id;
       this.$emit('click', item);

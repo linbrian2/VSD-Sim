@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row justify="center">
-      <v-dialog v-model="show" hide-overlay max-width="1000px">
+      <v-dialog v-if="show" v-model="show" persistent hide-overlay max-width="1000px">
         <v-card>
           <v-toolbar dense flat fixed overflow extension-height="0">
             <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -23,6 +23,9 @@
 <script>
 import VideoPlayer from '@/components/modules/traffic/common/VideoPlayer';
 
+// IMPORTANT: The v-if flag in the v-dialog is very important to make sure every time when the dialog is closed
+// the dialog got destroyed. This will make sure the video player instance was destroyed as well so that it closes the video
+// connection to the video server, otherwise the video streaming will continue
 export default {
   components: {
     VideoPlayer
@@ -72,9 +75,11 @@ export default {
       };
     }
   },
+
   mounted() {
     this.changeVideoSource(this.url);
   },
+
   methods: {
     changeVideoSource(url) {
       this.url = url;
@@ -82,14 +87,23 @@ export default {
         this.$refs.videoPlayer.setUrl(url);
       }
     },
+
     changeTitle(title) {
       this.title = title;
     },
+
     changeCaption(caption) {
       this.caption = caption;
     },
+
     changeIcon(icon) {
       this.icon = icon;
+    },
+
+    stopVideo() {
+      if (this.$refs.videoPlayer) {
+        this.$refs.videoPlayer.destroy();
+      }
     }
   }
 };

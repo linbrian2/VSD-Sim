@@ -194,6 +194,10 @@ export default {
     return AxiosClient.get('weather/weatherStations');
   },
 
+  fetchTrafficCameras() {
+    return AxiosClient.get('api/trafficCameras');
+  },
+
   fetchBluetoothSegments() {
     return AxiosClient.get('travelTime/bluetoothSegments');
   },

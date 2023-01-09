@@ -6,6 +6,8 @@ export default Object.freeze({
   DEVICE_WEATHER: 'Weather Stations',
   DEVICE_RESTRICTIONS: 'Travel Restrictions',
   DEVICE_SEGMENTS: 'Anomaly Segments',
+  DEVICE_SIGNALS: 'Traffic Signals',
+  DEVICE_WAZE_ALERTS: 'Waze Alerts',
 
   DEVICE_TRAFFIC_ICON: 'mdi-car-multiple',
   DEVICE_BLUETOOTH_ICON: 'mdi-bluetooth-connect',
@@ -14,6 +16,7 @@ export default Object.freeze({
   DEVICE_WAZE_ICON: 'mdi-waze',
   DEVICE_ALERT_ICON: 'mdi-alert-circle-outline',
   DEVICE_SEGMENTS_ICON: 'mdi-vector-line',
+  DEVICE_TRAFFIC_CAMERA: 'mdi-cctv',
 
   INFO_BAR_DEFAULT_COLOR: 'white',
 
@@ -25,7 +28,8 @@ export default Object.freeze({
   LAYER_DEVICE_WEATHER: 2,
   LAYER_DEVICE_RESTRICTIONS: 3,
   LAYER_DEVICE_SEGMENTS: 4,
-  LAYER_TOTAL_COUNT: 5,
+  LAYER_DEVICE_SIGNALS: 5,
+  LAYER_DEVICE_WAZE_ALERTS: 6,
 
   DATA_TRAFFIC_FLOW: 1,
   DATA_TRAVEL_TIME: 2,

@@ -70,6 +70,7 @@ export default {
       if (this.player) {
         this.player.dispose();
         this.player = null;
+        console.log('video player destroyed');
       }
     }
   }

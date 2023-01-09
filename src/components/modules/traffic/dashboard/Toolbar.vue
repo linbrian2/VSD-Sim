@@ -9,11 +9,11 @@
 
       <v-list nav dense>
         <v-list-item-group color="primary">
-          <v-list-item class="my-2" v-for="item in map_menu_items" :key="item.id" @click="menuItemClicked(item.id)">
+          <v-list-item class="my-1" v-for="item in map_menu_items" :key="item.id" @click="menuItemClicked(item.id)">
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
             </v-list-item-icon>
-            <v-list-item-content class="ml-n4 pa-3">
+            <v-list-item-content class="ml-n4 pa-2">
               <v-list-item-title class="text-md-body-2">{{ item.title }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -42,20 +42,6 @@
         item-value="id"
         @change="onSearchChange"
       />
-      <!-- <v-text-field
-        v-model.trim="searchText"
-        dense
-        filled
-        rounded
-        clearable
-        placeholder="Search"
-        prepend-inner-icon="mdi-magnify"
-        class="pt-6 shrink expanding-search"
-        :class="{ closed: searchBoxClosed && !searchText }"
-        @keyup.enter="onSearch"
-        @focus="searchBoxClosed = false"
-        @blur="searchBoxClosed = true"
-      ></v-text-field> -->
     </div>
 
     <v-divider vertical />
@@ -64,8 +50,9 @@
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on: tooltip }">
-            <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+            <v-btn text color="grey darken-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
               <v-icon>mdi-map-outline</v-icon>
+              <span>{{ currentRegionShortName }}</span>
             </v-btn>
           </template>
           <span>Map Region</span>
@@ -123,11 +110,8 @@ export default {
     mapLayers: [],
 
     map_menu_items: [
-      { title: Constants.DEVICE_TRAFFIC, icon: Constants.DEVICE_TRAFFIC_ICON, id: 0 },
-      { title: Constants.DEVICE_BLUETOOTH, icon: Constants.DEVICE_BLUETOOTH_ICON, id: 1 },
-      { title: Constants.DEVICE_WEATHER, icon: Constants.DEVICE_WEATHER_ICON, id: 2 },
-      { title: Constants.DEVICE_RESTRICTIONS, icon: Constants.DEVICE_RESTRICTIONS_ICON, id: 3 },
-      { title: Constants.DEVICE_SEGMENTS, icon: Constants.DEVICE_SEGMENTS_ICON, id: 4 }
+      { title: 'Traffic Sensors', icon: Constants.DEVICE_TRAFFIC_ICON, id: 0 },
+      { title: 'Show multiple cameras', icon: Constants.DEVICE_TRAFFIC_CAMERA, id: 1 }
     ],
 
     tool_menu_items: [{ title: 'Map Layer Selection', icon: 'mdi-layers-triple', id: 5 }],
@@ -138,18 +122,19 @@ export default {
       { title: Constants.DEVICE_RESTRICTIONS, id: Constants.LAYER_DEVICE_RESTRICTIONS },
       { title: Constants.DEVICE_SEGMENTS, id: Constants.LAYER_DEVICE_SEGMENTS },
       { title: Constants.DEVICE_WEATHER, id: Constants.LAYER_DEVICE_WEATHER },
-      { title: 'High Resolution Signals', id: 5 },
-      { title: 'State-wide Detectors', id: 6 },
-      { title: 'Travel Segments', id: 7 },
-      { title: 'Waze Alerts', id: 8 },
-      { title: 'Traffic Incidents', id: 9 }
+      { title: Constants.DEVICE_SIGNALS, id: Constants.LAYER_DEVICE_SIGNALS },
+      { title: Constants.DEVICE_WAZE_ALERTS, id: Constants.LAYER_DEVICE_WAZE_ALERTS },
+      { title: 'Traffic Cameras', id: 10 },
+      { title: 'Statewide Detectors', id: 8 },
+      { title: 'Travel Segments', id: 7 }
     ],
 
     region_menu_items: [
-      { title: 'All Region', value: -1 },
-      { title: 'Urban Freeway', value: 1 },
-      { title: 'CAV Area Freeway', value: 3 },
-      { title: 'CAV Area Arterial', value: 4 }
+      { title: 'All Region', name: 'ALL', value: -1 },
+      { title: 'Urban Freeway', name: 'URBAN', value: 1 },
+      { title: 'CAV Area Freeway', name: 'CAV-F', value: 3 },
+      { title: 'CAV Area Arterial', name: 'CAV-A', value: 4 },
+      { title: 'Beach Area', name: 'BEACH', value: 7 }
     ]
   }),
 
@@ -173,6 +158,10 @@ export default {
   },
 
   computed: {
+    currentRegionShortName() {
+      const current = this.region_menu_items.find(item => item.value === this.mapRegionSelection);
+      return current ? current.name : this.region_menu_items[0].name;
+    },
     ...mapState('traffic', ['mapRegionSelection'])
   },
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card tile min-width="100%" min-height="200px">
+  <v-card tile min-width="100%" min-height="150px">
     <v-card-title class="my-n2 pa-1 teal darken-2" v-if="title">
       <h5 class="text-center ml-5 overline">{{ title }}</h5>
     </v-card-title>

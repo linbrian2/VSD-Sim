@@ -25,6 +25,18 @@
     <v-row class="mt-3 mx-1" v-if="currSegment">
       <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
+          :icon="'mdi-note-outline'"
+          :colDisplay="singleCol"
+          :flex="singleCol"
+          :height="cardHeight"
+          :name="'Name'"
+          :titleFontSize="singleCol ? undefined : 20"
+          :valueFontSize="singleCol ? undefined : 28"
+          :value="currSegment.short"
+        />
+      </v-col>
+      <v-col :cols="12 / infoColumnCount" class="pa-1">
+        <InfoCard
           :icon="'mdi-vector-line'"
           :colDisplay="singleCol"
           :flex="singleCol"
@@ -76,13 +88,13 @@
           :colDisplay="singleCol"
           :flex="singleCol"
           :height="cardHeight"
-          :name="'Travel Time (Current/Mean)'"
+          :name="'Travel Time'"
           :titleFontSize="singleCol ? undefined : 20"
           :valueFontSize="singleCol ? 38 : 28"
           :value="
             `${getDurStr(currSegment.travelTime.data.freeFlowRunTimeSecs)} / ${getDurStr(
               currSegment.travelTime.data.meanTravelTimeSecs
-            )}`
+            )} (mean)`
           "
         />
       </v-col>

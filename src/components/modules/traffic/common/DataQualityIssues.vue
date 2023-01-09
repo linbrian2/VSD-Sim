@@ -1,5 +1,5 @@
 <template>
-  <v-card tile elevation="24" v-if="quality.total > 0">
+  <v-card tile elevation="24" v-if="show">
     <v-alert dense outlined elevation="2" type="error">
       <div class="d-flex align-center">
         <h4 class="mx-0 overline">Data contains errors!</h4>
@@ -22,10 +22,18 @@
 <script>
 export default {
   props: {
-    quality: Object
+    quality: Object,
+    threshold: {
+      type: Number,
+      default: 10
+    }
   },
 
   computed: {
+    show() {
+      return this.quality.total > this.threshold;
+    },
+
     validErrors() {
       const result = this.quality.errors
         .map((item, index) => ({ index, count: item }))
@@ -39,7 +47,7 @@ export default {
     sensorErrorTypes: [
       { value: 0, color: '#90ed7d', description: 'No error' },
       { value: 1, color: '#434348', description: 'Missing data' },
-      { value: 2, color: '#f7a35c', description: 'Flow status 0' },
+      { value: 2, color: '#f7a35c', description: 'Invalid data' },
       { value: 3, color: '#8085e9', description: 'VOS exceeding threshold' },
       { value: 4, color: '#f15c80', description: 'VOS consecutive constant' },
       { value: 5, color: '#e4d354', description: 'VOS inconsistency' },

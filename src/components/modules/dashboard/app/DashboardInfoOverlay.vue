@@ -1,21 +1,21 @@
 <template>
   <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <v-card class="mx-auto" elevation="0" style="position: absolute; top: 60px; left:20px; " color="rgb(0, 0, 0, 0.0)">
-      <v-col v-for="(x, i) in cardData" :key="x.id" class="pa-0">
+      <v-col v-for="x in sortedCardData" :key="x.id" class="pa-0">
         <v-row cols="12" v-if="!!((x && x.val) || showAllOverlayCards)">
           <v-hover v-slot="{ hover }">
-            <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
-              <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
-                <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
-                  <v-sheet outlined :color="i == selectedIdx ? 'white' : 'transparent'">
+            <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
+              <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
+                <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
+                  <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
                     <v-tooltip right>
                       <template v-slot:activator="{ on: tooltip }">
                         <v-card
                           tile
                           class="d-flex align-center justify-center"
-                          :height="$vuetify.breakpoint.mobile ? '40px' : '65px'"
-                          :width="$vuetify.breakpoint.mobile ? '80px' : '120px'"
-                          @click.native="cardClicked(i)"
+                          :height="$vuetify.breakpoint.mobile ? '40px' : '60px'"
+                          :width="$vuetify.breakpoint.mobile ? '80px' : '110px'"
+                          @click.native="cardClicked(x.id)"
                           :color="getColor(x)"
                           :elevation="hover ? 12 : 2"
                           :class="{ 'on-hover': hover }"
@@ -62,13 +62,13 @@
     <v-card class="mx-auto" elevation="0" style="position: absolute; top: 55px; left:10px; " color="rgb(0, 0, 0, 0.0)">
       <v-chip-group>
         <v-chip
-          v-for="(x, i) in cardData"
+          v-for="x in sortedCardData"
           :key="x.id"
           filter
           small
           class="px-2 mr-1"
           :color="getColor(x)"
-          @click.native="cardClicked(i)"
+          @click.native="cardClicked(x.id)"
           :active="!!((x && x.val) || showAllOverlayCards)"
         >
           <template v-if="!!((x && x.val) || showAllOverlayCards)">
@@ -90,17 +90,12 @@
 </template>
 
 <script>
-// import Devices from '@/utils/Devices.js';
 import Constants from '@/utils/constants/dashboard.js';
 import Spinner from '@/components/common/Spinner.vue';
 import { RouterPaths } from '@/utils/constants/router';
 import { mapActions, mapGetters, mapState } from 'vuex';
 
 export default {
-  props: {
-    // cardData: Array,
-    // selectedIdx: Number
-  },
   components: {
     Spinner
   },
@@ -120,10 +115,12 @@ export default {
       cardElapsedTime: 38,
       cardData: [
         {
+          id: Constants.CARD_DATA_INCIDENTS_ID,
           title: Constants.TRAFFIC_INCIDENTS,
           icon: Constants.TRAFFIC_INCIDENTS_ICON,
           link: RouterPaths.TRAFFIC_INCIDENT_LIST,
           val: '-',
+          displayOrder: 0,
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
             { val: 1, color: '#339900' },
@@ -134,10 +131,12 @@ export default {
           ]
         },
         {
+          id: Constants.CARD_DATA_FLOW_ANOMALIES_ID,
           title: Constants.TRAFFIC_FLOW_ISSUES,
           icon: Constants.TRAFFIC_FLOW_ISSUES_ICON,
           link: RouterPaths.TRAFFIC_MULTIGRAPH,
           val: '-',
+          displayOrder: 2,
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
             { val: 1, color: '#339900' },
@@ -148,10 +147,12 @@ export default {
           ]
         },
         {
+          id: Constants.CARD_DATA_SIGNAL_ISSUES_ID,
           title: Constants.SIGNAL_PERFORMANCE_ISSUES,
           icon: Constants.SIGNAL_PERFORMANCE_ISSUES_ICON,
           link: RouterPaths.HR_DASHBOARD,
           val: '-',
+          displayOrder: 3,
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
             { val: 1, color: '#339900' },
@@ -162,10 +163,12 @@ export default {
           ]
         },
         {
+          id: Constants.CARD_DATA_DEDVICE_ANOMALIES_ID,
           title: Constants.DEVICE_ANOMALIES,
           icon: Constants.DEVICE_CABINET_ICON,
           link: RouterPaths.STATUS_QUALITY_MAP,
           val: '-',
+          displayOrder: 5,
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
             { val: 1, color: '#339900' },
@@ -176,10 +179,12 @@ export default {
           ]
         },
         {
+          id: Constants.CARD_DATA_CONGESTED_ROUTES_ID,
           title: Constants.HIGH_CONGESTION_ROUTES,
           icon: Constants.HIGH_CONGESTION_ROUTES_ICON,
           link: RouterPaths.TRAFFIC_DATA_PLAYBACK,
           val: '-',
+          displayOrder: 1,
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
             { val: 1, color: '#339900' },
@@ -190,10 +195,12 @@ export default {
           ]
         },
         {
+          id: Constants.CARD_DATA_WAZE_ALERTS_ID,
           title: Constants.REPORTED_WAZE_ALERTS,
           icon: Constants.REPORTED_WAZE_ALERTS_ICON,
           link: RouterPaths.TRAFFIC_DATA_PLAYBACK,
           val: '-',
+          displayOrder: 4,
           thresholds: [
             { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
             { val: 1, color: '#339900' },
@@ -215,6 +222,12 @@ export default {
     incidentData() {
       return this.segments != null && this.trafficIncidents != null;
     },
+
+    sortedCardData() {
+      const sorted = [...this.cardData].sort((a, b) => a.displayOrder - b.displayOrder);
+      return sorted;
+    },
+
     ...mapState('dashboard', [
       'weatherStations',
       'trafficIncidents',
@@ -228,13 +241,16 @@ export default {
     ]),
     ...mapGetters(['getSetting'])
   },
+
   created() {
     window.addEventListener('click', this.keydownListener);
   },
+
   destroyed() {
     window.removeEventListener('click', this.keydownListener);
     this.stopCardSwapInterval();
   },
+
   mounted() {
     this.startUpdateInterval();
     this.startCardSwapInterval();
@@ -244,15 +260,19 @@ export default {
     this.$bus.$on('SHOW_SELECTION_POPUP', id => {
       this.showSelectionDialog(id);
     });
+
     this.$bus.$on('DISPLAY_MARKER_DETAILS_DASHBOARD', ({ id, type }) => {
       this.handleMarkerClick(id, type);
     });
+
     this.$bus.$on('DISPLAY_MARKER_DETAILS', () => {
       this.selectedIdx = -1;
     });
+
     this.$bus.$on('SET_DASHBOARD_MARKERS', markers => {
       this.setMarkers(markers);
     });
+
     this.$bus.$on('SET_DASHBOARD_POLYLINES', polylines => {
       this.setPolylines(polylines);
     });
@@ -261,16 +281,13 @@ export default {
     keydownListener() {
       this.cardElapsedTime = -75;
     },
+
     cardClicked(i) {
       let param = this.cardData[i];
       if (!param.val || (param.val && (param.val == 0 || param.val == '-'))) {
         return;
       } else {
-        if (this.selectedIdx == i) {
-          this.selectedIdx = -1;
-        } else {
-          this.selectedIdx = i;
-        }
+        this.selectedIdx = this.selectedIdx == i ? -1 : i;
         this.$emit('cardClicked', { idx: this.selectedIdx, cardData: this.cardData });
       }
     },
@@ -299,52 +316,68 @@ export default {
         return 'black';
       }
     },
+
     initExistingData() {
       if (this.incidentData) {
-        this.cardData[0].val = this.trafficIncidents.length;
+        this.cardData[Constants.CARD_DATA_INCIDENTS_ID].val = this.trafficIncidents.length;
       }
-      if (this.trafficDevices) {
-        this.cardData[1].val = this.trafficDevices.filter(x => x.status !== 0).length;
-      }
-      if (this.hrSummary) {
-        this.cardData[2].val = this.hrSummary.filter(x => x.score > 60).length;
-      }
+
       if (this.flowAnomData) {
         let maxCount = this.flowAnomData.sensorErrorCounts[0].score;
         let hours = new Date().getHours();
-        this.cardData[3].val = this.flowAnomData.sensorErrorCounts.filter(
+        this.cardData[Constants.CARD_DATA_FLOW_ANOMALIES_ID].val = this.flowAnomData.sensorErrorCounts.filter(
           x => x.score / hours > 50 && x.score > maxCount - maxCount * 0.15
         ).length;
       }
-      if (this.segments) {
-        this.cardData[4].val = this.segments.filter(x => x.travelTime.level >= 5).length;
+
+      if (this.hrSummary) {
+        this.cardData[Constants.CARD_DATA_SIGNAL_ISSUES_ID].val = this.hrSummary.filter(x => x.score > 60).length;
       }
+
+      if (this.trafficDevices) {
+        this.cardData[Constants.CARD_DATA_DEDVICE_ANOMALIES_ID].val = this.trafficDevices.filter(
+          x => x.status !== 0
+        ).length;
+      }
+
+      if (this.segments) {
+        this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = this.segments.filter(
+          x => x.travelTime.level >= 5
+        ).length;
+      }
+
       if (this.waze) {
-        this.cardData[5].val = this.waze.filter(x => x.confidence >= 5).length;
+        this.cardData[Constants.CARD_DATA_WAZE_ALERTS_ID].val = this.waze.filter(x => x.confidence >= 5).length;
       }
     },
+
     dataAvailable(data) {
       return data.val && data.val != 0 && data.val != '-' && data.val != 'N/A';
     },
+
     setMarkers(markers) {
       if (markers) {
         this.markers = markers;
       }
     },
+
     setPolylines(polylines) {
       if (polylines) {
         this.polylines = polylines;
       }
     },
+
     startUpdateInterval() {
       this.updateInterval = setInterval(this.updateData, 1000);
     },
+
     stopUpdateInterval() {
       if (this.updateInterval) {
         clearInterval(this.updateInterval);
         this.updateInterval = null;
       }
     },
+
     fetchApiData() {
       this.fetchBluetoothSegments();
       this.fetchWeatherStations();
@@ -356,6 +389,7 @@ export default {
       this.fetchSegments();
       this.fetchWaze();
     },
+
     updateData() {
       this.elapsedTime++;
       if (
@@ -366,21 +400,26 @@ export default {
         this.fetchApiData();
       }
     },
+
     startCardSwapInterval() {
       this.cardSwapInterval = setInterval(this.updateCardSwap, 1000);
     },
+
     stopCardSwapInterval() {
       if (this.cardSwapInterval) {
         clearInterval(this.cardSwapInterval);
         this.cardSwapInterval = null;
       }
     },
+
     updateCardSwap() {
       this.cardElapsedTime++;
       let pageSwapEnabled = this.getSetting('dashboard', 'autoPageSwaps');
       let swapInterval = this.getSetting('dashboard', 'swapInterval');
+
       if (!this.manualMode && pageSwapEnabled && this.cardElapsedTime >= swapInterval) {
         this.cardElapsedTime = 0;
+
         if (this.selectedIdx >= 0 && this.selectedIdx <= 4) {
           for (let i = this.selectedIdx + 1; i < this.cardData.length; i++) {
             if (this.dataAvailable(this.cardData[i])) {
@@ -390,6 +429,7 @@ export default {
             }
           }
         }
+
         for (let i = 0; i < this.cardData.length; i++) {
           if (this.dataAvailable(this.cardData[i])) {
             this.selectedIdx = i;
@@ -399,6 +439,7 @@ export default {
         }
       }
     },
+
     showSelectionDialog(type) {
       if (this.$refs.selectionDialog) {
         if (type === 0) {
@@ -459,49 +500,57 @@ export default {
     ]),
     ...mapActions('traffic', ['fetchBluetoothSegments'])
   },
+
   watch: {
     incidentData(incidents) {
       if (incidents) {
-        this.cardData[0].val = this.trafficIncidents.length;
+        this.cardData[Constants.CARD_DATA_INCIDENTS_ID].val = this.trafficIncidents.length;
       } else {
         return 'N/A';
       }
     },
-    trafficDevices(trafficDevices) {
-      if (trafficDevices) {
-        this.cardData[1].val = trafficDevices.filter(x => x.status !== 0).length;
-      } else {
-        return 'N/A';
-      }
-    },
-    hrSummary(hrSummary) {
-      if (hrSummary) {
-        this.cardData[2].val = this.hrSummary.filter(x => x.score > 60).length;
-      } else {
-        return 'N/A';
-      }
-    },
+
     flowAnomData(flowAnomData) {
       if (flowAnomData) {
         let maxCount = flowAnomData.sensorErrorCounts[0].score;
         let hours = new Date().getHours();
-        this.cardData[3].val = flowAnomData.sensorErrorCounts.filter(
+        this.cardData[Constants.CARD_DATA_FLOW_ANOMALIES_ID].val = flowAnomData.sensorErrorCounts.filter(
           x => x.score / hours > 50 && x.score > maxCount - maxCount * 0.15
         ).length;
       } else {
         return 'N/A';
       }
     },
-    segments(segments) {
-      if (segments) {
-        this.cardData[4].val = segments.filter(x => x.travelTime.level >= 5).length;
+
+    hrSummary(hrSummary) {
+      if (hrSummary) {
+        this.cardData[Constants.CARD_DATA_SIGNAL_ISSUES_ID].val = this.hrSummary.filter(x => x.score > 60).length;
       } else {
         return 'N/A';
       }
     },
+
+    trafficDevices(trafficDevices) {
+      if (trafficDevices) {
+        this.cardData[Constants.CARD_DATA_DEDVICE_ANOMALIES_ID].val = trafficDevices.filter(x => x.status !== 0).length;
+      } else {
+        return 'N/A';
+      }
+    },
+
+    segments(segments) {
+      if (segments) {
+        this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = segments.filter(
+          x => x.travelTime.level >= 5
+        ).length;
+      } else {
+        return 'N/A';
+      }
+    },
+
     waze(waze) {
       if (waze) {
-        this.cardData[5].val = waze.filter(x => x.confidence >= 5).length;
+        this.cardData[Constants.CARD_DATA_WAZE_ALERTS_ID].val = waze.filter(x => x.confidence >= 5).length;
       } else {
         return 'N/A';
       }

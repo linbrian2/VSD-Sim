@@ -19,6 +19,7 @@
         </v-chip>
       </template>
     </v-data-table>
+
     <!-- Data Display -->
     <template v-if="!reload">
       <FlowDataInfo :marker="selectedtrafficDevice" />
@@ -169,5 +170,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss"></style>

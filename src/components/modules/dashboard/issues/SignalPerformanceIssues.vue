@@ -169,6 +169,7 @@ export default {
         }
       }
     },
+
     itemRowBackground(item) {
       return item.id == this.selectedId ? 'table_tr_selected' : 'table_tr_normal';
     },
@@ -177,9 +178,11 @@ export default {
       this.selectedSignalPerformanceIssue = item;
       this.$emit('click', item);
     },
+
     prepareSignalPerformanceIssues(data) {
       this.summary = data;
     },
+
     fetchPCDData(id, phases, time, title) {
       try {
         this.loading = true;
@@ -226,5 +229,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

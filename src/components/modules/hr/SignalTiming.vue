@@ -23,7 +23,7 @@
       :offsetY="-40"
       :marker="signal.center"
     >
-      <div v-if="signal.timeRemaining > 0 && signal.timeRemaining < 10">
+      <div v-if="counterdownAvailable(signal)">
         <v-chip color="purple">
           <span class="font-weight-bold white--text">{{ signal.timeRemaining }}</span>
         </v-chip>
@@ -129,6 +129,10 @@ export default {
       }
     },
 
+    counterdownAvailable(signal) {
+      return signal.status === 'Y' && signal.timeRemaining > 0 && signal.timeRemaining < 10;
+    },
+
     generateSignals(marker, projection) {
       if (marker) {
         this.signals = [];
@@ -176,7 +180,8 @@ export default {
         anchor: polygon[0],
         paths: polygon,
         light: 0,
-        timeRemaining: 1000
+        timeRemaining: 1000,
+        status: 'R'
       };
 
       this.signals.push(signal);
@@ -247,6 +252,7 @@ export default {
               signal.options.strokeOpacity = 0.8;
               signal.options.fillOpacity = 1.0;
               signal.timeRemaining = spat.ttc[idx];
+              signal.status = colorCode;
             }
           }
         });

@@ -79,6 +79,11 @@ export default {
         icon: RouterIcons.TRAFFIC_INCIDENT_LIST
       },
       { divider: true },
+      {
+        title: RouterNames.TRAFFIC_PREDICT,
+        url: RouterPaths.TRAFFIC_PREDICT,
+        icon: RouterIcons.TRAFFIC_PREDICT
+      },
       { divider: true },
       {
         title: RouterNames.TRAFFIC_DATA_PLAYBACK,

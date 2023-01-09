@@ -7,31 +7,48 @@
           <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-spacer></v-spacer>
 
-          <v-text-field
-            class="ml-15 shrink"
-            dark
-            rounded
-            dense
-            outlined
-            clearable
-            v-model="search"
-            prepend-inner-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-
           <v-btn icon @click="hideDialog">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-app-bar>
-        <div style="height: 450px;">
-          <vue-perfect-scrollbar class="app-drawer__scrollbar">
-            <div class="app-drawer__inner">
+        <div style="height: 550px;">
+          <v-card>
+            <v-toolbar dense>
+              <v-tabs
+                dense
+                color="teal accent-4"
+                fixed-tabs
+                show-arrows="mobile"
+                class="pr-1"
+                v-model="tab"
+                @change="tabChanged"
+              >
+                <v-tab v-for="category in categories" :key="category.id">
+                  <v-icon left>{{ category.icon }}</v-icon>
+                </v-tab>
+              </v-tabs>
+              <v-spacer></v-spacer>
+              <v-text-field
+                class="ml-15 shrink"
+                dark
+                rounded
+                dense
+                outlined
+                clearable
+                v-model="search"
+                prepend-inner-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-toolbar>
+
+            <!-- <v-card-title :class="$vuetify.breakpoint.mobile ? 'pl-2 pa-0' : null"> -->
+            <vue-perfect-scrollbar class="app-drawer__scrollbar">
               <v-data-table
                 disable-sort
                 :headers="headers"
-                height="420"
+                height="450"
                 fixed-header
                 :items="items"
                 :items-per-page="itemsPerPage"
@@ -41,8 +58,9 @@
                 :search="search"
               >
               </v-data-table>
-            </div>
-          </vue-perfect-scrollbar>
+            </vue-perfect-scrollbar>
+            <!-- </v-card-title> -->
+          </v-card>
         </div>
       </v-card>
     </v-dialog>
@@ -52,6 +70,7 @@
 <script>
 import Utils from '@/utils/Utils';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
+import Constants from '@/utils/constants/traffic';
 export default {
   components: {
     VuePerfectScrollbar
@@ -70,12 +89,21 @@ export default {
     title: '',
     itemsPerPage: 200,
     type: 0,
+    tab: 0,
+    sensorData: {},
     items: [],
     headers: [],
     searchItems: [],
     scrollSettings: {
       maxScrollbarLength: 160
-    }
+    },
+    categories: [
+      { title: Constants.DEVICE_TRAFFIC, icon: Constants.DEVICE_TRAFFIC_ICON, id: 0 },
+      { title: Constants.DEVICE_BLUETOOTH, icon: Constants.DEVICE_BLUETOOTH_ICON, id: 1 },
+      { title: Constants.DEVICE_WEATHER, icon: Constants.DEVICE_WEATHER_ICON, id: 2 },
+      { title: Constants.DEVICE_RESTRICTIONS, icon: Constants.DEVICE_RESTRICTIONS_ICON, id: 3 },
+      { title: Constants.DEVICE_SEGMENTS, icon: Constants.DEVICE_SEGMENTS_ICON, id: 4 }
+    ]
   }),
   computed: {
     show: {
@@ -92,25 +120,43 @@ export default {
   },
 
   methods: {
-    init(icon, title, type, data) {
-      this.icon = icon;
-      this.type = type;
-      this.title = title;
-      this.search = '';
-      if (type === 0) {
-        this.prepareTrafficDetectors(data);
-      } else if (type === 1) {
-        this.prepareBluetoothData(data);
-      } else if (type === 2) {
-        this.prepareWeatherStations(data);
-      } else if (type === 3) {
-        this.prepareTravelRestrictions(data);
-      } else if (type === 4) {
-        this.prepareAnomalySegments(data);
-      }
+    init(data) {
+      this.sensorData = data;
+      console.log(this.sensorData);
+      this.tab = 0;
+      this.prepareData(this.tab);
     },
 
     cleanUp() {},
+
+    prepareData(type) {
+      const c = this.categories[type];
+      this.icon = c.icon;
+      this.type = c.id;
+      this.title = c.title;
+      this.search = '';
+      switch (this.type) {
+        case 0:
+          this.prepareTrafficDetectors(this.sensorData.flowDetectors);
+          break;
+        case 1:
+          this.prepareBluetoothData(this.sensorData.bluetoothSensors);
+          break;
+        case 2:
+          this.prepareWeatherStations(this.sensorData.weatherStations);
+          break;
+        case 3:
+          this.prepareTravelRestrictions(this.sensorData.restrictions);
+          break;
+        case 4:
+          this.prepareAnomalySegments(this.sensorData.anomalySegments);
+          break;
+      }
+    },
+
+    tabChanged() {
+      this.prepareData(this.tab);
+    },
 
     hideDialog() {
       this.cleanUp();
@@ -130,15 +176,31 @@ export default {
       return '';
     },
 
+    getArea(zone) {
+      if (zone == 1) {
+        return 'Urban Freeway';
+      } else if (zone == 3) {
+        return 'CAV Area Freeway';
+      } else if (zone == 4) {
+        return 'CAV Area Arterial';
+      } else if (zone == 7) {
+        return 'Beach Area';
+      } else {
+        return '';
+      }
+    },
+
     prepareTrafficDetectors(deviceLocations) {
       this.headers = [
         { text: 'Device', value: 'device' },
+        { text: 'Area', value: 'area' },
         { text: 'Status', value: 'state' }
       ];
       this.items = deviceLocations.map(d => ({
         id: d.id,
         device: d.name,
         status: d.status,
+        area: this.getArea(d.zone),
         state: d.status === 0 ? 'Normal' : 'Anomaly'
       }));
     },

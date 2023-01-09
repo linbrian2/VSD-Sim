@@ -5,7 +5,7 @@
         <v-col cols="12">
           <div class="d-flex justify-space-between mt-n6">
             <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Current Info</h3></v-subheader>
-            <div class="mt-4 mr-3">
+            <div class="mt-4 mr-3" v-if="marker">
               <v-chip class="ml-2 mt-n1" outlined small>
                 <span>{{ marker.id }} / {{ marker.uid }}</span>
               </v-chip>
@@ -131,6 +131,31 @@
         </v-col>
       </v-row>
 
+      <v-row>
+        <v-col cols="12">
+          <div class="d-flex justify-space-between">
+            <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>V + O</h3></v-subheader>
+
+            <v-tooltip left>
+              <template v-slot:activator="{ on }">
+                <v-btn small icon v-on="on" @click.stop="showVOChart" class="mr-4 mt-2" :loading="loading">
+                  <v-icon small>mdi-arrow-expand</v-icon>
+                </v-btn>
+              </template>
+              <span>Expand</span>
+            </v-tooltip>
+          </div>
+          <v-divider />
+        </v-col>
+        <v-col cols="12">
+          <div class="mx-4">
+            <v-card tile class="basic-chart" elevation="4">
+              <BasicChart :data="vo" :height="height" :left="marginLeft" :legendy="legendY" />
+            </v-card>
+          </div>
+        </v-col>
+      </v-row>
+
       <v-row v-if="camerasAvaliable">
         <v-col cols="12">
           <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Cameras</h3></v-subheader>
@@ -149,7 +174,6 @@
       </v-row>
     </v-container>
     <ChartDialog ref="chartDialog" v-model="showChartDialog" />
-    <VideoPlayerDialog ref="vpRef" videoType="application/x-mpegURL" v-model="showVideoPlayer" />
   </div>
 </template>
 
@@ -161,8 +185,6 @@ import ListInfoCard from '@/components/modules/traffic/common/ListInfoCard';
 import PredictionInfoList from '@/components/modules/traffic/dashboard/PredictionInfoList';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
-import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
-import { getVideoUrl } from '@/utils/DeldotVideoUrl';
 
 export default {
   props: {
@@ -173,8 +195,7 @@ export default {
     BasicChart,
     ListInfoCard,
     ChartDialog,
-    PredictionInfoList,
-    VideoPlayerDialog
+    PredictionInfoList
   },
 
   data: () => ({
@@ -188,6 +209,7 @@ export default {
     speed: {},
     volume: {},
     occupancy: {},
+    vo: {},
     deviceInfo: {},
     info: {},
     cameraIds: []
@@ -220,7 +242,9 @@ export default {
 
   methods: {
     init(marker) {
-      this.fetchData(marker.id);
+      if (marker) {
+        this.fetchData(marker.id);
+      }
     },
 
     showSpeedChart() {
@@ -238,14 +262,13 @@ export default {
       this.$refs.chartDialog.init('Occupancy', this.occupancy);
     },
 
+    showVOChart() {
+      this.showChartDialog = true;
+      this.$refs.chartDialog.init('V + O', this.vo);
+    },
+
     playVideo(id) {
-      const url = getVideoUrl(id);
-      if (url) {
-        if (this.$refs.vpRef) {
-          this.$refs.vpRef.changeVideoSource(url);
-        }
-        this.showVideoPlayer = true;
-      }
+      this.$bus.$emit('PLAY_POPUP_VIDEO', id);
     },
 
     fetchData(deviceId) {
@@ -268,6 +291,7 @@ export default {
           this.speed = this.formSpeedData(flowList);
           this.volume = this.formVolumeData(flowList);
           this.occupancy = this.formOccupancyData(flowList);
+          this.vo = this.formVoData(flowList);
         }
 
         let deviceInfo = this.parseResponseData(deviceInfoRes);
@@ -295,7 +319,7 @@ export default {
       } else {
         console.log(response);
         console.log(response.data.message);
-        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
+        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'info' });
       }
       return result;
     },
@@ -327,6 +351,14 @@ export default {
       let yAxis = 'Occupancy (%)';
       let data = flowList.occupancy;
 
+      return { data, xAxis, yAxis, title };
+    },
+
+    formVoData(flowList) {
+      const title = '';
+      const xAxis = 'Time of day';
+      const yAxis = 'V + O (%)';
+      const data = flowList.vo;
       return { data, xAxis, yAxis, title };
     },
 
@@ -410,7 +442,7 @@ export default {
       const name = `Status ${i.flowLevel}`;
       p7[name] = i.flowStatus;
 
-      p7['vol + occ'] = i.vo + '%';
+      p7['vol + occ'] = i.vo ? i.vo + '%' : 'N/A';
       if (i.breakdown) {
         p7['Breakdown Probability'] = Math.round(i.breakdown) + '%';
       } else {

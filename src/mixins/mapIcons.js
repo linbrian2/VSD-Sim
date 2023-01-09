@@ -25,6 +25,12 @@ export const mapIcons = {
         size: { width: 30, height: 48, f: 'px', b: 'px' }
       },
 
+      greenDotSelect: {
+        url: require('@/assets/green-select.png'),
+        size: { width: 30, height: 30, f: 'px', b: 'px' },
+        anchor: { x: 15, y: 15 }
+      },
+
       weatherIcon: {
         url: require('@/assets/icon30.png'),
         size: { width: 32, height: 32, f: 'px', b: 'px' }
@@ -37,6 +43,12 @@ export const mapIcons = {
 
       normalBluetoothIcon: {
         url: require('@/assets/icon54.png'),
+        size: { width: 32, height: 32, f: 'px', b: 'px' },
+        anchor: { x: 16, y: 16 }
+      },
+
+      normalBluetoothIconActive: {
+        url: require('@/assets/icon54-select.png'),
         size: { width: 32, height: 32, f: 'px', b: 'px' },
         anchor: { x: 16, y: 16 }
       },
@@ -342,16 +354,33 @@ export const mapIcons = {
       }
       return this.selectedMarkerId === marker.id ? this.trafficLightIconActive : this.trafficLightIcon;
     },
+
     getWeatherMarkerIcon(marker) {
       if (marker) {
         return this.getWeatherIcon(marker.code);
       }
     },
 
+    getNormalWeatherMarkerIcon(marker, selected = false) {
+      return selected ? this.weatherIconActive : this.getWeatherIcon(marker.code);
+    },
+
     getSegmentMarkerIcon(marker) {
       if (marker) {
         return marker.status == 7 ? this.redBluetoothIcon : this.normalBluetoothIcon;
       }
+    },
+
+    getBluetoothMarkerIcon(selected = false) {
+      return selected ? this.normalBluetoothIconActive : this.normalBluetoothIcon;
+    },
+
+    getCameraMarkerIcon(selected = false) {
+      return selected ? this.cameraIconActive : this.cameraIcon;
+    },
+
+    getDotMarkerIcon(selected = false) {
+      return selected ? this.greenDotSelect : this.icons[0];
     },
 
     getDefaultMarkerIcon(marker, selected = false) {

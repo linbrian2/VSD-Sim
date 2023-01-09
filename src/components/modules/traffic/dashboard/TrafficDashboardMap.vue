@@ -1,7 +1,7 @@
 <template>
   <div id="wrapper">
     <div id="google_map">
-      <div v-show="selectedIdx == 0">
+      <div v-show="selectedIdx == CARD_IDS.CARD_DATA_INCIDENTS_ID">
         <MapSegment
           ref="mapSegmentRef"
           :incidentSegmentLinks="incidentSegmentLinks"
@@ -10,8 +10,8 @@
           @click="onMarkerClicked"
         />
       </div>
-      <!-- <div> -->
-      <div v-show="selectedIdx != 0">
+
+      <div v-show="selectedIdx != CARD_IDS.CARD_DATA_INCIDENTS_ID">
         <GmapMap
           ref="mapRef"
           :options="options"
@@ -26,14 +26,14 @@
           "
         >
           <!-- Traffic Flow Detectors & Traffic Flow Issues -->
-          <div v-if="isMapLayerVisible(0) || selectedIdx == 1">
+          <div v-if="isMapLayerVisible(0) || selectedIdx == CARD_IDS.CARD_DATA_FLOW_ANOMALIES_ID">
             <GmapMarker
               v-for="m in markers"
               :key="m.id"
               :position="m.position"
               :title="m.name"
               :clickable="true"
-              :icon="getDefaultMarkerIcon(m, m.id == selectedMarkerId)"
+              :icon="getDotMarkerIcon(m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
               @click="handleMarkerClick(0, m.id)"
             />
@@ -59,7 +59,7 @@
               :position="s.position"
               :title="s.name"
               :clickable="true"
-              :icon="getSegmentMarkerIcon(s)"
+              :icon="getBluetoothMarkerIcon(s.id == selectedMarkerId)"
               @click="handleMarkerClick(1, s.id)"
             />
 
@@ -89,7 +89,7 @@
               :position="m.position"
               :title="m.name"
               :clickable="true"
-              :icon="getWeatherMarkerIcon(m)"
+              :icon="getNormalWeatherMarkerIcon(m, m.id === selectedMarkerId)"
               @click="handleMarkerClick(2, m.id)"
             />
 
@@ -143,19 +143,8 @@
             </GmapCustomMarker>
           </div>
 
-          <!-- Traffic Incidents -->
-          <div v-if="selectedIdx == 0">
-            <MapSegment
-              ref="mapSegmentRef"
-              :incidentSegmentLinks="incidentSegmentLinks"
-              :incidentMarkers="incidentMarkers"
-              @select="onSegmentSelected"
-              @click="onMarkerClicked"
-            />
-          </div>
-
           <!-- Signal Issues -->
-          <div v-if="isMapLayerVisible(5) || selectedIdx == 2">
+          <div v-if="isMapLayerVisible(5) || selectedIdx == CARD_IDS.CARD_DATA_SIGNAL_ISSUES_ID">
             <GmapMarker
               v-for="m in signalPerformanceIssues"
               :key="m.id"
@@ -166,20 +155,20 @@
             />
           </div>
 
-          <!-- Device Anomalies -->
-          <div v-if="isMapLayerVisible(6) || selectedIdx == 3">
+          <!-- Waze Alerts -->
+          <div v-if="isMapLayerVisible(6) || selectedIdx == CARD_IDS.CARD_DATA_WAZE_ALERTS_ID">
             <GmapMarker
-              v-for="m in deviceMarkers"
+              v-for="m in waze"
               :key="m.id"
               :position="m.position"
               :title="m.name"
-              :icon="getMarker2Icon(m, m.id == selectedMarkerId)"
+              :icon="getWazeIcon(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
             />
           </div>
 
           <!-- Congested Routes -->
-          <div v-if="isMapLayerVisible(7) || selectedIdx == 4">
+          <div v-if="isMapLayerVisible(7) || selectedIdx == CARD_IDS.CARD_DATA_CONGESTED_ROUTES_ID">
             <GmapPolyline
               v-for="s in trafficSegments"
               :key="s.id"
@@ -201,35 +190,41 @@
             </GmapCustomMarker>
           </div>
 
-          <!-- Waze Alerts -->
-          <div v-if="isMapLayerVisible(8) || selectedIdx == 5">
+          <!-- Device Anomalies -->
+          <div v-if="isMapLayerVisible(8) || selectedIdx == CARD_IDS.CARD_DATA_DEDVICE_ANOMALIES_ID">
             <GmapMarker
-              v-for="m in waze"
+              v-for="m in deviceMarkers"
               :key="m.id"
               :position="m.position"
               :title="m.name"
-              :icon="getWazeIcon(m, m.id == selectedMarkerId)"
+              :icon="getMarker2Icon(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
             />
-            <!-- <GmapMarker
-              v-for="m in waze"
-              :key="m.id"
-              :position="m.position"
-              :title="m.name"
-              :clickable="true"
-              :icon="getWazeIcon(m, m.id == selectedMarkerId)"
-              :options="markerOptions(m.id)"
-              @click="handleMarkerClick(7, m.id)"
-            /> -->
           </div>
 
-          <div v-if="isMapLayerVisible(9) && trafficIncidents">
+          <div v-if="trafficIncidents && trafficIncidents.length > 0">
             <GmapMarker
               v-for="m in trafficIncidents"
               :key="m.id"
+              :title="`Incident ${m.id}`"
               :position="m.location"
               :icon="getTrafficIncidentMarker(m)"
               :options="markerOptions(m.id, 99)"
+              :clickable="true"
+              @click="handleMarkerClick(4, m.id)"
+            />
+          </div>
+
+          <div v-if="isMapLayerVisible(10) && cameraMarkers">
+            <GmapMarker
+              v-for="m in cameraMarkers"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :icon="getCameraMarkerIcon(m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+              :clickable="true"
+              @click="handleMarkerClick(10, m.id)"
             />
           </div>
 
@@ -251,6 +246,7 @@ import Devices from '@/utils/Devices.js';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapUtils from '@/utils/MapUtils.js';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
+import Constants from '@/utils/constants/dashboard.js';
 import { mapState } from 'vuex';
 import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
@@ -263,6 +259,7 @@ export default {
     deviceLocations: Array,
     bluetoothLocations: Array,
     restrictions: Array,
+    trafficCameras: Array,
     selectedIdx: Number
   },
   components: {
@@ -326,6 +323,9 @@ export default {
     weatherMarkers() {
       return this.weatherStations;
     },
+    cameraMarkers() {
+      return this.trafficCameras;
+    },
     segments() {
       return this.bluetoothLocations;
     },
@@ -387,14 +387,32 @@ export default {
       'incidentSettings'
     ])
   },
+
+  created() {
+    this.CARD_IDS = {
+      CARD_DATA_INCIDENTS_ID: Constants.CARD_DATA_INCIDENTS_ID,
+      CARD_DATA_FLOW_ANOMALIES_ID: Constants.CARD_DATA_FLOW_ANOMALIES_ID,
+      CARD_DATA_SIGNAL_ISSUES_ID: Constants.CARD_DATA_SIGNAL_ISSUES_ID,
+      CARD_DATA_DEDVICE_ANOMALIES_ID: Constants.CARD_DATA_DEDVICE_ANOMALIES_ID,
+      CARD_DATA_CONGESTED_ROUTES_ID: Constants.CARD_DATA_CONGESTED_ROUTES_ID,
+      CARD_DATA_WAZE_ALERTS_ID: Constants.CARD_DATA_WAZE_ALERTS_ID
+    };
+  },
+
   mounted() {
     this.addSelectedMarker();
     this.$bus.$on('UPDATE_DARK_MODE', () => {
       this.loadPage(this.$vuetify.theme.dark);
     });
-    this.$bus.$on('CENTER_SEGMENT', segment => {
-      this.centerSegment(segment);
+
+    this.$bus.$on('CENTER_INCIDENT_SEGMENT', segment => {
+      this.centerAndZoom(segment.location, 14);
     });
+
+    this.$bus.$on('HOME_CENTER_MAP', () => {
+      this.centerMap(this.map, this.markers);
+    });
+
     this.loadPage(this.$vuetify.theme.dark);
 
     this.$refs.mapRef.$mapPromise.then(map => {
@@ -416,12 +434,14 @@ export default {
   methods: {
     getTrafficIncidentMarker(marker) {
       if (marker.id == this.selectedMarkerId) {
-        if (this.trafficIncidents && this.startTime && this.endTime) {
+        if (this.trafficIncidents && this.trafficIncidents.length > 0 && this.startTime && this.endTime) {
           if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
             return this.alertAnimatedIconActive;
           } else {
             return this.alertIconActive;
           }
+        } else {
+          return this.alertIconActive;
         }
       } else {
         if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
@@ -455,12 +475,15 @@ export default {
         this.map.setZoom(zoomLevel);
       }
     },
+
     onSegmentSelected(segmentId) {
       console.log(segmentId);
     },
+
     onMarkerClicked(marker) {
       console.log(marker);
     },
+
     changeSelectedColor() {
       this.colorInterp = setInterval(() => {
         let timeVal = parseFloat((new Date().getTime() % 2000) / 1000).toFixed(2);
@@ -470,9 +493,11 @@ export default {
         this.selectedColor = d3.interpolateLab('red', 'blue')(timeVal);
       }, 50);
     },
+
     getChipColor(s) {
       return this.selectedSegmentId === s.id ? 'blue' : 'white';
     },
+
     segmentOptions(segment) {
       const color =
         segment.id === this.selectedSegmentId ? this.selectedColor : Utils.getStrokeColor(segment.travelTime.level);
@@ -496,7 +521,6 @@ export default {
     },
 
     addSelectedMarker() {
-      // console.log(`addSelectedMarker ${this.selectedIdx}`);
       switch (this.selectedIdx) {
         case 0:
           break;
@@ -667,6 +691,7 @@ export default {
         events: {
           click: () => {
             this.centerMap(map, this.markers);
+            this.$emit('home-clicked');
           }
         }
       };
