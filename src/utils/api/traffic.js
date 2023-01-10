@@ -202,6 +202,11 @@ export default {
     return AxiosClient.get('travelTime/bluetoothSegments');
   },
 
+  fetchCongestedBluetoothSegments(level) {
+    console.log('level', level);
+    return AxiosClient.get('travelTime/congestedBluetoothSegments', { params: { level } });
+  },
+
   fetchWeatherData(id, interval, startDate, endDate) {
     let params = { id, interval, startDate };
     if (endDate) {

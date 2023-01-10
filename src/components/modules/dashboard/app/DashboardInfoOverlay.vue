@@ -220,7 +220,7 @@ export default {
       return this.getSetting('dashboard', 'showAllOverlayCards');
     },
     incidentData() {
-      return this.segments != null && this.trafficIncidents != null;
+      return this.congestedSegments != null && this.trafficIncidents != null;
     },
 
     sortedCardData() {
@@ -236,7 +236,7 @@ export default {
       'flowAnomData',
       'hrSummary',
       'detectors',
-      'segments',
+      'congestedSegments',
       'waze'
     ]),
     ...mapGetters(['getSetting'])
@@ -340,8 +340,8 @@ export default {
         ).length;
       }
 
-      if (this.segments) {
-        this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = this.segments.filter(
+      if (this.congestedSegments) {
+        this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = this.congestedSegments.filter(
           x => x.travelTime.level >= 5
         ).length;
       }
@@ -386,7 +386,7 @@ export default {
       this.fetchSignalPerformanceIssues();
       this.fetchStatus();
       this.fetchStatusOfDevices();
-      this.fetchSegments();
+      this.fetchCongestedSegments(5);
       this.fetchWaze();
     },
 
@@ -475,7 +475,7 @@ export default {
             Constants.HIGH_CONGESTION_ROUTES_ICON,
             Constants.HIGH_CONGESTION_ROUTES,
             4,
-            this.segments
+            this.congestedSegments
           );
         } else if (type === 5) {
           this.$refs.selectionDialog.init(
@@ -495,7 +495,7 @@ export default {
       'fetchSignalPerformanceIssues',
       'fetchStatus',
       'fetchStatusOfDevices',
-      'fetchSegments',
+      'fetchCongestedSegments',
       'fetchWaze'
     ]),
     ...mapActions('traffic', ['fetchBluetoothSegments'])
@@ -538,7 +538,7 @@ export default {
       }
     },
 
-    segments(segments) {
+    congestedSegments(segments) {
       if (segments) {
         this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = segments.filter(
           x => x.travelTime.level >= 5

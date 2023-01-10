@@ -22,6 +22,7 @@
         {{ item.lastUpdated.split(' ')[1].slice(0, 5) }}
       </template>
     </v-data-table>
+
     <v-row class="mt-3 mx-1" v-if="currSegment">
       <v-col :cols="12 / infoColumnCount" class="pa-1">
         <InfoCard
@@ -149,8 +150,8 @@ export default {
       return this.singleCol ? '11vh' : undefined;
     },
     currSegment() {
-      if (this.selectedSegment && this.segments) {
-        let result = this.segments.filter(x => x.id == this.selectedSegment.id);
+      if (this.selectedSegment && this.congestedSegments) {
+        let result = this.congestedSegments.filter(x => x.id == this.selectedSegment.id);
         return result.length > 0 ? result[0] : null;
       } else {
         return null;
@@ -162,35 +163,30 @@ export default {
       },
       set(val) {
         this.$store.state.dashboard.selectedSegment = val;
-        this.reload = true;
-        setTimeout(() => {
-          this.reload = false;
-        }, 1);
       }
     },
-    showTable: {
-      get() {
-        return this.$store.state.dashboard.showTable;
-      },
-      set(show) {
-        this.$store.commit('dashboard/SHOW_TABLE', show);
-      }
-    },
+
     listLimit() {
-      if (this.getSetting) {
-        return this.getSetting('dashboard', 'limitListings');
-      } else {
-        return 0;
-      }
+      return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
     },
     ...mapGetters(['getSetting']),
-    ...mapState('dashboard', ['segments'])
+    ...mapState('dashboard', ['congestedSegments', 'showTable'])
   },
+
   mounted() {
-    if (this.segments) {
-      this.prepareHighCongestionRoutes(this.segments);
+    if (this.congestedSegments) {
+      this.prepareHighCongestionRoutes(this.congestedSegments);
       this.handleRowClick(this.items[0]);
     }
+
+    this.$bus.$on('SELECT_TABLE_ROW', dir => {
+      console.log('SELECT_TABLE_ROW');
+      if (dir > 0) {
+        this.selectNext();
+      } else {
+        this.selectPrev();
+      }
+    });
   },
   methods: {
     getDurStr(dur) {
@@ -206,9 +202,8 @@ export default {
     prepareHighCongestionRoutes(data) {
       this.headers = [
         { text: 'Description', value: 'desc' },
-        { text: 'Last Updated', value: 'lastUpdated' },
-        { text: 'Level', value: 'level' },
-        { text: '', value: 'actions' }
+        { text: 'Time', value: 'lastUpdated' },
+        { text: 'Level', value: 'level' }
       ];
       this.items = data.map(d => ({
         id: d.id,
@@ -225,17 +220,40 @@ export default {
     handleRowClick(item) {
       this.selectedSegment = item;
       this.$emit('click', item);
+    },
+
+    selectNext() {
+      if (this.items && this.items.length > 0) {
+        const currentIndex = this.items.findIndex(item => item.id == this.selectedSegment.id);
+        const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % this.items.length;
+        this.handleRowClick(this.items[nextIndex]);
+        console.log(currentIndex, nextIndex);
+      }
+    },
+
+    selectPrev() {
+      if (this.items && this.items.length > 0) {
+        const currentIndex = this.items.findIndex(item => item.id == this.selectedSegment.id);
+        let prevIndex = 0;
+        if (currentIndex === -1) {
+          prevIndex = 0;
+        } else {
+          prevIndex = currentIndex - 1;
+          if (prevIndex < 0) {
+            prevIndex = this.items.length + prevIndex;
+          }
+        }
+        this.handleRowClick(this.items[prevIndex]);
+      }
     }
   },
   watch: {
-    segments() {
-      if (this.segments) {
-        this.prepareHighCongestionRoutes(this.segments);
+    congestedSegments() {
+      if (this.congestedSegments) {
+        this.prepareHighCongestionRoutes(this.congestedSegments);
         this.handleRowClick(this.items[0]);
       }
     }
   }
 };
 </script>
-
-<style></style>

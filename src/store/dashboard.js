@@ -16,7 +16,7 @@ const state = {
   hrSummary: null,
   flowAnomData: null,
   detectors: null,
-  segments: null,
+  congestedSegments: null,
   waze: null,
 
   selectedTrafficIncident: null,
@@ -75,8 +75,8 @@ const mutations = {
   SET_DETECTORS(state, data) {
     state.detectors = data;
   },
-  SET_SEGMENTS(state, data) {
-    state.segments = data;
+  SET_CONGESTED_SEGMENTS(state, data) {
+    state.congestedSegments = data;
   },
   SET_WAZE(state, data) {
     state.waze = data;
@@ -206,18 +206,20 @@ const actions = {
       dispatch('setSystemStatus', { text: error, color: 'error' });
     }
   },
+
   //! Congested Routes
-  async fetchSegments({ commit, dispatch }) {
+  async fetchCongestedSegments({ commit, dispatch }, level) {
     try {
-      const response = await TrafficApi.fetchBluetoothSegments();
+      const response = await TrafficApi.fetchCongestedBluetoothSegments(level);
       let sortedData = response.data.sort((a, b) =>
         a.travelTime.level > b.travelTime.level ? -1 : b.travelTime.level > a.travelTime.level ? 1 : 0
       );
-      commit('SET_SEGMENTS', sortedData);
+      commit('SET_CONGESTED_SEGMENTS', sortedData);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
+
   //! Waze Alerts
   async fetchWaze({ commit, dispatch }) {
     try {
@@ -232,14 +234,17 @@ const actions = {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
+
   loadDarkMode({ commit }) {
     const darkMode = localStorage.getItem('ThemeDarkMode');
     commit('SET_DARK_MODE', darkMode ? JSON.parse(darkMode) : true);
   },
+
   saveDarkMode({ state, commit }, darkMode) {
     commit('SET_DARK_MODE', darkMode);
     localStorage.setItem('ThemeDarkMode', JSON.stringify(state.darkMode));
   },
+
   setSystemStatus({ commit }, status) {
     let snackbar = { showing: true, color: 'info', timeout: 2000, text: '' };
     Object.assign(snackbar, status);

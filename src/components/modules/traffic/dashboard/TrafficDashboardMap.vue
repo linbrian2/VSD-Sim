@@ -170,7 +170,7 @@
           <!-- Congested Routes -->
           <div v-if="isMapLayerVisible(7) || selectedIdx == CARD_IDS.CARD_DATA_CONGESTED_ROUTES_ID">
             <GmapPolyline
-              v-for="s in trafficSegments"
+              v-for="s in congestedSegments"
               :key="s.id"
               :title="s.desc"
               :path.sync="s.path"
@@ -178,7 +178,7 @@
             />
             <GmapCustomMarker
               alignment="center"
-              v-for="s in trafficSegments"
+              v-for="s in congestedSegments"
               :key="`L-${s.id}`"
               :offsetX="0"
               :offsetY="-50"
@@ -353,10 +353,6 @@ export default {
       };
     },
 
-    trafficSegments() {
-      return this.$store.state.dashboard.segments;
-    },
-
     ...mapState(['currentDate']),
     ...mapState('dashboard', [
       'incidentSegmentLinks',
@@ -371,6 +367,7 @@ export default {
       'trafficDevices',
       'signalPerformanceIssues',
       'flowAnomData',
+      'congestedSegments',
       'hrSummary',
       'detectors',
       'waze'
@@ -420,6 +417,7 @@ export default {
       this.addMapControls(map);
       this.fetchSensorLocations();
     });
+
     if (!this.colorInterp) {
       this.changeSelectedColor();
     }
@@ -491,7 +489,7 @@ export default {
           timeVal = 2 - timeVal;
         }
         this.selectedColor = d3.interpolateLab('red', 'blue')(timeVal);
-      }, 50);
+      }, 200);
     },
 
     getChipColor(s) {
@@ -559,7 +557,7 @@ export default {
           setTimeout(() => {
             this.centerMapSegments(
               this.map,
-              this.trafficSegments.filter(x => x.id == this.selectedSegmentId),
+              this.congestedSegments.filter(x => x.id == this.selectedSegmentId),
               13
             );
           }, 1);

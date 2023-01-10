@@ -9,8 +9,8 @@
     >
       <template v-slot:buttons v-if="!trafficInfoShow">
         <div class="mr-6 mt-3">
-          <v-btn icon small @click.native.stop="prevItemClicked"><v-icon>mdi-chevron-left</v-icon></v-btn>
-          <v-btn icon small @click.native.stop="nextItemClicked"><v-icon>mdi-chevron-right</v-icon></v-btn>
+          <v-btn icon small @click.stop="prevItemClicked"><v-icon>mdi-chevron-left</v-icon></v-btn>
+          <v-btn icon small @click.stop="nextItemClicked"><v-icon>mdi-chevron-right</v-icon></v-btn>
         </div>
       </template>
 
@@ -276,11 +276,11 @@ export default {
 
   methods: {
     prevItemClicked() {
-      this.$bus.$emit('SELECT_TABLE_ROW', 1);
+      this.$bus.$emit('SELECT_TABLE_ROW', -1);
     },
 
     nextItemClicked() {
-      this.$bus.$emit('SELECT_TABLE_ROW', -1);
+      this.$bus.$emit('SELECT_TABLE_ROW', 1);
     },
 
     onHomeClick() {
