@@ -21,7 +21,7 @@
       <div class="hidden-sm-and-down">
         <NavDropdown :title="title" />
       </div>
-      <v-toolbar-title class="hidden-sm-and-down">{{ title }}</v-toolbar-title>
+      <v-toolbar-title class="hidden-sm-and-down overline">{{ title }}</v-toolbar-title>
       <template v-if="actionItems && actionItems.length > 0">
         <NavDropdown :items="actionItems" :title="itemTitle" />
         <v-toolbar-title class="overline hidden-sm-and-down">{{ itemTitle }}</v-toolbar-title>
@@ -61,7 +61,7 @@ import LoggedInUser from '@/components/common/LoggedInUser';
 import ThreeDotMenu from '@/components/common/ThreeDotMenu';
 import SnackBar from '@/components/common/SnackBar';
 import ChartStyles from '@/utils/ChartStyles.js';
-import WeatherOverlay from '@/components/modules/dashboard/WeatherOverlay.vue';
+import WeatherOverlay from '@/components/common/WeatherOverlay.vue';
 import SettingsDialog from './SettingsDialog.vue';
 
 export default {

@@ -171,20 +171,7 @@ const mutations = {
   }
 };
 
-const getters = {
-  getNotification(state) {
-    return state.currentAnomalySegments.map(segment => ({
-      id: segment.id,
-      title: `<span ${segment.status === 0 ? 'style="color:green;"' : ''} >${segment.shortName}</span>`,
-      status: segment.status,
-      icon: 'mdi-alert-octagon',
-      startTime: new Date(segment.startTime),
-      evidenceCounts: segment.evidenceCounts,
-      incidentScore: segment.severity,
-      severityColor: segment.severityColor
-    }));
-  }
-};
+const getters = {};
 
 const actions = {
   //! Congested Routes
@@ -230,6 +217,7 @@ const actions = {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
+
   async fetchDevices({ state, commit, dispatch }) {
     try {
       const response = await Api.fetchDevices();
@@ -243,6 +231,7 @@ const actions = {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
+
   async fetchAnomalyDevices({ commit, dispatch }) {
     try {
       const response = await Api.fetchAnomalyDevices();

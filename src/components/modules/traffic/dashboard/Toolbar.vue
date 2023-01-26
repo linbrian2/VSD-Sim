@@ -119,14 +119,14 @@ export default {
     layer_items: [
       { title: Constants.DEVICE_TRAFFIC, id: Constants.LAYER_DEVICE_TRAFFIC },
       { title: Constants.DEVICE_BLUETOOTH, id: Constants.LAYER_DEVICE_BLUETOOTH },
-      { title: Constants.DEVICE_RESTRICTIONS, id: Constants.LAYER_DEVICE_RESTRICTIONS },
-      { title: Constants.DEVICE_SEGMENTS, id: Constants.LAYER_DEVICE_SEGMENTS },
       { title: Constants.DEVICE_WEATHER, id: Constants.LAYER_DEVICE_WEATHER },
+      { title: Constants.DEVICE_CAMERAS, id: Constants.LAYER_DEVICE_CAMERAS },
       { title: Constants.DEVICE_SIGNALS, id: Constants.LAYER_DEVICE_SIGNALS },
+      { title: Constants.DEVICE_RESTRICTIONS, id: Constants.LAYER_DEVICE_RESTRICTIONS },
       { title: Constants.DEVICE_WAZE_ALERTS, id: Constants.LAYER_DEVICE_WAZE_ALERTS },
-      { title: 'Traffic Cameras', id: 10 },
-      { title: 'Statewide Detectors', id: 8 },
-      { title: 'Travel Segments', id: 7 }
+      { title: Constants.DEVICE_INCIDENTS, id: Constants.LAYER_DEVICE_INCIDENTS },
+      { title: Constants.DEVICE_CONGESTED_SEGMENTS, id: Constants.LAYER_DEVICE_CONGESTED_SEGMENTS },
+      { title: Constants.DEVICE_ANOMALY_DEVICES, id: Constants.LAYER_DEVICE_ANOMALY_DEVICES }
     ],
 
     region_menu_items: [

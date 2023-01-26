@@ -101,13 +101,6 @@ export default {
   },
   data() {
     return {
-      deviceLocations: [],
-      incidents: [],
-      icons: undefined,
-      showSelection: false,
-      markers: [],
-      polylines: null,
-      loading: false,
       manualMode: false,
       updateInterval: null,
       cardSwapInterval: null,
@@ -131,10 +124,10 @@ export default {
           ]
         },
         {
-          id: Constants.CARD_DATA_FLOW_ANOMALIES_ID,
-          title: Constants.TRAFFIC_FLOW_ISSUES,
-          icon: Constants.TRAFFIC_FLOW_ISSUES_ICON,
-          link: RouterPaths.TRAFFIC_MULTIGRAPH,
+          id: Constants.CARD_DATA_RESTRICTIONS_ID,
+          title: Constants.TRAFFIC_RESTRICTIONS,
+          icon: Constants.DEVICE_TRAFFIC_ICON,
+          link: '',
           val: '-',
           displayOrder: 2,
           thresholds: [
@@ -219,9 +212,6 @@ export default {
     showAllOverlayCards() {
       return this.getSetting('dashboard', 'showAllOverlayCards');
     },
-    incidentData() {
-      return this.congestedSegments != null && this.trafficIncidents != null;
-    },
 
     sortedCardData() {
       const sorted = [...this.cardData].sort((a, b) => a.displayOrder - b.displayOrder);
@@ -229,15 +219,12 @@ export default {
     },
 
     ...mapState('dashboard', [
-      'weatherStations',
       'trafficIncidents',
-      'trafficDevices',
-      'signalPerformanceIssues',
-      'flowAnomData',
-      'hrSummary',
-      'detectors',
+      'trafficRestrictions',
+      'signalIssues',
+      'deviceAnomalies',
       'congestedSegments',
-      'waze'
+      'wazeAlerts'
     ]),
     ...mapGetters(['getSetting'])
   },
@@ -257,24 +244,8 @@ export default {
     this.initExistingData();
     this.fetchApiData();
 
-    this.$bus.$on('SHOW_SELECTION_POPUP', id => {
-      this.showSelectionDialog(id);
-    });
-
-    this.$bus.$on('DISPLAY_MARKER_DETAILS_DASHBOARD', ({ id, type }) => {
-      this.handleMarkerClick(id, type);
-    });
-
     this.$bus.$on('DISPLAY_MARKER_DETAILS', () => {
       this.selectedIdx = -1;
-    });
-
-    this.$bus.$on('SET_DASHBOARD_MARKERS', markers => {
-      this.setMarkers(markers);
-    });
-
-    this.$bus.$on('SET_DASHBOARD_POLYLINES', polylines => {
-      this.setPolylines(polylines);
     });
   },
   methods: {
@@ -294,7 +265,6 @@ export default {
 
     goToPage(link) {
       const route = window.location.origin + link;
-      //console.log(route);
       window.open(route, '_blank');
     },
 
@@ -318,53 +288,13 @@ export default {
     },
 
     initExistingData() {
-      if (this.incidentData) {
-        this.cardData[Constants.CARD_DATA_INCIDENTS_ID].val = this.trafficIncidents.length;
-      }
-
-      if (this.flowAnomData) {
-        let maxCount = this.flowAnomData.sensorErrorCounts[0].score;
-        let hours = new Date().getHours();
-        this.cardData[Constants.CARD_DATA_FLOW_ANOMALIES_ID].val = this.flowAnomData.sensorErrorCounts.filter(
-          x => x.score / hours > 50 && x.score > maxCount - maxCount * 0.15
-        ).length;
-      }
-
-      if (this.hrSummary) {
-        this.cardData[Constants.CARD_DATA_SIGNAL_ISSUES_ID].val = this.hrSummary.filter(x => x.score > 60).length;
-      }
-
-      if (this.trafficDevices) {
-        this.cardData[Constants.CARD_DATA_DEDVICE_ANOMALIES_ID].val = this.trafficDevices.filter(
-          x => x.status !== 0
-        ).length;
-      }
-
-      if (this.congestedSegments) {
-        this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = this.congestedSegments.filter(
-          x => x.travelTime.level >= 5
-        ).length;
-      }
-
-      if (this.waze) {
-        this.cardData[Constants.CARD_DATA_WAZE_ALERTS_ID].val = this.waze.filter(x => x.confidence >= 5).length;
+      for (let i = 0; i < this.cardData.length; i++) {
+        this.cardData[i].val = 0;
       }
     },
 
     dataAvailable(data) {
       return data.val && data.val != 0 && data.val != '-' && data.val != 'N/A';
-    },
-
-    setMarkers(markers) {
-      if (markers) {
-        this.markers = markers;
-      }
-    },
-
-    setPolylines(polylines) {
-      if (polylines) {
-        this.polylines = polylines;
-      }
     },
 
     startUpdateInterval() {
@@ -379,15 +309,13 @@ export default {
     },
 
     fetchApiData() {
-      this.fetchBluetoothSegments();
-      this.fetchWeatherStations();
       this.fetchTrafficIncidents();
       this.fetchTrafficDevices();
-      this.fetchSignalPerformanceIssues();
-      this.fetchStatus();
-      this.fetchStatusOfDevices();
+      this.fetchTrafficRestrictions();
+      this.fetchSignalIssues();
+      this.fetchAnomalyDevices(80);
       this.fetchCongestedSegments(5);
-      this.fetchWaze();
+      this.fetchWazeAlerts();
     },
 
     updateData() {
@@ -440,119 +368,65 @@ export default {
       }
     },
 
-    showSelectionDialog(type) {
-      if (this.$refs.selectionDialog) {
-        if (type === 0) {
-          this.$refs.selectionDialog.init(
-            Constants.TRAFFIC_INCIDENTS_ICON,
-            Constants.TRAFFIC_INCIDENTS,
-            0,
-            this.incidents
-          );
-        } else if (type === 1) {
-          this.$refs.selectionDialog.init(
-            Constants.DEVICE_TRAFFIC_ICON,
-            Constants.DEVICE_TRAFFIC,
-            1,
-            this.trafficDevices
-          );
-        } else if (type === 2) {
-          this.$refs.selectionDialog.init(
-            Constants.SIGNAL_PERFORMANCE_ISSUES_ICON,
-            Constants.SIGNAL_PERFORMANCE_ISSUES,
-            2,
-            this.hrSummary
-          );
-        } else if (type === 3) {
-          this.$refs.selectionDialog.init(
-            Constants.TRAFFIC_FLOW_ANOMALIES_ICON,
-            Constants.TRAFFIC_FLOW_ANOMALIES,
-            3,
-            this.detectors
-          );
-        } else if (type === 4) {
-          this.$refs.selectionDialog.init(
-            Constants.HIGH_CONGESTION_ROUTES_ICON,
-            Constants.HIGH_CONGESTION_ROUTES,
-            4,
-            this.congestedSegments
-          );
-        } else if (type === 5) {
-          this.$refs.selectionDialog.init(
-            Constants.REPORTED_WAZE_ALERTS_ICON,
-            Constants.REPORTED_WAZE_ALERTS,
-            5,
-            this.waze
-          );
-        }
-        this.showSelection = true;
+    cardStat() {
+      const counts = [];
+      for (let i = 0; i < this.cardData.length; i++) {
+        counts.push(this.cardData[i].val);
       }
+      //console.log('CARD counts:', counts);
     },
+
     ...mapActions('dashboard', [
-      'fetchWeatherStations',
       'fetchTrafficIncidents',
       'fetchTrafficDevices',
-      'fetchSignalPerformanceIssues',
-      'fetchStatus',
-      'fetchStatusOfDevices',
+      'fetchTrafficRestrictions',
+      'fetchSignalIssues',
+      'fetchAnomalyDevices',
       'fetchCongestedSegments',
-      'fetchWaze'
-    ]),
-    ...mapActions('traffic', ['fetchBluetoothSegments'])
+      'fetchWazeAlerts'
+    ])
   },
 
   watch: {
-    incidentData(incidents) {
-      if (incidents) {
-        this.cardData[Constants.CARD_DATA_INCIDENTS_ID].val = this.trafficIncidents.length;
-      } else {
-        return 'N/A';
+    trafficIncidents(trafficIncidents) {
+      if (trafficIncidents) {
+        this.cardData[Constants.CARD_DATA_INCIDENTS_ID].val = trafficIncidents.length;
+        this.cardStat();
       }
     },
 
-    flowAnomData(flowAnomData) {
-      if (flowAnomData) {
-        let maxCount = flowAnomData.sensorErrorCounts[0].score;
-        let hours = new Date().getHours();
-        this.cardData[Constants.CARD_DATA_FLOW_ANOMALIES_ID].val = flowAnomData.sensorErrorCounts.filter(
-          x => x.score / hours > 50 && x.score > maxCount - maxCount * 0.15
-        ).length;
-      } else {
-        return 'N/A';
+    deviceAnomalies(deviceAnomalies) {
+      if (deviceAnomalies) {
+        this.cardData[Constants.CARD_DATA_DEDVICE_ANOMALIES_ID].val = deviceAnomalies.length;
+        this.cardStat();
       }
     },
 
-    hrSummary(hrSummary) {
-      if (hrSummary) {
-        this.cardData[Constants.CARD_DATA_SIGNAL_ISSUES_ID].val = this.hrSummary.filter(x => x.score > 60).length;
-      } else {
-        return 'N/A';
+    signalIssues(signalIssues) {
+      if (signalIssues) {
+        this.cardData[Constants.CARD_DATA_SIGNAL_ISSUES_ID].val = this.signalIssues.length;
+        this.cardStat();
       }
     },
 
-    trafficDevices(trafficDevices) {
-      if (trafficDevices) {
-        this.cardData[Constants.CARD_DATA_DEDVICE_ANOMALIES_ID].val = trafficDevices.filter(x => x.status !== 0).length;
-      } else {
-        return 'N/A';
+    trafficRestrictions(trafficRestrictions) {
+      if (trafficRestrictions) {
+        this.cardData[Constants.CARD_DATA_RESTRICTIONS_ID].val = trafficRestrictions.length;
+        this.cardStat();
       }
     },
 
     congestedSegments(segments) {
       if (segments) {
-        this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = segments.filter(
-          x => x.travelTime.level >= 5
-        ).length;
-      } else {
-        return 'N/A';
+        this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = segments.length;
+        this.cardStat();
       }
     },
 
-    waze(waze) {
-      if (waze) {
-        this.cardData[Constants.CARD_DATA_WAZE_ALERTS_ID].val = waze.filter(x => x.confidence >= 5).length;
-      } else {
-        return 'N/A';
+    wazeAlerts(wazeAlerts) {
+      if (wazeAlerts) {
+        this.cardData[Constants.CARD_DATA_WAZE_ALERTS_ID].val = wazeAlerts.length;
+        this.cardStat();
       }
     }
   }

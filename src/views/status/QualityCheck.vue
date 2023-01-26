@@ -421,13 +421,13 @@ export default {
     prepareSensorErrorCounts(data) {
       const TYPE_AND_FIELD = [
         { text: 'Total Counts', value: 'total' },
-        { text: 'Missing data', value: 'e1' },
-        { text: 'Flow status', value: 'e2' },
-        { text: 'Exceeding Threshold', value: 'e3' },
-        { text: 'VOS Constant', value: 'e4' },
-        { text: 'VOS Inconsistency', value: 'e5' },
-        { text: 'Volume Aggregation', value: 'e6' },
-        { text: 'Timezone Issue', value: 'e7' }
+        { text: Constants.QUALITY_ERROR_NAMES[1], value: 'e1' },
+        { text: Constants.QUALITY_ERROR_NAMES[2], value: 'e2' },
+        { text: Constants.QUALITY_ERROR_NAMES[3], value: 'e3' },
+        { text: Constants.QUALITY_ERROR_NAMES[4], value: 'e4' },
+        { text: Constants.QUALITY_ERROR_NAMES[5], value: 'e5' },
+        { text: Constants.QUALITY_ERROR_NAMES[6], value: 'e6' },
+        { text: Constants.QUALITY_ERROR_NAMES[7], value: 'e7' }
       ];
 
       this.headers = [{ text: 'Sensor Id', value: 'id' }];

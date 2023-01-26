@@ -15,7 +15,13 @@
 <script>
 import Highcharts from 'highcharts';
 export default {
-  props: ['data', 'interval', 'title', 'height'],
+  props: {
+    data: Object,
+    colors: Array,
+    interval: Number,
+    title: String,
+    height: Number
+  },
   data() {
     return {
       reload: false
@@ -37,37 +43,51 @@ export default {
   methods: {
     prepareSeries(data) {
       let perShapeGradient = { x1: 0, y1: 0, x2: 1, y2: 0 };
-      let colors = Highcharts.getOptions().colors;
-      colors = [
-        {
-          linearGradient: Highcharts.merge(perShapeGradient),
-          stops: [
-            [0, 'rgb(136, 219, 5)'],
-            [1, 'rgb(112, 180, 5)']
-          ]
-        },
-        {
-          linearGradient: Highcharts.merge(perShapeGradient),
-          stops: [
-            [0, 'rgb(120, 202, 248)'],
-            [1, 'rgb(46, 150, 208)']
-          ]
-        },
-        {
-          linearGradient: perShapeGradient,
-          stops: [
-            [0, 'rgb(247, 111, 111)'],
-            [1, 'rgb(220, 54, 54)']
-          ]
-        },
-        {
-          linearGradient: perShapeGradient,
-          stops: [
-            [0, 'rgb(125, 60, 152)'],
-            [1, 'rgb(100, 55, 100)']
-          ]
-        }
-      ];
+      let colors = this.colors && this.colors.length > 0 ? this.colors
+          : [
+              {
+                linearGradient: Highcharts.merge(perShapeGradient),
+                stops: [
+                  [0, 'rgb(136, 219, 5)'],
+                  [1, 'rgb(112, 180, 5)']
+                ]
+              },
+              {
+                linearGradient: Highcharts.merge(perShapeGradient),
+                stops: [
+                  [0, 'rgb(120, 202, 248)'],
+                  [1, 'rgb(46, 150, 208)']
+                ]
+              },
+              {
+                linearGradient: perShapeGradient,
+                stops: [
+                  [0, 'rgb(247, 111, 111)'],
+                  [1, 'rgb(220, 54, 54)']
+                ]
+              },
+              {
+                linearGradient: perShapeGradient,
+                stops: [
+                  [0, 'rgb(125, 60, 152)'],
+                  [1, 'rgb(100, 55, 100)']
+                ]
+              },
+              {
+                linearGradient: perShapeGradient,
+                stops: [
+                  [0, '#5b651f'],
+                  [1, '#517623']
+                ]
+              },
+              {
+                linearGradient: perShapeGradient,
+                stops: [
+                  [0, '#cc7a00'],
+                  [1, '#ff9800']
+                ]
+              }
+            ];
 
       let series = [];
       data.forEach((item, idx) => {
@@ -98,9 +118,9 @@ export default {
         chart: {
           height: chartHeight,
           spacingTop: 30,
-          spacingBottom: 25,
-          marginLeft: 90,
-          marginRight: 40,
+          spacingBottom: 15,
+          marginLeft: 80,
+          marginRight: 30,
           alignTicks: false,
           panning: true,
           panKey: 'shift',
@@ -197,7 +217,7 @@ export default {
           verticalAlign: 'top',
           align: 'left',
           x: 80,
-          y: 10
+          y: 5
         },
         exporting: {
           enabled: false

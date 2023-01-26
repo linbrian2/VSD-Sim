@@ -264,9 +264,9 @@ export default {
     },
 
     markerClicked(marker) {
-      if (marker.status == 0) {
-        return;
-      }
+      // if (marker.status == 0) {
+      //   return;
+      // }
       this.showPanelIfNot();
       this.selectedMarker = marker;
       this.currentTitle = 'Detector Quality Check';

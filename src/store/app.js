@@ -149,6 +149,11 @@ const actions = {
     commit('SET_SNACKBAR', snackbar);
   },
 
+  clearSystemStatus({ commit }) {
+    let snackbar = { showing: false, color: 'info', timeout: -1, text: '' };
+    commit('SET_SNACKBAR', snackbar);
+  },
+
   incCurrentDate({ state, commit }, days) {
     const currentDate = state.currentDate;
     if (Utils.isTodayAndBeyond(currentDate) && days > 0) {

@@ -30,7 +30,7 @@ export default {
     SelectionPanel,
     MapDisplay,
     TripData,
-    TripSelectionDialog,
+    TripSelectionDialog
   },
 
   computed: {

@@ -11,7 +11,8 @@
       <v-list>
         <template v-for="(item, index) in items">
           <v-divider v-if="item.divider" :key="index"></v-divider>
-          <v-list-item v-else :key="index" @click="menuItemClicked(item.action)">
+          <v-list-item v-else :key="`e-${index}`" @click="menuItemClicked(item.action)">
+            <v-icon small left v-text="item.icon" />
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
         </template>

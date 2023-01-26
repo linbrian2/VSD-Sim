@@ -149,7 +149,7 @@ export default {
           this.prepareTravelRestrictions(this.sensorData.restrictions);
           break;
         case 4:
-          this.prepareAnomalySegments(this.sensorData.anomalySegments);
+          this.prepareAnomalySegments(this.sensorData.incidents);
           break;
       }
     },
@@ -232,15 +232,21 @@ export default {
     prepareTravelRestrictions(restrictions) {
       this.headers = [
         { text: 'Id', value: 'id' },
-        { text: 'Type', value: 'type' },
+        { text: 'Type', value: 'impactType' },
+        { text: 'Start Time', value: 'startTime' },
+        { text: 'End Time', value: 'endTime' },
         { text: 'Description', value: 'desc' }
       ];
       if (restrictions) {
+        console.log(restrictions);
         this.items = restrictions.map(d => ({
           id: d.id,
-          type: d.name,
-          desc: d.data && d.data.map(dd => dd.desc.replace(/<br ?\/?>/g, '')).join(' ')
+          impactType: d.impactType,
+          startTime: Utils.formatTime(new Date(d.startTime)),
+          endTime: Utils.formatTime(new Date(d.endTime)),
+          desc: d.description
         }));
+        console.log(this.items);
       } else {
         this.items = [];
       }
@@ -248,6 +254,7 @@ export default {
 
     prepareAnomalySegments(segments) {
       this.headers = [
+        { text: 'ID', value: 'id' },
         { text: 'Segment', value: 'shortName' },
         { text: 'Start Time', value: 'time' },
         { text: 'Duration', value: 'duration' },
@@ -258,7 +265,7 @@ export default {
       this.items = segments.map(s => ({
         id: s.id,
         shortName: s.shortName,
-        time: Utils.formatTime(new Date(s.startTime)),
+        time: Utils.formatDateTime(new Date(s.startTime)),
         duration: s.duration + 'min',
         desc: this.consolidateAnomalyTypes(s.items),
         status: s.status === 0 ? 'ongoing' : 'completed'
@@ -266,12 +273,12 @@ export default {
     },
 
     consolidateAnomalyTypes(items) {
-      const DESCRIPTIONS = ['', 'Flow', 'Bluetooth', 'Waze', 'Restriction', ''];
+      const DESCRIPTIONS = ['', 'flow', 'bluetooth', 'waze', 'restriction', 'weather', 'TMC', 'video'];
       const types = [...new Set(items.map(item => item.type))];
-      return Array.from(types)
+      const descs = Array.from(types)
         .filter(t => t !== 5)
-        .map(t => DESCRIPTIONS[t])
-        .join(', ');
+        .map(t => DESCRIPTIONS[t]);
+      return descs.join(', ');
     },
 
     formatDisplay(seconds) {

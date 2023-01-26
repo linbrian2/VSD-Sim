@@ -5,7 +5,7 @@
       fixed-header
       :headers="headers"
       :items="items"
-      :items-per-page="showTable && maxItems > listLimit ? maxItems : listLimit"
+      :items-per-page="itemPerPage"
       disable-sort
       :hide-default-header="!showTable"
       hide-default-footer
@@ -14,7 +14,7 @@
       class="elevation-1 mx-2"
     >
       <template v-slot:[`item.state`]="{ item }">
-        <v-chip small :color="'red'">
+        <v-chip small :color="item.status === 0 ? 'green' : 'red'">
           <strong class="black--text">{{ item.state }}</strong>
         </v-chip>
       </template>
@@ -22,7 +22,7 @@
 
     <!-- Data Display -->
     <template v-if="!reload">
-      <FlowDataInfo :marker="selectedtrafficDevice" />
+      <FlowDataInfo :marker="selectedTrafficDevice" />
     </template>
   </div>
 </template>
@@ -35,8 +35,7 @@ import { mapGetters, mapState } from 'vuex';
 export default {
   props: {
     data: Object,
-    maxItems: Number,
-    infoColumnCount: Number
+    maxItems: Number
   },
 
   components: {
@@ -52,35 +51,33 @@ export default {
   }),
 
   computed: {
-    selectedtrafficDevice: {
+    selectedTrafficDevice: {
       get() {
-        return this.$store.state.dashboard.selectedtrafficDevice;
+        return this.$store.state.dashboard.selectedTrafficDevice;
       },
       set(val) {
-        this.$store.state.dashboard.selectedtrafficDevice = val;
+        this.$store.state.dashboard.selectedTrafficDevice = val;
         this.reload = true;
         setTimeout(() => {
           this.reload = false;
         }, 1);
       }
     },
-    showTable: {
-      get() {
-        return this.$store.state.dashboard.showTable;
-      },
-      set(show) {
-        this.$store.commit('dashboard/SHOW_TABLE', show);
-      }
+
+    infoColumnCount() {
+      return this.getSetting('dashboard', 'infoColumnCount');
     },
+
     listLimit() {
-      if (this.getSetting) {
-        return this.getSetting('dashboard', 'limitListings');
-      } else {
-        return 0;
-      }
+      return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
     },
+
+    itemPerPage() {
+      return this.showTable && this.maxItems > this.listLimit ? this.maxItems : this.listLimit;
+    },
+
     ...mapGetters(['getSetting']),
-    ...mapState('dashboard', ['trafficDevices'])
+    ...mapState('dashboard', ['trafficDevices', 'selectedTrafficDevice', 'showTable'])
   },
 
   filters: {
@@ -117,7 +114,7 @@ export default {
           this.itemsPerPage = this.maxItems;
         }
       } else {
-        this.prepareTrafficDetectors([this.selectedtrafficDevice]);
+        this.prepareTrafficDetectors([this.selectedTrafficDevice]);
         this.height = null;
         this.itemsPerPage = 0;
       }
@@ -136,12 +133,16 @@ export default {
     },
 
     itemRowBackground(item) {
-      return item.device == this.selectedtrafficDevice.device ? 'table_tr_selected' : 'table_tr_normal';
+      return item.device == this.selectedTrafficDevice.device ? 'table_tr_selected' : 'table_tr_normal';
     },
 
     handleRowClick(item) {
-      this.selectedtrafficDevice = item;
+      this.selectedTrafficDevice = item;
       this.$emit('click', item);
+      // const data = this.signalIssues.find(x => x.id == item.id);
+      // if (data) {
+      //   this.$store.commit('dashboard/SET_SELECTED_SIGNAL_ISSUE', data);
+      // }
     },
 
     fetchInfo(device) {
@@ -158,7 +159,7 @@ export default {
     showTable() {
       this.expandTable();
     },
-    selectedtrafficDevice(device) {
+    selectedTrafficDevice(device) {
       this.fetchInfo(device);
     },
     trafficDevices() {

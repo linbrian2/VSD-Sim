@@ -3,14 +3,27 @@
     <v-card dense tile :color="statusColor" dark @click="handleClick">
       <v-card-title class="d-flex justify-space-between">
         <div>Incident {{ incident.id }}</div>
-        <div class="caption grey--text">{{ incident.region }} {{ incident.route }} {{ incident.direction }}</div>
-        <div class="caption grey--text"><v-icon small>mdi-clock</v-icon> {{ incident.duration }}min</div>
+
+        <div class="caption grey--text ml-3">
+          <v-icon small color="grey" class="mt-n1">mdi-clock</v-icon> {{ incident.duration }}min
+        </div>
+
         <div>
           <v-chip small :color="incident.severityColor">
             <strong class="black--text">{{ incident.severity }}</strong>
           </v-chip>
         </div>
       </v-card-title>
+
+      <v-card-text class="mt-n3">
+        <div class="d-flex justify-space-between">
+          <div class="caption grey--text">{{ incident.region }} {{ incident.route }} {{ incident.direction }}</div>
+          <div class="caption blue--text" v-if="address">
+            <v-icon small color="blue-grey" class="mt-n1">mdi-home-outline</v-icon>
+            {{ address }}
+          </div>
+        </div>
+      </v-card-text>
 
       <v-card-actions class="mt-n5">
         <v-list-item class="grow">
@@ -62,6 +75,9 @@ export default {
     },
     statusColor() {
       return this.incident.status === 0 ? '#004D40' : '';
+    },
+    address() {
+      return this.incident.address ? this.incident.address.split(',', 1)[0] : '';
     }
   },
 
@@ -113,7 +129,7 @@ export default {
       const mm2 = Utils.formatDateWOYear(d2);
       const tt2 = Utils.formatTimeAsMinute(d2);
 
-      let endTime = '';
+      let endTime = '...';
       if (incident.status === 1) {
         endTime = mm1 === mm2 ? tt2 : `${mm2} ${tt2}`;
       }

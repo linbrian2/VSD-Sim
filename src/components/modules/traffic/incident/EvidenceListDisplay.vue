@@ -14,7 +14,12 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row v-if="isVisible('info')" id="info">
+      <v-col cols="12">
+        <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Basic Info</h3></v-subheader>
+        <v-divider />
+      </v-col>
+
       <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 4">
         <DataCard title="Time" :items="incidentTime" />
       </v-col>
@@ -232,14 +237,15 @@ export default {
   },
   data: () => ({
     defaultItems: [
-      { key: 'flow', value: 'Traffic Flow', id: 1 },
-      { key: 'travelTime', value: 'Travel Time', id: 2 },
-      { key: 'waze', value: 'Waze Alerts', id: 3 },
-      { key: 'restrictions', value: 'Restrictions', id: 4 },
-      { key: 'alerts', value: 'Traffic Alerts', id: 5 },
-      { key: 'video', value: 'Traffic Videos', id: 6 },
-      { key: 'weather', value: 'Weather', id: 7 },
-      { key: 'timeline', value: 'Timeline', id: 8 }
+      { key: 'info', value: 'Basic Info', id: 1 },
+      { key: 'flow', value: 'Traffic Flow', id: 2 },
+      { key: 'travelTime', value: 'Travel Time', id: 3 },
+      { key: 'waze', value: 'Waze Alerts', id: 4 },
+      { key: 'restrictions', value: 'Restrictions', id: 5 },
+      { key: 'alerts', value: 'Traffic Alerts', id: 6 },
+      { key: 'video', value: 'Traffic Videos', id: 7 },
+      { key: 'weather', value: 'Weather', id: 8 },
+      { key: 'timeline', value: 'Timeline', id: 9 }
     ],
     items: [],
 
@@ -385,6 +391,8 @@ export default {
       }
 
       switch (name) {
+        case 'info':
+          return this.incidentLoc.length > 0 || this.incidentTime.length > 0;
         case 'timeline':
           return this.incidentTimelineSeries.length > 0;
         case 'flow':
@@ -444,6 +452,10 @@ export default {
     },
 
     prepareDataForDisplay(incident) {
+      if (!incident) {
+        return;
+      }
+
       const flows = incident.items.filter(item => item.type === Constants.DATA_TRAFFIC_FLOW);
       this.flowInfoList = flows.map(d => ({
         time: d.data.time,

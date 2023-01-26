@@ -89,6 +89,7 @@ export default {
   created() {
     this.$vuetify.theme.dark = true;
     this.logout();
+    this.$store.dispatch('clearSystemStatus');
   },
 
   methods: {

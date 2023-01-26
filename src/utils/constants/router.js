@@ -4,6 +4,7 @@ export const RouterNames = {
   TRAFFIC_DATA_PLAYBACK: 'Traffic Data Playback',
 
   TRAFFIC_FLOW: 'Traffic Data',
+  TRAFFIC_FLOW_DATA: 'Traffic Flow',
   TRAFFIC_LCM: 'Traffic LCM',
   TRAFFIC_ROUTING: 'Traffic Routing',
   TRAFFIC_PREDICT: 'Traffic Flow Prediction',
@@ -11,6 +12,7 @@ export const RouterNames = {
   TRAFFIC_ANOMALY: 'Traffic Anomaly Map',
   TRAFFIC_WEATHER: 'Weather Data',
   TRAFFIC_MULTIGRAPH: 'Traffic Data Viewer',
+  TRAFFIC_MULTIGRAPH_SELECT: 'Traffic Data Viewer',
   TRAVEL_TIME_DATA: 'Travel Time Data',
   TRAVEL_TIME_MAP: 'Travel Time Map',
   TRAFFIC_INCIDENT_LIST: 'Traffic Incidents',
@@ -57,6 +59,7 @@ export const RouterPaths = {
   TRAFFIC_ANOMALY: '/flow/anomaly',
   TRAFFIC_WEATHER: '/flow/weather',
   TRAFFIC_MULTIGRAPH: '/flow/multi-graph',
+  TRAFFIC_FLOW_DATA: '/flow/traffic-flow/:id?',
   TRAVEL_TIME_DATA: '/flow/travel-time-data',
   TRAVEL_TIME_MAP: '/flow/travel-time-map',
   TRAFFIC_INCIDENT_LIST: '/flow/incidents',

@@ -203,7 +203,6 @@ export default {
   },
 
   fetchCongestedBluetoothSegments(level) {
-    console.log('level', level);
     return AxiosClient.get('travelTime/congestedBluetoothSegments', { params: { level } });
   },
 

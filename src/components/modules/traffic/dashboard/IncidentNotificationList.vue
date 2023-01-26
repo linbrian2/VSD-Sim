@@ -10,7 +10,7 @@
     <v-card-text class="pa-0">
       <v-list dense class="pa-0 notes_list">
         <template v-for="(item, index) in items">
-          <v-list-item :key="index" @click="handleClick(item.id)">
+          <v-list-item :key="index" @click="handleClick(item)">
             <v-list-item-avatar size="40" color="black">
               <v-progress-circular :size="38" :width="4" :value="100" :color="item.severityColor">
                 <span class="score-value"> {{ item.incidentScore }}</span>
@@ -68,14 +68,14 @@ export default {
   },
 
   methods: {
-    handleClick(id) {
+    handleClick(item) {
       if (this.$route.name !== RouterNames.TRAFFIC_DASHBOARD) {
         this.$router.push({ path: '/' }).catch(() => {});
         setTimeout(() => {
-          this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type: 4 });
+          this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: 4, trigger: 1 });
         }, 500);
       } else {
-        this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type: 4 });
+        this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: 4, trigger: 1 });
       }
     },
 

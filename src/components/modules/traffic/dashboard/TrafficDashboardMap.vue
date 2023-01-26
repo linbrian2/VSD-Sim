@@ -1,17 +1,7 @@
 <template>
   <div id="wrapper">
     <div id="google_map">
-      <div v-show="selectedIdx == CARD_IDS.CARD_DATA_INCIDENTS_ID">
-        <MapSegment
-          ref="mapSegmentRef"
-          :incidentSegmentLinks="incidentSegmentLinks"
-          :incidentMarkers="incidentMarkers"
-          @select="onSegmentSelected"
-          @click="onMarkerClicked"
-        />
-      </div>
-
-      <div v-show="selectedIdx != CARD_IDS.CARD_DATA_INCIDENTS_ID">
+      <div>
         <GmapMap
           ref="mapRef"
           :options="options"
@@ -26,20 +16,20 @@
           "
         >
           <!-- Traffic Flow Detectors & Traffic Flow Issues -->
-          <div v-if="isMapLayerVisible(0) || selectedIdx == CARD_IDS.CARD_DATA_FLOW_ANOMALIES_ID">
+          <div v-if="isMapLayerVisible(0)">
             <GmapMarker
               v-for="m in markers"
               :key="m.id"
               :position="m.position"
               :title="m.name"
               :clickable="true"
-              :icon="getDotMarkerIcon(m.id == selectedMarkerId)"
+              :icon="getDotMarker(m.status === 0, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
               @click="handleMarkerClick(0, m.id)"
             />
 
             <!-- Anomaly marker id -->
-            <GmapCustomMarker
+            <!-- <GmapCustomMarker
               alignment="bottomright"
               v-for="(m, index) in markers.filter(d => d.status > 0)"
               :key="index + 100"
@@ -48,7 +38,7 @@
               :marker="m.position"
             >
               <h3 style="color:white">{{ m.id }}</h3>
-            </GmapCustomMarker>
+            </GmapCustomMarker> -->
           </div>
 
           <!-- Bluetooth Center locations -->
@@ -62,23 +52,6 @@
               :icon="getBluetoothMarkerIcon(s.id == selectedMarkerId)"
               @click="handleMarkerClick(1, s.id)"
             />
-
-            <!-- Travel Time Display -->
-            <GmapCustomMarker
-              alignment="bottomright"
-              v-for="(s, index) in segments"
-              :key="index + 200"
-              :offsetX="12"
-              :offsetY="7"
-              :marker="s.position"
-            >
-              <div v-if="s.travelTime && s.status === 7">
-                <v-chip small :color="getSegmentChipColor(s)" outlined>{{ formatDisplay(s.travelTime) }}</v-chip>
-              </div>
-            </GmapCustomMarker>
-
-            <!-- Bluetooth Segments -->
-            <!-- <GmapPolyline v-for="s in segments" :key="s.id" :path.sync="s.path" :options="getSegmentOptions(s)" /> -->
           </div>
 
           <!-- Weather Stations -->
@@ -109,44 +82,48 @@
           </div>
 
           <!-- Travel restrictions -->
-          <div v-if="isMapLayerVisible(3)">
+          <div v-if="isMapLayerVisible(3) || selectedIdx == CARD_IDS.CARD_DATA_RESTRICTIONS_ID">
             <GmapMarker
-              v-for="r in restrictions"
+              v-for="r in trafficRestrictions"
               :key="r.id"
               :position="r.position"
-              :title="r.name"
+              :title="r.description"
               :clickable="true"
-              :icon="restrictionIcon"
+              :icon="getRestrictionIcon(r.id == selectedMarkerId)"
               @click="handleMarkerClick(3, r.id)"
             />
           </div>
 
-          <!-- Anomaly Segments -->
-          <div v-if="isMapLayerVisible(4)">
-            <GmapPolyline
-              v-for="(s, idx) in ongoingAnomalySegments"
-              :key="`${s.id}-${idx}`"
-              :path.sync="s.path"
-              :options="anomalySegmentOptions"
-              @click="handleMarkerClick(4, s.id)"
+          <!-- Traffic Flow Issues -->
+          <div v-if="selectedIdx == CARD_IDS.CARD_DATA_FLOW_ANOMALIES_ID">
+            <GmapMarker
+              v-for="m in anomalyMarkers"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :clickable="true"
+              :icon="getDotMarkerIcon(m.id == selectedMarkerId)"
+              :options="markerOptions(m.id)"
+              @click="handleMarkerClick(0, m.id)"
             />
 
+            <!-- Anomaly marker id -->
             <GmapCustomMarker
-              alignment="center"
-              v-for="s in ongoingAnomalySegments"
-              :key="`A-${s.id}`"
-              :offsetX="0"
+              alignment="bottomright"
+              v-for="(m, index) in anomalyMarkers"
+              :key="index + 100"
+              :offsetX="15"
               :offsetY="0"
-              :marker="midPoint(s)"
+              :marker="m.position"
             >
-              <div class="pulsate-effect"></div>
+              <h3 style="color:white">{{ m.id }}</h3>
             </GmapCustomMarker>
           </div>
 
           <!-- Signal Issues -->
           <div v-if="isMapLayerVisible(5) || selectedIdx == CARD_IDS.CARD_DATA_SIGNAL_ISSUES_ID">
             <GmapMarker
-              v-for="m in signalPerformanceIssues"
+              v-for="m in signalIssues"
               :key="m.id"
               :position="m.position"
               :title="m.name"
@@ -158,10 +135,10 @@
           <!-- Waze Alerts -->
           <div v-if="isMapLayerVisible(6) || selectedIdx == CARD_IDS.CARD_DATA_WAZE_ALERTS_ID">
             <GmapMarker
-              v-for="m in waze"
+              v-for="m in wazeAlerts"
               :key="m.id"
               :position="m.position"
-              :title="m.name"
+              :title="m.description"
               :icon="getWazeIcon(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
             />
@@ -176,33 +153,35 @@
               :path.sync="s.path"
               :options="segmentOptions(s)"
             />
-            <GmapCustomMarker
-              alignment="center"
-              v-for="s in congestedSegments"
-              :key="`L-${s.id}`"
-              :offsetX="0"
-              :offsetY="-50"
-              :marker="midPoint(s)"
+            <!-- Travel Time Display -->
+            <!-- <GmapCustomMarker
+              alignment="topright"
+              v-for="m in weatherMarkers"
+              :key="`${m.id}-T`"
+              :offsetX="10"
+              :offsetY="-20"
+              :marker="m.position"
             >
-              <div v-if="s.id == selectedSegmentId">
-                <v-chip small :color="getChipColor(s)" @click="segmentClicked(s)">{{ s.short }}</v-chip>
+               segment.id === this.selectedSegmentId
+              <div v-if="m.temp > -100">
+                <h3 style="color:white">{{ m.temp }}</h3>
               </div>
-            </GmapCustomMarker>
+            </GmapCustomMarker> -->
           </div>
 
           <!-- Device Anomalies -->
           <div v-if="isMapLayerVisible(8) || selectedIdx == CARD_IDS.CARD_DATA_DEDVICE_ANOMALIES_ID">
             <GmapMarker
-              v-for="m in deviceMarkers"
+              v-for="m in deviceAnomalies"
               :key="m.id"
               :position="m.position"
               :title="m.name"
-              :icon="getMarker2Icon(m, m.id == selectedMarkerId)"
+              :icon="getDeviceMarkerIcon(m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
             />
           </div>
 
-          <div v-if="trafficIncidents && trafficIncidents.length > 0">
+          <div v-if="isMapLayerVisible(9) || selectedIdx == CARD_IDS.CARD_DATA_INCIDENTS_ID">
             <GmapMarker
               v-for="m in trafficIncidents"
               :key="m.id"
@@ -213,6 +192,16 @@
               :clickable="true"
               @click="handleMarkerClick(4, m.id)"
             />
+            <GmapCustomMarker
+              alignment="center"
+              v-for="s in trafficIncidents.filter(item => item.status === 0)"
+              :key="`A-${s.id}`"
+              :offsetX="0"
+              :offsetY="0"
+              :marker="s.location"
+            >
+              <div class="pulsate-effect"></div>
+            </GmapCustomMarker>
           </div>
 
           <div v-if="isMapLayerVisible(10) && cameraMarkers">
@@ -227,12 +216,6 @@
               @click="handleMarkerClick(10, m.id)"
             />
           </div>
-
-          <!-- InfoWindow -->
-          <!-- <InfoWindow :position="infoPosition" ref="infoWindow" /> -->
-
-          <!-- Heatmap layer -->
-          <!-- <GmapHeatMap :data="heatMapData" :options="{ maxIntensity: 15, dissipating: true, radius: 10 }" /> -->
         </GmapMap>
       </div>
     </div>
@@ -250,8 +233,7 @@ import Constants from '@/utils/constants/dashboard.js';
 import { mapState } from 'vuex';
 import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
-import MapSegment from '@/components/modules/dashboard/MapSegment';
-import * as d3 from 'd3';
+import { getRedBlueColor } from '@/utils/Colors.js';
 
 export default {
   mixins: [mapIcons, weatherCode],
@@ -263,8 +245,7 @@ export default {
     selectedIdx: Number
   },
   components: {
-    GmapCustomMarker,
-    MapSegment
+    GmapCustomMarker
   },
   data() {
     return {
@@ -317,9 +298,6 @@ export default {
         strokeWeight: this.getSegmentStrokeWeight()
       };
     },
-    ongoingAnomalySegments() {
-      return this.currentAnomalySegments.filter(s => s.status === 0);
-    },
     weatherMarkers() {
       return this.weatherStations;
     },
@@ -336,6 +314,10 @@ export default {
         return this.deviceLocations.filter(location => location.zone === this.mapRegionSelection);
       }
     },
+    anomalyMarkers() {
+      return this.deviceLocations.filter(d => d.status > 0);
+    },
+
     position() {
       return this.$store.state.position;
     },
@@ -343,11 +325,12 @@ export default {
       return {
         selectedIdx: this.selectedIdx,
         selectedMarkers: [
-          this.selectedTrafficIncident,
           this.markers,
-          this.selectedSignalPerformanceIssue,
-          this.selectedDetector,
-          this.selectedSegment,
+          this.selectedTrafficIncident,
+          this.selectedRestriction,
+          this.selectedSignalIssue,
+          this.selectedAnomalyDevice,
+          this.selectedCongestedSegment,
           this.selectedWazeAlert
         ]
       };
@@ -358,19 +341,19 @@ export default {
       'incidentSegmentLinks',
       'incidentMarkers',
       'selectedTrafficIncident',
-      'selectedtrafficDevice',
-      'selectedSignalPerformanceIssue',
-      'selectedDetector',
-      'selectedSegment',
+      'selectedTrafficDevice',
+      'selectedRestriction',
+      'selectedSignalIssue',
+      'selectedAnomalyDevice',
+      'selectedCongestedSegment',
       'selectedWazeAlert',
+      'deviceAnomalies',
       'trafficIncidents',
       'trafficDevices',
-      'signalPerformanceIssues',
-      'flowAnomData',
+      'trafficRestrictions',
+      'signalIssues',
       'congestedSegments',
-      'hrSummary',
-      'detectors',
-      'waze'
+      'wazeAlerts'
     ]),
     ...mapState('traffic', [
       'currentBluetoothAnomaly',
@@ -385,9 +368,30 @@ export default {
     ])
   },
 
+  watch: {
+    selectedMarkers: {
+      handler: function() {
+        this.addSelectedMarker();
+      },
+      deep: true
+    },
+    position() {
+      this.$refs.mapRef.$mapPromise.then(map => {
+        map.panTo(this.position);
+        map.setZoom(13);
+      });
+    },
+    markers(markers) {
+      this.$refs.mapRef.$mapPromise.then(map => {
+        this.centerMap(map, markers);
+      });
+    }
+  },
+
   created() {
     this.CARD_IDS = {
       CARD_DATA_INCIDENTS_ID: Constants.CARD_DATA_INCIDENTS_ID,
+      CARD_DATA_RESTRICTIONS_ID: Constants.CARD_DATA_RESTRICTIONS_ID,
       CARD_DATA_FLOW_ANOMALIES_ID: Constants.CARD_DATA_FLOW_ANOMALIES_ID,
       CARD_DATA_SIGNAL_ISSUES_ID: Constants.CARD_DATA_SIGNAL_ISSUES_ID,
       CARD_DATA_DEDVICE_ANOMALIES_ID: Constants.CARD_DATA_DEDVICE_ANOMALIES_ID,
@@ -400,10 +404,6 @@ export default {
     this.addSelectedMarker();
     this.$bus.$on('UPDATE_DARK_MODE', () => {
       this.loadPage(this.$vuetify.theme.dark);
-    });
-
-    this.$bus.$on('CENTER_INCIDENT_SEGMENT', segment => {
-      this.centerAndZoom(segment.location, 14);
     });
 
     this.$bus.$on('HOME_CENTER_MAP', () => {
@@ -488,7 +488,7 @@ export default {
         if (timeVal > 1) {
           timeVal = 2 - timeVal;
         }
-        this.selectedColor = d3.interpolateLab('red', 'blue')(timeVal);
+        this.selectedColor = getRedBlueColor(timeVal);
       }, 200);
     },
 
@@ -518,42 +518,58 @@ export default {
       }
     },
 
+    incidentClicked(incident) {
+      this.markerClicked(incident);
+      const markers = this.trafficIncidents.filter(x => x.id == this.selectedMarkerId);
+      setTimeout(() => {
+        this.centerMap(this.map, markers, 14);
+      }, 1);
+    },
+
     addSelectedMarker() {
       switch (this.selectedIdx) {
-        case 0:
+        case Constants.CARD_DATA_INCIDENTS_ID:
+          {
+            this.markerClicked(this.selectedTrafficIncident);
+            const markers = this.trafficIncidents.filter(x => x.id == this.selectedMarkerId);
+            setTimeout(() => {
+              this.centerMap(this.map, markers, 14);
+            }, 1);
+          }
           break;
-        case 1:
-          this.markerClicked(this.selectedtrafficDevice);
+        case Constants.CARD_DATA_RESTRICTIONS_ID:
+          {
+            this.markerClicked(this.selectedRestriction);
+
+            const markers = this.trafficRestrictions.filter(x => x.id == this.selectedMarkerId);
+            console.log('this.selectedMarkerId=', this.selectedMarkerId, markers);
+            setTimeout(() => {
+              this.centerMap(this.map, markers, 14);
+            }, 1);
+          }
+          break;
+        case Constants.CARD_DATA_SIGNAL_ISSUES_ID:
+          this.markerClicked(this.selectedSignalIssue);
           setTimeout(() => {
             this.centerMap(
               this.map,
-              this.markers.filter(x => x.id == this.selectedMarkerId),
-              14
-            );
-          }, 1);
-          break;
-        case 2:
-          this.markerClicked(this.selectedSignalPerformanceIssue);
-          setTimeout(() => {
-            this.centerMap(
-              this.map,
-              this.signalPerformanceIssues.filter(x => x.id == this.selectedMarkerId),
+              this.signalIssues.filter(x => x.id == this.selectedMarkerId),
               13
             );
           }, 1);
           break;
-        case 3:
-          this.markerClicked(this.selectedDetector);
+        case Constants.CARD_DATA_DEDVICE_ANOMALIES_ID:
+          this.markerClicked(this.selectedAnomalyDevice);
           setTimeout(() => {
             this.centerMap(
               this.map,
               this.deviceMarkers.filter(x => x.id == this.selectedMarkerId),
-              12
+              14
             );
           }, 1);
           break;
-        case 4:
-          this.segmentClicked(this.selectedSegment);
+        case Constants.CARD_DATA_CONGESTED_ROUTES_ID:
+          this.segmentClicked(this.selectedCongestedSegment);
           setTimeout(() => {
             this.centerMapSegments(
               this.map,
@@ -562,12 +578,12 @@ export default {
             );
           }, 1);
           break;
-        case 5:
+        case Constants.CARD_DATA_WAZE_ALERTS_ID:
           this.markerClicked(this.selectedWazeAlert);
           setTimeout(() => {
             this.centerMap(
               this.map,
-              this.waze.filter(x => x.id == this.selectedMarkerId),
+              this.wazeAlerts.filter(x => x.id == this.selectedMarkerId),
               12
             );
           }, 1);
@@ -613,6 +629,12 @@ export default {
       return `${minutes.toFixed(1)} min`;
     },
 
+    clearMarkerSelection() {
+      this.selectedMarkerId = -1;
+      this.selectedMarkerType = -1;
+      this.selectedSegmentId = -1;
+    },
+
     handleMarkerClick(type, id) {
       this.selectedMarkerType = type;
       this.selectedMarkerId = id;
@@ -626,6 +648,7 @@ export default {
           bounds.extend(markers[i].position);
         }
         map.setCenter(bounds.getCenter());
+
         if (markers.length == 0) {
           map.setCenter({ lat: 33.907, lng: -117.7 });
           map.setZoom(zoom ? zoom : 10);
@@ -634,6 +657,7 @@ export default {
         } else {
           map.fitBounds(bounds);
         }
+
         let center = this.map.getCenter();
         this.center = { lat: center.lat(), lng: center.lng() };
         this.$store.commit('SET_MAP_CENTER', this.center);
@@ -641,13 +665,7 @@ export default {
     },
 
     zoomSelectMarker(map) {
-      const markers = [
-        this.markers,
-        this.segments,
-        this.weatherMarkers,
-        this.restrictions,
-        this.ongoingAnomalySegments
-      ];
+      const markers = [this.markers, this.segments, this.weatherMarkers, this.restrictions];
 
       const type = this.selectedMarkerType;
       if (this.selectedMarkerId && type >= 0 && type < markers.length) {
@@ -740,6 +758,9 @@ export default {
     },
 
     isMapLayerVisible(id) {
+      if (this.selectedIdx >= 0) {
+        return false;
+      }
       const entry = this.mapLayersSelection.find(m => m === id);
       return entry !== undefined;
     },
@@ -760,26 +781,6 @@ export default {
     },
     getMap() {
       return this.$refs.mapRef;
-    }
-  },
-
-  watch: {
-    selectedMarkers: {
-      handler: function() {
-        this.addSelectedMarker();
-      },
-      deep: true
-    },
-    position() {
-      this.$refs.mapRef.$mapPromise.then(map => {
-        map.panTo(this.position);
-        map.setZoom(13);
-      });
-    },
-    markers(markers) {
-      this.$refs.mapRef.$mapPromise.then(map => {
-        this.centerMap(map, markers);
-      });
     }
   }
 };

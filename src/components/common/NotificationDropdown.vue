@@ -28,7 +28,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('traffic', ['getNotification'])
+    ...mapGetters('dashboard', ['getNotification'])
   }
 };
 </script>

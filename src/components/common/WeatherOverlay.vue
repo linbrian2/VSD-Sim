@@ -81,7 +81,7 @@ export default {
       return this.getSetting('general', 'showPrecip');
     },
     ...mapGetters(['getSetting']),
-    ...mapState('dashboard', ['weatherStations'])
+    ...mapState('traffic', ['weatherStations'])
   },
   mounted() {
     this.startUpdateInterval();

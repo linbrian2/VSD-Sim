@@ -29,36 +29,28 @@
         </v-col>
       </v-row>
 
-      <v-row id="info">
+      <v-row id="info" class="mt-n5">
         <v-col cols="12">
-          <div class="d-flex justify-space-between">
-            <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Current Info</h3></v-subheader>
-            <div class="mt-4 mr-3">
-              <div class="d-flex align-center mr-1 mt-n2">
-                <v-chip label outlined @click.stop="centerSegment">
-                  <span>Incident {{ segment.id }}</span>
-                </v-chip>
-              </div>
-            </div>
-          </div>
+          <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Current Info</h3></v-subheader>
           <v-divider />
         </v-col>
         <v-col cols="12">
-          <div class="mx-4">
-            <v-row>
-              <v-col cols="6">
+          <div class="mx-4 mt-n3">
+            <IncidentInfo :incident="segment" />
+            <!-- <v-row>
+              <v-col cols="12">
                 <DataCard title="Time" :items="incidentTime" />
               </v-col>
-              <v-col cols="6" v-if="incidentLoc.length > 0">
+              <v-col cols="12" v-if="incidentLoc.length > 0">
                 <DataCard title="Location" :items="incidentLoc" />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="12">
                 <IncidentTypeCard title="Type" :item="incidentType" />
               </v-col>
-              <v-col cols="6" v-if="incidentConditions.length > 0">
+              <v-col cols="12" v-if="incidentConditions.length > 0">
                 <DataCard title="Conditions" :items="incidentConditions" />
               </v-col>
-            </v-row>
+            </v-row> -->
           </div>
         </v-col>
       </v-row>
@@ -192,6 +184,7 @@ import Utils from '@/utils/Utils';
 import WazeAlertTypes from '@/utils/WazeAlertTypes';
 import Constants from '@/utils/constants/traffic';
 import DataCard from '@/components/modules/traffic/common/DataCard';
+import IncidentInfo from '@/components/modules/traffic/common/IncidentInfo';
 import IncidentTypeCard from '@/components/modules/traffic/incident/IncidentTypeCard';
 import WazeInfo from '@/components/modules/traffic/common/WazeInfo';
 import RestrictionInfo from '@/components/modules/traffic/common/RestrictionInfo';
@@ -209,6 +202,7 @@ export default {
   components: {
     DataCard,
     IncidentTypeCard,
+    IncidentInfo,
     WazeInfo,
     TimingPlan,
     RestrictionInfo,
@@ -254,6 +248,14 @@ export default {
     },
     timingPlanChangeNeeded() {
       return this.segment.incidentState && this.segment.incidentState.timingPlan === 2;
+    }
+  },
+
+  watch: {
+    segment() {
+      if (this.segment) {
+        this.init(this.segment);
+      }
     }
   },
 
@@ -382,8 +384,11 @@ export default {
 
         this.incidentConditions = [
           { name: 'Blockages:', value: lanes },
-          { name: 'Detour Needed:', value: incident.incidentState.detour ? 'YES' : 'NO' },
-          { name: 'Timing Plan:', value: this.getTimingPlanChangeFlag(incident.incidentState.timingPlan) }
+          { name: 'Detour Needed:', value: incident.incidentState && incident.incidentState.detour ? 'YES' : 'NO' },
+          {
+            name: 'Timing Plan:',
+            value: this.getTimingPlanChangeFlag(incident.incidentState && incident.incidentState.timingPlan)
+          }
         ];
       } else {
         this.incidentConditions = [];

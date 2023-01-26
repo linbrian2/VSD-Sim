@@ -10,6 +10,9 @@
       <template v-slot:buttons v-if="!trafficInfoShow">
         <div class="mr-6 mt-3">
           <v-btn icon small @click.stop="prevItemClicked"><v-icon>mdi-chevron-left</v-icon></v-btn>
+          <v-chip color="teal" outlined small>
+            <span class="white--text">{{ selection }}</span>
+          </v-chip>
           <v-btn icon small @click.stop="nextItemClicked"><v-icon>mdi-chevron-right</v-icon></v-btn>
         </div>
       </template>
@@ -27,6 +30,7 @@
       :selectedIdx="selectedIdx"
       @fetchSensorLocations="fetchSensorLocations"
       @home-clicked="onHomeClick"
+      ref="trafficDashboardMap"
     />
 
     <BottomDataDisplay
@@ -70,6 +74,7 @@ import { mapState, mapActions } from 'vuex';
 import { gmapApi } from 'vue2-google-maps';
 import Api from '@/utils/api/traffic';
 import Constants from '@/utils/constants/traffic';
+import DashboardConstants from '@/utils/constants/dashboard.js';
 
 import RightPanel from '@/components/modules/traffic/common/RightPanel';
 import InfoWindow from '@/components/modules/traffic/dashboard/InfoWindow';
@@ -81,12 +86,11 @@ import BluetoothDataInfo from '@/components/modules/traffic/dashboard/BluetoothD
 import WeatherDataInfo from '@/components/modules/traffic/dashboard/WeatherDataInfo';
 import IncidentDataInfo from '@/components/modules/traffic/dashboard/IncidentDataInfo';
 import CameraMultiView from '@/components/modules/traffic/dashboard/CameraMultiView';
-
 import SelectionDialog from '@/components/modules/traffic/dashboard/SelectionDialog';
 
 import Utils from '@/utils/Utils';
 import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
-import DashboardInfoOverlay from '@/components/modules/dashboard/app/DashboardInfoOverlay.vue';
+import DashboardInfoOverlay from '@/components/modules/dashboard/DashboardInfoOverlay.vue';
 import TrafficDashboardMap from '@/components/modules/traffic/dashboard/TrafficDashboardMap.vue';
 import BottomDataDisplay from '@/components/modules/traffic/common/BottomDataDisplay.vue';
 import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
@@ -123,11 +127,8 @@ export default {
     selectedMarker: null,
     currentComponent: null,
     currentTitle: '',
-
     showSelection: false,
-
     map: null,
-
     deviceLocations: [],
     bluetoothLocations: [],
     restrictions: []
@@ -163,23 +164,12 @@ export default {
       return {};
     },
 
-    heatMapData() {
-      return (
-        this.google &&
-        this.markers
-          .filter(marker => marker.status > 0)
-          .map(marker => {
-            // the Heatmap API is one of the few that *must* use a LatLng object
-            return {
-              location: new this.google.maps.LatLng(marker.position),
-              weight: 0
-            };
-          })
-      );
-    },
-
     entities() {
       return this.generateSearchEntities();
+    },
+
+    selection() {
+      return this.selectedIdx != -1 ? this.getCurrentSelection(this.selectedIdx) : '';
     },
 
     ...mapState(['currentDate']),
@@ -195,6 +185,21 @@ export default {
       'mapRegionSelection',
       'mapLayersSelection',
       'incidentSettings'
+    ]),
+    ...mapState('dashboard', [
+      'trafficIncidents',
+      'trafficRestrictions',
+      'signalIssues',
+      'deviceAnomalies',
+      'congestedSegments',
+      'wazeAlerts',
+      'selectedTrafficIncident',
+      'selectedTrafficDevice',
+      'selectedRestriction',
+      'selectedSignalIssue',
+      'selectedAnomalyDevice',
+      'selectedCongestedSegment',
+      'selectedWazeAlert'
     ])
   },
 
@@ -205,7 +210,14 @@ export default {
         if (this.currentComponent === CameraMultiView) {
           this.currentComponent = null;
         }
+
+        // Clear maker selection
+        this.clearMarkerSelection();
       }
+    },
+
+    isCameraView() {
+      return this.currentComponent === CameraMultiView;
     },
 
     currentFlowAnomaly: function(value) {
@@ -248,9 +260,9 @@ export default {
       }
     });
 
-    this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type }) => {
+    this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type, trigger }) => {
       this.selectedIdx = -1;
-      this.handleMarkerClick(type, id);
+      this.handleMarkerClick(type, id, trigger);
     });
 
     this.$bus.$on('PLAY_POPUP_VIDEO', id => {
@@ -267,26 +279,155 @@ export default {
   },
 
   created() {
+    window.addEventListener('keydown', this.keydownListener);
     this.$store.commit('traffic/SHOW_PANEL', false);
   },
 
   destroyed: function() {
+    window.removeEventListener('keydown', this.keydownListener);
     this.showScrollBar(true);
   },
 
   methods: {
+    keydownListener(e) {
+      if (e.key === 'ArrowUp') {
+        this.prevItemClicked();
+      } else if (e.key === 'ArrowDown') {
+        this.nextItemClicked();
+      }
+    },
+
     prevItemClicked() {
-      this.$bus.$emit('SELECT_TABLE_ROW', -1);
+      this.selectSelection(this.selectedIdx, -1);
     },
 
     nextItemClicked() {
-      this.$bus.$emit('SELECT_TABLE_ROW', 1);
+      this.selectSelection(this.selectedIdx, 1);
+    },
+
+    getCurrentSelection(selectIdx) {
+      let objectList = null;
+      let selectedObject = null;
+
+      switch (selectIdx) {
+        case DashboardConstants.CARD_DATA_INCIDENTS_ID:
+          objectList = this.trafficIncidents;
+          selectedObject = this.selectedTrafficIncident;
+          break;
+        case DashboardConstants.CARD_DATA_RESTRICTIONS_ID:
+          objectList = this.trafficRestrictions;
+          selectedObject = this.selectedRestriction;
+          console.log('getCurrentSelection=', this.trafficRestrictions.length);
+          break;
+        case DashboardConstants.CARD_DATA_SIGNAL_ISSUES_ID:
+          objectList = this.signalIssues;
+          selectedObject = this.selectedSignalIssue;
+          break;
+        case DashboardConstants.CARD_DATA_DEDVICE_ANOMALIES_ID:
+          objectList = this.deviceAnomalies;
+          selectedObject = this.selectedAnomalyDevice;
+          break;
+        case DashboardConstants.CARD_DATA_CONGESTED_ROUTES_ID:
+          objectList = this.congestedSegments;
+          selectedObject = this.selectedCongestedSegment;
+          break;
+        case DashboardConstants.CARD_DATA_WAZE_ALERTS_ID:
+          objectList = this.wazeAlerts;
+          selectedObject = this.selectedWazeAlert;
+          break;
+      }
+
+      const total = objectList ? objectList.length : 0;
+      const index = objectList && selectedObject ? objectList.findIndex(item => item.id === selectedObject.id) : 0;
+      let result = `${index + 1} of ${total}`;
+
+      return result;
+    },
+
+    selectSelection(selectIdx, dir) {
+      if (selectIdx < 0) {
+        return;
+      }
+
+      switch (selectIdx) {
+        case DashboardConstants.CARD_DATA_INCIDENTS_ID:
+          {
+            const data = this.getNextObject(this.trafficIncidents, this.selectedTrafficIncident, dir);
+            if (data) {
+              this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_INCIDENT', data);
+            }
+          }
+          break;
+        case DashboardConstants.CARD_DATA_RESTRICTIONS_ID:
+          {
+            const data = this.getNextObject(this.trafficRestrictions, this.selectedRestriction, dir);
+            if (data) {
+              this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_RESTRICTION', data);
+            }
+          }
+          break;
+        case DashboardConstants.CARD_DATA_SIGNAL_ISSUES_ID:
+          {
+            const data = this.getNextObject(this.signalIssues, this.selectedSignalIssue, dir);
+            if (data) {
+              this.$store.commit('dashboard/SET_SELECTED_SIGNAL_ISSUE', data);
+            }
+          }
+          break;
+        case DashboardConstants.CARD_DATA_DEDVICE_ANOMALIES_ID:
+          {
+            const data = this.getNextObject(this.deviceAnomalies, this.selectedAnomalyDevice, dir);
+            if (data) {
+              this.$store.commit('dashboard/SET_SELECTED_ANOMALY_DEVICE', data);
+            }
+          }
+          break;
+        case DashboardConstants.CARD_DATA_CONGESTED_ROUTES_ID:
+          {
+            const data = this.getNextObject(this.congestedSegments, this.selectedCongestedSegment, dir);
+            if (data) {
+              this.$store.commit('dashboard/SET_SELECTED_CONGESTED_SEGMENT', data);
+            }
+          }
+          break;
+        case DashboardConstants.CARD_DATA_WAZE_ALERTS_ID:
+          {
+            const data = this.getNextObject(this.wazeAlerts, this.selectedWazeAlert, dir);
+            if (data) {
+              this.$store.commit('dashboard/SET_SELECTED_WAZE_ALERT', data);
+            }
+          }
+          break;
+      }
+    },
+
+    getNextObject(objectList, selectedObject, dir) {
+      if (!objectList || objectList.length === 0) {
+        return null;
+      }
+
+      const currentIndex = selectedObject ? objectList.findIndex(item => item.id === selectedObject.id) : -1;
+      let idx = 0;
+      if (dir > 0) {
+        idx = (currentIndex + 1) % objectList.length;
+      } else {
+        idx = currentIndex <= 0 ? objectList.length - 1 : currentIndex - 1;
+      }
+
+      return objectList[idx];
+    },
+
+    clearMarkerSelection() {
+      if (this.$refs.trafficDashboardMap) {
+        this.$refs.trafficDashboardMap.clearMarkerSelection();
+      }
     },
 
     onHomeClick() {
       // Restore everything
       if (this.selectedIdx !== -1) {
         this.selectedIdx = -1;
+        this.clearMarkerSelection();
         this.$bus.$emit('DISPLAY_MARKER_DETAILS', {});
         this.$store.commit('traffic/SHOW_PANEL', false);
       }
@@ -296,7 +437,13 @@ export default {
       this.trafficInfoShow = false;
       this.selectedIdx = payload.idx;
       if (this.selectedIdx < 0) {
-        this.$store.commit('traffic/SHOW_PANEL', false);
+        this.clearMarkerSelection();
+
+        // Only hide the right now when the view is not a camera view
+        if (!this.isCameraView) {
+          this.$store.commit('traffic/SHOW_PANEL', false);
+        }
+
         setTimeout(() => {
           this.$bus.$emit('HOME_CENTER_MAP');
         }, 200);
@@ -358,7 +505,7 @@ export default {
       }
     },
 
-    handleMarkerClick(type, id) {
+    handleMarkerClick(type, id, trigger) {
       this.trafficInfoShow = true;
       let marker = null;
       switch (type) {
@@ -379,8 +526,8 @@ export default {
           this.restrictionClicked(marker);
           break;
         case 4:
-          marker = this.currentAnomalySegments.find(m => m.id === id);
-          this.anomalySegmentClicked(marker);
+          marker = this.trafficIncidents.find(m => m.id === id);
+          this.trafficIncidentClicked(marker, trigger);
           break;
         case 10:
           marker = this.trafficCameras.find(m => m.id === id);
@@ -449,18 +596,23 @@ export default {
       this.currentTitle = 'Restrictions';
     },
 
-    anomalySegmentClicked(segment) {
+    trafficIncidentClicked(marker, trigger) {
       this.showPanelIfNot();
-      this.selectedMarker = segment;
+      this.selectedMarker = marker;
       this.currentTitle = 'Current Incident';
       if (this.currentComponent !== IncidentDataInfo) {
         this.currentComponent = IncidentDataInfo;
       } else {
         if (this.$refs.refPanelInfo) {
-          this.$refs.refPanelInfo.init(segment);
+          this.$refs.refPanelInfo.init(marker);
         }
       }
-      this.$bus.$emit('CENTER_INCIDENT_SEGMENT', segment);
+
+      if (trigger && this.$refs.trafficDashboardMap) {
+        setTimeout(() => {
+          this.$refs.trafficDashboardMap.incidentClicked(marker);
+        }, 500);
+      }
     },
 
     cameraMarkerClicked(camera) {
@@ -541,14 +693,15 @@ export default {
     },
 
     updateRestrictionsStatus(data) {
-      this.restrictions = data.map(d => {
-        return {
-          id: d.id,
-          name: d.name,
-          position: d.position,
-          data: d.data
-        };
-      });
+      // this.restrictions = data.map(d => {
+      //   return {
+      //     id: d.id,
+      //     name: d.name,
+      //     position: d.position,
+      //     data: d.data
+      //   };
+      // });
+      Object.assign(this.restrictions, data);
     },
 
     updateAnomalySegementsStatus(data) {
@@ -566,7 +719,7 @@ export default {
           bluetoothSensors: this.bluetoothLocations,
           weatherStations: this.weatherStations,
           restrictions: this.restrictions,
-          anomalySegments: this.currentAnomalySegments
+          incidents: this.trafficIncidents
         });
         this.showSelection = true;
       }
@@ -618,7 +771,7 @@ export default {
           Api.fetchLatestAnomalyData(secondsAgo),
           Api.fetchLatestBluetoothAnomalyData(secondsAgo),
           Api.fetchLatestWeatherData(secondsAgo),
-          Api.fetchLatestRestrictionData(secondsAgo),
+          Api.fetchLatestRestrictionData(3600),
           Api.fetchLatestAnomalySegments(3600, severity, duration)
         ]);
 
@@ -640,7 +793,6 @@ export default {
 
         if (anomalySegments.data.status === 'OK') {
           this.$store.commit('traffic/SET_CURRENT_ANOMALY_SEGMENTS', anomalySegments.data.data);
-          this.$store.commit('dashboard/SET_TRAFFIC_INCIDENTS', anomalySegments.data.data);
         }
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
