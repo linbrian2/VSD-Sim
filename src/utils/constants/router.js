@@ -33,6 +33,7 @@ export const RouterNames = {
 
   CAV_DASHBOARD: 'Trip Data',
   CAV_STATUS: 'Trip Status',
+  CAV_CSPI: 'Trip CSPI',
 
   STATUS_DASHBOARD: 'Status Check',
   STATUS_QUALITY_CHECK: 'Quality Check',
@@ -85,6 +86,7 @@ export const RouterPaths = {
   CAV_ROOT: '/cav',
   CAV_DASHBOARD: '/cav/trip',
   CAV_STATUS: '/cav/status',
+  CAV_CSPI: '/cav/cspi',
 
   STATUS_ROOT: '/status',
   STATUS_DASHBOARD: '/status/check',
@@ -126,6 +128,7 @@ export const RouterIcons = {
 
   CAV_DASHBOARD: 'mdi-format-list-bulleted',
   CAV_STATUS: 'mdi-truck-check-outline',
+  CAV_CSPI: 'mdi-counter',
 
   STATUS_DASHBOARD: 'mdi-list-status',
   STATUS_QUALITY_CHECK: 'mdi-check-decagram',

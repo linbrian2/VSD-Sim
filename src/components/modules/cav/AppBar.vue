@@ -18,6 +18,14 @@
           </template>
           <span>Trip Status</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn class="mx-1" fab :color="color(2)" icon v-on="on" @click.stop="showTripCSPI">
+              <v-icon>mdi-counter </v-icon>
+            </v-btn>
+          </template>
+          <span>Trip CSPI</span>
+        </v-tooltip>
       </div>
     </Header>
     <LoadingProgress :loading="progressLoading" color="primary" />
@@ -40,7 +48,8 @@ export default {
     title: AppConstants.CAV_APP_TITLE,
     action_menu_items: [
       { title: RouterNames.CAV_DASHBOARD, url: RouterPaths.CAV_DASHBOARD },
-      { title: RouterNames.CAV_STATUS, url: RouterPaths.CAV_STATUS }
+      { title: RouterNames.CAV_STATUS, url: RouterPaths.CAV_STATUS },
+      { title: RouterNames.CAV_CSPI, url: RouterPaths.CAV_CSPI }
     ]
   }),
   computed: {
@@ -54,6 +63,8 @@ export default {
           return this.$route.name === RouterNames.CAV_DASHBOARD ? 'orange' : 'teal';
         case 1:
           return this.$route.name === RouterNames.CAV_STATUS ? 'orange' : 'teal';
+        case 2:
+          return this.$route.name === RouterNames.CAV_CSPI ? 'orange' : 'teal';
       }
     },
     switchTo(path) {
@@ -66,6 +77,10 @@ export default {
 
     showTripData() {
       this.switchTo(RouterPaths.CAV_DASHBOARD);
+    },
+
+    showTripCSPI() {
+      this.switchTo(RouterPaths.CAV_CSPI);
     }
   }
 };

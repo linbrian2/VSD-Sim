@@ -12,25 +12,25 @@
           <span>Choose Trip</span>
         </v-tooltip>
       </template>
-      <TripData />
+      <TripDataCSPI />
     </SelectionPanel>
-    <MapDisplay />
-    <TripSelectionDialog v-model="showSelection" ref="dialog" />
+    <MapDisplayCSPI />
+    <TripSelectionDialogCSPI v-model="showSelection" ref="dialog" />
   </div>
 </template>
 
 <script>
-import TripData from '@/components/modules/cav/TripData';
-import MapDisplay from '@/components/modules/cav/MapDisplay';
+import TripDataCSPI from '@/components/modules/cav/TripDataCSPI';
+import MapDisplayCSPI from '@/components/modules/cav/MapDisplayCSPI';
 import SelectionPanel from '@/components/modules/cav/SelectionPanel';
-import TripSelectionDialog from '@/components/modules/cav/TripSelectionDialog';
+import TripSelectionDialogCSPI from '@/components/modules/cav/TripSelectionDialogCSPI';
 
 export default {
   components: {
     SelectionPanel,
-    MapDisplay,
-    TripData,
-    TripSelectionDialog
+    MapDisplayCSPI,
+    TripDataCSPI,
+    TripSelectionDialogCSPI
   },
 
   computed: {

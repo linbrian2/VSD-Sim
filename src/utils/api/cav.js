@@ -7,6 +7,10 @@ export default {
     return AxiosClient.get('api/trips', { params: { time, limit } });
   },
 
+  fetchTripsCSPI(time, limit) {
+    return AxiosClient.get('api/trips-cpsi', { params: { time, limit } });
+  },
+
   fetchLatestTrips(limit) {
     return AxiosClient.get('api/latestTrips', { params: { limit } });
   },

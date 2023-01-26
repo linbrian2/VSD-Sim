@@ -42,7 +42,7 @@
                   <div>
                     <v-tabs color="blue accent-4" v-model="solutionTab" show-arrows>
                       <v-tab v-for="(solution, time, i) in solutions" :key="i">
-                        <v-chip color="purple" label>{{ fromatTimestamp(time, true) }}</v-chip>
+                        <v-chip color="purple" label>{{ formatTimestamp(time, true) }}</v-chip>
                       </v-tab>
                     </v-tabs>
                   </div>
@@ -242,7 +242,7 @@ export default {
       const keys = Object.keys(this.solutions);
       if (this.solutionTab >= 0 && this.solutionTab < keys.length) {
         const timestamp = keys[this.solutionTab];
-        const evalTime = this.fromatTimestamp(timestamp, false);
+        const evalTime = this.formatTimestamp(timestamp, false);
         return `Evaluation Time: <u>${evalTime}</u>, Time Offset: <u>${this.selectedTimeOffset}min</u>, Cycle Length: <u>${this.selectedCycleLength}s</u>`;
       }
       return '';
@@ -308,7 +308,7 @@ export default {
 
     handleRejected() {},
 
-    fromatTimestamp(timestamp, timeOnly) {
+    formatTimestamp(timestamp, timeOnly) {
       if (timeOnly) {
         return timestamp ? Utils.formatTimeAsMinute(new Date(parseInt(timestamp))) : '';
       } else {

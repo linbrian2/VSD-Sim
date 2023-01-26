@@ -50,7 +50,7 @@ export default {
   },
 
   filters: {
-    fromatTimestamp: function(timestamp) {
+    formatTimestamp: function(timestamp) {
       if (timestamp) {
         return Utils.formatDateAndTime(new Date(timestamp));
       } else {

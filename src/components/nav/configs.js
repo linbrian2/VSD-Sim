@@ -207,6 +207,14 @@ const protectedRoute = [
               title: RouterNames.CAV_STATUS,
               icon: RouterIcons.CAV_STATUS
             }
+          },
+          {
+            path: RouterPaths.CAV_CSPI,
+            name: RouterNames.CAV_CSPI,
+            meta: {
+              title: RouterNames.CAV_CSPI,
+              icon: RouterIcons.CAV_CSPI
+            }
           }
         ]
       },

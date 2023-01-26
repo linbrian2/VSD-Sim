@@ -11,10 +11,10 @@
     @click:row="handleRowClick"
   >
     <template v-slot:[`item.startTime`]="{ item }">
-      <div>{{ fromatTimestamp(item.startTime) }}</div>
+      <div>{{ formatTimestamp(item.startTime) }}</div>
     </template>
     <template v-slot:[`item.lastUpdated`]="{ item }">
-      <div>{{ fromatTimestamp(item.lastUpdated) }}</div>
+      <div>{{ formatTimestamp(item.lastUpdated) }}</div>
     </template>
     <template v-slot:[`item.duration`]="{ item }">
       <div>{{ formatDuration(item.duration) }}</div>
@@ -33,10 +33,26 @@
         <span>{{ item.status === 0 ? 'ONGOING' : 'COMPLETED' }}</span>
       </v-tooltip>
     </template>
+    <template v-slot:[`item.segment`]="{ item }">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <span v-on="on">
+            <div v-if="item.cspiData && item.cspiData.length > 0">
+              <v-chip small :color="getColor(item.cspiData[item.cspiData.length - 1].score)">
+                <h4 style="color: #3b3b3b;">{{ item.cspiData[item.cspiData.length - 1].score }}</h4>
+              </v-chip>
+            </div>
+            <div v-else>-</div>
+          </span>
+        </template>
+        <span>{{ item.segment ? 'Has CSPI' : 'No CSPI' }}</span>
+      </v-tooltip>
+    </template>
   </v-data-table>
 </template>
 
 <script>
+import * as d3 from 'd3';
 import Format from '@/utils/Format';
 export default {
   props: {
@@ -49,8 +65,23 @@ export default {
   }),
 
   methods: {
-    fromatTimestamp(timestamp) {
-      return Format.fromatTimestamp(timestamp);
+    getColor(score) {
+      return d3.interpolateLab('#ff1900', '#33ff00')((score - 33) / 76);
+      // if (score < 50) {
+      //   return '#ff1900';
+      // } else if (score < 60) {
+      //   return '#ff9900';
+      // } else if (score < 70) {
+      //   return '#fff700';
+      // } else if (score < 80) {
+      //   return '#c8ff00';
+      // } else {
+      //   return '#33ff00';
+      // }
+    },
+
+    formatTimestamp(timestamp) {
+      return Format.formatTimestamp(timestamp);
     },
 
     formatDuration(seconds) {
@@ -73,7 +104,8 @@ export default {
         { text: 'TripId', value: 'id' },
         { text: 'Start Time', value: 'startTime' },
         { text: 'Duration', value: 'duration' },
-        { text: 'Status', value: 'status' }
+        { text: 'Status', value: 'status' },
+        { text: 'CSPI', value: 'segment' }
       ];
       this.items = data;
     },
