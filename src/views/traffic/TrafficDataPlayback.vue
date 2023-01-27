@@ -330,6 +330,7 @@ export default {
     this.$store.commit('SET_CURRENT_DATE', date);
 
     this.$bus.$on('DISPLAY_DETAILS', payload => {
+      console.log('TrafficDataPLayback DISPLAY_DETAILS');
       this.cardClicked(payload);
     });
     setTimeout(() => {

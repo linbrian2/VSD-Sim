@@ -109,7 +109,7 @@
       />
     </div>
 
-    <!-- Signal Issues -->
+    <!-- Traffic Signals -->
     <div v-if="isMapLayerVisible(5)">
       <GmapMarker
         v-for="m in signals"
@@ -145,12 +145,6 @@
         @click="handleMarkerClick(10, m.id)"
       />
     </div>
-
-    <!-- InfoWindow -->
-    <!-- <InfoWindow :position="infoPosition" ref="infoWindow" /> -->
-
-    <!-- Heatmap layer -->
-    <!-- <GmapHeatMap :data="heatMapData" :options="{ maxIntensity: 15, dissipating: true, radius: 10 }" /> -->
   </div>
 </template>
 

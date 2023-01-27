@@ -1,21 +1,27 @@
 <template>
   <v-container>
-    <v-row id="info">
+    <v-row id="info" v-if="marker">
       <v-col cols="12">
         <div class="d-flex justify-space-between">
           <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Basic Info</h3></v-subheader>
           <div class="mt-4 mr-3">
-            <v-chip class="ml-2 mt-n1" outlined small @click.stop="markerIdClicked(marker.id)">
-              <span>{{ marker.id }} / {{ marker.uid }}</span>
-            </v-chip>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-chip class="ml-2 mt-n1" outlined small v-on="on" @click.stop="showTrafficFlowViewer(marker.id)">
+                  <span>{{ marker.id }} / {{ marker.uid }}</span>
+                  <v-icon small class="ml-2">mdi-open-in-new</v-icon>
+                </v-chip>
+              </template>
+              <span>Open Traffic flow</span>
+            </v-tooltip>
           </div>
         </div>
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <div class="mx-4">
+        <div class="mx-4 mt-n3">
           <v-row>
-            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 6" v-for="(item, j) in info" :key="j">
+            <v-col :cols="12" v-for="(item, j) in info" :key="j">
               <ListInfoCard :info="item" class="mt-0" />
             </v-col>
           </v-row>
@@ -24,6 +30,29 @@
     </v-row>
 
     <v-row>
+      <v-col cols="12">
+        <div class="d-flex justify-space-between">
+          <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"
+            ><h3>Historical Data</h3></v-subheader
+          >
+
+          <v-tooltip left>
+            <template v-slot:activator="{ on }">
+              <v-btn small icon v-on="on" @click.stop="showStackChart" class="mr-4 mt-2" :loading="loading">
+                <v-icon small>mdi-arrow-expand</v-icon>
+              </v-btn>
+            </template>
+            <span>Expand</span>
+          </v-tooltip>
+        </div>
+        <v-divider />
+      </v-col>
+      <v-col cols="12">
+        <StackBarChart :data="counts" :colors="colors" :interval="interval" :height="stackHeight" class="mx-4" />
+      </v-col>
+    </v-row>
+
+    <v-row v-if="sensorErrorTypes.length > 0">
       <v-col cols="12">
         <div class="d-flex justify-space-between">
           <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Error Types</h3></v-subheader>
@@ -74,9 +103,12 @@
 import StatusApi from '@/utils/api/status';
 import { mapState } from 'vuex';
 import Utils from '@/utils/Utils';
+import { RouterNames } from '@/utils/constants/router';
 import Constants from '@/utils/constants/status';
 import ListInfoCard from '@/components/modules/traffic/common/ListInfoCard';
 import SensorHeatmapChart from '@/components/modules/status/SensorHeatmapChart';
+import StackBarChart from '@/components/modules/vision/StackBarChart';
+
 export default {
   props: {
     marker: Object
@@ -84,20 +116,33 @@ export default {
 
   components: {
     ListInfoCard,
-    SensorHeatmapChart
+    SensorHeatmapChart,
+    StackBarChart
   },
 
   data: () => ({
     loading: false,
     showLegend: false,
     height: 350,
+    stackHeight: 400,
     info: [],
     sensorErrorTypes: [],
-    dataClasses: []
+    dataClasses: [],
+    interval: 1800000,
+    counts: {},
+    colors: Constants.DISTINCT_COLORS.slice(1)
   }),
 
   computed: {
     ...mapState(['currentDate'])
+  },
+
+  watch: {
+    marker() {
+      if (this.marker) {
+        this.init(this.marker);
+      }
+    }
   },
 
   mounted() {
@@ -107,11 +152,16 @@ export default {
 
   methods: {
     init(marker) {
-      this.fetchSensorStatus(marker, this.currentDate);
+      if (marker && marker.id) {
+        this.fetchSensorStatus(marker, this.currentDate);
+      }
     },
 
-    markerIdClicked(id) {
-      this.$emit('id-click', id);
+    showStackChart() {},
+
+    showTrafficFlowViewer(id) {
+      const r = this.$router.resolve({ name: RouterNames.TRAFFIC_FLOW_DATA, params: { id } });
+      window.open(r.href, '_blank');
     },
 
     async fetchSensorStatus(device, date) {
@@ -119,8 +169,13 @@ export default {
 
       this.loading = true;
       try {
-        const response = await StatusApi.fetchSensorErrors(deviceId, date.getTime());
-        const allErrorTypes = this.parseResponseData(response);
+        // Now we await for both results, whose async processes have already been started
+        const [statusRes, countsRes] = await Promise.all([
+          StatusApi.fetchSensorErrors(deviceId, date.getTime()),
+          StatusApi.fetchSensorsErrorPercentCounts(deviceId, date.getTime(), 14)
+        ]);
+
+        const allErrorTypes = this.parseResponseData(statusRes);
         if (allErrorTypes) {
           this.info = this.composeBasicInfo(device, allErrorTypes);
 
@@ -130,6 +185,11 @@ export default {
             sensorErrorTypes.push({ dir, errorTypes });
           });
           this.sensorErrorTypes = sensorErrorTypes;
+        }
+
+        const countsData = this.parseResponseData(countsRes);
+        if (countsData) {
+          this.counts = this.formCountsData(countsData);
         }
       } catch (error) {
         console.log(error);
@@ -228,9 +288,9 @@ export default {
           }
         }
       } else {
-        console.log(response);
-        console.log(response.data.message);
-        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
+        // console.log(response);
+        // console.log(response.data.message);
+        // this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
       return result;
     },
@@ -247,6 +307,10 @@ export default {
       }
 
       return maxIndex;
+    },
+
+    getError(idx) {
+      return idx > 0 && idx < Constants.QUALITY_ERROR_NAMES.length ? Constants.QUALITY_ERROR_NAMES[idx] : '';
     },
 
     composeBasicInfo(device, allErrorTypes) {
@@ -272,22 +336,36 @@ export default {
       }
 
       const p = {
+        Location: `${device.uid} - ${device.title}`,
         'Total Errors': errorCount,
         'Error Percentage': errorPercentage + '%',
-        'Dominant Error': dominantErrorType
+        'Major Error': this.getError(dominantErrorType)
       };
 
-      const d = {
-        'Device Id': device.id,
-        Permit: device.uid,
-        Location: device.title
-      };
+      // const d = {
+      //   'Device Id': device.id,
+      //   Permit: device.uid,
+      //   Location: device.title
+      // };
 
       const result = [];
-      result.push({ title: 'Device Info', items: Utils.obj2Arr(d) });
+      //result.push({ title: 'Device Info', items: Utils.obj2Arr(d) });
       result.push({ title: 'Error Statistics', items: Utils.obj2Arr(p) });
 
       return result;
+    },
+
+    formCountsData(input) {
+      let xAxis = 'Day of month';
+      let yAxis = 'Error Count Percentage';
+
+      let data = [];
+      Object.keys(input).forEach(name => {
+        let counts = input[name];
+        data.push({ name: Utils.capitalize(name), data: counts });
+      });
+
+      return { data, xAxis, yAxis };
     }
   }
 };

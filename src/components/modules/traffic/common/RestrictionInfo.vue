@@ -2,7 +2,7 @@
   <v-card tile :color="color" dark>
     <v-card-title class="d-flex justify-space-between my-n3">
       <div>
-        <strong>{{ restriction.name }}</strong>
+        <strong>{{ restriction.name }} </strong>
       </div>
       <div class="d-flex">
         <v-tooltip bottom max-width="350" color="orange">
@@ -17,8 +17,13 @@
       </div>
     </v-card-title>
     <v-card-text class="font-weight-light">
-      <div v-html="restriction.desc" />
+      <div class="pre-formatted" v-html="restriction.desc" />
     </v-card-text>
+
+    <v-card-actions class="mt-n3 mx-2 d-flex justify-space-between">
+      <div class="grey--text overline" v-if="restriction.time">Created at {{ restriction.time | dateAndTime }}</div>
+      <div class="grey--text caption">#{{ restriction.id }}</div>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -41,3 +46,11 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.pre-formatted {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  -moz-white-space: pre-wrap;
+}
+</style>

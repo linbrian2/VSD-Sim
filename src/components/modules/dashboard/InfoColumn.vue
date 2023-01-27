@@ -1,33 +1,38 @@
 <template>
   <v-container class="pa-0 px-2">
-    <div id="traffic-incidents" v-if="cardData && dataAvailable(cardData[0]) && selectedIdx == 0">
-      <TrafficIncidents class="mt-1" :infoColumnCount="infoColumnCount" :handleRowClick="handleRowClick" />
+    <div id="traffic-incidents" v-if="avialable(CARD_IDS.INCIDENTS_ID)">
+      <TrafficIncidents class="mt-1" :maxItems="cardData[CARD_IDS.INCIDENTS_ID].val" />
     </div>
-    <div id="traffic-flow-issues" v-if="cardData && dataAvailable(cardData[1]) && selectedIdx == 1">
-      <TrafficFlowIssues class="mt-1" :maxItems="cardData[1].val" :infoColumnCount="infoColumnCount" />
+    <div id="traffic-flow-issues" v-if="avialable(CARD_IDS.FLOW_ANOMALIES_ID)">
+      <TrafficFlowIssues class="mt-1" :maxItems="cardData[CARD_IDS.FLOW_ANOMALIES_ID].val" />
     </div>
-    <div id="signal-performance-issues" v-if="cardData && dataAvailable(cardData[2]) && selectedIdx == 2">
-      <SignalPerformanceIssues class="mt-1" :maxItems="cardData[2].val" :infoColumnCount="infoColumnCount" />
+    <div id="traffic-restrictions" v-if="avialable(CARD_IDS.RESTRICTIONS_ID)">
+      <TrafficRestrictions class="mt-1" :maxItems="cardData[CARD_IDS.RESTRICTIONS_ID].val" />
     </div>
-    <div id="device-anomalies" v-if="cardData && dataAvailable(cardData[3]) && selectedIdx == 3">
-      <DeviceAnomalies class="mt-1" :maxItems="cardData[3].val" :infoColumnCount="infoColumnCount" />
+    <div id="signal-performance-issues" v-if="avialable(CARD_IDS.SIGNAL_ISSUES_ID)">
+      <SignalIssues class="mt-1" :maxItems="cardData[CARD_IDS.SIGNAL_ISSUES_ID].val" />
     </div>
-    <div id="congested-routes" v-if="cardData && dataAvailable(cardData[4]) && selectedIdx == 4">
-      <CongestedRoutes class="mt-1" :maxItems="cardData[4].val" :infoColumnCount="infoColumnCount" />
+    <div id="device-anomalies" v-if="avialable(CARD_IDS.DEDVICE_ANOMALIES_ID)">
+      <DeviceAnomalies class="mt-1" :maxItems="cardData[CARD_IDS.DEDVICE_ANOMALIES_ID].val" />
     </div>
-    <div id="waze-alerts" v-if="cardData && dataAvailable(cardData[5]) && selectedIdx == 5">
-      <WazeAlerts class="mt-1" :maxItems="cardData[5].val" :infoColumnCount="infoColumnCount" />
+    <div id="congested-routes" v-if="avialable(CARD_IDS.CONGESTED_ROUTES_ID)">
+      <CongestedRoutes class="mt-1" :maxItems="cardData[CARD_IDS.CONGESTED_ROUTES_ID].val" />
+    </div>
+    <div id="waze-alerts" v-if="avialable(CARD_IDS.WAZE_ALERTS_ID)">
+      <WazeAlerts class="mt-1" :maxItems="cardData[CARD_IDS.WAZE_ALERTS_ID].val" />
     </div>
   </v-container>
 </template>
 
 <script>
-import TrafficIncidents from '@/components/modules/dashboard/incidents/TrafficIncidents.vue';
-import TrafficFlowIssues from '@/components/modules/dashboard/flow/TrafficFlowIssues.vue';
-import DeviceAnomalies from '@/components/modules/dashboard/anomalies/DeviceAnomalies.vue';
-import SignalPerformanceIssues from '@/components/modules/dashboard/issues/SignalPerformanceIssues.vue';
-import CongestedRoutes from '@/components/modules/dashboard/routes/CongestedRoutes.vue';
-import WazeAlerts from '@/components/modules/dashboard/waze/WazeAlerts.vue';
+import TrafficIncidents from '@/components/modules/dashboard/views/TrafficIncidents.vue';
+import TrafficFlowIssues from '@/components/modules/dashboard/views/TrafficFlowIssues.vue';
+import DeviceAnomalies from '@/components/modules/dashboard/views/DeviceAnomalies.vue';
+import SignalIssues from '@/components/modules/dashboard/views/SignalIssues.vue';
+import CongestedRoutes from '@/components/modules/dashboard/views/CongestedRoutes.vue';
+import WazeAlerts from '@/components/modules/dashboard/views/WazeAlerts.vue';
+import TrafficRestrictions from '@/components/modules/dashboard/views/TrafficRestrictions.vue';
+import Constants from '@/utils/constants/dashboard.js';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -38,10 +43,11 @@ export default {
   components: {
     TrafficIncidents,
     TrafficFlowIssues,
-    SignalPerformanceIssues,
+    SignalIssues,
     DeviceAnomalies,
     CongestedRoutes,
-    WazeAlerts
+    WazeAlerts,
+    TrafficRestrictions
   },
   data() {
     return {
@@ -49,24 +55,24 @@ export default {
     };
   },
   computed: {
-    infoColumnCount() {
-      return this.getSetting('dashboard', 'infoColumnCount');
-    },
-    listLimit() {
-      if (this.getSetting) {
-        return this.getSetting('dashboard', 'limitListings');
-      } else {
-        return 0;
-      }
-    },
     ...mapGetters(['getSetting'])
   },
+  created() {
+    this.CARD_IDS = {
+      INCIDENTS_ID: Constants.CARD_DATA_INCIDENTS_ID,
+      RESTRICTIONS_ID: Constants.CARD_DATA_RESTRICTIONS_ID,
+      SIGNAL_ISSUES_ID: Constants.CARD_DATA_SIGNAL_ISSUES_ID,
+      DEDVICE_ANOMALIES_ID: Constants.CARD_DATA_DEDVICE_ANOMALIES_ID,
+      CONGESTED_ROUTES_ID: Constants.CARD_DATA_CONGESTED_ROUTES_ID,
+      WAZE_ALERTS_ID: Constants.CARD_DATA_WAZE_ALERTS_ID
+    };
+  },
   methods: {
-    handleRowClick(data) {
-      console.log('handleRowClick: %o', data);
-    },
     dataAvailable(data) {
-      return data.val && data.val != 0 && data.val != '-' && data.val != 'N/A';
+      return data && data.val && data.val != 0 && data.val != '-' && data.val != 'N/A';
+    },
+    avialable(idx) {
+      return this.cardData && this.dataAvailable(this.cardData[idx]) && this.selectedIdx == idx;
     }
   }
 };

@@ -3,7 +3,7 @@
     <v-card tile :color="color" dark @click="handleClick">
       <v-card-title class="d-flex justify-space-between">
         <div>{{ waze.type }}</div>
-        <div class="caption grey--text">{{ waze.dist }}</div>
+        <div class="caption grey--text" v-if="waze.dist">{{ waze.dist }}</div>
       </v-card-title>
 
       <v-card-text>

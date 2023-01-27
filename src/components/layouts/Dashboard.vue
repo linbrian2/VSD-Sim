@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import AppBar from '@/components/modules/dashboard/app/AppBar';
+import AppBar from '@/components/modules/dashboard/AppBar';
 
 export default {
   name: 'App',

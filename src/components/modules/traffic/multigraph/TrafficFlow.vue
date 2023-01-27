@@ -205,11 +205,9 @@ export default {
         strokeWeight: 0.4
       },
       {
-        path: 0,
-        scale: 10.0,
-        fillColor: '#FF7F00',
-        fillOpacity: 0.8,
-        strokeWeight: 0.4
+        url: require('@/assets/green-select.png'),
+        size: { width: 30, height: 30, f: 'px', b: 'px' },
+        anchor: { x: 15, y: 15 }
       }
     ],
 
@@ -282,10 +280,17 @@ export default {
   mounted() {
     this.fetchDevices();
 
-    // Load first selected data in case of no data showing
-    setTimeout(() => {
-      this.showDataIfEmpty();
-    }, 500);
+    const id = this.$route.params.id;
+    if (id) {
+      setTimeout(() => {
+        this.$bus.$emit('ID_SELECTED', id);
+      }, 1500);
+    } else {
+      // Load first selected data in case of no data showing
+      setTimeout(() => {
+        this.showDataIfEmpty();
+      }, 500);
+    }
   },
 
   watch: {

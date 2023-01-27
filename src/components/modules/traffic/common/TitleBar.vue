@@ -39,7 +39,7 @@
           small
           icon
           @click.stop="refreshData"
-          class="title-btn float-right mt-2"
+          class="title-btn mt-2 float-right"
           :loading="loading"
           v-if="showRefresh"
         >
@@ -112,6 +112,10 @@ export default {
 
     showPanel() {
       this.$store.commit('traffic/TOGGLE_SHOW_PANEL');
+    },
+
+    menuItemClicked(action) {
+      this.$emit('menuItemclick', action);
     }
   }
 };

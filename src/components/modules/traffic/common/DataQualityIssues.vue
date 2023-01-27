@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import ErrorTypes from '@/utils/constants/status';
 export default {
   props: {
     quality: Object,
@@ -38,22 +39,9 @@ export default {
       const result = this.quality.errors
         .map((item, index) => ({ index, count: item }))
         .filter(item => item.count > 0)
-        .map(item => ({ percent: item.count, ...this.sensorErrorTypes[item.index] }));
+        .map(item => ({ percent: item.count, ...ErrorTypes.ERROR_COLOR_TYPES[item.index] }));
       return result;
     }
-  },
-
-  data: () => ({
-    sensorErrorTypes: [
-      { value: 0, color: '#90ed7d', description: 'No error' },
-      { value: 1, color: '#434348', description: 'Missing data' },
-      { value: 2, color: '#f7a35c', description: 'Invalid data' },
-      { value: 3, color: '#8085e9', description: 'VOS exceeding threshold' },
-      { value: 4, color: '#f15c80', description: 'VOS consecutive constant' },
-      { value: 5, color: '#e4d354', description: 'VOS inconsistency' },
-      { value: 6, color: '#2b908f', description: 'Volume aggregation issue' },
-      { value: 7, color: '#f45b5b', description: 'Timezone mismatch' }
-    ]
-  })
+  }
 };
 </script>

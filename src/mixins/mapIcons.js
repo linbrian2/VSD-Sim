@@ -32,6 +32,12 @@ export const mapIcons = {
         anchor: { x: 15, y: 15 }
       },
 
+      redDotSelect: {
+        url: require('@/assets/red-select.png'),
+        size: { width: 30, height: 30, f: 'px', b: 'px' },
+        anchor: { x: 15, y: 15 }
+      },
+
       weatherIcon: {
         url: require('@/assets/icon30.png'),
         size: { width: 32, height: 32, f: 'px', b: 'px' }
@@ -78,9 +84,9 @@ export const mapIcons = {
       },
 
       trafficLightIconActive: {
-        url: require('@/assets/traffic_light_active.png'),
-        size: { width: 15, height: 36, f: 'px', b: 'px' },
-        anchor: { x: 8, y: 18 }
+        url: require('@/assets/traffic_light_small_select.png'),
+        size: { width: 19, height: 40, f: 'px', b: 'px' },
+        anchor: { x: 9, y: 20 }
       },
 
       redDotIconActive: {
@@ -114,14 +120,14 @@ export const mapIcons = {
 
       alertIcon: {
         url: require('@/assets/alert.png'),
-        size: { width: 64, height: 64, f: 'px', b: 'px' },
-        anchor: { x: 32, y: 32 }
+        size: { width: 48, height: 48, f: 'px', b: 'px' },
+        anchor: { x: 24, y: 24 }
       },
 
       alertIconActive: {
         url: require('@/assets/alert-select.png'),
-        size: { width: 64, height: 64, f: 'px', b: 'px' },
-        anchor: { x: 32, y: 32 }
+        size: { width: 48, height: 48, f: 'px', b: 'px' },
+        anchor: { x: 24, y: 24 }
       },
 
       alertAnimatedIcon: {
@@ -158,6 +164,18 @@ export const mapIcons = {
         url: require('@/assets/icon49-select.png'),
         size: { width: 36, height: 36, f: 'px', b: 'px' },
         anchor: { x: 18, y: 18 }
+      },
+
+      cabinetIcon: {
+        url: require('@/assets/file-cabinet.png'),
+        size: { width: 28, height: 28, f: 'px', b: 'px' },
+        anchor: { x: 14, y: 14 }
+      },
+
+      cabinetIconActive: {
+        url: require('@/assets/file-cabinet-select.png'),
+        size: { width: 28, height: 28, f: 'px', b: 'px' },
+        anchor: { x: 14, y: 14 }
       },
 
       redIcon: {
@@ -420,6 +438,22 @@ export const mapIcons = {
 
     getDotMarkerIcon(selected = false) {
       return selected ? this.greenDotSelect : this.icons[0];
+    },
+
+    getDotMarker(normal = true, selected = false) {
+      if (normal) {
+        return selected ? this.greenDotSelect : this.icons[0];
+      } else {
+        return selected ? this.redDotSelect : this.icons[1];
+      }
+    },
+
+    getDeviceMarkerIcon(selected = false) {
+      return selected ? this.cabinetIconActive : this.cabinetIcon;
+    },
+
+    getRestrictionIcon(selected = false) {
+      return selected ? this.restrictionIconActive : this.restrictionIcon;
     },
 
     getDefaultMarkerIcon(marker, selected = false) {

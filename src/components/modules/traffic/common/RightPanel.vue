@@ -4,14 +4,14 @@
     <v-toolbar dense flat fixed overflow @click="changeTable">
       <v-toolbar-title class="action-title">
         <v-icon dark class="mt-n1 mr-2" v-if="icon">{{ icon }}</v-icon>
-        {{ title }}
+        <span class="overline">{{ title }}</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-tooltip bottom v-if="tableButton">
+        <v-tooltip left v-if="tableButton">
           <template v-slot:activator="{ on, attrs }">
-            <v-icon color="primary" class="mr-10" :loading="loading" v-bind="attrs" v-on="on">
+            <v-icon color="grey" class="mr-10" :loading="loading" v-bind="attrs" v-on="on">
               {{ showTable ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
             </v-icon>
           </template>

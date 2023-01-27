@@ -16,6 +16,7 @@ import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficDataPlayback from '@/views/traffic/TrafficDataPlayback.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
 import Multigraph from '@/views/traffic/Multigraph.vue';
+import TrafficFlow from '@/components/modules/traffic/multigraph/TrafficFlow.vue';
 import TrafficRoutingDashboard from '@/views/traffic/TrafficRoutingDashboard';
 import TrafficPredict from '@/views/traffic/TrafficPredict.vue';
 import AnomalyMap from '@/views/traffic/AnomalyMap.vue';
@@ -96,6 +97,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_MULTIGRAPH,
           name: RouterNames.TRAFFIC_MULTIGRAPH,
           component: Multigraph
+        },
+        {
+          path: RouterPaths.TRAFFIC_FLOW_DATA,
+          name: RouterNames.TRAFFIC_FLOW_DATA,
+          component: TrafficFlow
         },
         {
           path: RouterPaths.TRAVEL_TIME_MAP,

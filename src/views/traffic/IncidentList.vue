@@ -2,38 +2,26 @@
   <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <!-- Left map panel -->
     <SelectionPanel :width="width" name="incidentSideBarWidth">
-      <TitleBar title="INCIDENT LIST" :showMap="false" :loading="loading" :refresh="refreshData">
+      <TitleBar title="INCIDENT LIST" :showRefresh="false" :showMap="false" :loading="loading" :refresh="refreshData">
+        <template v-slot:right>
+          <ThreeDotMenu :items="menuItems" @menuItemclick="menuItemClicked" class="float-right mt-n5" />
+        </template>
+
         <div class="d-flex justify-space-between">
           <v-spacer></v-spacer>
-          <div>
+          <div class="ml-2">
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn class="mt-1" icon v-on="on" @click.stop="displaySearchSettings">
-                  <v-icon medium color="white">mdi-magnify</v-icon>
+                <v-btn class="mt-1" icon v-on="on" @click.stop="setupPin">
+                  <v-icon medium color="white">{{ pinPane ? 'mdi-pin' : 'mdi-pin-off' }}</v-icon>
                 </v-btn>
               </template>
-              <span>Global Search</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn class="mt-1" icon v-on="on" @click.stop="showSettings = !showSettings">
-                  <v-icon medium color="white">mdi-cog-outline</v-icon>
-                </v-btn>
-              </template>
-              <span>Settings</span>
-            </v-tooltip>
-
-            <v-tooltip bottom v-if="isSimulation">
-              <template v-slot:activator="{ on }">
-                <v-btn class="mt-1" icon v-on="on" @click.stop="showSimulationConfig = !showSimulationConfig">
-                  <v-icon medium color="white">mdi-traffic-light-outline </v-icon>
-                </v-btn>
-              </template>
-              <span>Simulation</span>
+              <span>Pin the incident list pane</span>
             </v-tooltip>
           </div>
         </div>
       </TitleBar>
+
       <v-container>
         <v-layout column style="height: 80vh">
           <div v-for="(incident, i) in incidents" :key="i">
@@ -49,7 +37,7 @@
     </SelectionPanel>
 
     <v-app-bar absolute fixed dense dark color="blue-grey darken-1">
-      <v-app-bar-nav-icon @click.stop="showIncidentPanel" />
+      <v-app-bar-nav-icon color="teal lighten-2" @click.stop="showIncidentPanel" />
       <v-toolbar-title class="overline">{{ incidentTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <div class="d-flex justify-end mt-n2">
@@ -75,39 +63,27 @@
       </div>
     </v-app-bar>
 
-    <v-sheet class="overflow-y-auto mt-10" max-height="89vh">
-      <div v-if="incidentItem">
-        <v-row id="mapSegment">
-          <v-col cols="12">
-            <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"
-              ><h3>Incident Location</h3></v-subheader
-            >
-            <v-divider />
-          </v-col>
-          <v-col cols="12">
-            <div class="mx-3 mt-n5 mb-n5">
-              <v-card tile>
-                <MapSegment
-                  ref="mapSegmentRef"
-                  :segments="segmentLinks"
-                  :markers="markers"
-                  @select="onSegmentSelected"
-                  @click="onMarkerClicked"
-                  :smallMap="true"
-                />
-              </v-card>
-            </div>
-          </v-col>
-        </v-row>
+    <v-layout v-if="incidentItem">
+      <v-navigation-drawer v-model="drawer" left :width="width">
+        <MapSegment
+          ref="mapSegmentRef"
+          :segments="segmentLinks"
+          :markers="markers"
+          @select="onSegmentSelected"
+          @click="onMarkerClicked"
+          :smallMap="false"
+        />
+      </v-navigation-drawer>
 
+      <v-sheet class="overflow-y-auto mt-10" max-height="89vh">
         <EvidenceListDisplay
           :showHeader="false"
           :incident="incidentItem"
           @select="singleSegmentSelected"
           ref="anomalySegmentDisplay"
         />
-      </div>
-    </v-sheet>
+      </v-sheet>
+    </v-layout>
 
     <IncidentSettings v-model="showSettings" ref="settings" />
     <SimulationConfigs v-model="showSimulationConfig" ref="simu" v-if="isSimulation" />
@@ -154,6 +130,7 @@ import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
 import { mapState, mapActions } from 'vuex';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
+import ThreeDotMenu from '@/components/common/ThreeDotMenu';
 import MapSegment from '@/components/modules/traffic/incident/MapSegment';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import IncidentInfo from '@/components/modules/traffic/common/IncidentInfo';
@@ -166,6 +143,7 @@ import EvidenceListDisplay from '@/components/modules/traffic/incident/EvidenceL
 export default {
   components: {
     TitleBar,
+    ThreeDotMenu,
     MapSegment,
     SelectionPanel,
     IncidentInfo,
@@ -185,6 +163,7 @@ export default {
     showSearch: false,
     showSimulationConfig: false,
     showMitigation: false,
+    pinPane: false,
 
     segments: [],
     markers: [],
@@ -196,8 +175,15 @@ export default {
 
     btnSelection: 0,
 
+    menuItems: [
+      { title: 'Global Search ...', icon: 'mdi-magnify', action: 0 },
+      { title: 'Incident Settings ...', icon: 'mdi-cog-outline', action: 1 },
+      { divider: true },
+      { title: 'Start Simulation ...', icon: 'mdi-traffic-light-outline', action: 2 }
+    ],
+
     DEFAULT_ACTION_ITEMS: [
-      { id: 1, icon: 'mdi-map', tooltip: 'Map', action: 'mapSegment' },
+      { id: 1, icon: 'mdi-information-outline', tooltip: 'Basic Info', action: 'info' },
       { id: 2, icon: 'mdi-timeline-clock-outline', tooltip: 'Timeline', action: 'timeline' },
       { id: 3, icon: 'mdi-car-multiple', tooltip: 'Traffic Flow', action: 'flow' },
       { id: 4, icon: 'mdi-bluetooth-connect', tooltip: 'Travel Time', action: 'travelTime' },
@@ -211,6 +197,15 @@ export default {
   }),
 
   computed: {
+    drawer: {
+      get() {
+        return true;
+      },
+      set(show) {
+        this.$store.commit('traffic/SHOW_PANEL', show);
+      }
+    },
+
     totalIncidents() {
       return this.incidents ? this.incidents.length : 0;
     },
@@ -285,6 +280,27 @@ export default {
       }
     },
 
+    setupPin() {
+      this.pinPane = !this.pinPane;
+      if (!this.pinPane) {
+        this.$store.commit('traffic/SHOW_PANEL', false);
+      }
+    },
+
+    menuItemClicked(action) {
+      switch (action) {
+        case 0:
+          this.displaySearchSettings();
+          break;
+        case 1:
+          this.showSettings = true;
+          break;
+        case 2:
+          this.showSimulationConfig = true;
+          break;
+      }
+    },
+
     displaySearchSettings() {
       this.$refs.search.init();
       this.showSearch = true;
@@ -338,8 +354,16 @@ export default {
         }, 50);
       }
 
+      // Hide the incident list
+      if (!this.pinPane) {
+        setTimeout(() => {
+          this.$store.commit('traffic/SHOW_PANEL', false);
+        }, 100);
+      }
+
+      // Move the incident display to the top
       setTimeout(() => {
-        this.gotoSection('mapSegment');
+        this.gotoSection(this.DEFAULT_ACTION_ITEMS[0].action);
         this.actionItems = this.createActionItems();
       }, 200);
     },
@@ -356,7 +380,6 @@ export default {
       } else {
         const display = this.$refs.anomalySegmentDisplay;
         const items = [];
-        items.push(this.DEFAULT_ACTION_ITEMS[0]);
         this.DEFAULT_ACTION_ITEMS.forEach(item => {
           if (display.isVisible(item.action)) {
             items.push(item);

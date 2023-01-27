@@ -2,7 +2,7 @@
   <v-toolbar
     dense
     floating
-    color="green"
+    color="white"
     height="40"
     :style="`position: absolute; top: ${layerBtnTopOffset}; left: ${layerBtnLeftOffset}; width: 55px;`"
   >
@@ -10,7 +10,7 @@
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on: tooltip }">
-            <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+            <v-btn icon color="grey darken-2" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
               <v-icon>mdi-layers-outline</v-icon>
             </v-btn>
           </template>
@@ -47,7 +47,7 @@ export default {
       return this.$vuetify.breakpoint.mobile ? '220px' : '190px';
     },
     layerBtnTopOffset() {
-      return '48px';
+      return '49px';
     }
   },
 

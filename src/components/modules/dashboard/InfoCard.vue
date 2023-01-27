@@ -1,16 +1,16 @@
 <template>
-  <v-card :color="cardColor" :class="flex ? 'py-2' : 'grid-center'">
+  <v-card tile dense :color="cardColor" :class="flex ? 'py-1' : 'grid-center'">
     <v-row v-if="colDisplay" class="mx-3">
-      <v-col :cols="navigationWidth < 420 ? 12 : 5">
+      <v-col :cols="navigationWidth < 420 ? 12 : 6">
         <div style="display: flex;">
-          <v-icon v-if="!hideIcons" class="pr-1" :color="iconColor" :size="30">{{ icon }}</v-icon>
+          <v-icon v-if="!hideIcons" class="pr-1" :color="iconColor" :size="25">{{ icon }}</v-icon>
           <h3 v-if="!(navigationWidth < 420)" :style="`color: ${titleColor}`">{{ name }}</h3>
           <h3 v-else class="pl-2" :style="`color: ${color !== 'undefined' ? color : valueColor};`">
             <b>{{ value }}</b>
           </h3>
         </div>
       </v-col>
-      <v-col cols="7" v-if="!(navigationWidth < 420)">
+      <v-col cols="6" v-if="!(navigationWidth < 420)">
         <h3 :style="`color: ${color !== 'undefined' ? color : valueColor};`">
           <div v-if="name == 'Evidence Counts' && value">
             <v-badge
@@ -108,14 +108,14 @@ export default {
     valueFontSize: { type: Number, default: 32 },
     cardColor: { type: String, default: undefined },
     color: { type: String, default: 'undefined' },
-    titleColor: { type: String, default: '#FFC107' },
-    iconColor: { type: String, default: '#FFC107' },
+    titleColor: { type: String, default: '#FFF' },
+    iconColor: { type: String, default: '#FFF' },
     height: { type: String, default: '21vh' },
     iconSize: { type: Number, default: 50 },
     icon: { type: String, default: 'mdi-cog' },
     name: { type: String, default: 'Placeholder' },
     value: { type: [Number, String, Object], default: '-' },
-    valueColor: { type: String }
+    valueColor: { type: String, default: 'teal' }
   },
   computed: {
     valueColorA() {
