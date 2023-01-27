@@ -11,7 +11,7 @@
         <InfoList :height="300" :data="info" />
       </v-card>
 
-      <v-card class="mb-4" v-if="isInfo">
+      <v-card class="mb-4" v-if="isInfo && currentTrip && currentTrip.cspiData && currentTrip.cspiData.length > 0">
         <v-data-table
           :headers="headers"
           :items="items"

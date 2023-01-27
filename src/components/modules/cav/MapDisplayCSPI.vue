@@ -18,13 +18,15 @@
       <GmapMarker :position="startPoint" :clickable="false" :draggable="false" :icon="startIcon" />
       <GmapMarker :position="endPoint" :clickable="false" :draggable="false" :icon="endIcon" />
 
-      <GmapMarker
-        v-for="m in markers"
-        :key="m.id"
-        :position="m.position"
-        :title="m.name"
-        :icon="getSignalIcon(m.zoneId)"
-      />
+      <div v-if="currentTrip && currentTrip.cspiData && currentTrip.cspiData.length > 0">
+        <GmapMarker
+          v-for="m in markers"
+          :key="m.id"
+          :position="m.position"
+          :title="m.name"
+          :icon="getSignalIcon(m.zoneId)"
+        />
+      </div>
 
       <!-- Car -->
       <CarMarker :visible="carVisible" :position="currentCarPos" />
@@ -124,7 +126,7 @@ export default {
     position() {
       this.$refs.mapRef.$mapPromise.then(map => {
         map.panTo(this.position);
-        map.setZoom(11);
+        map.setZoom(12);
       });
     },
 
@@ -152,7 +154,6 @@ export default {
   },
 
   mounted() {
-    this.$store.commit('SET_POSITION', { lat: 38.6, lng: -75.1 });
     this.$refs.mapRef.$mapPromise.then(map => {
       this.map = map;
       this.addHomeControlToMap(map);
