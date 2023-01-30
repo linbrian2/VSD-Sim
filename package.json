@@ -11,7 +11,6 @@
     "@googlemaps/markerclusterer": "^1.0.12",
     "axios": "^0.22.0",
     "core-js": "^2.6.5",
-    "d3": "^7.8.2",
     "date-fns": "^2.24.0",
     "highcharts": "^9.3.0",
     "highcharts-more": "^0.1.7",

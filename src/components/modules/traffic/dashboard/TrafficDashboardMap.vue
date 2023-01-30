@@ -233,7 +233,7 @@ import Constants from '@/utils/constants/dashboard.js';
 import { mapState } from 'vuex';
 import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
-import { getRedBlueColor } from '@/utils/Colors.js';
+import Colors from '@/utils/Colors.js';
 
 export default {
   mixins: [mapIcons, weatherCode],
@@ -488,7 +488,7 @@ export default {
         if (timeVal > 1) {
           timeVal = 2 - timeVal;
         }
-        this.selectedColor = getRedBlueColor(timeVal);
+        this.selectedColor = Colors.getRedBlueColor(timeVal);
       }, 200);
     },
 

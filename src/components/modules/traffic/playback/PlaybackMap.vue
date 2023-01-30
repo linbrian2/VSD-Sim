@@ -194,7 +194,7 @@ import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
 import Constants from '@/utils/constants/bluetooth';
 import GmapCluster from 'vue2-google-maps/src/components/cluster';
-import { getRedBlueColor } from '@/utils/Colors.js';
+import Colors from '@/utils/Colors.js';
 
 export default {
   mixins: [mapIcons, weatherCode],
@@ -324,7 +324,7 @@ export default {
         if (timeVal > 1) {
           timeVal = 2 - timeVal;
         }
-        this.selectedColor = getRedBlueColor(timeVal);
+        this.selectedColor = Colors.getRedBlueColor(timeVal);
       }, 50);
     },
     handleMarkerClick(type, id) {

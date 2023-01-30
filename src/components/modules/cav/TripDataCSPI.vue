@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import * as d3 from 'd3';
+import Colors from '@/utils/Colors.js';
 import Api from '@/utils/api/cav';
 import Utils from '@/utils/Utils';
 import Format from '@/utils/Format';
@@ -241,18 +241,7 @@ export default {
     },
 
     getColor(score) {
-      return d3.interpolateLab('#ff1900', '#33ff00')((score - 33) / 76);
-      // if (score < 50) {
-      //   return '#ff1900';
-      // } else if (score < 60) {
-      //   return '#ff9900';
-      // } else if (score < 70) {
-      //   return '#fff700';
-      // } else if (score < 80) {
-      //   return '#c8ff00';
-      // } else {
-      //   return '#33ff00';
-      // }
+      return Colors.getRedGreenColor((score - 33) / 76);
     },
 
     downloadAll() {

@@ -170,7 +170,7 @@
 </template>
 
 <script>
-import * as d3 from 'd3';
+import Colors from '@/utils/Colors.js';
 import Utils from '@/utils/Utils';
 import BasicChart from '@/components/modules/traffic/common/BasicChart.vue';
 
@@ -191,7 +191,7 @@ export default {
       return Utils.formatTime(new Date(ts));
     },
     getColorByScore(score) {
-      return d3.interpolateLab('#ff1900', '#33ff00')((score - 33) / 76);
+      return Colors.getRedGreenColor((score - 33) / 76);
     },
     closeDialog() {
       this.$emit('closeDialog');

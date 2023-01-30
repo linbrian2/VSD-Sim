@@ -43,7 +43,9 @@ export default {
   methods: {
     prepareSeries(data) {
       let perShapeGradient = { x1: 0, y1: 0, x2: 1, y2: 0 };
-      let colors = this.colors && this.colors.length > 0 ? this.colors
+      let colors =
+        this.colors && this.colors.length > 0
+          ? this.colors
           : [
               {
                 linearGradient: Highcharts.merge(perShapeGradient),

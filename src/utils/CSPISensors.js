@@ -304,7 +304,7 @@ export default [
       lat: 38.452163,
       lng: -75.052244
     }
-  },
+  }
   // {
   //   id: 100,
   //   name: 'NW',
