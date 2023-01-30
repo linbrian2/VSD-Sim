@@ -58,6 +58,12 @@ export default {
     }
   },
 
+  mounted() {
+    this.$bus.$on('SET_CURRENT_DATE', date => {
+      this.date = date;
+    });
+  },
+
   methods: {
     allowedDates(val) {
       let date0 = parseInt(val.split('-').join(''));

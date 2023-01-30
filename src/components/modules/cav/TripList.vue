@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     disable-sort
-    :headers="headers"
+    :headers="headersFilt"
     height="400"
     fixed-header
     :items="items"
@@ -33,20 +33,13 @@
         <span>{{ item.status === 0 ? 'ONGOING' : 'COMPLETED' }}</span>
       </v-tooltip>
     </template>
-    <template v-slot:[`item.segment`]="{ item }">
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <span v-on="on">
-            <div v-if="item.cspiData && item.cspiData.length > 0">
-              <v-chip small :color="getColor(item.cspiData[item.cspiData.length - 1].score)">
-                <h4 style="color: #3b3b3b;">{{ item.cspiData[item.cspiData.length - 1].score }}</h4>
-              </v-chip>
-            </div>
-            <div v-else>-</div>
-          </span>
-        </template>
-        <span>{{ item.segment ? 'Has CSPI' : 'No CSPI' }}</span>
-      </v-tooltip>
+    <template v-slot:[`item.segment`]="{ item }" v-if="showCSPI">
+      <div v-if="item.cspiData && item.cspiData.length > 0">
+        <v-chip small :color="getColor(item.cspiData[item.cspiData.length - 1].score)">
+          <h4 style="color: #3b3b3b;">{{ item.cspiData[item.cspiData.length - 1].score }}</h4>
+        </v-chip>
+      </div>
+      <div v-else>-</div>
     </template>
   </v-data-table>
 </template>
@@ -57,12 +50,26 @@ import Format from '@/utils/Format';
 export default {
   props: {
     headers: Array,
-    items: Array
+    items: Array,
+    showCSPI: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data: () => ({
     itemsPerPage: 100
   }),
+
+  computed: {
+    headersFilt() {
+      if (!this.showCSPI) {
+        return this.headers.filter(x => x.text != 'CSPI');
+      } else {
+        return this.headers;
+      }
+    }
+  },
 
   methods: {
     getColor(score) {

@@ -40,7 +40,6 @@ import MultiView from '@/views/vision/MultiView.vue';
 
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
-import TripCSPIView from '@/views/cav/TripCSPIView.vue';
 
 import StatusDashboard from '@/views/status/Dashboard.vue';
 import QualityCheck from '@/views/status/QualityCheck.vue';
@@ -216,11 +215,6 @@ const router = new Router({
           path: RouterPaths.CAV_STATUS,
           name: RouterNames.CAV_STATUS,
           component: TripStatusView
-        },
-        {
-          path: RouterPaths.CAV_CSPI,
-          name: RouterNames.CAV_CSPI,
-          component: TripCSPIView
         }
       ]
     },
