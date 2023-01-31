@@ -173,7 +173,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <ChartDialog ref="chartDialog" v-model="showChartDialog" />
   </div>
 </template>
 
@@ -184,7 +183,6 @@ import Constants from '@/utils/constants/traffic';
 import ListInfoCard from '@/components/modules/traffic/common/ListInfoCard';
 import PredictionInfoList from '@/components/modules/traffic/dashboard/PredictionInfoList';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
-import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 
 export default {
   props: {
@@ -194,14 +192,11 @@ export default {
   components: {
     BasicChart,
     ListInfoCard,
-    ChartDialog,
     PredictionInfoList
   },
 
   data: () => ({
     loading: false,
-    showChartDialog: false,
-    showVideoPlayer: false,
     height: 300,
     legendY: 5,
     marginLeft: 80,
@@ -248,23 +243,19 @@ export default {
     },
 
     showSpeedChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Speed', this.speed);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Speed', data: this.speed });
     },
 
     showVolumeChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Volume', this.volume);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Volume', data: this.volume });
     },
 
     showOccupancyChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Occupancy', this.occupancy);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Occupancy', data: this.occupancy });
     },
 
     showVOChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('V + O', this.vo);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'V + O', data: this.vo });
     },
 
     playVideo(id) {

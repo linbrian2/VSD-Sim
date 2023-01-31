@@ -27,18 +27,6 @@
               :options="markerOptions(m.id)"
               @click="handleMarkerClick(0, m.id)"
             />
-
-            <!-- Anomaly marker id -->
-            <!-- <GmapCustomMarker
-              alignment="bottomright"
-              v-for="(m, index) in markers.filter(d => d.status > 0)"
-              :key="index + 100"
-              :offsetX="15"
-              :offsetY="0"
-              :marker="m.position"
-            >
-              <h3 style="color:white">{{ m.id }}</h3>
-            </GmapCustomMarker> -->
           </div>
 
           <!-- Bluetooth Center locations -->
@@ -62,12 +50,14 @@
               :position="m.position"
               :title="m.name"
               :clickable="true"
-              :icon="getNormalWeatherMarkerIcon(m, m.id === selectedMarkerId)"
-              @click="handleMarkerClick(2, m.id)"
+              :icon="getWeatherMarkerIcon(m)"
+              @click="handleMarkerClick(2, m.id, m)"
             />
 
+            <MaskMarker :position="weatherMarkerPosition" />
+
             <!-- Weather Station Temeperature -->
-            <GmapCustomMarker
+            <!-- <GmapCustomMarker
               alignment="topright"
               v-for="m in weatherMarkers"
               :key="`${m.id}-T`"
@@ -78,7 +68,7 @@
               <div v-if="m.temp > -100">
                 <h3 style="color:white">{{ m.temp }}°F</h3>
               </div>
-            </GmapCustomMarker>
+            </GmapCustomMarker> -->
           </div>
 
           <!-- Travel restrictions -->
@@ -153,20 +143,6 @@
               :path.sync="s.path"
               :options="segmentOptions(s)"
             />
-            <!-- Travel Time Display -->
-            <!-- <GmapCustomMarker
-              alignment="topright"
-              v-for="m in weatherMarkers"
-              :key="`${m.id}-T`"
-              :offsetX="10"
-              :offsetY="-20"
-              :marker="m.position"
-            >
-               segment.id === this.selectedSegmentId
-              <div v-if="m.temp > -100">
-                <h3 style="color:white">{{ m.temp }}</h3>
-              </div>
-            </GmapCustomMarker> -->
           </div>
 
           <!-- Device Anomalies -->
@@ -230,6 +206,7 @@ import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapUtils from '@/utils/MapUtils.js';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import Constants from '@/utils/constants/dashboard.js';
+import MaskMarker from '@/components/modules/traffic/common/MaskMarker.vue';
 import { mapState } from 'vuex';
 import { mapIcons } from '@/mixins/mapIcons';
 import { weatherCode } from '@/mixins/weatherCode';
@@ -245,6 +222,7 @@ export default {
     selectedIdx: Number
   },
   components: {
+    MaskMarker,
     GmapCustomMarker
   },
   data() {
@@ -270,6 +248,7 @@ export default {
         styles: DarkMapStyle,
         gestureHandling: 'greedy'
       },
+      weatherMarkerPosition: { lat: 0, lng: 0 },
       infoPosition: null,
       defaultSegmentOptions: {
         strokeColor: 'green',
@@ -280,14 +259,6 @@ export default {
     };
   },
   computed: {
-    showPanel: {
-      get() {
-        return this.$store.state.traffic.showPanel;
-      },
-      set(show) {
-        this.$store.commit('traffic/SHOW_PANEL', show);
-      }
-    },
     deviceMarkers() {
       return Devices;
     },
@@ -356,6 +327,7 @@ export default {
       'wazeAlerts'
     ]),
     ...mapState('traffic', [
+      'showPanel',
       'currentBluetoothAnomaly',
       'currentFlowAnomaly',
       'currentWeatherCode',
@@ -369,6 +341,11 @@ export default {
   },
 
   watch: {
+    showPanel(show) {
+      if (!show) {
+        this.weatherMarkerPosition = { lat: 0, lng: 0 };
+      }
+    },
     selectedMarkers: {
       handler: function() {
         this.addSelectedMarker();
@@ -635,9 +612,10 @@ export default {
       this.selectedSegmentId = -1;
     },
 
-    handleMarkerClick(type, id) {
+    handleMarkerClick(type, id, marker = null) {
       this.selectedMarkerType = type;
       this.selectedMarkerId = id;
+      this.weatherMarkerPosition = type === 2 && marker ? marker.position : { lat: 0, lng: 0 };
       this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type });
     },
 

@@ -1,6 +1,9 @@
 <template>
   <v-list class="pa-0">
-    <v-subheader>System</v-subheader>
+    <v-subheader class="d-flex justify-space-between">
+      <div class="overline">Menu</div>
+      <Version />
+    </v-subheader>
     <v-divider></v-divider>
     <template v-for="(item, key) in items">
       <v-list-group
@@ -34,11 +37,13 @@
 </template>
 
 <script>
-import NavIcon from '@/components/nav//NavIcon';
-import NavListItem from '@/components/nav//NavListItem';
+import Version from '@/components/nav/Version';
+import NavIcon from '@/components/nav/NavIcon';
+import NavListItem from '@/components/nav/NavListItem';
 
 export default {
   components: {
+    Version,
     NavIcon,
     NavListItem
   },

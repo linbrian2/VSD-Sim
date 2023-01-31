@@ -64,12 +64,14 @@ export const weatherCode = {
       if (icon) {
         return {
           url: require(`@/assets/weather/icon${icon}.png`),
-          size: { width: 32, height: 32, f: 'px', b: 'px' }
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
         };
       } else {
         return {
           url: require(`@/assets/weather/icon41.png`),
-          size: { width: 32, height: 32, f: 'px', b: 'px' }
+          size: { width: 32, height: 32, f: 'px', b: 'px' },
+          anchor: { x: 16, y: 16 }
         };
       }
     }

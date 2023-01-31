@@ -185,6 +185,8 @@ export default {
             sensorErrorTypes.push({ dir, errorTypes });
           });
           this.sensorErrorTypes = sensorErrorTypes;
+        } else {
+          this.sensorErrorTypes = [];
         }
 
         const countsData = this.parseResponseData(countsRes);

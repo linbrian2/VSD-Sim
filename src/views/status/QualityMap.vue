@@ -30,8 +30,19 @@
         :options="markerOptions(m.id)"
         @click="markerClicked(m)"
       />
+
+      <!-- Mask marker -->
+      <MaskMarker :position="markerPosition" />
     </GmapMap>
-    <Toolbar @region-select="mapRegionSelect" @type-select="errorTypeSelect" />
+
+    <Toolbar
+      :entities="entities"
+      @system="showSystemInfo"
+      @region="mapRegionSelect"
+      @type="errorTypeSelect"
+      @search="showSearchResult"
+    />
+
     <BottomDataDisplay
       name="dashboardSideBarWidth"
       :title="currentTitle"
@@ -53,18 +64,22 @@ import StatusApi from '@/utils/api/status';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 import { mapIcons } from '@/mixins/mapIcons';
+import MaskMarker from '@/components/modules/traffic/common/MaskMarker.vue';
 import RightPanel from '@/components/modules/traffic/common/RightPanel';
 import Toolbar from '@/components/modules/status/Toolbar';
 import SensorErrorInfo from '@/components/modules/status/SensorErrorInfo';
+import SystemQualityInfo from '@/components/modules/status/SystemQualityInfo';
 import BottomDataDisplay from '@/components/modules/traffic/common/BottomDataDisplay.vue';
 
 export default {
   mixins: [mapIcons],
   components: {
     RightPanel,
+    MaskMarker,
     GmapCustomMarker,
     Toolbar,
     SensorErrorInfo,
+    SystemQualityInfo,
     BottomDataDisplay
   },
 
@@ -81,6 +96,7 @@ export default {
 
     map: null,
     infoPosition: null,
+    markerPosition: { lat: 0, lng: 0 },
     devices: [],
 
     options: {
@@ -88,12 +104,12 @@ export default {
       zoomControlOptions: {
         position: 8
       },
+      mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: true,
 
       mapTypeControlOptions: {
-        mapTypeIds: ['roadmap', 'hybrid'],
-        position: 2
+        mapTypeIds: ['roadmap', 'hybrid']
       },
       styles: DarkMapStyle,
       gestureHandling: 'greedy'
@@ -103,14 +119,6 @@ export default {
   computed: {
     google: gmapApi,
 
-    showPanel: {
-      get() {
-        return this.$store.state.cav.showPanel;
-      },
-      set(show) {
-        this.$store.commit('cav/SHOW_PANEL', show);
-      }
-    },
     markers() {
       if (this.mapRegionSelection < 0) {
         if (this.errorTypeSelection < 0) {
@@ -129,6 +137,10 @@ export default {
       }
     },
 
+    entities() {
+      return this.markers.map(marker => ({ id: marker.id, desc: marker.name }));
+    },
+
     position() {
       return this.$store.state.position;
     },
@@ -140,10 +152,18 @@ export default {
       return {};
     },
 
+    ...mapState('traffic', ['showPanel']),
     ...mapState(['currentDate'])
   },
 
   watch: {
+    showPanel(show) {
+      if (!show) {
+        // Clear maker selection
+        this.markerPosition = { lat: 0, lng: 0 };
+      }
+    },
+
     position() {
       this.$refs.mapRef.$mapPromise.then(map => {
         map.panTo(this.position);
@@ -223,6 +243,7 @@ export default {
 
     addMapControls(map) {
       this.addHomeControl(map);
+      this.addPointControl(map);
     },
 
     addHomeControl(map) {
@@ -246,30 +267,48 @@ export default {
       MapUtils.addControl(map, options);
     },
 
+    addPointControl(map) {
+      let options = {
+        position: 'right',
+        content: `<div class="non-selection" style="margin:-5px 4px;"><img src="${this.zoomIcon}"/></div>`,
+        title: 'Click to zoom in the selected marker',
+        style: {
+          width: '40px',
+          height: '40px',
+          margin: '10px',
+          padding: '12px 3px',
+          border: 'solid 1px #717B87',
+          background: '#fff'
+        },
+        events: {
+          click: () => {
+            this.zoomSelectedMarker();
+          }
+        }
+      };
+      MapUtils.addControl(map, options);
+    },
+
     showPanelIfNot() {
       if (!this.$store.state.traffic.showPanel) {
         this.$store.commit('traffic/SHOW_PANEL', true);
       }
     },
 
-    handleMarkerClick(type, id) {
-      let marker = null;
-      switch (type) {
-        case 0:
-          this.selectedMarkerId = id;
-          marker = this.markers.find(m => m.id === id);
-          this.markerClicked(marker);
-          break;
+    showSearchResult(item) {
+      const marker = this.markers.find(marker => marker.id === item.id);
+      if (marker) {
+        this.markerClicked(marker);
       }
     },
 
     markerClicked(marker) {
-      // if (marker.status == 0) {
-      //   return;
-      // }
+      // Update mask marker position to the current marker location
+      this.markerPosition = marker.position;
+
       this.showPanelIfNot();
       this.selectedMarker = marker;
-      this.currentTitle = 'Detector Quality Check';
+      this.currentTitle = 'Detector Quality';
       if (this.currentComponent !== SensorErrorInfo) {
         this.currentComponent = SensorErrorInfo;
       } else {
@@ -278,6 +317,14 @@ export default {
             this.$refs.refPanelInfo.init(marker);
           }
         }, 250);
+      }
+    },
+
+    showSystemInfo() {
+      this.showPanelIfNot();
+      this.currentTitle = 'System Quality Info';
+      if (this.currentComponent !== SystemQualityInfo) {
+        this.currentComponent = SystemQualityInfo;
       }
     },
 
@@ -313,7 +360,7 @@ export default {
     },
 
     zoomSelectedMarker() {
-      const marker = this.markers.find(m => m.id == this.selectedMarkerId);
+      const marker = this.markers.find(m => m.id == this.selectedMarker.id);
       if (marker) {
         this.map.panTo(marker.position);
         this.map.setZoom(14);

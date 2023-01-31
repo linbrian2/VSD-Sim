@@ -45,6 +45,17 @@
           </v-list-item>
         </v-list>
       </v-menu>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" @click.stop="showSystemQuality">
+            <v-icon>mdi-check-decagram</v-icon>
+          </v-btn>
+        </template>
+        <span>System Quality</span>
+      </v-tooltip>
+
+      <ExpandableSearch :entities="entities" @search="onSearchChange" />
     </v-toolbar>
 
     <v-chip-group>
@@ -67,15 +78,28 @@
 <script>
 import StatusConstants from '@/utils/constants/status';
 import TrafficConstants from '@/utils/constants/traffic';
+import ExpandableSearch from '@/components/common/ExpandableSearch';
 
 export default {
+  props: {
+    entities: Array
+  },
+
+  components: {
+    ExpandableSearch
+  },
+
   data: () => ({
     loading: false,
     dataClasses: [],
     selectedErrorType: -1,
 
     region_menu_items: TrafficConstants.TRAFFIC_DEVICE_CATEGORIES,
-    selectedRegionId: -1
+    selectedRegionId: -1,
+
+    select: null,
+    search: null,
+    searchItems: []
   }),
 
   mounted() {
@@ -98,20 +122,34 @@ export default {
         }
       }
 
-      // if (this.selectedErrorType >= 0) {
-      //   result.push({
-      //     id: 20 + this.selectedErrorType,
-      //     type: 1,
-      //     name: this.dataClasses[this.selectedErrorType].name,
-      //     color: this.dataClasses[this.selectedErrorType].color
-      //   });
-      // }
-
       return result;
     }
   },
 
+  watch: {
+    select() {
+      this.$nextTick(() => {
+        this.select = null;
+      });
+    },
+
+    search(val) {
+      if (val) {
+        if (!this.isLoading) {
+          this.isLoading = true;
+          const key = val.toLowerCase();
+          this.searchItems = this.entities.filter(item => item.desc.toLowerCase().includes(key));
+          this.loading = false;
+        }
+      }
+    }
+  },
+
   methods: {
+    onSearchChange(item) {
+      this.$emit('search', item);
+    },
+
     createDataClasses() {
       const dataClasses = [];
       for (let i = 0; i < 8; i++) {
@@ -133,14 +171,18 @@ export default {
       }
 
       setTimeout(() => {
-        this.$emit('type-select', this.selectedErrorType);
+        this.$emit('type', this.selectedErrorType);
       }, 100);
+    },
+
+    showSystemQuality() {
+      this.$emit('system');
     },
 
     regionMenuItemClicked(value) {
       this.selectedRegionId = value;
       setTimeout(() => {
-        this.$emit('region-select', this.selectedRegionId);
+        this.$emit('region', this.selectedRegionId);
       }, 100);
     },
 

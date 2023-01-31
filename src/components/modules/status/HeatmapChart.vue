@@ -173,8 +173,8 @@ export default {
 
         chart: {
           height: chartHeight,
-          spacingTop: 10,
-          spacingBottom: 5,
+          spacingTop: 20,
+          spacingBottom: 10,
           marginLeft: 75,
           marginRight: 70,
           marginBottom: 55,

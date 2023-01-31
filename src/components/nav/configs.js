@@ -32,6 +32,7 @@ const protectedRoute = [
               icon: RouterIcons.TRAFFIC_MULTIGRAPH
             }
           },
+
           {
             path: RouterPaths.TRAFFIC_SIGNALS,
             name: RouterNames.TRAFFIC_SIGNALS,
@@ -46,6 +47,14 @@ const protectedRoute = [
             meta: {
               title: RouterNames.TRAFFIC_RESPONSIVE_DATA,
               icon: RouterIcons.TRAFFIC_RESPONSIVE_DATA
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_INCIDENT_LIST,
+            name: RouterNames.TRAFFIC_INCIDENT_LIST,
+            meta: {
+              title: RouterNames.TRAFFIC_INCIDENT_LIST,
+              icon: RouterIcons.TRAFFIC_INCIDENT_LIST
             }
           },
           {
@@ -65,11 +74,11 @@ const protectedRoute = [
             }
           },
           {
-            path: RouterPaths.TRAFFIC_INCIDENT_LIST,
-            name: RouterNames.TRAFFIC_INCIDENT_LIST,
+            path: RouterPaths.STATUS_QUALITY_MAP,
+            name: RouterNames.STATUS_QUALITY_MAP,
             meta: {
-              title: RouterNames.TRAFFIC_INCIDENT_LIST,
-              icon: RouterIcons.TRAFFIC_INCIDENT_LIST
+              title: RouterNames.STATUS_QUALITY_MAP,
+              icon: RouterIcons.STATUS_QUALITY_MAP
             }
           },
           {
@@ -86,24 +95,6 @@ const protectedRoute = [
             meta: {
               title: RouterNames.TRAFFIC_DATA_PLAYBACK,
               icon: RouterIcons.TRAFFIC_DATA_PLAYBACK
-            }
-          },
-          {
-            path: RouterPaths.TRAFFIC_LCM,
-            name: RouterNames.TRAFFIC_LCM,
-            meta: {
-              title: RouterNames.TRAFFIC_LCM,
-              icon: RouterIcons.TRAFFIC_LCM,
-              permissions: ['Admin', 'Dev']
-            }
-          },
-          {
-            path: RouterPaths.TRAFFIC_ROUTING,
-            name: RouterNames.TRAFFIC_ROUTING,
-            meta: {
-              title: RouterNames.TRAFFIC_ROUTING,
-              icon: RouterIcons.TRAFFIC_ROUTING,
-              permissions: ['Admin', 'Dev']
             }
           }
         ]
@@ -214,33 +205,28 @@ const protectedRoute = [
       {
         path: RouterPaths.STATUS_DASHBOARD,
         meta: {
-          title: 'System Monitoring',
-          icon: 'healthIcon'
+          title: 'Experimental',
+          icon: RouterIcons.EXPERIMENTAL_ICON,
+          isNew: true
         },
         children: [
           {
-            path: RouterPaths.STATUS_DASHBOARD,
-            name: RouterNames.STATUS_DASHBOARD,
+            path: RouterPaths.TRAFFIC_LCM,
+            name: RouterNames.TRAFFIC_LCM,
             meta: {
-              title: RouterNames.STATUS_DASHBOARD,
-              icon: RouterIcons.STATUS_DASHBOARD,
+              title: RouterNames.TRAFFIC_LCM,
+              icon: RouterIcons.TRAFFIC_LCM,
+              permissions: ['Admin', 'Dev'],
+              isNew: true
+            }
+          },
+          {
+            path: RouterPaths.TRAFFIC_ROUTING,
+            name: RouterNames.TRAFFIC_ROUTING,
+            meta: {
+              title: RouterNames.TRAFFIC_ROUTING,
+              icon: RouterIcons.TRAFFIC_ROUTING,
               permissions: ['Admin', 'Dev']
-            }
-          },
-          {
-            path: RouterPaths.STATUS_QUALITY_CHECK,
-            name: RouterNames.STATUS_QUALITY_CHECK,
-            meta: {
-              title: RouterNames.STATUS_QUALITY_CHECK,
-              icon: RouterIcons.STATUS_QUALITY_CHECK
-            }
-          },
-          {
-            path: RouterPaths.STATUS_QUALITY_MAP,
-            name: RouterNames.STATUS_QUALITY_MAP,
-            meta: {
-              title: RouterNames.STATUS_QUALITY_MAP,
-              icon: RouterIcons.STATUS_QUALITY_MAP
             }
           }
         ]

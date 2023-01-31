@@ -1,12 +1,10 @@
 <template>
-  <v-card tile color="#004D40">
+  <v-card tile color="#444">
     <v-card-title class="d-flex justify-space-between">
       <div>{{ route.short }}</div>
-      <div class="overline">
-        <v-icon small color="grey" class="mt-n1 mr-1">mdi-vector-line</v-icon>{{ route.distance }} mi
-      </div>
+      <div class="overline"><v-icon small class="mt-n1 mr-1">mdi-vector-line</v-icon>{{ route.distance }} mi</div>
       <div class="mr-2">
-        <v-icon small color="grey" class="mt-n1 mr-1">mdi-arrow-top-right</v-icon>
+        <v-icon small class="mt-n1 mr-1">mdi-arrow-top-right</v-icon>
         <v-chip small :color="color">
           <strong class="black--text overline">{{ route.travelTime.level }}</strong>
         </v-chip>

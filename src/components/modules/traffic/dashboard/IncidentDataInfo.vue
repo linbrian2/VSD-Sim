@@ -37,20 +37,6 @@
         <v-col cols="12">
           <div class="mx-4 mt-n3">
             <IncidentInfo :incident="segment" />
-            <!-- <v-row>
-              <v-col cols="12">
-                <DataCard title="Time" :items="incidentTime" />
-              </v-col>
-              <v-col cols="12" v-if="incidentLoc.length > 0">
-                <DataCard title="Location" :items="incidentLoc" />
-              </v-col>
-              <v-col cols="12">
-                <IncidentTypeCard title="Type" :item="incidentType" />
-              </v-col>
-              <v-col cols="12" v-if="incidentConditions.length > 0">
-                <DataCard title="Conditions" :items="incidentConditions" />
-              </v-col>
-            </v-row> -->
           </div>
         </v-col>
       </v-row>
@@ -175,7 +161,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <ChartDialog ref="chartDialog" v-model="showChartDialog" />
   </div>
 </template>
 
@@ -185,10 +170,8 @@ import WazeAlertTypes from '@/utils/WazeAlertTypes';
 import Constants from '@/utils/constants/traffic';
 import DataCard from '@/components/modules/traffic/common/DataCard';
 import IncidentInfo from '@/components/modules/traffic/common/IncidentInfo';
-import IncidentTypeCard from '@/components/modules/traffic/incident/IncidentTypeCard';
 import WazeInfo from '@/components/modules/traffic/common/WazeInfo';
 import RestrictionInfo from '@/components/modules/traffic/common/RestrictionInfo';
-import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 import TimingPlan from '@/components/modules/traffic/dashboard/TimingPlan';
 import IncidentTimeline from '@/components/modules/traffic/incident/IncidentTimeline';
 import TrafficFlowData from '@/components/modules/traffic/incident/TrafficFlowData';
@@ -201,12 +184,10 @@ export default {
 
   components: {
     DataCard,
-    IncidentTypeCard,
     IncidentInfo,
     WazeInfo,
     TimingPlan,
     RestrictionInfo,
-    ChartDialog,
     TrafficFlowData,
     IncidentTimeline,
     TravelTimeData
@@ -214,7 +195,6 @@ export default {
 
   data: () => ({
     loading: false,
-    showChartDialog: false,
     showTimingPlan: false,
 
     height: 300,
@@ -278,18 +258,15 @@ export default {
     },
 
     showSpeedChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Speed', this.speed);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Speed', data: this.speed });
     },
 
     showVolumeChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Volume', this.volume);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Volume', data: this.volume });
     },
 
     showOccupancyChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Occupancy', this.occupancy);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Occupancy', data: this.occupancy });
     },
 
     playVideo(id) {

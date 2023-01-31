@@ -70,6 +70,7 @@ export const RouterPaths = {
   TRAFFIC_RESPONSIVE_DATA: '/flow/tr',
   TRAFFIC_SIGNALS: '/flow/signals',
   TRAFFIC_DATA_PLAYBACK: '/flow/playback',
+  STATUS_QUALITY_MAP: '/flow/quality-map',
 
   HR_ROOT: '/hr',
   HR_DASHBOARD: '/hr/summary',
@@ -92,7 +93,6 @@ export const RouterPaths = {
   STATUS_ROOT: '/status',
   STATUS_DASHBOARD: '/status/check',
   STATUS_QUALITY_CHECK: '/status/quality',
-  STATUS_QUALITY_MAP: '/status/map',
 
   AUTH_LOGIN: '/login',
   AUTH_CHANGE_PASSWORD: '/change-password',
@@ -116,6 +116,8 @@ export const RouterIcons = {
   TRAFFIC_RESPONSIVE_DATA: 'mdi-traffic-light-outline',
   TRAFFIC_SIGNALS: 'mdi-traffic-light-outline',
   TRAFFIC_DATA_PLAYBACK: 'mdi-motion-play-outline',
+
+  EXPERIMENTAL_ICON: 'mdi-lightning-bolt',
 
   HR_DASHBOARD: 'mdi-clipboard-list-outline',
   HR_PCD: 'mdi-chart-areaspline',

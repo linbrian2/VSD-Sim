@@ -4,7 +4,7 @@
     <SelectionPanel :width="width" name="incidentSideBarWidth">
       <TitleBar title="INCIDENT LIST" :showRefresh="false" :showMap="false" :loading="loading" :refresh="refreshData">
         <template v-slot:right>
-          <ThreeDotMenu :items="menuItems" @menuItemclick="menuItemClicked" class="float-right mt-n5" />
+          <ThreeDotMenu :items="menuItems" @menuItemclick="menuItemClicked" class="float-right mt-1" />
         </template>
 
         <div class="d-flex justify-space-between">

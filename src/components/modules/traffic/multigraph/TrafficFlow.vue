@@ -284,6 +284,10 @@ export default {
     if (id) {
       setTimeout(() => {
         this.$bus.$emit('ID_SELECTED', id);
+      }, 1000);
+
+      setTimeout(() => {
+        this.$bus.$emit('ZOOM_SELECTED', id);
       }, 1500);
     } else {
       // Load first selected data in case of no data showing

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card min-width="100%" :color="color">
-      <v-card-title class="justify-center my-n2 pa-1 grey darken-3" :class="$vuetify.breakpoint.mobile ? 'pt-2' : ''">
+      <v-card-title class="justify-center my-n2 pa-1 teal darken-4" :class="$vuetify.breakpoint.mobile ? 'pt-2' : ''">
         <div class="overline">{{ entry.name }}</div>
       </v-card-title>
 

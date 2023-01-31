@@ -65,6 +65,7 @@
     </v-bottom-sheet>
     <!-- Popup Dialogs -->
     <SelectionDialog v-model="showSelection" ref="selectionDialog" />
+    <ChartDialog ref="chartDialog" v-model="showChartDialog" />
     <VideoPlayerDialog ref="vpRef" videoType="application/x-mpegURL" v-model="showVideoPlayer" />
   </div>
 </template>
@@ -76,6 +77,7 @@ import Api from '@/utils/api/traffic';
 import Constants from '@/utils/constants/traffic';
 import DashboardConstants from '@/utils/constants/dashboard.js';
 
+import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 import RightPanel from '@/components/modules/traffic/common/RightPanel';
 import InfoWindow from '@/components/modules/traffic/dashboard/InfoWindow';
 
@@ -101,6 +103,7 @@ export default {
     Toolbar,
     RightPanel,
     InfoWindow,
+    ChartDialog,
     FlowDataInfo,
     BluetoothDataInfo,
     WeatherDataInfo,
@@ -116,6 +119,7 @@ export default {
 
   data: () => ({
     trafficInfoShow: false,
+    showChartDialog: false,
     showVideoPlayer: false,
     cardData: null,
     selectedIdx: -1,
@@ -263,6 +267,10 @@ export default {
     this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type, trigger }) => {
       this.selectedIdx = -1;
       this.handleMarkerClick(type, id, trigger);
+    });
+
+    this.$bus.$on('SHOW_CHART_DATA', ({ title, data }) => {
+      this.showChart(title, data);
     });
 
     this.$bus.$on('PLAY_POPUP_VIDEO', id => {
@@ -454,6 +462,11 @@ export default {
       this.cardData = payload.cardData;
       this.currentTitle =
         this.selectedIdx >= 0 && this.cardData[this.selectedIdx] ? this.cardData[this.selectedIdx].title : '';
+    },
+
+    showChart(title, data) {
+      this.showChartDialog = true;
+      this.$refs.chartDialog.init(title, data);
     },
 
     playVideo(id) {
