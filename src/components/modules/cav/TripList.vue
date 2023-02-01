@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     disable-sort
-    :headers="headers"
+    :headers="headersFilt"
     height="400"
     fixed-header
     :items="items"
@@ -11,10 +11,10 @@
     @click:row="handleRowClick"
   >
     <template v-slot:[`item.startTime`]="{ item }">
-      <div>{{ fromatTimestamp(item.startTime) }}</div>
+      <div>{{ formatTimestamp(item.startTime) }}</div>
     </template>
     <template v-slot:[`item.lastUpdated`]="{ item }">
-      <div>{{ fromatTimestamp(item.lastUpdated) }}</div>
+      <div>{{ formatTimestamp(item.lastUpdated) }}</div>
     </template>
     <template v-slot:[`item.duration`]="{ item }">
       <div>{{ formatDuration(item.duration) }}</div>
@@ -33,24 +33,51 @@
         <span>{{ item.status === 0 ? 'ONGOING' : 'COMPLETED' }}</span>
       </v-tooltip>
     </template>
+    <template v-slot:[`item.segment`]="{ item }" v-if="showCSPI">
+      <div v-if="item.cspiData && item.cspiData.length > 0">
+        <v-chip small :color="getColor(item.cspiData[item.cspiData.length - 1].score)">
+          <h4 style="color: #3b3b3b;">{{ item.cspiData[item.cspiData.length - 1].score }}</h4>
+        </v-chip>
+      </div>
+      <div v-else>-</div>
+    </template>
   </v-data-table>
 </template>
 
 <script>
+import Colors from '@/utils/Colors.js';
 import Format from '@/utils/Format';
 export default {
   props: {
     headers: Array,
-    items: Array
+    items: Array,
+    showCSPI: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data: () => ({
     itemsPerPage: 100
   }),
 
+  computed: {
+    headersFilt() {
+      if (!this.showCSPI) {
+        return this.headers.filter(x => x.text != 'CSPI');
+      } else {
+        return this.headers;
+      }
+    }
+  },
+
   methods: {
-    fromatTimestamp(timestamp) {
-      return Format.fromatTimestamp(timestamp);
+    getColor(score) {
+      return Colors.getRedGreenColor((score - 33) / 76);
+    },
+
+    formatTimestamp(timestamp) {
+      return Format.formatTimestamp(timestamp);
     },
 
     formatDuration(seconds) {
@@ -73,7 +100,8 @@ export default {
         { text: 'TripId', value: 'id' },
         { text: 'Start Time', value: 'startTime' },
         { text: 'Duration', value: 'duration' },
-        { text: 'Status', value: 'status' }
+        { text: 'Status', value: 'status' },
+        { text: 'CSPI', value: 'segment' }
       ];
       this.items = data;
     },

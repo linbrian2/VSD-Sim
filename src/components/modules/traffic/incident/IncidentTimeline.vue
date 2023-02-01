@@ -9,7 +9,7 @@
           <v-chip v-if="!isSimplified" outlined :color="item.color" class="font-weight-light">
             {{ item.event }}
           </v-chip>
-          <v-chip v-else :color="item.color"  class="font-weight-light px-2 py-1 mr-3 my-n3">
+          <v-chip v-else :color="item.color" class="font-weight-light px-2 py-1 mr-3 my-n3">
             {{ item.time }} - {{ item.event }}
           </v-chip>
         </v-col>

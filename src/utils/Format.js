@@ -1,7 +1,7 @@
 import Utils from '@/utils/Utils';
 
 export default {
-  fromatTimestamp(timestamp) {
+  formatTimestamp(timestamp) {
     if (timestamp) {
       const d = new Date(timestamp);
       if (Utils.isToday(d)) {

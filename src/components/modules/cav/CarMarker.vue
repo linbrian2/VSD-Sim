@@ -139,9 +139,9 @@ export default {
       return {
         tripId: info.id,
         deviceId: info.deviceId,
-        lastUpdated: Format.fromatTimestamp(new Date(info.lastUpdated)),
-        startTime: Format.fromatTimestamp(new Date(info.startTime)),
-        endTime: Format.fromatTimestamp(new Date(info.endTime)),
+        lastUpdated: Format.formatTimestamp(new Date(info.lastUpdated)),
+        startTime: Format.formatTimestamp(new Date(info.startTime)),
+        endTime: Format.formatTimestamp(new Date(info.endTime)),
         distance: info.distance ? Format.formatDistance(info.distance) : undefined,
         duration: info.duration ? Format.formatDuration(info.duration, false) : undefined,
         speed: info.speed !== undefined ? info.speed + ' mph' : undefined

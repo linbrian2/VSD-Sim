@@ -1,3 +1,4 @@
+/* global google */
 export const mapIcons = {
   data() {
     return {
@@ -315,6 +316,44 @@ export const mapIcons = {
         }
       ],
 
+      signalIcons: [
+        {
+          url: require('@/assets/traffic_light_green.png'),
+          scaledSize: new google.maps.Size(15, 38),
+          anchor: { x: 6, y: 15 }
+        },
+        {
+          url: require('@/assets/traffic_light_teal.png'),
+          scaledSize: new google.maps.Size(15, 38),
+          anchor: { x: 6, y: 15 }
+        },
+        {
+          url: require('@/assets/traffic_light_yellow.png'),
+          scaledSize: new google.maps.Size(15, 38),
+          anchor: { x: 6, y: 15 }
+        },
+        {
+          url: require('@/assets/traffic_light_lightorange.png'),
+          scaledSize: new google.maps.Size(15, 38),
+          anchor: { x: 6, y: 15 }
+        },
+        {
+          url: require('@/assets/traffic_light_purple.png'),
+          scaledSize: new google.maps.Size(15, 38),
+          anchor: { x: 6, y: 15 }
+        },
+        {
+          url: require('@/assets/traffic_light_red.png'),
+          scaledSize: new google.maps.Size(15, 38),
+          anchor: { x: 6, y: 15 }
+        },
+        {
+          url: require('@/assets/traffic_light_blue.png'),
+          scaledSize: new google.maps.Size(15, 38),
+          anchor: { x: 6, y: 15 }
+        }
+      ],
+
       deviceIcons: [
         {
           path: 0,
@@ -480,6 +519,10 @@ export const mapIcons = {
           ? { ...this.deviceIcons[level], strokeColor: '#FFFFFF', strokeWeight: 5.0 }
           : this.deviceIcons[level];
       else return this.deviceIcons[0];
+    },
+
+    getSignalIcon(level) {
+      return this.signalIcons[level];
     }
   }
 };

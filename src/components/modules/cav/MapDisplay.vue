@@ -18,6 +18,16 @@
       <GmapMarker :position="startPoint" :clickable="false" :draggable="false" :icon="startIcon" />
       <GmapMarker :position="endPoint" :clickable="false" :draggable="false" :icon="endIcon" />
 
+      <div v-if="currentTrip && currentTrip.cspiData && currentTrip.cspiData.length > 0">
+        <GmapMarker
+          v-for="m in markers"
+          :key="m.id"
+          :position="m.position"
+          :title="m.name"
+          :icon="getSignalIcon(m.zoneId)"
+        />
+      </div>
+
       <!-- Car -->
       <CarMarker :visible="carVisible" :position="currentCarPos" />
     </GmapMap>
@@ -36,13 +46,17 @@ import CarMarker from '@/components/modules/cav/CarMarker';
 import useMapGeometry from '@/utils/MapGeometry';
 import MapUtils from '@/utils/MapUtils.js';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
+import CSPISignals from '@/utils/CSPISignals.js';
+import { mapIcons } from '@/mixins/mapIcons';
 
 export default {
+  mixins: [mapIcons],
   components: {
     Toolbar,
     CarMarker
   },
   data: () => ({
+    markers: CSPISignals,
     homeIcon: require('@/assets/home-24.png'),
     InfoIcon: require('@/assets/info-24.png'),
     startIcon: {

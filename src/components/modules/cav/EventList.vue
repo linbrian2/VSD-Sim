@@ -12,7 +12,7 @@
       loading-text="Loading... Please wait"
     >
       <template v-slot:[`item.time`]="{ item }">
-        <div>{{ item.time | fromatTimestamp }}</div>
+        <div>{{ item.time | formatTimestamp }}</div>
       </template>
       <template v-slot:[`item.type`]="{ item }">
         <v-icon color="blue-grey">{{ icon(item.type) }}</v-icon>
@@ -44,7 +44,7 @@ export default {
     }
   },
   filters: {
-    fromatTimestamp: function(timestamp) {
+    formatTimestamp: function(timestamp) {
       if (timestamp) {
         return Utils.formatDateAndTime(new Date(timestamp));
       } else {

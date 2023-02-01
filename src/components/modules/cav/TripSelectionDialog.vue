@@ -46,7 +46,8 @@ export default {
       { text: 'Duration', value: 'duration' },
       { text: 'Distance', value: 'distance' },
       { text: 'Device', value: 'deviceId' },
-      { text: 'Status', value: 'status' }
+      { text: 'Status', value: 'status' },
+      { text: 'CSPI', value: 'segment' }
     ]
   }),
 
