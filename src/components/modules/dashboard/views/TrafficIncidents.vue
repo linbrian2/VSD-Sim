@@ -55,9 +55,8 @@
 </template>
 
 <script>
-//import InfoCard from '@/components/modules/dashboard/InfoCard';
 import Utils from '@/utils/Utils';
-import Constants from '@/utils/constants/traffic';
+import Constants from '@/utils/constants/traffic.js';
 import IncidentDataInfo from '@/components/modules/traffic/dashboard/IncidentDataInfo';
 import { mapState, mapGetters } from 'vuex';
 
@@ -131,10 +130,7 @@ export default {
     },
 
     handleRowClick(item) {
-      const data = this.trafficIncidents.find(x => x.id == item.id);
-      if (data) {
-        this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_INCIDENT', data);
-      }
+      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: Constants.LAYER_DEVICE_INCIDENTS });
     },
 
     getEvidenceIcon(name) {

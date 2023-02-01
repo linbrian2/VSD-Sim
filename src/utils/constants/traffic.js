@@ -1,6 +1,4 @@
 export default Object.freeze({
-  CHART_HEIGHT: 560,
-
   DEVICE_TRAFFIC: 'Traffic flow Detectors',
   DEVICE_BLUETOOTH: 'Bluetooth Sensors',
   DEVICE_WEATHER: 'Weather Stations',
@@ -11,7 +9,7 @@ export default Object.freeze({
   DEVICE_CAMERAS: 'Traffic Cameras',
   DEVICE_INCIDENTS: 'Traffic Incidents',
   DEVICE_CONGESTED_SEGMENTS: 'Congested Segments',
-  DEVICE_ANOMALY_DEVICES: 'Anomaly Devices',
+  DEVICE_ANOMALY_DEVICES: 'Detectors with issues',
 
   DEVICE_TRAFFIC_ICON: 'mdi-car-multiple',
   DEVICE_BLUETOOTH_ICON: 'mdi-bluetooth-connect',
@@ -24,20 +22,17 @@ export default Object.freeze({
 
   INFO_BAR_DEFAULT_COLOR: 'white',
 
-  ADD_MAP_LAYER: 0,
-  REMOVE_MAP_LAYER: 1,
-
   LAYER_DEVICE_TRAFFIC: 0,
   LAYER_DEVICE_BLUETOOTH: 1,
   LAYER_DEVICE_WEATHER: 2,
   LAYER_DEVICE_RESTRICTIONS: 3,
-  LAYER_DEVICE_SEGMENTS: 4,
   LAYER_DEVICE_SIGNALS: 5,
   LAYER_DEVICE_WAZE_ALERTS: 6,
   LAYER_DEVICE_CONGESTED_SEGMENTS: 7,
   LAYER_DEVICE_ANOMALY_DEVICES: 8,
   LAYER_DEVICE_INCIDENTS: 9,
   LAYER_DEVICE_CAMERAS: 10,
+
 
   DATA_TRAFFIC_FLOW: 1,
   DATA_TRAVEL_TIME: 2,

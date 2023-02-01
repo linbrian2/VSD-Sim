@@ -49,7 +49,7 @@ export const RouterNames = {
 
 export const RouterPaths = {
   DASHBOARD_ROOT: '/dash',
-  TRAFFIC_DASHBOARD: '/dash/traffic',
+  TRAFFIC_DASHBOARD: '/dashboard',
 
   TRAFFIC_ROOT: '/flow',
   TRAFFIC_FLOW: '/flow/data',

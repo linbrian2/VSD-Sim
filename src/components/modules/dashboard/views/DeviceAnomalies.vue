@@ -24,6 +24,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex';
+import Constants from '@/utils/constants/traffic.js';
 import ErrorTypes from '@/utils/constants/status';
 import SensorErrorInfo from '@/components/modules/status/SensorErrorInfo';
 
@@ -90,11 +91,9 @@ export default {
         return 'N/A';
       }
     },
+
     handleRowClick(item) {
-      const data = this.deviceAnomalies.find(x => x.id == item.id);
-      if (data) {
-        this.$store.commit('dashboard/SET_SELECTED_ANOMALY_DEVICE', data);
-      }
+      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: Constants.LAYER_DEVICE_ANOMALY_DEVICES });
     },
 
     itemRowBackground(item) {

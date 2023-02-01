@@ -16,7 +16,7 @@
           "
         >
           <!-- Traffic Flow Detectors & Traffic Flow Issues -->
-          <div v-if="isMapLayerVisible(0)">
+          <div v-if="isMapLayerVisible(LAYERS.TRAFFIC_FLOW)">
             <GmapMarker
               v-for="m in markers"
               :key="m.id"
@@ -25,12 +25,12 @@
               :clickable="true"
               :icon="getDotMarker(m.status === 0, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
-              @click="handleMarkerClick(0, m.id)"
+              @click="handleMarkerClick(LAYERS.TRAFFIC_FLOW, m.id)"
             />
           </div>
 
           <!-- Bluetooth Center locations -->
-          <div v-if="isMapLayerVisible(1)">
+          <div v-if="isMapLayerVisible(LAYERS.BLUETOOTH)">
             <GmapMarker
               v-for="s in segments"
               :key="`${s.id}-C`"
@@ -38,41 +38,26 @@
               :title="s.name"
               :clickable="true"
               :icon="getBluetoothMarkerIcon(s.id == selectedMarkerId)"
-              @click="handleMarkerClick(1, s.id)"
+              @click="handleMarkerClick(LAYERS.BLUETOOTH, s.id)"
             />
           </div>
 
           <!-- Weather Stations -->
-          <div v-if="isMapLayerVisible(2)">
+          <div v-if="isMapLayerVisible(LAYERS.WEATHER_STATIONS)">
             <GmapMarker
               v-for="m in weatherMarkers"
               :key="m.id"
               :position="m.position"
-              :title="m.name"
+              :title="`${m.name} - ${m.temp}°F`"
               :clickable="true"
               :icon="getWeatherMarkerIcon(m)"
-              @click="handleMarkerClick(2, m.id, m)"
+              @click="handleMarkerClick(LAYERS.WEATHER_STATIONS, m.id, m)"
             />
-
             <MaskMarker :position="weatherMarkerPosition" />
-
-            <!-- Weather Station Temeperature -->
-            <!-- <GmapCustomMarker
-              alignment="topright"
-              v-for="m in weatherMarkers"
-              :key="`${m.id}-T`"
-              :offsetX="10"
-              :offsetY="-20"
-              :marker="m.position"
-            >
-              <div v-if="m.temp > -100">
-                <h3 style="color:white">{{ m.temp }}°F</h3>
-              </div>
-            </GmapCustomMarker> -->
           </div>
 
           <!-- Travel restrictions -->
-          <div v-if="isMapLayerVisible(3) || selectedIdx == CARD_IDS.CARD_DATA_RESTRICTIONS_ID">
+          <div v-if="isMapLayerVisible(LAYERS.RESTRICTIONS) || selectedIdx == CARD_IDS.RESTRICTIONS_ID">
             <GmapMarker
               v-for="r in trafficRestrictions"
               :key="r.id"
@@ -80,12 +65,12 @@
               :title="r.description"
               :clickable="true"
               :icon="getRestrictionIcon(r.id == selectedMarkerId)"
-              @click="handleMarkerClick(3, r.id)"
+              @click="handleMarkerClick(LAYERS.RESTRICTIONS, r.id)"
             />
           </div>
 
           <!-- Traffic Flow Issues -->
-          <div v-if="selectedIdx == CARD_IDS.CARD_DATA_FLOW_ANOMALIES_ID">
+          <div v-if="selectedIdx == CARD_IDS.FLOW_ANOMALIES_ID">
             <GmapMarker
               v-for="m in anomalyMarkers"
               :key="m.id"
@@ -94,7 +79,7 @@
               :clickable="true"
               :icon="getDotMarkerIcon(m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
-              @click="handleMarkerClick(0, m.id)"
+              @click="handleMarkerClick(LAYERS.TRAFFIC_FLOW, m.id)"
             />
 
             <!-- Anomaly marker id -->
@@ -111,53 +96,60 @@
           </div>
 
           <!-- Signal Issues -->
-          <div v-if="isMapLayerVisible(5) || selectedIdx == CARD_IDS.CARD_DATA_SIGNAL_ISSUES_ID">
+          <div v-if="isMapLayerVisible(LAYERS.ISSUED_SIGNALS) || selectedIdx == CARD_IDS.SIGNAL_ISSUES_ID">
             <GmapMarker
               v-for="m in signalIssues"
               :key="m.id"
               :position="m.position"
               :title="m.name"
+              :clickable="true"
               :icon="getHRIcons(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
+              @click="handleMarkerClick(LAYERS.ISSUED_SIGNALS, m.id)"
             />
           </div>
 
           <!-- Waze Alerts -->
-          <div v-if="isMapLayerVisible(6) || selectedIdx == CARD_IDS.CARD_DATA_WAZE_ALERTS_ID">
+          <div v-if="isMapLayerVisible(LAYERS.WAZE_ALERTS) || selectedIdx == CARD_IDS.WAZE_ALERTS_ID">
             <GmapMarker
               v-for="m in wazeAlerts"
               :key="m.id"
               :position="m.position"
               :title="m.description"
+              :clickable="true"
               :icon="getWazeIcon(m, m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
+              @click="handleMarkerClick(LAYERS.WAZE_ALERTS, m.id)"
             />
           </div>
 
           <!-- Congested Routes -->
-          <div v-if="isMapLayerVisible(7) || selectedIdx == CARD_IDS.CARD_DATA_CONGESTED_ROUTES_ID">
+          <div v-if="isMapLayerVisible(LAYERS.CONGESTED_SEGMENTS) || selectedIdx == CARD_IDS.CONGESTED_ROUTES_ID">
             <GmapPolyline
               v-for="s in congestedSegments"
               :key="s.id"
               :title="s.desc"
               :path.sync="s.path"
               :options="segmentOptions(s)"
+              @click="handleMarkerClick(LAYERS.CONGESTED_SEGMENTS, s.id)"
             />
           </div>
 
           <!-- Device Anomalies -->
-          <div v-if="isMapLayerVisible(8) || selectedIdx == CARD_IDS.CARD_DATA_DEDVICE_ANOMALIES_ID">
+          <div v-if="isMapLayerVisible(LAYERS.ANOMALY_DEVICES) || selectedIdx == CARD_IDS.DEDVICE_ANOMALIES_ID">
             <GmapMarker
               v-for="m in deviceAnomalies"
               :key="m.id"
               :position="m.position"
               :title="m.name"
+              :clickable="true"
               :icon="getDeviceMarkerIcon(m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
+              @click="handleMarkerClick(LAYERS.ANOMALY_DEVICES, m.id)"
             />
           </div>
 
-          <div v-if="isMapLayerVisible(9) || selectedIdx == CARD_IDS.CARD_DATA_INCIDENTS_ID">
+          <div v-if="isMapLayerVisible(LAYERS.INCIDENTS) || selectedIdx == CARD_IDS.INCIDENTS_ID">
             <GmapMarker
               v-for="m in trafficIncidents"
               :key="m.id"
@@ -166,7 +158,7 @@
               :icon="getTrafficIncidentMarker(m)"
               :options="markerOptions(m.id, 99)"
               :clickable="true"
-              @click="handleMarkerClick(4, m.id)"
+              @click="handleMarkerClick(LAYERS.INCIDENTS, m.id)"
             />
             <GmapCustomMarker
               alignment="center"
@@ -180,7 +172,7 @@
             </GmapCustomMarker>
           </div>
 
-          <div v-if="isMapLayerVisible(10) && cameraMarkers">
+          <div v-if="isMapLayerVisible(LAYERS.CAMERAS) && cameraMarkers">
             <GmapMarker
               v-for="m in cameraMarkers"
               :key="m.id"
@@ -189,7 +181,7 @@
               :icon="getCameraMarkerIcon(m.id == selectedMarkerId)"
               :options="markerOptions(m.id)"
               :clickable="true"
-              @click="handleMarkerClick(10, m.id)"
+              @click="handleMarkerClick(LAYERS.CAMERAS, m.id)"
             />
           </div>
         </GmapMap>
@@ -206,6 +198,7 @@ import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapUtils from '@/utils/MapUtils.js';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import Constants from '@/utils/constants/dashboard.js';
+import TrafficConstants from '@/utils/constants/traffic.js';
 import MaskMarker from '@/components/modules/traffic/common/MaskMarker.vue';
 import { mapState } from 'vuex';
 import { mapIcons } from '@/mixins/mapIcons';
@@ -367,13 +360,26 @@ export default {
 
   created() {
     this.CARD_IDS = {
-      CARD_DATA_INCIDENTS_ID: Constants.CARD_DATA_INCIDENTS_ID,
-      CARD_DATA_RESTRICTIONS_ID: Constants.CARD_DATA_RESTRICTIONS_ID,
-      CARD_DATA_FLOW_ANOMALIES_ID: Constants.CARD_DATA_FLOW_ANOMALIES_ID,
-      CARD_DATA_SIGNAL_ISSUES_ID: Constants.CARD_DATA_SIGNAL_ISSUES_ID,
-      CARD_DATA_DEDVICE_ANOMALIES_ID: Constants.CARD_DATA_DEDVICE_ANOMALIES_ID,
-      CARD_DATA_CONGESTED_ROUTES_ID: Constants.CARD_DATA_CONGESTED_ROUTES_ID,
-      CARD_DATA_WAZE_ALERTS_ID: Constants.CARD_DATA_WAZE_ALERTS_ID
+      INCIDENTS_ID: Constants.CARD_DATA_INCIDENTS_ID,
+      RESTRICTIONS_ID: Constants.CARD_DATA_RESTRICTIONS_ID,
+      FLOW_ANOMALIES_ID: Constants.CARD_DATA_FLOW_ANOMALIES_ID,
+      SIGNAL_ISSUES_ID: Constants.CARD_DATA_SIGNAL_ISSUES_ID,
+      DEDVICE_ANOMALIES_ID: Constants.CARD_DATA_DEDVICE_ANOMALIES_ID,
+      CONGESTED_ROUTES_ID: Constants.CARD_DATA_CONGESTED_ROUTES_ID,
+      WAZE_ALERTS_ID: Constants.CARD_DATA_WAZE_ALERTS_ID
+    };
+
+    this.LAYERS = {
+      TRAFFIC_FLOW: TrafficConstants.LAYER_DEVICE_TRAFFIC,
+      BLUETOOTH: TrafficConstants.LAYER_DEVICE_BLUETOOTH,
+      WEATHER_STATIONS: TrafficConstants.LAYER_DEVICE_WEATHER,
+      RESTRICTIONS: TrafficConstants.LAYER_DEVICE_RESTRICTIONS,
+      ISSUED_SIGNALS: TrafficConstants.LAYER_DEVICE_SIGNALS,
+      WAZE_ALERTS: TrafficConstants.LAYER_DEVICE_WAZE_ALERTS,
+      CONGESTED_SEGMENTS: TrafficConstants.LAYER_DEVICE_CONGESTED_SEGMENTS,
+      ANOMALY_DEVICES: TrafficConstants.LAYER_DEVICE_ANOMALY_DEVICES,
+      INCIDENTS: TrafficConstants.LAYER_DEVICE_INCIDENTS,
+      CAMERAS: TrafficConstants.LAYER_DEVICE_CAMERAS
     };
   },
 
@@ -517,9 +523,7 @@ export default {
         case Constants.CARD_DATA_RESTRICTIONS_ID:
           {
             this.markerClicked(this.selectedRestriction);
-
             const markers = this.trafficRestrictions.filter(x => x.id == this.selectedMarkerId);
-            console.log('this.selectedMarkerId=', this.selectedMarkerId, markers);
             setTimeout(() => {
               this.centerMap(this.map, markers, 14);
             }, 1);
@@ -615,7 +619,8 @@ export default {
     handleMarkerClick(type, id, marker = null) {
       this.selectedMarkerType = type;
       this.selectedMarkerId = id;
-      this.weatherMarkerPosition = type === 2 && marker ? marker.position : { lat: 0, lng: 0 };
+      this.weatherMarkerPosition =
+        type === TrafficConstants.LAYER_DEVICE_WEATHER && marker ? marker.position : { lat: 0, lng: 0 };
       this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type });
     },
 

@@ -139,10 +139,6 @@ export default {
     handleRowClick(item) {
       this.selectedTrafficDevice = item;
       this.$emit('click', item);
-      // const data = this.signalIssues.find(x => x.id == item.id);
-      // if (data) {
-      //   this.$store.commit('dashboard/SET_SELECTED_SIGNAL_ISSUE', data);
-      // }
     },
 
     fetchInfo(device) {

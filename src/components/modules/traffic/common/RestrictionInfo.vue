@@ -1,6 +1,6 @@
 <template>
   <v-card tile :color="color" dark>
-    <v-card-title class="d-flex justify-space-between my-n3">
+    <v-card-title class="d-flex justify-space-between">
       <div>
         <strong>{{ restriction.name }} </strong>
       </div>

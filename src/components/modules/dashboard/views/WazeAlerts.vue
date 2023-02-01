@@ -18,21 +18,22 @@
       </template>
     </v-data-table>
 
-    <WazeInfo class="mx-2 mt-3" :waze="currWazeInfo" v-if="currWazeInfo" />
+    <WazeAlertInfo :waze="selectedWazeAlert" v-if="selectedWazeAlert" />
   </div>
 </template>
 
 <script>
 import Utils from '@/utils/Utils';
+import Constants from '@/utils/constants/traffic.js';
 import { mapGetters, mapState } from 'vuex';
-import WazeInfo from '@/components/modules/traffic/common/WazeInfo';
+import WazeAlertInfo from '@/components/modules/traffic/dashboard/WazeAlertInfo';
 
 export default {
   props: {
     data: Object,
     maxItems: Number
   },
-  components: { WazeInfo },
+  components: { WazeAlertInfo },
   data: () => ({
     reload: false,
     items: [],
@@ -46,10 +47,6 @@ export default {
         return null;
       }
     },
-    currWazeInfo() {
-      return this.getWazeInfo(this.selectedWazeAlert);
-    },
-
     listLimit() {
       return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
     },
@@ -101,28 +98,7 @@ export default {
     },
 
     handleRowClick(item) {
-      const data = this.wazeAlerts.find(x => x.id == item.id);
-      if (data) {
-        this.$store.commit('dashboard/SET_SELECTED_WAZE_ALERT', data);
-      }
-    },
-
-    getWazeInfo(waze) {
-      if (!waze) {
-        return null;
-      }
-
-      return {
-        id: waze.id,
-        time: Utils.formatAMPMTime(new Date(waze.alertTimeTS)),
-        type: waze.alertType.name,
-        desc: waze.description,
-        position: waze.position,
-        reportRating: waze.reportRating,
-        confidence: waze.confidence,
-        reliability: waze.reliability,
-        thumbsup: waze.thumbsUp
-      };
+      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: Constants.LAYER_DEVICE_WAZE_ALERTS });
     }
   }
 };

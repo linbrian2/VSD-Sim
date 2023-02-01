@@ -82,13 +82,19 @@ import RightPanel from '@/components/modules/traffic/common/RightPanel';
 import InfoWindow from '@/components/modules/traffic/dashboard/InfoWindow';
 
 import Toolbar from '@/components/modules/traffic/dashboard/Toolbar';
+import SelectionDialog from '@/components/modules/traffic/dashboard/SelectionDialog';
 
 import FlowDataInfo from '@/components/modules/traffic/dashboard/FlowDataInfo';
 import BluetoothDataInfo from '@/components/modules/traffic/dashboard/BluetoothDataInfo';
 import WeatherDataInfo from '@/components/modules/traffic/dashboard/WeatherDataInfo';
 import IncidentDataInfo from '@/components/modules/traffic/dashboard/IncidentDataInfo';
 import CameraMultiView from '@/components/modules/traffic/dashboard/CameraMultiView';
-import SelectionDialog from '@/components/modules/traffic/dashboard/SelectionDialog';
+
+import SensorErrorInfo from '@/components/modules/status/SensorErrorInfo';
+import CongestedRouteInfo from '@/components/modules/traffic/dashboard/CongestedRouteInfo';
+import SignalIssueInfo from '@/components/modules/traffic/dashboard/SignalIssueInfo';
+import WazeAlertInfo from '@/components/modules/traffic/dashboard/WazeAlertInfo';
+import RestrictionDataInfo from '@/components/modules/traffic/dashboard/RestrictionDataInfo';
 
 import Utils from '@/utils/Utils';
 import InfoColumn from '@/components/modules/dashboard/InfoColumn.vue';
@@ -114,7 +120,12 @@ export default {
     TrafficDashboardMap,
     DashboardInfoOverlay,
     BottomDataDisplay,
-    VideoPlayerDialog
+    VideoPlayerDialog,
+    SensorErrorInfo,
+    CongestedRouteInfo,
+    SignalIssueInfo,
+    WazeAlertInfo,
+    RestrictionDataInfo
   },
 
   data: () => ({
@@ -164,7 +175,18 @@ export default {
         return { segment: this.selectedMarker };
       } else if (this.currentComponent === CameraMultiView) {
         return { camera: this.selectedMarker };
+      } else if (this.currentComponent === SensorErrorInfo) {
+        return { marker: this.selectedMarker };
+      } else if (this.currentComponent === CongestedRouteInfo) {
+        return { segment: this.selectedMarker };
+      } else if (this.currentComponent === SignalIssueInfo) {
+        return { signal: this.selectedMarker };
+      } else if (this.currentComponent === WazeAlertInfo) {
+        return { waze: this.selectedMarker };
+      } else if (this.currentComponent === RestrictionDataInfo) {
+        return { restriction: this.selectedMarker };
       }
+
       return {};
     },
 
@@ -265,8 +287,11 @@ export default {
     });
 
     this.$bus.$on('DISPLAY_MARKER_DETAILS', ({ id, type, trigger }) => {
-      this.selectedIdx = -1;
-      this.handleMarkerClick(type, id, trigger);
+      if (this.selectedIdx === -1) {
+        this.handleMarkerClick(type, id, trigger);
+      } else {
+        this.handleAnomalyMarkerClick(type, id);
+      }
     });
 
     this.$bus.$on('SHOW_CHART_DATA', ({ title, data }) => {
@@ -325,7 +350,6 @@ export default {
         case DashboardConstants.CARD_DATA_RESTRICTIONS_ID:
           objectList = this.trafficRestrictions;
           selectedObject = this.selectedRestriction;
-          console.log('getCurrentSelection=', this.trafficRestrictions.length);
           break;
         case DashboardConstants.CARD_DATA_SIGNAL_ISSUES_ID:
           objectList = this.signalIssues;
@@ -352,61 +376,61 @@ export default {
       return result;
     },
 
-    selectSelection(selectIdx, dir) {
-      if (selectIdx < 0) {
+    anomalyMarkerSelection(selectIdx, data) {
+      if (selectIdx === -1 || !data) {
         return;
       }
 
       switch (selectIdx) {
         case DashboardConstants.CARD_DATA_INCIDENTS_ID:
-          {
-            const data = this.getNextObject(this.trafficIncidents, this.selectedTrafficIncident, dir);
-            if (data) {
-              this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_INCIDENT', data);
-            }
-          }
+          this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_INCIDENT', data);
           break;
         case DashboardConstants.CARD_DATA_RESTRICTIONS_ID:
-          {
-            const data = this.getNextObject(this.trafficRestrictions, this.selectedRestriction, dir);
-            if (data) {
-              this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_RESTRICTION', data);
-            }
-          }
+          this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_RESTRICTION', data);
           break;
         case DashboardConstants.CARD_DATA_SIGNAL_ISSUES_ID:
-          {
-            const data = this.getNextObject(this.signalIssues, this.selectedSignalIssue, dir);
-            if (data) {
-              this.$store.commit('dashboard/SET_SELECTED_SIGNAL_ISSUE', data);
-            }
-          }
+          this.$store.commit('dashboard/SET_SELECTED_SIGNAL_ISSUE', data);
           break;
         case DashboardConstants.CARD_DATA_DEDVICE_ANOMALIES_ID:
-          {
-            const data = this.getNextObject(this.deviceAnomalies, this.selectedAnomalyDevice, dir);
-            if (data) {
-              this.$store.commit('dashboard/SET_SELECTED_ANOMALY_DEVICE', data);
-            }
-          }
+          this.$store.commit('dashboard/SET_SELECTED_ANOMALY_DEVICE', data);
           break;
         case DashboardConstants.CARD_DATA_CONGESTED_ROUTES_ID:
-          {
-            const data = this.getNextObject(this.congestedSegments, this.selectedCongestedSegment, dir);
-            if (data) {
-              this.$store.commit('dashboard/SET_SELECTED_CONGESTED_SEGMENT', data);
-            }
-          }
+          this.$store.commit('dashboard/SET_SELECTED_CONGESTED_SEGMENT', data);
           break;
         case DashboardConstants.CARD_DATA_WAZE_ALERTS_ID:
-          {
-            const data = this.getNextObject(this.wazeAlerts, this.selectedWazeAlert, dir);
-            if (data) {
-              this.$store.commit('dashboard/SET_SELECTED_WAZE_ALERT', data);
-            }
-          }
+          this.$store.commit('dashboard/SET_SELECTED_WAZE_ALERT', data);
           break;
       }
+    },
+
+    selectSelection(selectIdx, dir) {
+      if (selectIdx < 0) {
+        return;
+      }
+
+      let data = null;
+      switch (selectIdx) {
+        case DashboardConstants.CARD_DATA_INCIDENTS_ID:
+          data = this.getNextObject(this.trafficIncidents, this.selectedTrafficIncident, dir);
+          break;
+        case DashboardConstants.CARD_DATA_RESTRICTIONS_ID:
+          data = this.getNextObject(this.trafficRestrictions, this.selectedRestriction, dir);
+          break;
+        case DashboardConstants.CARD_DATA_SIGNAL_ISSUES_ID:
+          data = this.getNextObject(this.signalIssues, this.selectedSignalIssue, dir);
+          break;
+        case DashboardConstants.CARD_DATA_DEDVICE_ANOMALIES_ID:
+          data = this.getNextObject(this.deviceAnomalies, this.selectedAnomalyDevice, dir);
+          break;
+        case DashboardConstants.CARD_DATA_CONGESTED_ROUTES_ID:
+          data = this.getNextObject(this.congestedSegments, this.selectedCongestedSegment, dir);
+          break;
+        case DashboardConstants.CARD_DATA_WAZE_ALERTS_ID:
+          data = this.getNextObject(this.wazeAlerts, this.selectedWazeAlert, dir);
+          break;
+      }
+
+      this.anomalyMarkerSelection(selectIdx, data);
     },
 
     getNextObject(objectList, selectedObject, dir) {
@@ -482,24 +506,6 @@ export default {
       }
     },
 
-    getWazeIcon(key, active) {
-      let id = key.id;
-      if (id >= 10 && id <= 13)
-        // Accident
-        return active ? this.icons[3] : this.icons[2];
-      else if (id >= 20 && id <= 25)
-        // Jam
-        return active ? this.icons[11] : this.icons[10];
-      else if (id >= 90 && id <= 91)
-        // Construction
-        return active ? this.icons[5] : this.icons[4];
-      else if (id >= 100 && id <= 104)
-        // Closure
-        return active ? this.icons[9] : this.icons[8];
-      // Hazard
-      else return active ? this.icons[7] : this.icons[6];
-    },
-
     segmentOptions(segment) {
       const color =
         segment.id === this.selectedSegmentId ? this.selectedColor : Utils.getStrokeColor(segment.travelTime.level);
@@ -522,27 +528,43 @@ export default {
       this.trafficInfoShow = true;
       let marker = null;
       switch (type) {
-        case 0:
+        case Constants.LAYER_DEVICE_TRAFFIC: // detectors
           marker = this.markers.find(m => m.id === id);
           this.markerClicked(marker);
           break;
-        case 1:
+        case Constants.LAYER_DEVICE_BLUETOOTH: // Bluetooth
           marker = this.bluetoothLocations.find(m => m.id === id);
           this.segmentClicked(marker);
           break;
-        case 2:
+        case Constants.LAYER_DEVICE_WEATHER: // weather stations
           marker = this.weatherStations.find(m => m.id === id);
           this.weatherMarkerClicked(marker);
           break;
-        case 3:
-          marker = this.restrictions.find(m => m.id === id);
+        case Constants.LAYER_DEVICE_RESTRICTIONS: //travel restrictions
+          marker = this.trafficRestrictions.find(m => m.id === id);
           this.restrictionClicked(marker);
           break;
-        case 4:
+        case Constants.LAYER_DEVICE_INCIDENTS: // incident
           marker = this.trafficIncidents.find(m => m.id === id);
           this.trafficIncidentClicked(marker, trigger);
           break;
-        case 10:
+        case Constants.LAYER_DEVICE_SIGNALS: // Signal Issues
+          marker = this.signalIssues.find(m => m.id === id);
+          this.signalIssueClicked(marker);
+          break;
+        case Constants.LAYER_DEVICE_WAZE_ALERTS: // Waze Alerts
+          marker = this.wazeAlerts.find(m => m.id === id);
+          this.wazeAlertClicked(marker);
+          break;
+        case Constants.LAYER_DEVICE_CONGESTED_SEGMENTS: // Congested Routes
+          marker = this.congestedSegments.find(m => m.id === id);
+          this.congestedRouteClicked(marker);
+          break;
+        case Constants.LAYER_DEVICE_ANOMALY_DEVICES: // Device Anomalies
+          marker = this.deviceAnomalies.find(m => m.id === id);
+          this.anomlyDeviceClicked(marker);
+          break;
+        case Constants.LAYER_DEVICE_CAMERAS: // cameras
           marker = this.trafficCameras.find(m => m.id === id);
           this.cameraMarkerClicked(marker);
           break;
@@ -552,13 +574,45 @@ export default {
       }
     },
 
-    markerClicked(marker) {
-      this.trafficInfoShow = true;
+    handleAnomalyMarkerClick(type, id) {
+      let marker = null;
+      switch (type) {
+        case Constants.LAYER_DEVICE_RESTRICTIONS: // travel restrictions
+          marker = this.trafficRestrictions.find(m => m.id === id);
+          this.anomalyMarkerSelection(DashboardConstants.CARD_DATA_RESTRICTIONS_ID, marker);
+          break;
+        case Constants.LAYER_DEVICE_INCIDENTS: // incident
+          marker = this.trafficIncidents.find(m => m.id === id);
+          this.anomalyMarkerSelection(DashboardConstants.CARD_DATA_INCIDENTS_ID, marker);
+          break;
+        case Constants.LAYER_DEVICE_SIGNALS: // Signal Issues
+          marker = this.signalIssues.find(m => m.id === id);
+          this.anomalyMarkerSelection(DashboardConstants.CARD_DATA_SIGNAL_ISSUES_ID, marker);
+          break;
+        case Constants.LAYER_DEVICE_WAZE_ALERTS: // Waze Alerts
+          marker = this.wazeAlerts.find(m => m.id === id);
+          this.anomalyMarkerSelection(DashboardConstants.CARD_DATA_WAZE_ALERTS_ID, marker);
+          break;
+        case Constants.LAYER_DEVICE_CONGESTED_SEGMENTS: // Congested Routes
+          marker = this.congestedSegments.find(m => m.id === id);
+          this.anomalyMarkerSelection(DashboardConstants.CARD_DATA_CONGESTED_ROUTES_ID, marker);
+          break;
+        case Constants.LAYER_DEVICE_ANOMALY_DEVICES: // Device Anomalies
+          marker = this.deviceAnomalies.find(m => m.id === id);
+          this.anomalyMarkerSelection(DashboardConstants.CARD_DATA_DEDVICE_ANOMALIES_ID, marker);
+          break;
+        default:
+          console.log('Unimplemented anomaly Marker Click Case');
+          break;
+      }
+    },
+
+    showInfoPanel(marker, title, component) {
       this.showPanelIfNot();
       this.selectedMarker = marker;
-      this.currentTitle = 'Traffic Flow Detector';
-      if (this.currentComponent !== FlowDataInfo) {
-        this.currentComponent = FlowDataInfo;
+      this.currentTitle = title;
+      if (this.currentComponent !== component) {
+        this.currentComponent = component;
       } else {
         setTimeout(() => {
           if (this.$refs.refPanelInfo) {
@@ -568,64 +622,46 @@ export default {
       }
     },
 
+    markerClicked(marker) {
+      this.trafficInfoShow = true;
+      this.showInfoPanel(marker, 'Traffic Flow Detector', FlowDataInfo);
+    },
+
     segmentClicked(segment) {
-      this.showPanelIfNot();
-      this.selectedMarker = segment;
-      this.currentTitle = 'Bluetooth Travel Time';
-      if (this.currentComponent !== BluetoothDataInfo) {
-        this.currentComponent = BluetoothDataInfo;
-      } else {
-        setTimeout(() => {
-          if (this.$refs.refPanelInfo) {
-            this.$refs.refPanelInfo.init(segment);
-          }
-        }, 250);
-      }
+      this.showInfoPanel(segment, 'Bluetooth Travel Time', BluetoothDataInfo);
     },
 
     weatherMarkerClicked(marker) {
-      this.showPanelIfNot();
-      this.selectedMarker = marker;
-      this.currentTitle = 'Weather Station';
-      if (this.currentComponent !== WeatherDataInfo) {
-        this.currentComponent = WeatherDataInfo;
-      } else {
-        if (this.$refs.refPanelInfo) {
-          setTimeout(() => {
-            if (this.$refs.refPanelInfo) {
-              this.$refs.refPanelInfo.init(marker);
-            }
-          }, 250);
-        }
-      }
-    },
-
-    restrictionClicked(marker) {
-      if (marker && this.$refs.restrictionDialog) {
-        this.$refs.restrictionDialog.init(marker);
-        this.showRestrictionInfo = true;
-      }
-      this.selectedMarker = marker;
-      this.currentTitle = 'Restrictions';
+      this.showInfoPanel(marker, 'Weather Station', WeatherDataInfo);
     },
 
     trafficIncidentClicked(marker, trigger) {
-      this.showPanelIfNot();
-      this.selectedMarker = marker;
-      this.currentTitle = 'Current Incident';
-      if (this.currentComponent !== IncidentDataInfo) {
-        this.currentComponent = IncidentDataInfo;
-      } else {
-        if (this.$refs.refPanelInfo) {
-          this.$refs.refPanelInfo.init(marker);
-        }
-      }
-
+      this.showInfoPanel(marker, 'Current Incident', IncidentDataInfo);
       if (trigger && this.$refs.trafficDashboardMap) {
         setTimeout(() => {
           this.$refs.trafficDashboardMap.incidentClicked(marker);
         }, 500);
       }
+    },
+
+    restrictionClicked(marker) {
+      this.showInfoPanel(marker, 'Restriction', RestrictionDataInfo);
+    },
+
+    signalIssueClicked(marker) {
+      this.showInfoPanel(marker, 'Signal Issue', SignalIssueInfo);
+    },
+
+    wazeAlertClicked(marker) {
+      this.showInfoPanel(marker, 'Waze Alert', WazeAlertInfo);
+    },
+
+    congestedRouteClicked(segment) {
+      this.showInfoPanel(segment, 'Congested Route', CongestedRouteInfo);
+    },
+
+    anomlyDeviceClicked(marker) {
+      this.showInfoPanel(marker, 'Device Anomaly', SensorErrorInfo);
     },
 
     cameraMarkerClicked(camera) {

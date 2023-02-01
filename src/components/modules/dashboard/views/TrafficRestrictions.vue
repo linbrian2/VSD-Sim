@@ -15,21 +15,22 @@
     >
     </v-data-table>
 
-    <RestrictionInfo class="mx-2 mt-6" :restriction="currRestriction" v-if="currRestriction" />
+    <RestrictionDataInfo :restriction="selectedRestriction" v-if="selectedRestriction" />
   </div>
 </template>
 
 <script>
 import Utils from '@/utils/Utils';
+import Constants from '@/utils/constants/traffic.js';
 import { mapGetters, mapState } from 'vuex';
-import RestrictionInfo from '@/components/modules/traffic/common/RestrictionInfo';
+import RestrictionDataInfo from '@/components/modules/traffic/dashboard/RestrictionDataInfo';
 
 export default {
   props: {
     data: Object,
     maxItems: Number
   },
-  components: { RestrictionInfo },
+  components: { RestrictionDataInfo },
   data: () => ({
     reload: false,
     items: [],
@@ -96,35 +97,7 @@ export default {
     },
 
     handleRowClick(item) {
-      const data = this.trafficRestrictions.find(x => x.id == item.id);
-      if (data) {
-        console.log('handleRowClick', data);
-        this.$store.commit('dashboard/SET_SELECTED_TRAFFIC_RESTRICTION', data);
-      }
-    },
-
-    getRestrictionInfo(res) {
-      if (!res) {
-        return null;
-      }
-
-      return {
-        id: res.restrictionId,
-        name: res.impactType,
-        time: res.time,
-        dist: this.formatDistance(res.dist),
-        loc: res.location,
-        position: res.position,
-        desc: res.description
-      };
-    },
-
-    formatDistance(dist) {
-      if (!dist) {
-        return '';
-      }
-      const value = (dist / 1609).toFixed(2);
-      return `${value} miles`;
+      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: Constants.LAYER_DEVICE_RESTRICTIONS });
     },
 
     formatTime(t) {

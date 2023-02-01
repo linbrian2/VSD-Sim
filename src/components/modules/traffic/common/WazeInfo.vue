@@ -2,7 +2,11 @@
   <v-sheet outlined :color="borderColor">
     <v-card tile :color="color" dark @click="handleClick">
       <v-card-title class="d-flex justify-space-between">
-        <div>{{ waze.type }}</div>
+        <div class="d-flex">
+          <v-img :src="getIcon(waze)" width="24" height="24" />
+          <div>{{ waze.type }}</div>
+        </div>
+
         <div class="caption grey--text" v-if="waze.dist">{{ waze.dist }}</div>
       </v-card-title>
 
@@ -58,7 +62,9 @@
 </template>
 
 <script>
+import { mapIcons } from '@/mixins/mapIcons';
 export default {
+  mixins: [mapIcons],
   props: {
     waze: Object,
     color: {
@@ -77,6 +83,10 @@ export default {
     handleClick() {
       this.waze.selected = true;
       this.$emit('click', this.waze);
+    },
+
+    getIcon(waze) {
+      return this.getWazeIcon(waze).url;
     }
   }
 };

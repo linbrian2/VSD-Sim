@@ -244,9 +244,9 @@ export default {
     this.initExistingData();
     this.fetchApiData();
 
-    this.$bus.$on('DISPLAY_MARKER_DETAILS', () => {
-      this.selectedIdx = -1;
-    });
+    // this.$bus.$on('DISPLAY_MARKER_DETAILS', () => {
+    //   this.selectedIdx = -1;
+    // });
   },
   methods: {
     keydownListener() {

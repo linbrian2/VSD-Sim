@@ -26,26 +26,15 @@
       </template>
     </v-data-table>
 
-    <SignalInfo :signal="selectedSignalIssue" class="mt-3 mx-2" v-if="selectedSignalIssue" />
-
-    <!-- <v-row class="mt-3 mx-1" v-if="currSignalIssue">
-      <v-col :cols="12 / infoColumnCount" v-for="x in currSignalIssue" :key="x.name" class="pa-1">
-        <InfoCard
-          :icon="x.icon"
-          :colDisplay="x.colDisplay"
-          :flex="x.flex"
-          :height="x.height"
-          :name="x.name"
-          :value="x.value"
-        />
-      </v-col>
-    </v-row> -->
+    <SignalIssueInfo :signal="selectedSignalIssue" v-if="selectedSignalIssue" />
   </div>
 </template>
 
 <script>
+
+import Constants from '@/utils/constants/traffic.js';
 import FormatChip from '@/components/modules/hr/FormatChip';
-import SignalInfo from '@/components/modules/dashboard/views/SignalInfo';
+import SignalIssueInfo from '@/components/modules/traffic/dashboard/SignalIssueInfo';
 import { mapState } from 'vuex';
 
 export default {
@@ -55,7 +44,7 @@ export default {
   },
   components: {
     FormatChip,
-    SignalInfo
+    SignalIssueInfo
   },
   data: () => ({
     reload: false,
@@ -106,10 +95,7 @@ export default {
     },
 
     handleRowClick(item) {
-      const data = this.signalIssues.find(x => x.id == item.id);
-      if (data) {
-        this.$store.commit('dashboard/SET_SELECTED_SIGNAL_ISSUE', data);
-      }
+      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: Constants.LAYER_DEVICE_SIGNALS });
     },
 
     triggerFirst() {

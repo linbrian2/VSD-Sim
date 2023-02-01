@@ -1,6 +1,4 @@
 export default Object.freeze({
-  CHART_HEIGHT: 560,
-
   DIALOG_NONE: -1,
   DIALOG_CONGESTION: 0,
   DIALOG_WAZE: 1,
