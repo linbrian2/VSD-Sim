@@ -300,7 +300,6 @@ export default {
           return item;
         }
       });
-      console.log(this.items);
       Utils.downloadJSON(`Trip ${this.currentTrip.id} CSPI`, newItem);
     },
     download(item) {

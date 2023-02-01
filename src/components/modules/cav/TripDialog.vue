@@ -206,7 +206,6 @@ export default {
       }
     },
     speedData() {
-      console.log(this.cardData);
       let title = 'Speed';
       let xAxis = 'Time of day';
       let yAxis = 'Speed (mph)';
