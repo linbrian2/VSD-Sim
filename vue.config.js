@@ -1,5 +1,7 @@
 const { InjectManifest } = require('workbox-webpack-plugin');
 
+//process.env.VUE_APP_VERSION = require('./package.json').version;
+
 module.exports = {
   productionSourceMap: false,
   publicPath: process.env.VUE_APP_BASE_URL,
@@ -12,7 +14,15 @@ module.exports = {
     // remove the prefetch plugin
     config.plugins.delete('prefetch');
     config.optimization.delete('splitChunks');
+
+    // Add version number to environment variables
+    config.plugin('define').tap(args => {
+      args[0]['process.env']['VUE_APP_VERSION'] = JSON.stringify(require('./package.json').version);
+      args[0]['process.env']['VUE_APP_BUILD_TIME'] = new Date().getTime() + '';
+      return args;
+    });
   },
+
   configureWebpack: {
     plugins: [
       new InjectManifest({

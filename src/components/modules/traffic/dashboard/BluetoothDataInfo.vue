@@ -92,8 +92,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <ChartDialog ref="chartDialog" v-model="showChartDialog" />
-    <VideoPlayerDialog ref="vpRef" videoType="application/x-mpegURL" v-model="showVideoPlayer" />
   </div>
 </template>
 
@@ -103,9 +101,6 @@ import Utils from '@/utils/Utils';
 import Constants from '@/utils/constants/traffic';
 import ListInfoCard from '@/components/modules/traffic/common/ListInfoCard';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
-import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
-import VideoPlayerDialog from '@/components/modules/traffic/common/VideoPlayerDialog';
-import { getVideoUrl } from '@/utils/DeldotVideoUrl';
 
 export default {
   props: {
@@ -114,15 +109,11 @@ export default {
 
   components: {
     BasicChart,
-    ListInfoCard,
-    ChartDialog,
-    VideoPlayerDialog
+    ListInfoCard
   },
 
   data: () => ({
     loading: false,
-    showChartDialog: false,
-    showVideoPlayer: false,
     height: 300,
     legendY: 5,
     marginLeft: 80,
@@ -162,35 +153,16 @@ export default {
       }
     },
 
-    videoUrlChanged() {
-      this.changeVideoSource(getVideoUrl(this.cameraSelect));
-    },
-
-    changeVideoSource(url) {
-      this.url = url;
-      if (this.$refs.videoPlayer) {
-        this.$refs.videoPlayer.setUrl(url);
-      }
-    },
-
     showTrafficSpeedChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Traffic Speed', this.speed);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Traffic Speed', data: this.speed });
     },
 
     showTravelTimeChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Travel Time', this.travelTime);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Travel Time', data: this.travelTime });
     },
 
     playVideo(id) {
-      const url = getVideoUrl(id);
-      if (url) {
-        if (this.$refs.vpRef) {
-          this.$refs.vpRef.changeVideoSource(url);
-        }
-        this.showVideoPlayer = true;
-      }
+      this.$bus.$emit('PLAY_POPUP_VIDEO', id);
     },
 
     async fetchTravelTimeData(linkId, interval, time) {

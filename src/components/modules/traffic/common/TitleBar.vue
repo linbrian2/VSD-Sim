@@ -31,10 +31,10 @@
           </div>
         </div>
       </v-col>
-      <v-col lg="7" sm="4" xs="12">
+      <v-col lg="6" sm="4" xs="12">
         <span><slot></slot></span>
       </v-col>
-      <v-col lg="1" sm="2" xs="12">
+      <v-col lg="2" sm="2" xs="12">
         <v-btn
           small
           icon

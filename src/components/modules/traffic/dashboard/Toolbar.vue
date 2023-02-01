@@ -20,31 +20,11 @@
         </v-list-item-group>
       </v-list>
     </v-menu>
-
-    <div style="width:150px">
-      <v-autocomplete
-        light
-        dense
-        flat
-        solo
-        clearable
-        v-model="select"
-        single-line
-        hide-details
-        append-icon=""
-        prepend-inner-icon="mdi-magnify"
-        placeholder="Search"
-        hide-no-data
-        :search-input.sync="search"
-        return-object
-        :items="searchItems"
-        item-text="desc"
-        item-value="id"
-        @change="onSearchChange"
-      />
-    </div>
-
     <v-divider vertical />
+
+    <ExpandableSearch :entities="entities" @search="onSearchChange" />
+
+    <v-divider vertical class="ml-4" />
 
     <v-menu light bottom right offset-y min-width="250" :close-on-content-click="true">
       <template v-slot:activator="{ on: menu, attrs }">
@@ -99,13 +79,15 @@
 <script>
 import Constants from '@/utils/constants/traffic';
 import { mapState } from 'vuex';
+import ExpandableSearch from '@/components/common/ExpandableSearch';
 export default {
   props: ['entities'],
+  components: {
+    ExpandableSearch
+  },
   data: () => ({
     loading: false,
-    select: null,
     search: null,
-    searchItems: [],
 
     mapLayers: [],
 
@@ -137,25 +119,6 @@ export default {
       { title: 'Beach Area', name: 'BEACH', value: 7 }
     ]
   }),
-
-  watch: {
-    select() {
-      this.$nextTick(() => {
-        this.select = null;
-      });
-    },
-
-    search(val) {
-      if (val) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          const key = val.toLowerCase();
-          this.searchItems = this.entities.filter(item => item.desc.toLowerCase().includes(key));
-          this.loading = false;
-        }
-      }
-    }
-  },
 
   computed: {
     currentRegionShortName() {
@@ -193,12 +156,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.v-input.expanding-search {
-  transition: max-width 0.5s;
-}
-.v-input.expanding-search.closed {
-  max-width: 70px;
-}
-</style>

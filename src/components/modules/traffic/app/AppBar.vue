@@ -82,9 +82,14 @@ export default {
       { title: RouterNames.TRAFFIC_SIGNALS, url: RouterPaths.TRAFFIC_SIGNALS },
       { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
       { divider: true },
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST },
       { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
       { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST },
+      { divider: true },
+      {
+        title: RouterNames.STATUS_QUALITY_MAP,
+        url: RouterPaths.STATUS_QUALITY_MAP
+      },
       { divider: true },
       { title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT },
       { divider: true },
@@ -106,9 +111,6 @@ export default {
     actionItems() {
       const items = [];
       items.push(...this.action_main_items);
-      if (this.isDevUser) {
-        items.push(...this.action_optional_items);
-      }
       return items;
     },
 

@@ -51,12 +51,6 @@ export default {
     init(title, data) {
       this.title = title;
       this.data = data;
-
-      setTimeout(() => {
-        if (this.$refs.chart) {
-          this.$refs.chart.updateScaling();
-        }
-      }, 300);
     },
 
     hideDialog() {

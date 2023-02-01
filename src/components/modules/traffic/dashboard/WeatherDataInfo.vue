@@ -153,7 +153,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <ChartDialog ref="chartDialog" v-model="showChartDialog" />
   </div>
 </template>
 
@@ -161,19 +160,16 @@
 import Api from '@/utils/api/traffic';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
 import WeatherInfo from '@/components/modules/traffic/common/WeatherInfoSm';
-import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 export default {
   props: {
     station: Object
   },
   components: {
     BasicChart,
-    WeatherInfo,
-    ChartDialog
+    WeatherInfo
   },
   data: () => ({
     loading: false,
-    showChartDialog: false,
     height: 300,
     legendY: 5,
     marginLeft: 80,
@@ -231,28 +227,23 @@ export default {
     },
 
     showTempChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Temperature', this.temp);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Temperature', data: this.temp });
     },
 
     showWindChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Wind speed', this.wind);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Wind speed', data: this.wind });
     },
 
     showHumidityChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Humidity', this.humidity);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Humidity', data: this.humidity });
     },
 
     showVisibilityChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('visibility', this.visibility);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Visibility', data: this.visibility });
     },
 
     showPrecipitationChart() {
-      this.showChartDialog = true;
-      this.$refs.chartDialog.init('Precipitation', this.precipitation);
+      this.$bus.$emit('SHOW_CHART_DATA', { title: 'Precipitation', data: this.precipitation });
     },
 
     async fetchWeatherData(stationId, time) {

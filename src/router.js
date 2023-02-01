@@ -131,6 +131,11 @@ const router = new Router({
           path: RouterPaths.TRAFFIC_SIGNALS,
           name: RouterNames.TRAFFIC_SIGNALS,
           component: TrafficSignals
+        },
+        {
+          path: RouterPaths.STATUS_QUALITY_MAP,
+          name: RouterNames.STATUS_QUALITY_MAP,
+          component: QualityMap
         }
       ]
     },

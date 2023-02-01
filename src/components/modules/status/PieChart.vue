@@ -41,9 +41,11 @@ export default {
 
         chart: {
           height: chartHeight,
-          spacingTop: 10,
-          spacingBottom: 15,
-          plotBorderColor: '#0000ff',
+          spacingTop: 25,
+          spacingBottom: 25,
+          marginLeft: 25,
+          marginRight: 25,
+          plotBorderColor: 'grey',
           plotBorderWidth: 2,
           plotBackgroundColor: null,
           plotShadow: false,
@@ -55,7 +57,7 @@ export default {
             fontSize: '15px',
             fontWeight: 'bold'
           },
-          margin: 5,
+          margin: 15,
           text: title
         },
 
@@ -87,6 +89,7 @@ export default {
 
         plotOptions: {
           pie: {
+            size: '70%',
             allowPointSelect: true,
             cursor: 'pointer',
             dataLabels: {
