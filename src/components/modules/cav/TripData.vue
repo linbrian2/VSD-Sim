@@ -145,7 +145,6 @@ import InfoList from '@/components/modules/cav/InfoList';
 import BasicChart from '@/components/modules/cav/BasicChart';
 import ChartDialog from '@/components/modules/cav/ChartDialog';
 import TripDialog from '@/components/modules/cav/TripDialog.vue';
-// import TempDataCSPI from '@/components/modules/cav/TempDataCSPI.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -294,40 +293,6 @@ export default {
         data: item.data
       };
       Utils.downloadJSON(`Trip ${this.currentTrip.id}_${item.group} CSPI`, newItem);
-    },
-    processCSPI(data) {
-      console.log(data);
-      /* let P2data = data.P2Points.map(x => {
-        return { ...x, phase: 2, timeStr: x.time ? Utils.formatTime(new Date(x.time)) : 'N/A' };
-      });
-      let P6data = data.P6Points.map(x => {
-        return { ...x, phase: 6, timeStr: x.time ? Utils.formatTime(new Date(x.time)) : 'N/A' };
-      });
-      let combinedData = [...P2data, ...P6data].sort((a, b) => a.time < b.time);
-      let uniqueVals = [...new Set(combinedData.map(x => x.vid))];
-
-      const items = [];
-      for (const key of uniqueVals) {
-        let tripData = combinedData.filter(x => x.vid == key);
-        let results = this.getTripData(key, tripData);
-        if (results.length > 0) {
-          items.push(...results);
-        }
-      }
-      items.push(
-        this.getAverage(
-          'K999',
-          items.filter(x => x.group == 'K999')
-        )
-      );
-      items.push(
-        this.getAverage(
-          'K001',
-          items.filter(x => x.group == 'K001')
-        )
-      );
-      this.items = items;
-      // console.log('Items: %o', this.items); */
     },
 
     refreshData() {

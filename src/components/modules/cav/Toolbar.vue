@@ -17,11 +17,16 @@
               <div style="width: 220px">
                 <DatePicker type="short" @date="dateSelected" />
               </div>
-              <v-btn small icon @click.stop="refreshTripData" class="mr-2 mt-2" :loading="loading">
-                <v-icon>mdi-refresh</v-icon>
-              </v-btn>
+              <div>
+                <v-btn small @click="openCSPIFull" class="mr-2 mt-2 primary" :loading="loading" :disabled="hideCSPIBtn">
+                  CSPI
+                </v-btn>
+                <v-btn small icon @click.stop="refreshTripData" class="mr-2 mt-2" :loading="loading">
+                  <v-icon>mdi-refresh</v-icon>
+                </v-btn>
+              </div>
             </v-card-actions>
-            <TripList class="mt-n3" :headers="headers" :items="items" :showCSPI="true"  />
+            <TripList class="mt-n3" :headers="headers" :items="items" :showCSPI="true" />
           </v-card>
         </v-menu>
 
@@ -169,6 +174,10 @@ export default {
   }),
 
   computed: {
+    hideCSPIBtn() {
+      return !this.items || (this.items && this.items.filter(x => x.cspiData).length == 0);
+    },
+
     validTrip() {
       return Object.keys(this.currentTrip).length > 0;
     },
@@ -221,6 +230,10 @@ export default {
   },
 
   methods: {
+    openCSPIFull() {
+      this.$bus.$emit('TOGGLE_CSPI_FULL', true);
+    },
+
     showDetails() {
       this.$store.commit('cav/TOGGLE_SHOW_PANEL');
     },
@@ -514,7 +527,8 @@ export default {
           const trips = response.data;
           const processedTrips = this.processTrips(trips);
           this.items = processedTrips;
-          this.$bus.$emit('CAV_TRIP_SELECTED', processedTrips);
+          // console.log("Trips: %o", processedTrips);
+          this.$bus.$emit('CAV_TRIPS_SELECTED', this.items);
 
           let cspiTrips = processedTrips.filter(x => x.cspiData && x.cspiData.length > 0);
           let text = `Computed ${cspiTrips.length} trips with CSPI values out of ${processedTrips.length} trips.`;
