@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import { RouterNames } from '@/utils/constants/router';
+import Constants from '@/utils/constants/traffic.js';
+import { RouterNames, RouterPaths } from '@/utils/constants/router';
 import Utils from '@/utils/Utils';
-import { RouterPaths } from '@/utils/constants/router';
 export default {
   props: {
     items: {
@@ -72,11 +72,16 @@ export default {
       if (this.$route.name !== RouterNames.TRAFFIC_DASHBOARD) {
         this.$router.push({ path: '/' }).catch(() => {});
         setTimeout(() => {
-          this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: 4, trigger: 1 });
+          this.showIncident(item.id);
         }, 500);
       } else {
-        this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id: item.id, type: 4, trigger: 1 });
+        this.showIncident(item.id);
       }
+    },
+
+    showIncident(id) {
+      const type = Constants.LAYER_DEVICE_INCIDENTS;
+      this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type, trigger: 1 });
     },
 
     handleClearNotification() {

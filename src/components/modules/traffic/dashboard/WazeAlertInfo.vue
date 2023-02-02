@@ -37,7 +37,8 @@ export default {
         reportRating: waze.reportRating,
         confidence: waze.confidence,
         reliability: waze.reliability,
-        thumbsup: waze.thumbsUp
+        thumbsup: waze.thumbsUp,
+        subType: waze.subType
       };
     }
   }

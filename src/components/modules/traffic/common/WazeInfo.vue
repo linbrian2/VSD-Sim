@@ -3,7 +3,7 @@
     <v-card tile :color="color" dark @click="handleClick">
       <v-card-title class="d-flex justify-space-between">
         <div class="d-flex">
-          <v-img :src="getIcon(waze)" width="24" height="24" />
+          <v-img :src="getIcon(waze)" width="24" height="24" class="mt-1 mr-2" v-if="waze.subType" />
           <div>{{ waze.type }}</div>
         </div>
 

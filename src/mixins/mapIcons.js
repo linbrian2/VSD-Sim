@@ -319,37 +319,37 @@ export const mapIcons = {
       signalIcons: [
         {
           url: require('@/assets/traffic_light_green.png'),
-          scaledSize: new google.maps.Size(15, 38),
+          scaledSize: { width: 15, height: 38, f: 'px', b: 'px' },
           anchor: { x: 6, y: 15 }
         },
         {
           url: require('@/assets/traffic_light_teal.png'),
-          scaledSize: new google.maps.Size(15, 38),
+          scaledSize: { width: 15, height: 38, f: 'px', b: 'px' },
           anchor: { x: 6, y: 15 }
         },
         {
           url: require('@/assets/traffic_light_yellow.png'),
-          scaledSize: new google.maps.Size(15, 38),
+          scaledSize: { width: 15, height: 38, f: 'px', b: 'px' },
           anchor: { x: 6, y: 15 }
         },
         {
           url: require('@/assets/traffic_light_lightorange.png'),
-          scaledSize: new google.maps.Size(15, 38),
+          scaledSize: { width: 15, height: 38, f: 'px', b: 'px' },
           anchor: { x: 6, y: 15 }
         },
         {
           url: require('@/assets/traffic_light_purple.png'),
-          scaledSize: new google.maps.Size(15, 38),
+          scaledSize: { width: 15, height: 38, f: 'px', b: 'px' },
           anchor: { x: 6, y: 15 }
         },
         {
           url: require('@/assets/traffic_light_red.png'),
-          scaledSize: new google.maps.Size(15, 38),
+          scaledSize: { width: 15, height: 38, f: 'px', b: 'px' },
           anchor: { x: 6, y: 15 }
         },
         {
           url: require('@/assets/traffic_light_blue.png'),
-          scaledSize: new google.maps.Size(15, 38),
+          scaledSize: { width: 15, height: 38, f: 'px', b: 'px' },
           anchor: { x: 6, y: 15 }
         }
       ],
