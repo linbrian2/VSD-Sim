@@ -1,12 +1,16 @@
 import Api from '@/utils/api/traffic';
+import Utils from '@/utils/Utils';
+import Constants from '@/utils/constants/traffic';
+import Message from '@/utils/Message.js';
 
 const state = {
-  currentBluetoothAnomaly: null,
+  currentTravelTimeAnomaly: null,
   currentFlowAnomaly: null,
-  currentWeatherCode: null,
+  currentWeather: null,
   currentRestrictions: [],
-  currentAnomalySegments: [],
+  currentTrafficIncident: [],
   currentWaze: null,
+  messages: [],
 
   showFlowChart: false,
   showPanel: false,
@@ -28,8 +32,6 @@ const state = {
     duration: 30
   },
 
-  notifications: [],
-
   multigraphModes: ['Traffic Flow Data', 'Travel Time Data', 'Weather Data'],
   multigraphModeSelect: 'Traffic Flow Data',
   singleSelect: 'Single Select',
@@ -49,46 +51,77 @@ const state = {
 const mutations = {
   SOCKET_FLOW(state, message) {
     state.currentFlowAnomaly = message.data;
+
+    const type = Constants.DATA_TRAFFIC_FLOW;
+    if (Message.isSameKind(state.messages, type)) {
+      const lastMessage = state.messages.pop();
+      state.messages.push(Message.compose(type, message.data, lastMessage));
+    } else {
+      state.messages.push(Message.compose(type, message.data));
+    }
   },
   SOCKET_WEATHER(state, message) {
-    state.currentWeatherCode = message.data;
+    state.currentWeather = message.data;
+
+    const type = Constants.DATA_WEATHER;
+    if (Message.isSameKind(state.messages, type)) {
+      const lastMessage = state.messages.pop();
+      state.messages.push(Message.compose(type, message.data, lastMessage));
+    } else {
+      state.messages.push(Message.compose(type, message.data));
+    }
   },
   SOCKET_BLUETOOTH(state, message) {
-    state.currentBluetoothAnomaly = message.data;
+    state.currentTravelTimeAnomaly = message.data;
+
+    const type = Constants.DATA_TRAVEL_TIME;
+    if (Message.isSameKind(state.messages, type)) {
+      const lastMessage = state.messages.pop();
+      state.messages.push(Message.compose(type, message.data, lastMessage));
+    } else {
+      state.messages.push(Message.compose(type, message.data));
+    }
   },
   SOCKET_ANOMALY(state, message) {
-    console.log('anomaly segment received.');
-    const { severity, duration } = state.incidentSettings;
-    state.currentAnomalySegments = message.data.filter(s => s.severity >= severity && s.duration >= duration);
+    state.currentTrafficIncident = message.data;
+
+    const type = Constants.DATA_TRAFFIC_INCIDENT;
+    if (Message.isSameKind(state.messages, type)) {
+      const lastMessage = state.messages.pop();
+      state.messages.push(Message.compose(type, message.data, lastMessage));
+    } else {
+      state.messages.push(Message.compose(type, message.data));
+    }
   },
   SOCKET_RESTRICTION(state, message) {
     state.currentRestrictions = message.data;
+
+    const type = Constants.DATA_RESTRICTION;
+    if (Message.isSameKind(state.messages, type)) {
+      const lastMessage = state.messages.pop();
+      state.messages.push(Message.compose(type, message.data, lastMessage));
+    } else {
+      state.messages.push(Message.compose(type, message.data));
+    }
   },
   SOCKET_WAZE(state, message) {
     state.currentWaze = message.data;
+
+    const type = Constants.DATA_WAZE_ALERTS;
+    if (Message.isSameKind(state.messages, type)) {
+      const lastMessage = state.messages.pop();
+      state.messages.push(Message.compose(type, message.data, lastMessage));
+    } else {
+      state.messages.push(Message.compose(type, message.data));
+    }
   },
   SOCKET_MITIGATION(state, message) {
-    console.log('anomaly mitigation received.');
     state.mitigation = message.data;
+    state.messages.push(Message.compose(Constants.DATA_MITIGATION, message.data));
   },
   SOCKET_SIMULATION(state, message) {
-    console.log('anomaly simulation received.');
     state.simulation = message.data;
-  },
-  SET_CURRENT_BLUETOOTH_ANOMALY_DATA(state, data) {
-    state.currentBluetoothAnomaly = data;
-  },
-  SET_CURRENT_FLOW_ANOMALY_DATA(state, data) {
-    state.currentFlowAnomaly = data;
-  },
-  SET_CURRENT_WEATHER_DATA(state, data) {
-    state.currentWeatherCode = data;
-  },
-  SET_CURRENT_RESTRICTION_DATA(state, data) {
-    state.currentRestrictions = data;
-  },
-  SET_CURRENT_ANOMALY_SEGMENTS(state, data) {
-    state.currentAnomalySegments = data;
+    state.messages.push(Message.compose(Constants.DATA_SIMULATION, message.data));
   },
   SHOW_FLOW_CHART(state, show) {
     state.showFlowChart = show;
@@ -136,12 +169,6 @@ const mutations = {
   SET_INCIDENT_SETTINGS(state, settings) {
     state.incidentSettings = settings;
   },
-  UPDATE_NOTIFICATION(state, payload) {
-    state.notifications.push(payload);
-  },
-  CLEAR_NOTIFICATION(state) {
-    state.notifications = [];
-  },
   SET_VISION_RESULT(state, result) {
     state.visionResult = result;
   },
@@ -168,10 +195,27 @@ const mutations = {
   },
   SET_LOADING(state, loading) {
     state.loading = loading;
+  },
+  CLEAR_MESSAGE(state) {
+    state.messages = [];
+  },
+  ADD_MESSAGE_TO_LIST(state, message) {
+    // Before adding, remove old messages
+    state.messages = state.messages.filter(message => Utils.laterThan(message.time, 24 * 3600));
+
+    // Add new message to the array
+    state.messages.push(message);
   }
 };
 
-const getters = {};
+const getters = {
+  getMessages(state) {
+    // Get sort by time and return top 20
+    const messages = state.messages;
+    messages.sort((a, b) => b.time - a.time);
+    return messages.slice(0, 100);
+  }
+};
 
 const actions = {
   //! Congested Routes
@@ -326,6 +370,10 @@ const actions = {
 
   clearNotificaton({ commit }) {
     commit('CLEAR_NOTIFICATION');
+  },
+
+  clearMessageQueue({ commit }) {
+    commit('CLEAR_MESSAGE');
   }
 };
 

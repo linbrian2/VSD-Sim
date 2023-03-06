@@ -2,6 +2,14 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent max-width="290">
       <v-card>
+        <v-system-bar window dark color="#1A237E">
+          <v-icon>mdi-help</v-icon>
+          <span class="overline">Signal Controller</span>
+          <v-spacer></v-spacer>
+          <v-btn icon small @click="dialog = false">
+            <v-icon small>mdi-close</v-icon>
+          </v-btn>
+        </v-system-bar>
         <v-card-title class="text-h5">
           {{ title }}
         </v-card-title>
@@ -31,5 +39,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped></style>

@@ -319,8 +319,15 @@ export default {
       let errorCount = 0;
       let totalCount = 0;
       let typesCount = new Array(8).fill(0);
+
+      let totalPoints = 288;
+      if (Utils.isToday(this.currentDate)) {
+        const current = new Date();
+        totalPoints = Math.min(288, Utils.get5MinIndexOf288(current.getTime()) + 1);
+      }
+
       allErrorTypes.forEach(({ types }) => {
-        for (let i = 0; i < 288; i++) {
+        for (let i = 0; i < totalPoints; i++) {
           totalCount++;
           if (types[i] > 0) {
             errorCount++;

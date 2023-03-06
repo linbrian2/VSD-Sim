@@ -12,6 +12,7 @@
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
       class="elevation-1 mx-2"
+      v-show="showTable"
     >
       <template v-slot:[`item.state`]="{ item }">
         <v-chip small :color="item.status === 0 ? 'green' : 'red'">
@@ -46,6 +47,7 @@ export default {
     height: null,
     itemsPerPage: 0,
     reload: false,
+    listLimit: 0,
     items: [],
     headers: []
   }),
@@ -62,14 +64,6 @@ export default {
           this.reload = false;
         }, 1);
       }
-    },
-
-    infoColumnCount() {
-      return this.getSetting('dashboard', 'infoColumnCount');
-    },
-
-    listLimit() {
-      return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
     },
 
     itemPerPage() {

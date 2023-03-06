@@ -252,6 +252,12 @@ export default {
   watch: {
     currentDate() {
       this.refreshData();
+
+      if (!this.showPanel) {
+        setTimeout(() => {
+          this.$store.commit('traffic/SHOW_PANEL', true);
+        }, 1000);
+      }
     }
   },
 

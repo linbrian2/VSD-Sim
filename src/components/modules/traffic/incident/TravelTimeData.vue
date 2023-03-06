@@ -77,7 +77,7 @@ export default {
 
     evidenceText() {
       const infoList = this.travelTimeListBySegment;
-      return infoList ? `${infoList.length} Evidence${infoList.length > 1 ? 's' : ''}` : '';
+      return infoList ? `${infoList.length}` : '';
     },
 
     filteredSegments() {

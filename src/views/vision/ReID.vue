@@ -8,13 +8,13 @@
         <v-col cols="6">
           <v-system-bar color="orange" height="5" dark />
           <!-- <v-img src="@/assets/loading.gif" aspect-ratio="1.78" /> -->
-          <img :src="'http://10.51.4.9:25344/streams/PCAM_DOWN1'" width="100%" />
+          <img :src="downUrl" width="100%" />
         </v-col>
         <!-- Downstream Video -->
         <v-col cols="6">
           <v-system-bar color="purple" height="5" dark />
           <!-- <v-img src="@/assets/loading.gif" aspect-ratio="1.78" /> -->
-          <img :src="'http://10.51.4.9:25344/streams/PCAM_UP2'" width="100%" />
+          <img :src="upUrl" width="100%" />
         </v-col>
       </v-row>
       <!-- Snippets -->
@@ -34,7 +34,7 @@
             <v-col class="grid-center">
               <h2>Re-ID Detections</h2>
               <br />
-              <h3 style="color: #FF6666;">(API Inactive)</h3>
+              <h3 style="color: #FF6666;">(API Server {{ apiServer }} Inactive)</h3>
             </v-col>
           </v-card>
         </v-col>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Api from '@/utils/api/vision';
+import Api from '@/utils/api/reid';
 import TitleBarReID from '@/components/modules/vision/TitleBarReID';
 import DetectionBoxes from '@/components/modules/vision/DetectionBoxes.vue';
 
@@ -62,6 +62,21 @@ export default {
     fetchSuccess: false,
     apiConnectInterval: null
   }),
+
+  computed: {
+    apiServer() {
+      return process.env.VUE_APP_REID_API_URL;
+    },
+    videoServer() {
+      return process.env.VUE_APP_REID_VIDEO_URL;
+    },
+    downUrl() {
+      return `${this.videoServer}/streams/PCAM_DOWN1`;
+    },
+    upUrl() {
+      return `${this.videoServer}/streams/PCAM_UP2`;
+    }
+  },
 
   mounted() {
     this.initialFetch = true;

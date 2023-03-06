@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="my-0 mx-0">
-      <highcharts :options="chartOptions" :callback="drawRowText" v-if="!reload"></highcharts>
+      <highcharts :options="chartOptions" v-if="!reload"></highcharts>
       <v-card v-else :height="height" :color="$store.state.darkMode ? 'rgb(51,51,51)' : 'rgb(255,255,255)'" />
     </div>
   </div>
@@ -32,7 +32,7 @@ export default {
         };
       }
       let height = this.$vuetify.breakpoint.mobile ? 300 : this.height;
-      let chart = this.makeChart(height, this.data, this.drawRowText);
+      let chart = this.makeChart(height, this.data);
       return chart;
     }
   },
@@ -80,7 +80,7 @@ export default {
       };
     },
 
-    getYAxisProps(label, categories, devices) {
+    getYAxisProps(label, categories, devices, descriptions) {
       const ctx = this;
       return {
         categories: categories,
@@ -102,11 +102,11 @@ export default {
           },
 
           formatter: function() {
-            if (devices[this.value]) {
-              return `<div style="text-decoration: underline;">${this.value}</div>`;
-            } else {
-              return this.value;
-            }
+            const value = devices[this.value]
+              ? `<div style="text-decoration: underline;">${this.value}</div>`
+              : this.value;
+            const name = descriptions[this.pos];
+            return '<span title="' + name + '">' + value + '</span>';
           },
           useHTML: true,
           events: {
@@ -190,7 +190,7 @@ export default {
       return str;
     },
 
-    makeChart(chartHeight, data, redrawFunc) {
+    makeChart(chartHeight, data) {
       let ctx = this;
 
       let startTime = data.startTime;
@@ -200,7 +200,7 @@ export default {
       let series = this.tranformSeries(data.data);
       let title = this.getChartTitle(data.title || '');
       let xAxis = this.getXAxisProps(data.xAxis, data.xcategories, interval);
-      let yAxis = this.getYAxisProps(data.yAxis, data.ycategories, data.devices);
+      let yAxis = this.getYAxisProps(data.yAxis, data.ycategories, data.devices, data.descriptions);
       let colorAxis = this.getColorAxis();
 
       // Setup the y-axis click handler
@@ -223,12 +223,7 @@ export default {
           marginBottom: 55,
           type: 'heatmap',
           plotBorderColor: '#000000',
-          plotBorderWidth: 2,
-          events: {
-            redraw: function() {
-              redrawFunc(this);
-            }
-          }
+          plotBorderWidth: 2
         },
 
         title: title,
@@ -316,6 +311,7 @@ export default {
 
       const startX = chart.xAxis[0].toPixels(0);
       let rows = this.$vuetify.breakpoint.mobile ? this.data.ycategories : this.data.descriptions;
+
       rows.forEach((row, index) => {
         const x = startX + 20;
         const y = chart.yAxis[0].toPixels(index) + 5;
@@ -327,6 +323,7 @@ export default {
         this.customObjects.push(t);
       });
     },
+
     refresh(ms = 1000) {
       this.reload = true;
       setTimeout(() => {

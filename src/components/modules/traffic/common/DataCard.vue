@@ -33,7 +33,7 @@
                   </div>
                 </div>
 
-                <div v-else>{{ item.value }}</div>
+                <div v-else class="green--text text-bold overline">{{ item.value }}</div>
               </td>
             </tr>
           </tbody>

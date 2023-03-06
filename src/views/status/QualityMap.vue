@@ -36,9 +36,10 @@
     </GmapMap>
 
     <Toolbar
+      :counts="classCounts"
       :entities="entities"
       @system="showSystemInfo"
-      @region="mapRegionSelect"
+      @filter="deviceFiltering"
       @type="errorTypeSelect"
       @search="showSearchResult"
     />
@@ -86,11 +87,12 @@ export default {
   data: () => ({
     loading: false,
     errorIcons: [],
-
+    errorCountThreshold: 5,
     selectedMarker: null,
     currentComponent: null,
     currentTitle: '',
     mapRegionSelection: -1,
+    sensorTypeSelection: -1,
     selectedMarkerId: -1,
     errorTypeSelection: -1,
 
@@ -98,6 +100,7 @@ export default {
     infoPosition: null,
     markerPosition: { lat: 0, lng: 0 },
     devices: [],
+    errorCounts: [],
 
     options: {
       zoomControl: true,
@@ -119,22 +122,28 @@ export default {
   computed: {
     google: gmapApi,
 
-    markers() {
-      if (this.mapRegionSelection < 0) {
-        if (this.errorTypeSelection < 0) {
-          return this.devices;
-        } else {
-          return this.devices.filter(location => location.status === this.errorTypeSelection);
-        }
-      } else {
-        if (this.errorTypeSelection < 0) {
-          return this.devices.filter(location => location.flags === this.mapRegionSelection);
-        } else {
-          return this.devices.filter(
-            location => location.flags === this.mapRegionSelection && location.status === this.errorTypeSelection
-          );
-        }
+    filteredMarkers() {
+      let devices = this.devices;
+      if (this.mapRegionSelection > 0 && this.sensorTypeSelection < 0) {
+        devices = this.devices.filter(location => location.region === this.mapRegionSelection);
+      } else if (this.mapRegionSelection < 0 && this.sensorTypeSelection > 0) {
+        devices = this.devices.filter(location => location.type === this.sensorTypeSelection);
+      } else if (this.mapRegionSelection > 0 && this.sensorTypeSelection > 0) {
+        devices = this.devices.filter(
+          location => location.region === this.mapRegionSelection && location.type === this.sensorTypeSelection
+        );
       }
+      return devices;
+    },
+
+    markers() {
+      return this.errorTypeSelection < 0
+        ? this.filteredMarkers
+        : this.filteredMarkers.filter(location => location.errorTypes.includes(this.errorTypeSelection));
+    },
+
+    classCounts() {
+      return this.updateClassCounts(this.filteredMarkers, this.errorCounts, this.errorCountThreshold);
     },
 
     entities() {
@@ -367,8 +376,9 @@ export default {
       }
     },
 
-    mapRegionSelect(regionId) {
+    deviceFiltering({ regionId, typeId }) {
       this.mapRegionSelection = regionId;
+      this.sensorTypeSelection = typeId;
     },
 
     errorTypeSelect(classId) {
@@ -410,15 +420,42 @@ export default {
       let map = new Map();
       data.forEach(d => {
         if (d.counts[0] > threshold) {
-          const dominantErrorType = this.getDominantErrorType(d.counts, 1);
-          map.set(d.id, dominantErrorType);
+          const status = this.getDominantErrorType(d.counts, 1);
+          const errorTypes = this.getErrorTypes(d.counts);
+          map.set(d.id, { status, errorTypes });
         }
       });
+
       this.devices.forEach(d => {
         if (map.has(d.id)) {
-          d.status = map.get(d.id);
+          const value = map.get(d.id);
+          d.status = value.status;
+          d.errorTypes = value.errorTypes;
+        } else {
+          d.status = 0;
+          d.errorTypes = [0];
         }
       });
+    },
+
+    updateClassCounts(devices, data, threshold) {
+      const deviceSet = new Set(devices.map(d => d.id));
+
+      const classCounts = Array(8).fill(0);
+      classCounts[0] = deviceSet.size;
+      //console.log(deviceSet.size, data.length);
+      data.forEach(d => {
+        if (deviceSet.has(d.id) && d.counts[0] > threshold) {
+          classCounts[0]--;
+          for (let i = 1; i < d.counts.length; i++) {
+            if (d.counts[i] > 0) {
+              classCounts[i]++;
+            }
+          }
+        }
+      });
+
+      return classCounts;
     },
 
     getDominantErrorType(counts, startIdx) {
@@ -435,10 +472,24 @@ export default {
       return maxIndex;
     },
 
+    getErrorTypes(counts) {
+      let result = [];
+      if (counts[0] > 0) {
+        for (var i = 1; i < counts.length; i++) {
+          if (counts[i] > 0) {
+            result.push(i);
+          }
+        }
+      } else {
+        result.push(0);
+      }
+      return result;
+    },
+
     async fetchDevices() {
       try {
         const response = await TrafficApi.fetchDevices();
-        this.devices = response.data.map(obj => ({ ...obj, status: 0 }));
+        this.devices = response.data.map(obj => ({ ...obj, status: 0, errorTypes: [] }));
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
@@ -451,7 +502,8 @@ export default {
         const data = this.parseResponseData(response);
 
         if (data) {
-          this.updateMarkerStatus(data, 20);
+          this.errorCounts = data;
+          this.updateMarkerStatus(data, this.errorCountThreshold);
         }
       } catch (error) {
         console.log(error);

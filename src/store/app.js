@@ -18,6 +18,8 @@ const state = {
   mapCenter: { lat: 39.14, lng: -75.5 },
   position: { lat: 38.9108, lng: -75.5277 },
   currentDate: new Date(),
+  lastUpdatedTime: null,
+  refreshLoading: false,
   notificationStatus: 0,
   subscription: null
 };
@@ -103,6 +105,14 @@ const mutations = {
 
   SET_NOTIFICATION_SUB(state, subscription) {
     state.subscription = subscription;
+  },
+
+  SET_LAST_UPDATED_TIME(state, time) {
+    state.lastUpdatedTime = time;
+  },
+
+  SET_REFRESH_LOADING(state, loading) {
+    state.refreshLoading = loading;
   }
 };
 

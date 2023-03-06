@@ -10,11 +10,13 @@
                 filter
                 small
                 label
+                v-bind="{ disabled: counts[from] === 0 }"
                 :color="color"
+                :input-value="selectedErrorType === from"
                 v-on="on"
                 @click="classClicked(from)"
               >
-                {{ from }}
+                {{ counts.length == 8 ? counts[from] : 0 }}
               </v-chip>
             </template>
             <span>{{ name }}</span>
@@ -24,27 +26,7 @@
 
       <v-divider :class="$vuetify.breakpoint.mobile ? 'ml-3' : null" vertical />
 
-      <v-menu light bottom right offset-y min-width="250" :close-on-content-click="true">
-        <template v-slot:activator="{ on: menu, attrs }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
-              <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                <v-icon>mdi-map-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Map Region</span>
-          </v-tooltip>
-        </template>
-
-        <v-list>
-          <v-list-item v-for="item in region_menu_items" :key="item.value" @click="regionMenuItemClicked(item.value)">
-            <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
-              <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
-              <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }}</span>
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <DeviceSelectionMenu icon="mdi-map-outline" tooltip="Device Filter" v-model="deviceSelection" />
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -62,14 +44,18 @@
       <v-chip
         small
         filter
-        v-for="{ name, color, id } in selections"
-        :key="id"
-        :color="color"
+        v-for="item in selections"
+        :key="item.id"
+        :color="item.color"
         class="black--text"
         close
-        @click:close="chipClosed(id)"
+        @click:close="chipClosed(item)"
       >
-        {{ name }}
+        {{ item.name }}
+      </v-chip>
+
+      <v-chip small :color="dataClasses[selectedErrorType].color" class="black--text" v-if="selectedErrorType >= 0">
+        {{ currentTag }}
       </v-chip>
     </v-chip-group>
   </v-card>
@@ -77,26 +63,31 @@
 
 <script>
 import StatusConstants from '@/utils/constants/status';
-import TrafficConstants from '@/utils/constants/traffic';
+import Constants from '@/utils/constants/traffic';
 import ExpandableSearch from '@/components/common/ExpandableSearch';
+import DeviceSelectionMenu from '@/components/modules/traffic/common/DeviceSelectionMenu';
 
 export default {
   props: {
-    entities: Array
+    entities: Array,
+    counts: Array
   },
 
   components: {
-    ExpandableSearch
+    ExpandableSearch,
+    DeviceSelectionMenu
   },
 
   data: () => ({
     loading: false,
     dataClasses: [],
     selectedErrorType: -1,
-
-    region_menu_items: TrafficConstants.TRAFFIC_DEVICE_CATEGORIES,
-    selectedRegionId: -1,
-
+    region_menu_items: Constants.TRAFFIC_DEVICE_REGIONS,
+    type_menu_items: Constants.TRAFFIC_DEVICE_TYPES,
+    deviceSelection: {
+      regionId: -1,
+      typeId: -1
+    },
     select: null,
     search: null,
     searchItems: []
@@ -108,16 +99,40 @@ export default {
   },
 
   computed: {
+    currentTag() {
+      if (this.selectedErrorType >= 0) {
+        const name = this.dataClasses[this.selectedErrorType].name;
+        const count = this.selectedErrorType < this.counts.length ? this.counts[this.selectedErrorType] : 0;
+        return `${name} - ${count}`;
+      } else {
+        return '';
+      }
+    },
+
     selections() {
       const result = [];
-      if (this.selectedRegionId >= 0) {
-        const item = this.region_menu_items.find(item => item.value == this.selectedRegionId);
+      if (this.deviceSelection.regionId >= 0) {
+        const item = this.region_menu_items.find(item => item.value == this.deviceSelection.regionId);
         if (item) {
           result.push({
-            id: 10 + this.selectedRegionId,
+            id: 100 + this.deviceSelection.regionId,
             type: 0,
+            value: this.deviceSelection.regionId,
             name: item.title,
-            color: 'white'
+            color: 'orange'
+          });
+        }
+      }
+
+      if (this.deviceSelection.typeId >= 0) {
+        const item = this.type_menu_items.find(item => item.value == this.deviceSelection.typeId);
+        if (item) {
+          result.push({
+            id: 200 + this.deviceSelection.typeId,
+            type: 1,
+            value: this.deviceSelection.typeId,
+            name: item.title,
+            color: 'teal'
           });
         }
       }
@@ -142,6 +157,12 @@ export default {
           this.loading = false;
         }
       }
+    },
+
+    deviceSelection() {
+      setTimeout(() => {
+        this.$emit('filter', this.deviceSelection);
+      }, 250);
     }
   },
 
@@ -172,27 +193,26 @@ export default {
 
       setTimeout(() => {
         this.$emit('type', this.selectedErrorType);
-      }, 100);
+      }, 10);
     },
 
     showSystemQuality() {
       this.$emit('system');
     },
 
-    regionMenuItemClicked(value) {
-      this.selectedRegionId = value;
-      setTimeout(() => {
-        this.$emit('region', this.selectedRegionId);
-      }, 100);
-    },
-
-    chipClosed(id) {
-      if (id < 20) {
-        this.regionMenuItemClicked(-1);
+    chipClosed(item) {
+      if (item.type == 0) {
+        this.deviceSelection.regionId = -1;
+        this.$emit('filter', { regionId: -1, typeId: this.deviceSelection.typeId });
+      } else if (item.type == 1) {
+        this.deviceSelection.typeId = -1;
+        this.$emit('filter', { regionId: this.deviceSelection.regionId, typeId: -1 });
       } else {
         this.classClicked(-1);
       }
-    }
+    },
+
+    errorTypeChipClosed() {}
   }
 };
 </script>

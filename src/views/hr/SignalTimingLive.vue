@@ -176,7 +176,7 @@ export default {
           margin: '10px 20px',
           padding: '12px 8px',
           border: 'solid 1px #717B87',
-          color: '#00f',
+          color: '#070',
           background: '#fff',
           fontSize: '16px',
           fontWeight: 'bold'

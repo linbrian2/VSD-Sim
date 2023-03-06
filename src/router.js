@@ -8,7 +8,6 @@ import Traffic from '@/components/layouts/Traffic.vue';
 import HR from '@/components/layouts/HR.vue';
 import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
-import Status from '@/components/layouts/Status.vue';
 import Dashboard from '@/components/layouts/Dashboard.vue';
 import Fullscreen from '@/components/layouts/Fullscreen.vue';
 
@@ -37,12 +36,11 @@ import MultiOcc from '@/views/hr/MultiOcc.vue';
 
 import VisionDashboard from '@/views/vision/Dashboard.vue';
 import MultiView from '@/views/vision/MultiView.vue';
+import ReID from '@/views/vision/ReID.vue';
 
 import TripStatusView from '@/views/cav/TripStatusView.vue';
 import TripDataView from '@/views/cav/TripDataView.vue';
 
-import StatusDashboard from '@/views/status/Dashboard.vue';
-import QualityCheck from '@/views/status/QualityCheck.vue';
 import QualityMap from '@/views/status/QualityMap.vue';
 
 import LoginPage from '@/auth/views/LoginPage';
@@ -204,6 +202,11 @@ const router = new Router({
           path: RouterPaths.VISION_MULTIVIEW,
           name: RouterNames.VISION_MULTIVIEW,
           component: MultiView
+        },
+        {
+          path: RouterPaths.VISION_REID,
+          name: RouterNames.VISION_REID,
+          component: ReID
         }
       ]
     },
@@ -220,27 +223,6 @@ const router = new Router({
           path: RouterPaths.CAV_STATUS,
           name: RouterNames.CAV_STATUS,
           component: TripStatusView
-        }
-      ]
-    },
-    {
-      path: RouterPaths.STATUS_DASHBOARD,
-      component: Status,
-      children: [
-        {
-          path: RouterPaths.STATUS_DASHBOARD,
-          name: RouterNames.STATUS_DASHBOARD,
-          component: StatusDashboard
-        },
-        {
-          path: RouterPaths.STATUS_QUALITY_CHECK,
-          name: RouterNames.STATUS_QUALITY_CHECK,
-          component: QualityCheck
-        },
-        {
-          path: RouterPaths.STATUS_QUALITY_MAP,
-          name: RouterNames.STATUS_QUALITY_MAP,
-          component: QualityMap
         }
       ]
     },

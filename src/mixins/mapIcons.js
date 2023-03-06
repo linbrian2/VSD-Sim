@@ -38,6 +38,12 @@ export const mapIcons = {
         anchor: { x: 15, y: 15 }
       },
 
+      brownDotSelect: {
+        url: require('@/assets/brown-select.png'),
+        size: { width: 30, height: 30, f: 'px', b: 'px' },
+        anchor: { x: 15, y: 15 }
+      },
+
       weatherIcon: {
         url: require('@/assets/icon30.png'),
         size: { width: 32, height: 32, f: 'px', b: 'px' }
@@ -233,23 +239,14 @@ export const mapIcons = {
           fillColor: '#FF0000',
           fillOpacity: 0.8,
           strokeWeight: 0.4
-        }
-      ],
-
-      icons2: [
-        {
-          path: 0,
-          scale: 10.0,
-          fillColor: '#fa00ff',
-          fillOpacity: 0.8,
-          strokeWeight: 0.4
         },
         {
           path: 0,
           scale: 10.0,
-          fillColor: '#00ffff',
-          fillOpacity: 0.8,
-          strokeWeight: 0.4
+          fillColor: '#4E342E',
+          fillOpacity: 0.95,
+          strokeColor: '#666',
+          strokeWeight: 1.5
         }
       ],
 
@@ -460,7 +457,7 @@ export const mapIcons = {
     },
 
     getDeviceMarkerIcon(selected = false) {
-      return selected ? this.cabinetIconActive : this.cabinetIcon;
+      return selected ? this.brownDotSelect : this.icons[2];
     },
 
     getRestrictionIcon(selected = false) {
@@ -472,13 +469,6 @@ export const mapIcons = {
         return marker.status > 0 || selected ? this.icons[1] : this.icons[0];
       }
       return this.selectedMarkerId === marker.id ? this.icons[1] : this.icons[0];
-    },
-
-    getMarker2Icon(marker, selected = false) {
-      if (marker) {
-        return marker.status > 0 || !selected ? this.icons2[1] : this.icons2[0];
-      }
-      return this.selectedMarkerId === marker.id ? this.icons2[1] : this.icons2[0];
     },
 
     getMarkerIcon(marker, selected = false) {

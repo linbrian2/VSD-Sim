@@ -1,6 +1,10 @@
 <template>
   <v-sheet outlined :color="borderColor">
     <v-card dense tile :color="statusColor" dark @click="handleClick">
+      <v-system-bar dark color="red" v-if="incident.status === 0">
+        <span class="overline ml-2">This incident is ongoing ... </span>
+      </v-system-bar>
+
       <v-card-title class="d-flex justify-space-between">
         <div>Incident {{ incident.id }}</div>
 

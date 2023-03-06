@@ -30,7 +30,7 @@
       <!-- notification -->
       <v-divider vertical class="ml-2 hidden-xs-only" />
       <NotificationDropdown />
-      <v-divider vertical class="ml-2 hidden-xs-only" />
+      <v-divider vertical class="ml-1 hidden-xs-only" />
     </Header>
     <FlowChartDialog v-model="showFlowChart" />
   </div>
@@ -57,24 +57,24 @@ export default {
     title: AppConstants.TRAFFIC_APP_TITLE,
 
     chart_menu_items: [
-      { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
+      { title: RouterNames.TRAFFIC_MULTIGRAPH, action: RouterPaths.TRAFFIC_MULTIGRAPH },
       { divider: true },
-      { title: RouterNames.TRAFFIC_SIGNALS, url: RouterPaths.TRAFFIC_SIGNALS },
-      { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, url: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
+      { title: RouterNames.TRAFFIC_SIGNALS, action: RouterPaths.TRAFFIC_SIGNALS },
+      { title: RouterNames.TRAFFIC_RESPONSIVE_DATA, action: RouterPaths.TRAFFIC_RESPONSIVE_DATA },
 
       { divider: true },
-      { title: RouterNames.TRAFFIC_LCM, url: RouterPaths.TRAFFIC_LCM },
+      { title: RouterNames.TRAFFIC_LCM, action: RouterPaths.TRAFFIC_LCM },
       { divider: true },
-      { title: RouterNames.TRAFFIC_ROUTING, url: RouterPaths.TRAFFIC_ROUTING }
+      { title: RouterNames.TRAFFIC_ROUTING, action: RouterPaths.TRAFFIC_ROUTING }
     ],
 
     anomaly_menu_items: [
-      { title: RouterNames.TRAFFIC_ANOMALY, url: RouterPaths.TRAFFIC_ANOMALY },
-      { title: RouterNames.TRAVEL_TIME_MAP, url: RouterPaths.TRAVEL_TIME_MAP },
-      { title: RouterNames.TRAFFIC_INCIDENT_LIST, url: RouterPaths.TRAFFIC_INCIDENT_LIST }
+      { title: RouterNames.TRAFFIC_ANOMALY, action: RouterPaths.TRAFFIC_ANOMALY },
+      { title: RouterNames.TRAVEL_TIME_MAP, action: RouterPaths.TRAVEL_TIME_MAP },
+      { title: RouterNames.TRAFFIC_INCIDENT_LIST, action: RouterPaths.TRAFFIC_INCIDENT_LIST }
     ],
 
-    prediction_menu_items: [{ title: RouterNames.TRAFFIC_PREDICT, url: RouterPaths.TRAFFIC_PREDICT }],
+    prediction_menu_items: [{ title: RouterNames.TRAFFIC_PREDICT, action: RouterPaths.TRAFFIC_PREDICT }],
 
     action_main_items: [
       { title: RouterNames.TRAFFIC_MULTIGRAPH, url: RouterPaths.TRAFFIC_MULTIGRAPH },
@@ -138,9 +138,9 @@ export default {
       this.$router.push({ path }).catch(() => {});
     },
 
-    dataMenuItemClicked(url) {
+    dataMenuItemClicked(action) {
       setTimeout(() => {
-        this.switchTo(url);
+        this.switchTo(action);
       }, 100);
     }
   }

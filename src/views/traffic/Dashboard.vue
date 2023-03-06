@@ -156,7 +156,7 @@ export default {
       if (this.mapRegionSelection < 0) {
         return this.deviceLocations;
       } else {
-        return this.deviceLocations.filter(location => location.zone === this.mapRegionSelection);
+        return this.deviceLocations.filter(location => location.region === this.mapRegionSelection);
       }
     },
 
@@ -201,11 +201,10 @@ export default {
     ...mapState(['currentDate']),
     ...mapState('traffic', [
       'showPanel',
-      'currentBluetoothAnomaly',
+      'currentTravelTimeAnomaly',
       'currentFlowAnomaly',
-      'currentWeatherCode',
+      'currentWeather',
       'currentRestrictions',
-      'currentAnomalySegments',
       'weatherStations',
       'trafficCameras',
       'mapRegionSelection',
@@ -252,13 +251,13 @@ export default {
       }
     },
 
-    currentBluetoothAnomaly: function(value) {
+    currentTravelTimeAnomaly: function(value) {
       if (value) {
-        this.updateSegmentStatus(value);
+        this.updateBluetoothSegmentStatus(value);
       }
     },
 
-    currentWeatherCode: function(value) {
+    currentWeather: function(value) {
       if (value) {
         this.updateWeatherStatus(value);
       }
@@ -267,12 +266,6 @@ export default {
     currentRestrictions: function(value) {
       if (value) {
         this.updateRestrictionsStatus(value);
-      }
-    },
-
-    currentAnomalySegments: function(value) {
-      if (value) {
-        this.updateAnomalySegementsStatus(value);
       }
     }
   },
@@ -305,10 +298,6 @@ export default {
     this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
       this.loadPage(darkMode);
     });
-
-    setTimeout(() => {
-      this.fetchLatestData();
-    }, 2000);
   },
 
   created() {
@@ -467,6 +456,8 @@ export default {
 
     cardClicked(payload) {
       this.trafficInfoShow = false;
+      this.$store.commit('dashboard/SHOW_TABLE', false);
+
       this.selectedIdx = payload.idx;
       if (this.selectedIdx < 0) {
         this.clearMarkerSelection();
@@ -530,43 +521,63 @@ export default {
       switch (type) {
         case Constants.LAYER_DEVICE_TRAFFIC: // detectors
           marker = this.markers.find(m => m.id === id);
-          this.markerClicked(marker);
+          if (marker) {
+            this.markerClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_BLUETOOTH: // Bluetooth
           marker = this.bluetoothLocations.find(m => m.id === id);
-          this.segmentClicked(marker);
+          if (marker) {
+            this.segmentClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_WEATHER: // weather stations
           marker = this.weatherStations.find(m => m.id === id);
-          this.weatherMarkerClicked(marker);
+          if (marker) {
+            this.weatherMarkerClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_RESTRICTIONS: //travel restrictions
           marker = this.trafficRestrictions.find(m => m.id === id);
-          this.restrictionClicked(marker);
+          if (marker) {
+            this.restrictionClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_INCIDENTS: // incident
           marker = this.trafficIncidents.find(m => m.id === id);
-          this.trafficIncidentClicked(marker, trigger);
+          if (marker) {
+            this.trafficIncidentClicked(marker, trigger);
+          }
           break;
         case Constants.LAYER_DEVICE_SIGNALS: // Signal Issues
           marker = this.signalIssues.find(m => m.id === id);
-          this.signalIssueClicked(marker);
+          if (marker) {
+            this.signalIssueClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_WAZE_ALERTS: // Waze Alerts
           marker = this.wazeAlerts.find(m => m.id === id);
-          this.wazeAlertClicked(marker);
+          if (marker) {
+            this.wazeAlertClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_CONGESTED_SEGMENTS: // Congested Routes
           marker = this.congestedSegments.find(m => m.id === id);
-          this.congestedRouteClicked(marker);
+          if (marker) {
+            this.congestedRouteClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_ANOMALY_DEVICES: // Device Anomalies
           marker = this.deviceAnomalies.find(m => m.id === id);
-          this.anomlyDeviceClicked(marker);
+          if (marker) {
+            this.anomlyDeviceClicked(marker);
+          }
           break;
         case Constants.LAYER_DEVICE_CAMERAS: // cameras
           marker = this.trafficCameras.find(m => m.id === id);
-          this.cameraMarkerClicked(marker);
+          if (marker) {
+            this.cameraMarkerClicked(marker);
+          }
           break;
         default:
           console.log('Unimplemented Marker Click Case');
@@ -628,7 +639,7 @@ export default {
     },
 
     segmentClicked(segment) {
-      this.showInfoPanel(segment, 'Bluetooth Travel Time', BluetoothDataInfo);
+      this.showInfoPanel(segment, 'Travel Time', BluetoothDataInfo);
     },
 
     weatherMarkerClicked(marker) {
@@ -695,11 +706,6 @@ export default {
       this.sheet = !this.sheet;
     },
 
-    getStrokeColor(level) {
-      const colors = ['#808080', '#0000FF', '#339900', '#00FF33', '#D7DF01', '#FFCC55', '#FF6600', '#FF0000'];
-      return colors[level];
-    },
-
     updateMarkerStatus(data) {
       let map = new Map();
       data.forEach(d => {
@@ -712,7 +718,7 @@ export default {
       });
     },
 
-    updateSegmentStatus(data) {
+    updateBluetoothSegmentStatus(data) {
       let map = new Map();
       data.forEach(d => {
         map.set(d.linkId, { status: d.status, travelTime: d.travelTime });
@@ -742,23 +748,14 @@ export default {
     },
 
     updateRestrictionsStatus(data) {
-      // this.restrictions = data.map(d => {
-      //   return {
-      //     id: d.id,
-      //     name: d.name,
-      //     position: d.position,
-      //     data: d.data
-      //   };
-      // });
-      Object.assign(this.restrictions, data);
-    },
-
-    updateAnomalySegementsStatus(data) {
-      if (data.length > 0) {
-        // const id = data[0].id;
-        // const msg = `Anomaly segment ${id} detected`;
-        //this.$store.dispatch('setSystemStatus', { text: msg, color: 'orange darken-2' });
-      }
+      data.forEach(d => {
+        const index = this.restrictions.findIndex(r => r.id === d.id);
+        if (index != -1) {
+          this.restrictions[index] = d;
+        } else {
+          this.restrictions.push(d);
+        }
+      });
     },
 
     showSelectionDialog() {
@@ -779,7 +776,6 @@ export default {
         Api.fetchAnomalyDevices().then(response => {
           let data = response.data;
           this.deviceLocations = data.map(obj => ({ ...obj, status: 0 }));
-
           if (this.deviceLocations.length > 0) {
             this.$store.commit('traffic/SET_ACTIVE_MARKER', this.deviceLocations[0]);
           }
@@ -809,46 +805,6 @@ export default {
       }
     },
 
-    async fetchLatestData() {
-      const secondsAgo = 600;
-      const { severity, duration } = this.incidentSettings;
-
-      this.loading = true;
-      try {
-        // Now we await for both results, whose async processes have already been started
-        const [anomalyData, travelTimeData, weatherData, restrictionData, anomalySegments] = await Promise.all([
-          Api.fetchLatestAnomalyData(secondsAgo),
-          Api.fetchLatestBluetoothAnomalyData(secondsAgo),
-          Api.fetchLatestWeatherData(secondsAgo),
-          Api.fetchLatestRestrictionData(3600),
-          Api.fetchLatestAnomalySegments(3600, severity, duration)
-        ]);
-
-        if (anomalyData.data.status === 'OK') {
-          this.$store.commit('traffic/SET_CURRENT_FLOW_ANOMALY_DATA', anomalyData.data.data);
-        }
-
-        if (travelTimeData.data.status === 'OK') {
-          this.$store.commit('traffic/SET_CURRENT_BLUETOOTH_ANOMALY_DATA', travelTimeData.data.data);
-        }
-
-        if (weatherData.data.status === 'OK') {
-          this.$store.commit('traffic/SET_CURRENT_WEATHER_DATA', weatherData.data.data);
-        }
-
-        if (restrictionData.data.status === 'OK') {
-          this.$store.commit('traffic/SET_CURRENT_RESTRICTION_DATA', restrictionData.data.data);
-        }
-
-        if (anomalySegments.data.status === 'OK') {
-          this.$store.commit('traffic/SET_CURRENT_ANOMALY_SEGMENTS', anomalySegments.data.data);
-        }
-      } catch (error) {
-        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
-      }
-      this.loading = false;
-    },
-
     generateSearchEntities() {
       const items1 = this.deviceLocations.map(d => ({
         id: d.id,
@@ -874,7 +830,7 @@ export default {
         desc: Constants.DEVICE_RESTRICTIONS + ':' + d.name
       }));
 
-      const items5 = this.currentAnomalySegments.map(d => ({
+      const items5 = this.trafficIncidents.map(d => ({
         id: d.id,
         type: 4,
         desc: Constants.DEVICE_SEGMENTS + ':' + d.id

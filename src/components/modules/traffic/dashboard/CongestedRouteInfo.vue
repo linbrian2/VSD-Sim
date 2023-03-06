@@ -61,22 +61,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="camerasAvaliable">
-      <v-col cols="12">
-        <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Nearby Cameras</h3></v-subheader>
-        <v-divider />
-      </v-col>
-      <v-col cols="12">
-        <div class="mx-4">
-          <v-btn outlined v-for="camera in cameraIds" :key="camera.id" @click.stop="playVideo(camera.id)" class="mr-5">
-            <v-icon left color="warning">
-              mdi-camera
-            </v-icon>
-            {{ camera.id }}
-          </v-btn>
-        </div>
-      </v-col>
-    </v-row>
+    <NearbyCameras :cameraIds="cameraIds" v-if="camerasAvaliable" />
   </v-container>
 </template>
 
@@ -85,6 +70,7 @@ import Utils from '@/utils/Utils';
 import RouteCard from '@/components/modules/traffic/dashboard/RouteCard';
 import Api from '@/utils/api/traffic';
 import BasicChart from '@/components/modules/traffic/common/BasicChart';
+import NearbyCameras from '@/components/modules/traffic/common/NearbyCameras';
 
 export default {
   props: {
@@ -93,7 +79,8 @@ export default {
 
   components: {
     RouteCard,
-    BasicChart
+    BasicChart,
+    NearbyCameras
   },
 
   data: () => ({
@@ -133,10 +120,6 @@ export default {
         let time = new Date().getTime();
         this.fetchTravelTimeData(segment.id, 300000, time);
       }
-    },
-
-    playVideo(id) {
-      this.$bus.$emit('PLAY_POPUP_VIDEO', id);
     },
 
     showTrafficSpeedChart() {

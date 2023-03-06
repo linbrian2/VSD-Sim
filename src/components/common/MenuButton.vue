@@ -1,7 +1,12 @@
 <template>
   <v-menu bottom right offset-y>
     <template v-slot:activator="{ on: menu, attrs }">
-      <v-tooltip bottom>
+      <v-btn small color="teal darken-3" v-bind="attrs" v-on="{ ...menu }" v-if="normal">
+        <v-icon small left>{{ icon }}</v-icon>
+        {{ tooltip }}
+      </v-btn>
+
+      <v-tooltip bottom v-else>
         <template v-slot:activator="{ on: tooltip }">
           <v-btn class="mx-1" fab :color="color" icon v-bind="attrs" v-on="{ ...tooltip, ...menu }">
             <v-icon>{{ icon }}</v-icon>
@@ -14,7 +19,7 @@
     <v-list>
       <template v-for="(item, index) in items">
         <v-divider v-if="item.divider" :key="index"></v-divider>
-        <v-list-item v-else :key="index + 100" @click="menuItemClicked(item.url)">
+        <v-list-item v-else :key="index + 100" @click="menuItemClicked(item.action)">
           <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
       </template>
@@ -28,7 +33,8 @@ export default {
     items: Array,
     tooltip: String,
     icon: String,
-    color: String
+    color: String,
+    normal: { type: Boolean, default: false }
   },
   methods: {
     menuItemClicked(action) {

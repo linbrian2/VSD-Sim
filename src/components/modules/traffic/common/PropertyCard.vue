@@ -9,7 +9,7 @@
         <v-row wrap>
           <v-col :cols="cols" v-for="(item, index) in entry.items" :key="index">
             <div class="text-center">
-              <h1 class="extra-bold" :style="`color: ${item.color ? item.color : '#3c763d'};`">
+              <h1 class="extra-bold" :style="`color: ${item.color ? item.color : '#00c853'};`">
                 <strong>{{ item.value }}</strong>
               </h1>
               <h5>{{ item.name }}</h5>
@@ -36,10 +36,10 @@ export default {
   text-align: center;
 }
 .text-success {
-  color: #3c763d;
+  color: #00c853;
 }
 .extra-bold {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 500;
 }
 </style>

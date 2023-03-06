@@ -1,11 +1,11 @@
 <template>
   <v-card tile color="#444">
-    <v-card-title class="d-flex justify-space-between">
+    <v-card-title dense class="d-flex justify-space-between">
       <div>{{ route.short }}</div>
       <div class="overline"><v-icon small class="mt-n1 mr-1">mdi-vector-line</v-icon>{{ route.distance }} mi</div>
       <div class="mr-2">
         <v-chip small :color="color">
-          <strong class="black--text overline">{{ route.travelTime.level }}</strong>
+          <strong class="black--text overline">Level {{ route.travelTime.level }}</strong>
         </v-chip>
       </div>
     </v-card-title>

@@ -4,54 +4,56 @@
       <v-col v-for="x in sortedCardData" :key="x.id" class="pa-0">
         <v-row cols="12" v-if="!!((x && x.val) || showAllOverlayCards)">
           <v-hover v-slot="{ hover }">
-            <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
-              <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
-                <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
-                  <v-sheet outlined :color="x.id == selectedIdx ? 'white' : 'transparent'">
-                    <v-tooltip right>
-                      <template v-slot:activator="{ on: tooltip }">
-                        <v-card
-                          tile
-                          class="d-flex align-center justify-center"
-                          :height="$vuetify.breakpoint.mobile ? '40px' : '60px'"
-                          :width="$vuetify.breakpoint.mobile ? '80px' : '110px'"
-                          @click.native="cardClicked(x.id)"
-                          :color="getColor(x)"
-                          :elevation="hover ? 12 : 2"
-                          :class="{ 'on-hover': hover }"
-                          v-on="{ ...tooltip }"
-                        >
-                          <v-col class="grid-center pa-0">
-                            <v-card-title
-                              class="pa-0"
-                              :style="`font-size:${$vuetify.breakpoint.mobile ? '26px' : '38px'}`"
-                            >
-                              <v-icon class="pr-2" color="white" :large="!$vuetify.breakpoint.mobile">
-                                {{ x.icon }}
-                              </v-icon>
-                              <template v-if="x.val == null || (x.val && x.val == '-')">
-                                <div class="pt-3"></div>
-                                <Spinner />
-                              </template>
-                              <template v-else>
-                                <h4 :style="'color: white;'">{{ x.val }}</h4>
-                              </template>
-                            </v-card-title>
-                          </v-col>
-                          <div v-show="hover" class="card-container">
-                            <v-btn icon @click="goToPage(x.link)" class="link-button">
-                              <v-icon small :class="{ 'show-btns': hover }" color="transparent">
-                                mdi-open-in-new
-                              </v-icon>
-                            </v-btn>
-                          </div>
-                        </v-card>
-                      </template>
-                      <span>{{ x.title }}</span>
-                    </v-tooltip>
-                  </v-sheet>
-                </v-sheet>
-              </v-sheet>
+            <v-sheet outlined class="mb-1" color="black">
+              <v-tooltip right>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-card
+                    tile
+                    class="d-flex align-center justify-center"
+                    :height="$vuetify.breakpoint.mobile ? '40px' : '60px'"
+                    :width="$vuetify.breakpoint.mobile ? '80px' : '110px'"
+                    @click.native="cardClicked(x.id)"
+                    :color="getColor(x)"
+                    :elevation="hover ? 12 : 2"
+                    :class="{ 'on-hover': hover }"
+                    :style="cardBorder(x.id)"
+                    v-on="{ ...tooltip }"
+                  >
+                    <v-col
+                      class="grid-center pa-0 mx-3 d-flex justify-space-between align-center"
+                      :style="`font-size:${$vuetify.breakpoint.mobile ? '26px' : '32px'}`"
+                    >
+                      <v-icon class="pr-2" color="white" :large="!$vuetify.breakpoint.mobile">
+                        {{ x.icon }}
+                      </v-icon>
+
+                      <div>
+                        <template v-if="x.val == null || (x.val && x.val == '-')">
+                          <div class="pt-3"></div>
+                          <Spinner />
+                        </template>
+                        <template v-else>
+                          <h4 :style="'color: white;'">
+                            <v-fade-transition leave-absolute>
+                              <span :key="`counts-${x.val}`">
+                                {{ x.val }}
+                              </span>
+                            </v-fade-transition>
+                          </h4>
+                        </template>
+                      </div>
+                    </v-col>
+                    <div v-show="hover" class="card-container">
+                      <v-btn icon @click="goToPage(x.link)" class="link-button">
+                        <v-icon small :class="{ 'show-btns': hover }" color="transparent">
+                          mdi-open-in-new
+                        </v-icon>
+                      </v-btn>
+                    </div>
+                  </v-card>
+                </template>
+                <span>{{ x.title }}</span>
+              </v-tooltip>
             </v-sheet>
           </v-hover>
         </v-row>
@@ -90,9 +92,10 @@
 </template>
 
 <script>
+import Utils from '@/utils/Utils.js';
 import Constants from '@/utils/constants/dashboard.js';
 import Spinner from '@/components/common/Spinner.vue';
-import { RouterPaths } from '@/utils/constants/router';
+import CardData from '@/components/modules/dashboard/CardData.js';
 import { mapActions, mapGetters, mapState } from 'vuex';
 
 export default {
@@ -104,110 +107,16 @@ export default {
       manualMode: false,
       updateInterval: null,
       cardSwapInterval: null,
+      dataUpdateInterval: 60000, // 60 seconds
       elapsedTime: 0,
+      cardColorAlpha: 0.9,
       cardElapsedTime: 38,
-      cardData: [
-        {
-          id: Constants.CARD_DATA_INCIDENTS_ID,
-          title: Constants.TRAFFIC_INCIDENTS,
-          icon: Constants.TRAFFIC_INCIDENTS_ICON,
-          link: RouterPaths.TRAFFIC_INCIDENT_LIST,
-          val: '-',
-          displayOrder: 0,
-          thresholds: [
-            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
-            { val: 1, color: '#339900' },
-            { val: 3, color: '#D7DF01' },
-            { val: 5, color: '#FFCC55' },
-            { val: 7, color: '#FF6600' },
-            { val: 9, color: '#FF0000' }
-          ]
-        },
-        {
-          id: Constants.CARD_DATA_RESTRICTIONS_ID,
-          title: Constants.TRAFFIC_RESTRICTIONS,
-          icon: Constants.DEVICE_TRAFFIC_ICON,
-          link: '',
-          val: '-',
-          displayOrder: 2,
-          thresholds: [
-            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
-            { val: 1, color: '#339900' },
-            { val: 2, color: '#D7DF01' },
-            { val: 4, color: '#FFCC55' },
-            { val: 6, color: '#FF6600' },
-            { val: 8, color: '#FF0000' }
-          ]
-        },
-        {
-          id: Constants.CARD_DATA_SIGNAL_ISSUES_ID,
-          title: Constants.SIGNAL_PERFORMANCE_ISSUES,
-          icon: Constants.SIGNAL_PERFORMANCE_ISSUES_ICON,
-          link: RouterPaths.HR_DASHBOARD,
-          val: '-',
-          displayOrder: 3,
-          thresholds: [
-            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
-            { val: 1, color: '#339900' },
-            { val: 4, color: '#D7DF01' },
-            { val: 6, color: '#FFCC55' },
-            { val: 8, color: '#FF6600' },
-            { val: 10, color: '#FF0000' }
-          ]
-        },
-        {
-          id: Constants.CARD_DATA_DEDVICE_ANOMALIES_ID,
-          title: Constants.DEVICE_ANOMALIES,
-          icon: Constants.DEVICE_CABINET_ICON,
-          link: RouterPaths.STATUS_QUALITY_MAP,
-          val: '-',
-          displayOrder: 5,
-          thresholds: [
-            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
-            { val: 1, color: '#339900' },
-            { val: 4, color: '#D7DF01' },
-            { val: 6, color: '#FFCC55' },
-            { val: 8, color: '#FF6600' },
-            { val: 10, color: '#FF0000' }
-          ]
-        },
-        {
-          id: Constants.CARD_DATA_CONGESTED_ROUTES_ID,
-          title: Constants.HIGH_CONGESTION_ROUTES,
-          icon: Constants.HIGH_CONGESTION_ROUTES_ICON,
-          link: RouterPaths.TRAFFIC_DATA_PLAYBACK,
-          val: '-',
-          displayOrder: 1,
-          thresholds: [
-            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
-            { val: 1, color: '#339900' },
-            { val: 3, color: '#D7DF01' },
-            { val: 6, color: '#FFCC55' },
-            { val: 9, color: '#FF6600' },
-            { val: 12, color: '#FF0000' }
-          ]
-        },
-        {
-          id: Constants.CARD_DATA_WAZE_ALERTS_ID,
-          title: Constants.REPORTED_WAZE_ALERTS,
-          icon: Constants.REPORTED_WAZE_ALERTS_ICON,
-          link: RouterPaths.TRAFFIC_DATA_PLAYBACK,
-          val: '-',
-          displayOrder: 4,
-          thresholds: [
-            { val: 0, color: 'rgba(42, 215, 40, 0.35)' },
-            { val: 1, color: '#339900' },
-            { val: 20, color: '#D7DF01' },
-            { val: 35, color: '#FFCC55' },
-            { val: 50, color: '#FF6600' },
-            { val: 65, color: '#FF0000' }
-          ]
-        }
-      ],
+      cardData: CardData,
       selectedIdx: -1,
       transparent: 'rgba(255, 255, 255, 0)'
     };
   },
+
   computed: {
     showAllOverlayCards() {
       return this.getSetting('dashboard', 'showAllOverlayCards');
@@ -236,21 +145,27 @@ export default {
   destroyed() {
     window.removeEventListener('click', this.keydownListener);
     this.stopCardSwapInterval();
+    this.stopUpdateInterval();
   },
 
   mounted() {
+    this.$bus.$on('FETCH_DASHBOARD_DATA', () => {
+      this.fetchApiData();
+    });
+
     this.startUpdateInterval();
     this.startCardSwapInterval();
     this.initExistingData();
     this.fetchApiData();
-
-    // this.$bus.$on('DISPLAY_MARKER_DETAILS', () => {
-    //   this.selectedIdx = -1;
-    // });
   },
+
   methods: {
     keydownListener() {
       this.cardElapsedTime = -75;
+    },
+
+    cardBorder(id) {
+      return id == this.selectedIdx ? 'border: 3px solid red;' : 'border: 0px solid transparent;';
     },
 
     cardClicked(i) {
@@ -269,22 +184,18 @@ export default {
     },
 
     getColor(param) {
-      if (param.val == '-') {
+      if (!param || !param.thresholds || param.val == '-') {
         return 'black';
       }
-      if (param && param.thresholds) {
-        for (let i = 0; i < param.thresholds.length; i++) {
-          if (i == param.thresholds.length - 1) {
-            return param.thresholds[i].color;
-          } else {
-            if (param.val >= param.thresholds[i].val && param.val < param.thresholds[i + 1].val) {
-              return param.thresholds[i].color;
-            }
-          }
+
+      let idx = param.thresholds.length - 1;
+      for (let i = 0; i < param.thresholds.length - 1; i++) {
+        if (param.thresholds[i].val <= param.val && param.val < param.thresholds[i + 1].val) {
+          idx = i;
         }
-      } else {
-        return 'black';
       }
+
+      return Utils.hexToRGBA(param.thresholds[idx].color, this.cardColorAlpha);
     },
 
     initExistingData() {
@@ -298,34 +209,13 @@ export default {
     },
 
     startUpdateInterval() {
-      this.updateInterval = setInterval(this.updateData, 1000);
+      this.updateInterval = setInterval(this.fetchApiData, this.dataUpdateInterval);
     },
 
     stopUpdateInterval() {
       if (this.updateInterval) {
         clearInterval(this.updateInterval);
         this.updateInterval = null;
-      }
-    },
-
-    fetchApiData() {
-      this.fetchTrafficIncidents();
-      this.fetchTrafficDevices();
-      this.fetchTrafficRestrictions();
-      this.fetchSignalIssues();
-      this.fetchAnomalyDevices(80);
-      this.fetchCongestedSegments(5);
-      this.fetchWazeAlerts();
-    },
-
-    updateData() {
-      this.elapsedTime++;
-      if (
-        this.getSetting('dashboard', 'autoDataUpdate') &&
-        this.elapsedTime >= this.getSetting('dashboard', 'dataUpdateInterval') * 60
-      ) {
-        this.elapsedTime = 0;
-        this.fetchApiData();
       }
     },
 
@@ -338,6 +228,25 @@ export default {
         clearInterval(this.cardSwapInterval);
         this.cardSwapInterval = null;
       }
+    },
+
+    async fetchApiData() {
+      // Start loading data
+      this.$store.commit('SET_REFRESH_LOADING', true);
+
+      await Promise.all([
+        this.fetchTrafficIncidents(),
+        this.fetchTrafficDevices(),
+        this.fetchTrafficRestrictions(),
+        this.fetchSignalIssues(),
+        this.fetchAnomalyDevices(80),
+        this.fetchCongestedSegments(5),
+        this.fetchWazeAlerts()
+      ]);
+
+      // Update last updated time
+      this.$store.commit('SET_LAST_UPDATED_TIME', new Date());
+      this.$store.commit('SET_REFRESH_LOADING', false);
     },
 
     updateCardSwap() {
@@ -368,14 +277,6 @@ export default {
       }
     },
 
-    cardStat() {
-      const counts = [];
-      for (let i = 0; i < this.cardData.length; i++) {
-        counts.push(this.cardData[i].val);
-      }
-      //console.log('CARD counts:', counts);
-    },
-
     ...mapActions('dashboard', [
       'fetchTrafficIncidents',
       'fetchTrafficDevices',
@@ -391,42 +292,36 @@ export default {
     trafficIncidents(trafficIncidents) {
       if (trafficIncidents) {
         this.cardData[Constants.CARD_DATA_INCIDENTS_ID].val = trafficIncidents.length;
-        this.cardStat();
       }
     },
 
     deviceAnomalies(deviceAnomalies) {
       if (deviceAnomalies) {
         this.cardData[Constants.CARD_DATA_DEDVICE_ANOMALIES_ID].val = deviceAnomalies.length;
-        this.cardStat();
       }
     },
 
     signalIssues(signalIssues) {
       if (signalIssues) {
         this.cardData[Constants.CARD_DATA_SIGNAL_ISSUES_ID].val = this.signalIssues.length;
-        this.cardStat();
       }
     },
 
     trafficRestrictions(trafficRestrictions) {
       if (trafficRestrictions) {
         this.cardData[Constants.CARD_DATA_RESTRICTIONS_ID].val = trafficRestrictions.length;
-        this.cardStat();
       }
     },
 
     congestedSegments(segments) {
       if (segments) {
         this.cardData[Constants.CARD_DATA_CONGESTED_ROUTES_ID].val = segments.length;
-        this.cardStat();
       }
     },
 
     wazeAlerts(wazeAlerts) {
       if (wazeAlerts) {
         this.cardData[Constants.CARD_DATA_WAZE_ALERTS_ID].val = wazeAlerts.length;
-        this.cardStat();
       }
     }
   }

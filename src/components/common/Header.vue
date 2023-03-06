@@ -6,16 +6,19 @@
       </v-btn>
 
       <div class="hidden-md-and-down">
-        <router-link to="/">
-          <v-img
-            alt="Logo"
-            class="shrink mr-2"
-            contain
-            src="@/assets/logo.png"
-            transition="scale-transition"
-            width="100"
-          />
-        </router-link>
+        <div class="d-flex align-center">
+          <router-link to="/">
+            <v-img
+              alt="Logo"
+              class="shrink mr-2"
+              contain
+              src="@/assets/logo.png"
+              transition="scale-transition"
+              width="100"
+            />
+          </router-link>
+          <div class="overline mt-1">v{{ version }}</div>
+        </div>
       </div>
 
       <div class="hidden-sm-and-down">
@@ -33,6 +36,18 @@
       </div>
       <div v-if="showWeatherInfo" class="hidden-sm-and-down">
         <WeatherOverlay :center="mapCenter" :showCurrentTime="showCurrentTime" />
+      </div>
+
+      <div class="ml-12 d-flex align-center" v-if="isDashboard && updatedTime">
+        <v-btn small icon @click.stop="refreshData" :loading="refreshLoading">
+          <v-icon small color="grey">mdi-cached</v-icon>
+          <template v-slot:loader>
+            <span class="custom-loader">
+              <v-icon small color="green">mdi-cached</v-icon>
+            </span>
+          </template>
+        </v-btn>
+        <div class="overline grey--text">{{ updatedTime }}</div>
       </div>
 
       <v-spacer></v-spacer>
@@ -63,6 +78,7 @@ import SnackBar from '@/components/common/SnackBar';
 import ChartStyles from '@/utils/ChartStyles.js';
 import WeatherOverlay from '@/components/common/WeatherOverlay.vue';
 import SettingsDialog from './SettingsDialog.vue';
+import Utils from '../../utils/Utils';
 
 export default {
   props: {
@@ -108,6 +124,10 @@ export default {
   data: () => ({}),
 
   computed: {
+    version() {
+      return process.env.VUE_APP_VERSION || '';
+    },
+
     icon() {
       return this.$store.state.traffic.showPanel ? 'mdi-close' : 'mdi-menu';
     },
@@ -120,11 +140,15 @@ export default {
       return this.$route.name;
     },
 
+    updatedTime() {
+      return this.refreshLoading ? 'Updating ...' : this.lastUpdatedTime ? Utils.formatTime(this.lastUpdatedTime) : '';
+    },
+
     user() {
       return this.$store.state.auth.user;
     },
 
-    ...mapState(['currentDate', 'darkMode', 'mapCenter'])
+    ...mapState(['currentDate', 'lastUpdatedTime', 'refreshLoading', 'darkMode', 'mapCenter'])
   },
 
   watch: {
@@ -152,7 +176,51 @@ export default {
 
     menuItemClicked(action) {
       this.$emit('menuItemclick', action);
+    },
+
+    refreshData() {
+      this.$bus.$emit('FETCH_DASHBOARD_DATA');
     }
   }
 };
 </script>
+
+<style>
+.custom-loader {
+  animation: loader 1s infinite;
+  display: flex;
+}
+
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

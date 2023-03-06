@@ -12,6 +12,7 @@
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
       class="elevation-1 mx-2"
+      v-show="showTable"
     >
       <template v-slot:[`item.id`]="{ item }">
         <v-chip color="green" outlined small style="width:62px;">{{ item.id }}</v-chip>
@@ -38,25 +39,14 @@ export default {
   },
 
   data: () => ({
+    listLimit: 0,
     items: [],
     headers: []
   }),
 
   computed: {
     height() {
-      if (this.showTable && this.maxItems > 12) {
-        return 'calc(80vh - 48px)';
-      } else {
-        return null;
-      }
-    },
-
-    listLimit() {
-      if (this.getSetting) {
-        return this.getSetting('dashboard', 'limitListings');
-      } else {
-        return 0;
-      }
+      return this.maxItems > 5 ? '35vh' : 'null';
     },
 
     itemPerPage() {

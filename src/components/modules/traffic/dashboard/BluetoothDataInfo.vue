@@ -199,9 +199,10 @@ export default {
             result = data;
           }
         }
-      } else {
-        this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
       }
+      //  else {
+      //   this.$store.dispatch('setSystemStatus', { text: response.data.message, color: 'error' });
+      // }
       return result;
     },
 
@@ -228,20 +229,24 @@ export default {
     },
 
     formDeviceInfoData(info) {
-      let current = {
-        'Travel Time': this.formatDuration(info.current.mean),
-        'Average Speed': info.current.speed + ' mph'
-      };
+      let current = info.current
+        ? {
+            'Travel Time': this.formatDuration(info.current.mean),
+            'Average Speed': info.current.speed + ' mph'
+          }
+        : {};
 
       let baseline = {
         'Travel Time': this.formatDuration(info.baseline.meanTravelTime),
         'Average Speed': info.baseline.avgLinkSpeed + ' mph'
       };
 
-      let status = {
-        'Max Travel Time': this.formatDuration(info.current.max),
-        'Actual Wait Time': this.formatDuration(info.current.waitTime)
-      };
+      let status = info.current
+        ? {
+            'Max Travel Time': this.formatDuration(info.current.max),
+            'Actual Wait Time': this.formatDuration(info.current.waitTime)
+          }
+        : {};
 
       let result = [];
       let color = Constants.INFO_BAR_DEFAULT_COLOR;

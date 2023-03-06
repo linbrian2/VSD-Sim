@@ -31,8 +31,10 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on: tooltip }">
             <v-btn text color="grey darken-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-              <v-icon>mdi-map-outline</v-icon>
-              <span>{{ currentRegionShortName }}</span>
+              <div class="d-flex align-center">
+                <v-icon>mdi-map-outline</v-icon>
+                <span>{{ currentRegionShortName }}</span>
+              </div>
             </v-btn>
           </template>
           <span>Map Region</span>
@@ -73,6 +75,10 @@
         </v-list-item-group>
       </v-list>
     </v-menu>
+
+    <v-divider vertical />
+
+    <MessageDropdown />
   </v-toolbar>
 </template>
 
@@ -80,10 +86,12 @@
 import Constants from '@/utils/constants/traffic';
 import { mapState } from 'vuex';
 import ExpandableSearch from '@/components/common/ExpandableSearch';
+import MessageDropdown from '@/components/modules/traffic/dashboard/MessageDropdown';
 export default {
   props: ['entities'],
   components: {
-    ExpandableSearch
+    ExpandableSearch,
+    MessageDropdown
   },
   data: () => ({
     loading: false,
@@ -112,11 +120,10 @@ export default {
     ],
 
     region_menu_items: [
-      { title: 'All Region', name: 'ALL', value: -1 },
-      { title: 'Urban Freeway', name: 'URBAN', value: 1 },
-      { title: 'CAV Area Freeway', name: 'CAV-F', value: 3 },
-      { title: 'CAV Area Arterial', name: 'CAV-A', value: 4 },
-      { title: 'Beach Area', name: 'BEACH', value: 7 }
+      { title: 'All Regions', name: 'ALL', value: -1 },
+      { title: 'Urban Freeway', name: 'URBAN', value: 10 },
+      { title: 'CAV Area', name: 'CAV', value: 20 },
+      { title: 'Beach Area', name: 'BEACH', value: 30 }
     ]
   }),
 

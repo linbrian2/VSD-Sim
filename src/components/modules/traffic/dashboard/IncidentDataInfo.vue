@@ -132,22 +132,7 @@
         </v-col>
       </v-row>
 
-      <v-row v-if="camerasAvaliable">
-        <v-col cols="12">
-          <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Nearby Cameras</h3></v-subheader>
-          <v-divider />
-        </v-col>
-        <v-col cols="12">
-          <div class="mx-4">
-            <v-btn outlined v-for="id in cameraIds" :key="id" @click.stop="playVideo(id)" class="mr-5">
-              <v-icon left color="warning">
-                mdi-camera
-              </v-icon>
-              {{ id }}
-            </v-btn>
-          </div>
-        </v-col>
-      </v-row>
+      <NearbyCameras :cameraIds="cameraIds" v-if="camerasAvaliable" />
 
       <v-row>
         <v-col cols="12">
@@ -176,6 +161,7 @@ import TimingPlan from '@/components/modules/traffic/dashboard/TimingPlan';
 import IncidentTimeline from '@/components/modules/traffic/incident/IncidentTimeline';
 import TrafficFlowData from '@/components/modules/traffic/incident/TrafficFlowData';
 import TravelTimeData from '@/components/modules/traffic/incident/TravelTimeData';
+import NearbyCameras from '@/components/modules/traffic/common/NearbyCameras';
 
 export default {
   props: {
@@ -186,6 +172,7 @@ export default {
     DataCard,
     IncidentInfo,
     WazeInfo,
+    NearbyCameras,
     TimingPlan,
     RestrictionInfo,
     TrafficFlowData,
@@ -228,6 +215,9 @@ export default {
     },
     timingPlanChangeNeeded() {
       return this.segment.incidentState && this.segment.incidentState.timingPlan === 2;
+    },
+    ongoing() {
+      return this.segment && this.segment.status === 0;
     }
   },
 
@@ -267,10 +257,6 @@ export default {
 
     showOccupancyChart() {
       this.$bus.$emit('SHOW_CHART_DATA', { title: 'Occupancy', data: this.occupancy });
-    },
-
-    playVideo(id) {
-      this.$bus.$emit('PLAY_POPUP_VIDEO', id);
     },
 
     centerSegment() {
@@ -317,7 +303,7 @@ export default {
 
       // Setup traffic camera tab
       if (incident.info.cameras) {
-        this.cameraIds = incident.info.cameras.map(c => c.id);
+        this.cameraIds = incident.info.cameras;
       }
 
       this.composeInfoCards(incident);

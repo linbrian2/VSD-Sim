@@ -45,12 +45,10 @@ export default {
   data: () => ({
     title: `Version ${process.env.VUE_APP_VERSION}`,
     text: `<br>* Dashboard UI improvements <br>
-* Added version tracking <br>
-* Refactored the detector quality map <br>
-* Removed system monitoring item from the main menu <br>
-* Combined the quality check with the detector quality map <br>
-* Removed system check and moved to admin UI <br>
-* Allows marker click on the dashboard UI <br>`
+* Added real-time message list to dashboard <br>
+* Fixed issuses on the detector quality map <br>
+* Improved Traffic Anomaly Map<br>
+* Improved NTCIP UI<br>`
   }),
 
   computed: {

@@ -49,7 +49,7 @@ export default {
   text-align: center;
 }
 .text-success {
-  color: #3c763d;
+  color: #00c853;
 }
 .text-danger {
   color: #ff8080;

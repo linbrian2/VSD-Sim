@@ -1,7 +1,6 @@
 import TrafficApi from '@/utils/api/traffic';
 import HRApi from '@/utils/api/hr';
 import StatusApi from '@/utils/api/status';
-
 import Utils from '@/utils/Utils';
 import store from '@/store';
 
@@ -146,7 +145,7 @@ const actions = {
     try {
       let start = date ? date.getTime() : new Date().getTime();
       const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
-      if (response.data.data) {
+      if (response.data && response.data.data) {
         const incidentList = response.data.data;
 
         // Add position
@@ -194,7 +193,23 @@ const actions = {
   async fetchTrafficRestrictions({ commit, dispatch }) {
     try {
       const response = await TrafficApi.fetchLatestRestrictionData(3600);
-      commit('SET_TRAFFIC_RESTRICTIONS', response.data.data);
+      if (response.data && response.data.data) {
+        const result = response.data.data;
+        let data = result;
+
+        // Fill in nearby cameras if it has any
+        if (result.length > 0) {
+          const locations = result.map(res => ({ id: res.id, lat: res.position.lat, lng: res.position.lng }));
+          const res = await TrafficApi.fetchNearbyCameras(locations);
+          if (res.data && res.data.data) {
+            let nearbyCameras = res.data.data;
+            data = result.map(x => ({ ...x, cameras: nearbyCameras[x.id] }));
+          }
+        }
+
+        // Set to the store value
+        commit('SET_TRAFFIC_RESTRICTIONS', data);
+      }
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -216,7 +231,18 @@ const actions = {
       // Combine detectors
       const result = filteredDetectors.map(t1 => ({ ...t1, ...detectors.find(t2 => t2.id === t1.id) }));
 
-      commit('SET_SIGNAL_ISSUES_DATA', result);
+      // Fill in nearby cameras
+      let signalIssues = result;
+      if (result.length > 0) {
+        const locations = result.map(signal => ({ id: signal.id, lat: signal.position.lat, lng: signal.position.lng }));
+        const res = await TrafficApi.fetchNearbyCameras(locations);
+        if (res.data && res.data.data) {
+          let nearbyCameras = res.data.data;
+          signalIssues = result.map(x => ({ ...x, cameras: nearbyCameras[x.id] }));
+        }
+      }
+
+      commit('SET_SIGNAL_ISSUES_DATA', signalIssues);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -262,7 +288,21 @@ const actions = {
           (value, index, self) => index === self.findIndex(t => t.alertTimeTS === value.alertTimeTS && t.description)
         );
       const result = sortedData.filter(x => x.reliability >= 5);
-      commit('SET_WAZE_ALERTS', result);
+
+      let wazeAlerts = [];
+
+      // Fill in nearby cameras
+      if (result.length > 0) {
+        wazeAlerts = result;
+        const locations = result.map(waze => ({ id: waze.id, lat: waze.position.lat, lng: waze.position.lng }));
+        const res = await TrafficApi.fetchNearbyCameras(locations);
+        if (res.data && res.data.data) {
+          let nearbyCameras = res.data.data;
+          wazeAlerts = result.map(x => ({ ...x, cameras: nearbyCameras[x.id] }));
+        }
+      }
+
+      commit('SET_WAZE_ALERTS', wazeAlerts);
     } catch (error) {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
@@ -285,7 +325,6 @@ const actions = {
     try {
       this.updatedTime = new Date();
       const response = await StatusApi.fetchErrors(date.getTime());
-      console.log(response);
 
       if (response.data && response.data.data) {
         let data = response.data.data;

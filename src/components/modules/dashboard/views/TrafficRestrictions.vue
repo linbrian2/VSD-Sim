@@ -12,6 +12,7 @@
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
       class="elevation-1 mx-2"
+      v-show="showTable"
     >
     </v-data-table>
 
@@ -33,24 +34,18 @@ export default {
   components: { RestrictionDataInfo },
   data: () => ({
     reload: false,
+    listLimit: 0,
     items: [],
     headers: []
   }),
   computed: {
     height() {
-      if (this.showTable && this.maxItems > 12) {
-        return 'calc(80vh - 48px)';
-      } else {
-        return null;
-      }
+      return this.maxItems > 5 ? '35vh' : 'null';
     },
     currRestriction() {
       return this.getRestrictionInfo(this.selectedRestriction);
     },
 
-    listLimit() {
-      return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
-    },
     itemPerPage() {
       return this.showTable && this.maxItems > this.listLimit ? this.maxItems : this.listLimit;
     },
@@ -76,9 +71,8 @@ export default {
     prepareData(data) {
       this.headers = [
         { text: 'Id', value: 'id' },
-        { text: 'ResId', value: 'restrictionId' },
-        { text: 'Created', value: 'time' },
-        { text: 'Type', value: 'name' },
+        { text: 'Time', value: 'time' },
+        //{ text: 'Type', value: 'name' },
         { text: 'Location', value: 'loc' }
       ];
 
@@ -102,7 +96,7 @@ export default {
 
     formatTime(t) {
       const d = new Date(t);
-      return Utils.formatDateTime(d);
+      return Utils.formatTimeAsMinute(d);
     }
   }
 };

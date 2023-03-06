@@ -1,7 +1,7 @@
 <template>
   <div class="congested-routes">
     <v-data-table
-      :height="tableHeight"
+      :height="height"
       fixed-header
       :headers="headers"
       :items="items"
@@ -12,6 +12,7 @@
       hide-default-footer
       @click:row="handleRowClick"
       class="elevation-1 mx-2"
+      v-show="showTable"
     >
       <template v-slot:[`item.level`]="{ item }">
         <v-chip small :color="getStrokeColor(item.level)">
@@ -43,24 +44,15 @@ export default {
   },
   data: () => ({
     loading: false,
+    listLimit: 0,
     items: [],
     headers: []
   }),
   computed: {
-    infoColumnCount() {
-      return this.getSetting('dashboard', 'infoColumnCount');
-    },
-    tableHeight() {
-      if (this.showTable && this.maxItems > 12) {
-        return 'calc(80vh - 48px)';
-      } else {
-        return null;
-      }
+    height() {
+      return this.maxItems > 5 ? '35vh' : 'null';
     },
 
-    listLimit() {
-      return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
-    },
     itemPerPage() {
       return this.showTable && this.maxItems > this.listLimit ? this.maxItems : this.listLimit;
     },

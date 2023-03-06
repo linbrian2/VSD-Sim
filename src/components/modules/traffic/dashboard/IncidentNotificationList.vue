@@ -1,6 +1,6 @@
 <template>
   <v-card tile class="notes" max-width="600">
-    <v-toolbar tile flat>
+    <v-toolbar tile flat dense height="40">
       <v-subheader><h3 class="font-weight-bold overline">Incidents</h3></v-subheader>
       <v-spacer />
       <!-- <v-btn text @click="handleClearNotification">close</v-btn> -->

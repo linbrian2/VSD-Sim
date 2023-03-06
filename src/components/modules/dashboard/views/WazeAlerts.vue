@@ -12,6 +12,7 @@
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
       class="elevation-1 mx-2"
+      v-show="showTable"
     >
       <template v-slot:[`item.time`]="{ item }">
         {{ item.time.split(' ')[1].slice(0, 5) }}
@@ -36,20 +37,15 @@ export default {
   components: { WazeAlertInfo },
   data: () => ({
     reload: false,
+    listLimit: 0,
     items: [],
     headers: []
   }),
   computed: {
     height() {
-      if (this.showTable && this.maxItems > 12) {
-        return 'calc(80vh - 48px)';
-      } else {
-        return null;
-      }
+      return this.maxItems > 5 ? '35vh' : 'null';
     },
-    listLimit() {
-      return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
-    },
+ 
     itemPerPage() {
       return this.showTable && this.maxItems > this.listLimit ? this.maxItems : this.listLimit;
     },

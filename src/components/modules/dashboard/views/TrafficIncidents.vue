@@ -12,6 +12,7 @@
       :item-class="itemRowBackground"
       @click:row="handleRowClick"
       class="elevation-1 mx-2"
+      v-show="showTable"
     >
       <template v-slot:[`item.id`]="{ item }">
         <div class="d-flex">
@@ -70,6 +71,7 @@ export default {
 
   data: () => ({
     reload: false,
+    listLimit: 0,
     segments: [],
     headers: [
       { text: 'ID', value: 'id' },
@@ -82,27 +84,13 @@ export default {
 
   computed: {
     height() {
-      if (this.showTable && this.maxItems > 12) {
-        return 'calc(80vh - 48px)';
-      } else {
-        return null;
-      }
-    },
-    infoColumnCount() {
-      return this.getSetting('dashboard', 'infoColumnCount');
-    },
-    listLimit() {
-      return this.getSetting ? this.getSetting('dashboard', 'limitListings') : 0;
+      return this.maxItems > 5 ? '35vh' : 'null';
     },
     itemPerPage() {
       return this.showTable && this.maxItems > this.listLimit ? this.maxItems : this.listLimit;
     },
     items() {
       return this.trafficIncidents;
-    },
-
-    currIncident() {
-      return this.formatData(this.selectedTrafficIncident);
     },
 
     ...mapGetters(['getSetting']),
@@ -155,42 +143,6 @@ export default {
         alert: 'red'
       };
       return ICONS[name];
-    },
-
-    formatData(item) {
-      if (!item) {
-        return [];
-      }
-
-      const items = [
-        { icon: 'mdi-vector-line', name: 'Route' },
-        { icon: 'mdi-clock-outline', name: 'Start Time' },
-        { icon: 'mdi-clock-outline', name: 'End Time' },
-        { icon: 'mdi-timer-outline', name: 'Duration' },
-        { icon: 'mdi-note-outline', name: 'Severity' },
-        { icon: 'mdi-note-outline', name: 'Evidence Counts' },
-        { icon: 'mdi-alert-circle-outline', name: 'Type' },
-        { icon: 'mdi-note-outline', name: 'Reason' }
-      ];
-
-      for (let i = 0; i < items.length; i++) {
-        items[i]['colDisplay'] = this.infoColumnCount == 1;
-        items[i]['flex'] = this.infoColumnCount == 1;
-        items[i]['height'] = this.infoColumnCount == 1 ? '11vh' : undefined;
-        items[i]['titleFontSize'] = this.infoColumnCount == 1 ? undefined : 20;
-        items[i]['valueFontSize'] = this.infoColumnCount == 1 ? undefined : 28;
-      }
-
-      items[0]['value'] = item.route;
-      items[1]['value'] = this.getTimeStr(item.startTime);
-      items[2]['value'] = this.getTimeStr(item.endTime);
-      items[3]['value'] = Utils.durationToTimeStr(item.duration * 60);
-      items[4]['value'] = item.severity;
-      items[5]['value'] = item.evidenceCounts;
-      items[6]['value'] = item.type;
-      items[7]['value'] = item.reason && item.reason.split('.')[0] ? item.reason.split('.')[0] : item.reason;
-
-      return items;
     }
   }
 };

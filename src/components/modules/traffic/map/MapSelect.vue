@@ -17,6 +17,21 @@
         :icon="getMarkerIcon(m.id)"
         @click="markerClicked(m)"
       />
+
+      <div v-if="markerLabel">
+        <GmapCustomMarker
+          alignment="center"
+          v-for="m in markers"
+          :key="`L-${m.id}`"
+          :offsetX="50"
+          :offsetY="10"
+          :marker="m.position"
+        >
+          <div v-if="isSelected(m.id)">
+            <v-chip small outlined color="white">{{ m.uid || m.permit || m.id }}</v-chip>
+          </div>
+        </GmapCustomMarker>
+      </div>
     </GmapMap>
   </div>
 </template>
@@ -26,12 +41,21 @@
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import MapUtils from '@/utils/MapUtils.js';
 import OutlierRemoval from '@/utils/OutlierRemoval.js';
+import GmapCustomMarker from 'vue2-gmap-custom-marker';
 
 export default {
-  props: ['markers', 'icons'],
+  props: {
+    markers: Array,
+    icons: Array
+  },
+
+  components: {
+    GmapCustomMarker
+  },
 
   // https://github.com/xkjyeah/vue-google-maps/issues/94
   data: () => ({
+    markerLabel: false,
     mapMarker: {
       url: require('@/assets/green-icon-48.png'),
       size: { width: 30, height: 48, f: 'px', b: 'px' }
@@ -208,6 +232,10 @@ export default {
       MapUtils.addControl(map, options);
     },
 
+    setMarkerLabel(show) {
+      this.markerLabel = show;
+    },
+
     triggerFirstMarkerClick() {
       if (this.markers && this.markers.length > 0) {
         const selectedMarker = this.markers[0];
@@ -278,6 +306,10 @@ export default {
       this.selectedMarkerId = marker.id;
       this.$store.commit('traffic/SET_ACTIVE_MARKER', marker);
       this.$emit('click', marker);
+    },
+
+    isSelected(id) {
+      return id === this.selectedMarkerId || this.selectedMarkerIds.includes(id);
     },
 
     selectById(id) {

@@ -7,10 +7,10 @@
       name="anomalySideBarWidth"
       :onMarkerClick="markerClicked"
     />
-    <TitleBar title="Traffic Flow Anomaly" :loading="loading" :refresh="refreshData" />
+    <TitleBar title="Traffic Anomaly Map" :loading="loading" :refresh="refreshData" />
 
     <v-container>
-      <v-card class="mb-2" v-if="isValid(anomaly1)">
+      <v-card class="mb-4" v-if="isValid(anomaly1)" @click="cardClicked(1)">
         <DrilldownHeatMapChart
           :data="anomaly1"
           :height="mapHeight(anomaly1)"
@@ -19,7 +19,7 @@
         />
       </v-card>
 
-      <v-card class="mb-2" v-if="isValid(anomaly2)">
+      <v-card class="mb-4" v-if="isValid(anomaly2)" @click="cardClicked(2)">
         <DrilldownHeatMapChart
           :data="anomaly2"
           :height="mapHeight(anomaly2)"
@@ -28,7 +28,7 @@
         />
       </v-card>
 
-      <v-card class="mb-2" v-if="isValid(anomaly3)">
+      <v-card class="mb-4" v-if="isValid(anomaly3)" @click="cardClicked(3)">
         <DrilldownHeatMapChart
           :data="anomaly3"
           :height="mapHeight(anomaly3)"
@@ -37,7 +37,7 @@
         />
       </v-card>
 
-      <v-card class="mb-2" v-if="isValid(anomaly4)">
+      <v-card class="mb-4" v-if="isValid(anomaly4)" @click="cardClicked(4)">
         <DrilldownHeatMapChart
           :data="anomaly4"
           :height="mapHeight(anomaly4)"
@@ -46,7 +46,7 @@
         />
       </v-card>
 
-      <v-card class="mb-2" v-if="isValid(anomaly5)">
+      <v-card class="mb-4" v-if="isValid(anomaly5)" @click="cardClicked(5)">
         <DrilldownHeatMapChart
           :data="anomaly5"
           :height="mapHeight(anomaly5)"
@@ -55,7 +55,7 @@
         />
       </v-card>
 
-      <v-card class="mb-2" v-if="isValid(anomaly6)">
+      <v-card class="mb-4" v-if="isValid(anomaly6)" @click="cardClicked(6)">
         <DrilldownHeatMapChart
           :data="anomaly6"
           :height="mapHeight(anomaly6)"
@@ -160,6 +160,7 @@ export default {
     loading: false,
     showDialog: false,
     height: 650,
+    anomalyDeviceNames: null,
     anomaly1: {},
     anomaly2: {},
     anomaly3: {},
@@ -189,17 +190,18 @@ export default {
     },
 
     ...mapState(['currentDate']),
-    ...mapState('traffic', ['activeMarker', 'anomalyDevices'])
+    ...mapState('traffic', ['showPanel', 'activeMarker', 'anomalyDevices'])
   },
 
   created() {
     this.$store.commit('traffic/SHOW_PANEL', false);
   },
 
-  mounted() {
+  async mounted() {
     if (this.anomalyDevices.length === 0) {
-      this.fetchAnomalyDevices();
+      await this.fetchAnomalyDevices();
     }
+    this.createAnomalyDeviceNames();
     this.fetchData();
 
     // Load first selected data in case of no data showing
@@ -253,6 +255,15 @@ export default {
       console.log(e);
     },
 
+    createAnomalyDeviceNames() {
+      if (!this.anomalyDeviceNames) {
+        this.anomalyDeviceNames = new Map();
+        this.anomalyDevices.forEach(d => {
+          this.anomalyDeviceNames.set(d.id, d.name.trimRight());
+        });
+      }
+    },
+
     async fetchAnomalyData(start) {
       const timestamp = start.getTime();
       this.loading = true;
@@ -302,6 +313,11 @@ export default {
       if (response.data.status === 'OK') {
         if (response.data.data) {
           let data = response.data.data;
+
+          // Create names
+          const names = data.ycategories.map(deviceId => this.anomalyDeviceNames.get(deviceId));
+
+          // Setup values
           result.start = start.getTime();
           result.route = route;
           result.direction = direction;
@@ -310,6 +326,8 @@ export default {
           result.yAxis = '';
           result.xcategories = data.xcategories;
           result.ycategories = data.ycategories;
+          result.permitNumbers = data.permitNumbers;
+          result.names = names;
           result.data = data.series;
           result.index = index;
           result.startTime = Utils.getStartOfDay(start);
@@ -370,6 +388,12 @@ export default {
         case 6:
           this.selectGroup(this.anomaly6.ycategories);
           break;
+      }
+    },
+
+    cardClicked(type) {
+      if (this.showPanel) {
+        this.linkDevices(type);
       }
     },
 

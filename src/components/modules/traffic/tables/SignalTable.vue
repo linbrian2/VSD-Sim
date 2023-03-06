@@ -8,6 +8,7 @@
     class="elevation-1"
   >
     <template v-slot:[`item.pattern`]="{ item }">
+      <v-icon color="red" v-if="controller">mdi-circle-small</v-icon>
       <v-chip :color="patternColor(item)" label small>
         <span class="font-weight-bold white--text">{{ item.pattern }}</span>
       </v-chip>
@@ -37,6 +38,37 @@
     <template v-slot:[`item.P8`]="{ item }">
       <span :class="cc(item.M8)">{{ item.P8 }}</span>
     </template>
+
+    <template v-slot:[`item.action`]="{ item }">
+      <div class="d-flex">
+        <v-tooltip left>
+          <template v-slot:activator="{ on }">
+            <v-btn class="mx-2" dark icon v-on="on" color="orange" @click.stop="applyThisPattern(item)">
+              <v-icon dark>mdi-arrow-down-bold-circle-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>Apply pattern</span>
+        </v-tooltip>
+
+        <v-tooltip left>
+          <template v-slot:activator="{ on }">
+            <v-btn class="mx-2" dark icon v-on="on" color="lime" @click.stop="modifyThisPattern(item)">
+              <v-icon dark>mdi-pencil</v-icon>
+            </v-btn>
+          </template>
+          <span>Modify pattern</span>
+        </v-tooltip>
+
+        <v-tooltip left>
+          <template v-slot:activator="{ on }">
+            <v-btn class="mx-2" dark icon v-on="on" color="red" @click.stop="deleteThisPattern(item)">
+              <v-icon dark>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+          <span>Delete pattern</span>
+        </v-tooltip>
+      </div>
+    </template>
   </v-data-table>
 </template>
 
@@ -44,7 +76,8 @@
 export default {
   props: {
     items: Array,
-    current: String
+    current: String,
+    controller: { type: Boolean, default: false }
   },
 
   data: () => ({
@@ -64,6 +97,12 @@ export default {
     ]
   }),
 
+  mounted() {
+    this.$bus.$on('OPEN_CLOSE_SYNC_CONTROL', show => {
+      show ? this.addActionColumn() : this.removeActionColumn();
+    });
+  },
+
   methods: {
     cc(mode) {
       return mode && mode > 0 ? 'red--text' : 'white--text';
@@ -79,6 +118,40 @@ export default {
         return 'highlighted-tr';
       } else {
         return '';
+      }
+    },
+
+    applyThisPattern(item) {
+      this.$bus.$emit('APPLY_PATTERN', { action: 0, pattern: item });
+    },
+
+    modifyThisPattern(item) {
+      this.$bus.$emit('APPLY_PATTERN', { action: 1, pattern: item });
+    },
+
+    deleteThisPattern(item) {
+      this.$bus.$emit('APPLY_PATTERN', { action: 2, pattern: item });
+    },
+
+    addActionColumn() {
+      const column = this.headers.find(item => item.text === 'Action');
+      if (!column) {
+        this.headers.push({
+          text: 'Action',
+          value: 'action',
+          align: 'center',
+          sortable: false,
+          class: 'blue-grey',
+          divider: true,
+          width: 20
+        });
+      }
+    },
+
+    removeActionColumn() {
+      const index = this.headers.findIndex(item => item.text === 'Action');
+      if (index > -1) {
+        this.headers.splice(index, 1);
       }
     }
   }

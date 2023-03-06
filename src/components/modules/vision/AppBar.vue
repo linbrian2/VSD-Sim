@@ -19,6 +19,10 @@
         <span>Camera Multiview</span>
       </v-tooltip>
     </div>
+    <!-- notification -->
+    <v-divider vertical class="ml-1 hidden-xs-only" />
+    <NotificationDropdown />
+    <v-divider vertical class="ml-0 hidden-xs-only" />
   </Header>
 </template>
 
@@ -26,10 +30,12 @@
 import Header from '@/components/common/Header';
 import { RouterNames, RouterPaths } from '@/utils/constants/router';
 import AppConstants from '@/utils/constants/app';
+import NotificationDropdown from '@/components/common/NotificationDropdown';
 
 export default {
   components: {
-    Header
+    Header,
+    NotificationDropdown
   },
 
   data: () => ({

@@ -56,7 +56,7 @@
 
               <v-col
                 class="py-0"
-                :cols="setting.divider || $vuetify.breakpoint.mobile ? 12 : 4"
+                :cols="setting.divider || $vuetify.breakpoint.mobile ? 12 : 6"
                 v-for="setting in category.settings"
                 :key="setting.id"
               >
@@ -70,14 +70,14 @@
                   v-if="setting.type == 'boolean'"
                   v-model="setting.val"
                   :label="setting.label"
-                  class="mr-10"
+                  class="mr-6"
                 ></v-checkbox>
                 <v-select
                   v-else-if="setting.type == 'select' && setting.items"
                   v-model="setting.val"
                   :label="setting.label"
                   :items="setting.items"
-                  class="mr-10 mb-1"
+                  class="mr-6 mb-1"
                   dense
                   filled
                   hide-details
@@ -88,7 +88,7 @@
                   :label="setting.label"
                   :min="setting.min"
                   :max="setting.max"
-                  class="mr-10 mb-1"
+                  class="mr-6 mb-1"
                   type="number"
                   dense
                   filled
@@ -159,11 +159,26 @@ export default {
   },
 
   mounted() {
-    if (!this.appSettings) {
-      this.settings = Settings.getDefault();
-    } else {
-      this.settings = this.appSettings;
+    const settings = Settings.getDefault();
+    if (this.appSettings) {
+      const savedSettings = this.appSettings;
+
+      // Override default settings using the saved settings
+      for (const app in settings) {
+        for (let i = 0; i < settings[app].settings.length; i++) {
+          const item = settings[app].settings[i];
+          if (item.name) {
+            const value = this.getSettings(savedSettings, app, item.name);
+            if (value) {
+              settings[app].settings[i].val = value;
+            }
+          }
+        }
+      }
+
+      this.settings = settings;
     }
+
     this.$bus.$on('TOGGLE_SETTINGS_DIALOG', toggle => {
       this.dialog = toggle;
     });
@@ -180,6 +195,18 @@ export default {
     },
     goBack() {
       this.dialog = false;
+    },
+
+    getSettings(settings, app, name) {
+      if (settings && app && name) {
+        if (settings[app]) {
+          let item = settings[app].settings.filter(s => s.name && s.name == name);
+          if (item.length > 0) {
+            return item[0].val;
+          }
+        }
+      }
+      return null;
     },
 
     saveData() {

@@ -2,6 +2,7 @@
   <div class="desktop" v-if="!$vuetify.breakpoint.mobile">
     <SelectionPanel :name="name">
       <v-combobox
+        v-if="selection"
         class="mx-2"
         dense
         hide-details
@@ -17,6 +18,7 @@
 
   <div class="mobile" v-else>
     <v-combobox
+      v-if="selection"
       class="mx-2"
       dense
       hide-details
@@ -39,10 +41,8 @@ export default {
     markers: Array,
     items: Array,
     icons: Array,
-    name: {
-      type: String,
-      default: ''
-    },
+    name: { type: String, default: '' },
+    selection: { type: Boolean, default: true },
     onMarkerClick: Function
   },
 
@@ -104,6 +104,7 @@ export default {
 
     selectDevicesByIds(ids) {
       this.$refs.mapSelect.selectByIds(ids);
+      this.$refs.mapSelect.setMarkerLabel(true);
       if (!this.showPanel) {
         this.$store.commit('traffic/SHOW_PANEL', true);
       }

@@ -93,7 +93,7 @@ export default {
       };
     },
 
-    getYAxisProps(label, categories) {
+    getYAxisProps(label, categories, names) {
       return {
         categories: categories,
         reversed: true,
@@ -105,12 +105,15 @@ export default {
           text: label
         },
         labels: {
+          enabled: true,
+          formatter: function() {
+            const name = names[this.pos];
+            return '<span title="' + name + '">' + this.value + '</span>';
+          },
+          useHTML: true,
           style: {
             fontSize: 11,
             fontWeight: 'bold'
-          },
-          events: {
-            click: function() {}
           }
         }
       };
@@ -141,12 +144,12 @@ export default {
       const interval = 300;
       const time = new Date(startTime.getTime() + point.x * interval * 1000);
       const timeStr = this.formatTime(time);
-      const deviceId = this.data.ycategories[point.y];
+      const permit = this.data.permitNumbers[point.y];
       let value = point.value;
       if (value == null || value < 0) {
         return `Time: ${timeStr}`;
       }
-      return `Device: ${deviceId}, Time: ${timeStr}, Status: ${value}`;
+      return `Device: ${permit}, Time: ${timeStr}, Status: ${value}`;
     },
 
     formatTime(d) {
@@ -233,7 +236,7 @@ export default {
       let series = this.tranformSeries(data.data);
       let title = this.getChartTitle(data.title || '');
       let xAxis = this.getXAxisProps(data.xAxis, data.xcategories);
-      let yAxis = this.getYAxisProps(data.yAxis, data.ycategories);
+      let yAxis = this.getYAxisProps(data.yAxis, data.permitNumbers, data.names);
       let colorAxis = this.getColorAxis();
 
       // Setup the y-axis click handler
@@ -251,7 +254,7 @@ export default {
           height: chartHeight,
           spacingTop: 20,
           spacingBottom: 15,
-          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : 90,
+          marginLeft: this.$vuetify.breakpoint.mobile ? 60 : 110,
           marginRight: this.$vuetify.breakpoint.mobile ? 20 : 80,
           marginBottom: this.$vuetify.breakpoint.mobile ? 50 : 65,
           type: 'heatmap',

@@ -23,7 +23,6 @@ function startRefreshTokenTimer() {
   const expires = AuthToken.getTokenExpireDate();
   if (expires) {
     const timeout = expires.getTime() - Date.now() - 60 * 1000;
-    //console.log('timeout=', timeout);
     refreshTokenTimeout = setTimeout(refreshToken, timeout);
   }
 }

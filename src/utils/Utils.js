@@ -13,6 +13,11 @@ export default {
     return new Date(date.getTime() + seconds * 1000);
   },
 
+  laterThan(time, secondAgo) {
+    const earlierTime = this.addSeconds(new Date(), -secondAgo);
+    return time >= earlierTime;
+  },
+
   dateFromString(str, hms) {
     let y = str.substr(0, 4),
       m = str.substr(5, 2) - 1,
@@ -23,6 +28,7 @@ export default {
     let date = new Date(y, m, d, hh, mm, ss);
     return date;
   },
+
   dateFromDateAndTimeString(currentDate, hhmmstr) {
     const y = currentDate.getFullYear();
     const m = currentDate.getMonth();
@@ -118,9 +124,11 @@ export default {
 
     return strTime;
   },
+
   get5MinIndex(startTime, timestamp) {
     return Math.floor((timestamp - startTime) / 300000);
   },
+
   get5MinIndexOf288(timestamp) {
     const d = new Date(timestamp);
     const h = d.getHours();
@@ -128,6 +136,7 @@ export default {
     const idx = h * 12 + Math.floor(m / 5);
     return idx;
   },
+
   getTodayNumber() {
     let today = new Date();
     let number = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
@@ -615,5 +624,20 @@ export default {
     } else {
       cancelFullScreen.call(doc);
     }
+  },
+
+  /*
+   * Takes a 3 or 6-digit hex color code, and an optional numeric alpha value
+   */
+  hexToRGBA(hex, alpha) {
+    if (typeof hex !== 'string' || hex[0] !== '#') return null; // or return 'transparent'
+
+    const stringValues =
+      hex.length === 4
+        ? [hex.slice(1, 2), hex.slice(2, 3), hex.slice(3, 4)].map(n => `${n}${n}`)
+        : [hex.slice(1, 3), hex.slice(3, 5), hex.slice(5, 7)];
+    const intValues = stringValues.map(n => parseInt(n, 16));
+
+    return typeof alpha === 'number' ? `rgba(${intValues.join(', ')}, ${alpha})` : `rgb(${intValues.join(', ')})`;
   }
 };

@@ -14,6 +14,9 @@ const getters = {
   isDevUser(state) {
     return state.user && (state.user.role === 'Admin' || state.user.role === 'Dev');
   },
+  isAdminUser(state) {
+    return state.user && state.user.role === 'Admin';
+  },
   userRole(state) {
     return state.user ? state.user.role : '';
   }

@@ -1,24 +1,36 @@
 <template>
   <v-container>
     <WazeInfo :waze="info" />
+    <NearbyCameras :cameraIds="cameraIds" v-if="camerasAvaliable" />
   </v-container>
 </template>
 
 <script>
 import Utils from '@/utils/Utils';
 import WazeInfo from '@/components/modules/traffic/common/WazeInfo';
+import NearbyCameras from '@/components/modules/traffic/common/NearbyCameras';
+
 export default {
   props: {
     waze: Object
   },
 
   components: {
-    WazeInfo
+    WazeInfo,
+    NearbyCameras
   },
 
   computed: {
     info() {
       return this.formatDate(this.waze);
+    },
+
+    cameraIds() {
+      return this.waze.cameras ? this.waze.cameras : [];
+    },
+
+    camerasAvaliable() {
+      return !Utils.isEmpty(this.cameraIds);
     }
   },
 

@@ -33,7 +33,6 @@
 </template>
 
 <script>
-/* global google */
 import { mapState } from 'vuex';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import Constants from '@/utils/constants/hr';

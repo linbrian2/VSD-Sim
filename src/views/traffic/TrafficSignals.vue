@@ -137,15 +137,29 @@
                   <span class="font-weight-bold black--text"> {{ currentPatternNumber }}</span>
                 </v-chip>
               </div>
+
+              <div v-if="currentSignal">
+                <v-tooltip left>
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon v-on="on" @click.stop="showSync = !showSync" class="mt-2">
+                      <v-icon color="grey">mdi-progress-download</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Sync with controller</span>
+                </v-tooltip>
+              </div>
             </div>
 
             <v-divider />
           </v-col>
 
           <v-col cols="12">
-            <v-card tile class="mt-n2" elevation="12" v-if="currentSignal">
-              <SignalTable :items="currentSignal" :current="currentPatternNumber" />
-            </v-card>
+            <div v-if="currentSignal">
+              <SignalSyncUI class="mt-n3 mb-5" :controller="currentController" v-model="showSync" />
+              <v-card tile class="mt-n2" elevation="12">
+                <SignalTable :items="currentSignal" :current="currentPatternNumber" />
+              </v-card>
+            </div>
           </v-col>
         </v-row>
       </div>
@@ -153,16 +167,6 @@
   </div>
 
   <div class="mobile" v-else>
-    <!-- TitleBar -->
-    <!-- <TitleBar
-      :loading="loading"
-      :refresh="refreshData"
-      :showRefresh="!$vuetify.breakpoint.xs"
-      :showMap="false"
-    >
-      <div :style="'height: 45px'" />
-    </TitleBar> -->
-
     <!-- Input & Map -->
     <div class="d-flex justify-space-between">
       <v-combobox
@@ -297,13 +301,22 @@
                   <span class="font-weight-bold black--text"> {{ currentPatternNumber }}</span>
                 </v-chip>
               </div>
+              <v-tooltip left>
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on" @click.stop="showSync = !showSync" class="mt-2">
+                    <v-icon color="grey">mdi-progress-download</v-icon>
+                  </v-btn>
+                </template>
+                <span>Sync with controller</span>
+              </v-tooltip>
             </div>
 
             <v-divider />
           </v-col>
 
           <v-col cols="12">
-            <v-card tile class="mt-n2" elevation="12" v-if="currentSignal">
+            <SignalSyncUI class="mt-n4 mb-4" :controller="currentController" v-model="showSync" />
+            <v-card class="mt-n2" tile elevation="12" v-if="currentSignal">
               <SignalTable :items="currentSignal" :current="currentPatternNumber" />
             </v-card>
           </v-col>
@@ -325,6 +338,7 @@ import TitleBar from '@/components/modules/traffic/common/TitleBar';
 import Utils from '@/utils/Utils';
 import TrafficConstants from '@/utils/constants/traffic';
 import DataCard from '@/components/modules/traffic/common/DataCard';
+import SignalSyncUI from '@/components/modules/traffic/common/SignalSyncUI.vue';
 import SignalPatternChart from '@/components/modules/traffic/chart/SignalPatternChart';
 import TrafficResponsiveChart from '@/components/modules/traffic/chart/TrafficResponsiveChart';
 
@@ -336,6 +350,7 @@ export default {
     TitleBar,
     SignalTable,
     DataCard,
+    SignalSyncUI,
     SignalPatternChart,
     TrafficResponsiveChart
   },
@@ -348,6 +363,7 @@ export default {
     title: RouterNames.TRAFFIC_SIGNALS,
     zoneChanged: true,
     showInfo: true,
+    showSync: false,
     showResponsivePlot: true,
     responsiveChartData: {},
     signalChartData: {},
@@ -355,6 +371,7 @@ export default {
     currentPermit: null,
     currentGroupId: null,
     currentSignal: null,
+    currentController: null,
     valueSelected: null,
     currentZoneDetectors: [],
     deviceList: [],
@@ -379,13 +396,6 @@ export default {
         size: { width: 15, height: 36, f: 'px', b: 'px' },
         anchor: { x: 8, y: 18 }
       }
-      // {
-      //   path: 0,
-      //   scale: 10.0,
-      //   fillColor: '#05FF00',
-      //   fillOpacity: 0.8,
-      //   strokeWeight: 0.4
-      // }
     ]
   }),
 
@@ -467,6 +477,10 @@ export default {
   watch: {
     currentDate() {
       this.refreshData();
+    },
+
+    showSync() {
+      this.$bus.$emit('OPEN_CLOSE_SYNC_CONTROL', this.showSync);
     }
   },
 
@@ -484,6 +498,20 @@ export default {
       this.delayComplete = true;
       this.showDataIfEmpty();
     }, 500);
+
+    this.$bus.$on('UPDATE_SIGNAL_TABLE', ({ action, signal }) => {
+      if (action === 0) {
+        this.currentSignal = signal;
+      } else if (action === 1) {
+        this.currentSignal.push(signal);
+      } else if (action === 2) {
+        console.log(this.currentSignal, signal);
+        let index = this.currentSignal.findIndex(s => s.pattern === signal.pattern);
+        if (index >= 0) {
+          this.currentSignal.splice(index, 1);
+        }
+      }
+    });
   },
 
   methods: {
@@ -597,10 +625,19 @@ export default {
         if (data != null) {
           this.currentEnabledTr = data.device.enabledTr;
           this.detectorInfo = this.composeDetectorInfo(data.device);
-          this.currentSignal = data.signal;
+
           this.currentPattern = data.current;
           this.signalChartData = this.composeSignalData(data.pattern);
           this.fetchResponsiveZoneData(data.device.enabledTr, false);
+
+          if (data.signal) {
+            // Add action field to the signal array
+            this.currentSignal = data.signal.map(item => ({ ...item, action: 'action' }));
+            this.currentController = { ip: data.device.ip, patterns: data.signal.map(item => item.pattern) };
+          } else {
+            this.currentSignal = [];
+            this.currentController = { ip: data.device.ip, patterns: [] };
+          }
         }
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });

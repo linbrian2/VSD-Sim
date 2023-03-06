@@ -19,6 +19,10 @@
           <span>Trip Status</span>
         </v-tooltip>
       </div>
+      <!-- notification -->
+      <v-divider vertical class="ml-1 hidden-xs-only" />
+      <NotificationDropdown />
+      <v-divider vertical class="ml-1 hidden-xs-only" />
     </Header>
     <LoadingProgress :loading="progressLoading" color="primary" />
   </div>
@@ -29,18 +33,20 @@ import { mapState } from 'vuex';
 import Header from '@/components/common/Header';
 import AppConstants from '@/utils/constants/app';
 import LoadingProgress from '@/components/modules/cav/LoadingProgress';
+import NotificationDropdown from '@/components/common/NotificationDropdown';
 import { RouterNames, RouterPaths } from '@/utils/constants/router';
 
 export default {
   components: {
     Header,
+    NotificationDropdown,
     LoadingProgress
   },
   data: () => ({
     title: AppConstants.CAV_APP_TITLE,
     action_menu_items: [
       { title: RouterNames.CAV_DASHBOARD, url: RouterPaths.CAV_DASHBOARD },
-      { title: RouterNames.CAV_STATUS, url: RouterPaths.CAV_STATUS },
+      { title: RouterNames.CAV_STATUS, url: RouterPaths.CAV_STATUS }
     ]
   }),
   computed: {

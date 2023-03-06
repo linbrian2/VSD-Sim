@@ -5,7 +5,7 @@ const state = {
   activeMarker: null,
   locations: [],
   currentTime: '09:00',
-  imageAPI: 'http://10.51.4.9:34557/images',
+  imageAPI: `${process.env.VUE_APP_REID_API_URL}/images`,
   showReIDVideos: true,
   snippetHistory: [],
   snippetInfo: null,

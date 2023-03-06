@@ -184,6 +184,20 @@
               @click="handleMarkerClick(LAYERS.CAMERAS, m.id)"
             />
           </div>
+
+          <!-- Selected cameras -->
+          <div v-if="selectedIdx >= 0">
+            <GmapMarker
+              v-for="m in selectedCameras"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :icon="getCameraMarkerIcon(false)"
+              :options="markerOptions(m.id)"
+              :clickable="true"
+              @click="handleCameraClick(m.id)"
+            />
+          </div>
         </GmapMap>
       </div>
     </div>
@@ -193,7 +207,6 @@
 <script>
 /* global google */
 import Utils from '@/utils/Utils';
-import Devices from '@/utils/Devices.js';
 import GmapCustomMarker from 'vue2-gmap-custom-marker';
 import MapUtils from '@/utils/MapUtils.js';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
@@ -252,30 +265,23 @@ export default {
     };
   },
   computed: {
-    deviceMarkers() {
-      return Devices;
-    },
-    anomalySegmentOptions() {
-      return {
-        strokeColor: '#FA8072',
-        strokeOpacity: 0.8,
-        strokeWeight: this.getSegmentStrokeWeight()
-      };
-    },
     weatherMarkers() {
       return this.weatherStations;
     },
+
     cameraMarkers() {
       return this.trafficCameras;
     },
+
     segments() {
       return this.bluetoothLocations;
     },
+
     markers() {
       if (this.mapRegionSelection < 0) {
         return this.deviceLocations;
       } else {
-        return this.deviceLocations.filter(location => location.zone === this.mapRegionSelection);
+        return this.deviceLocations.filter(location => location.region === this.mapRegionSelection);
       }
     },
     anomalyMarkers() {
@@ -285,6 +291,11 @@ export default {
     position() {
       return this.$store.state.position;
     },
+
+    selectedCameras() {
+      return this.getNearbyCameras();
+    },
+
     selectedMarkers() {
       return {
         selectedIdx: this.selectedIdx,
@@ -319,18 +330,7 @@ export default {
       'congestedSegments',
       'wazeAlerts'
     ]),
-    ...mapState('traffic', [
-      'showPanel',
-      'currentBluetoothAnomaly',
-      'currentFlowAnomaly',
-      'currentWeatherCode',
-      'currentRestrictions',
-      'currentAnomalySegments',
-      'weatherStations',
-      'mapRegionSelection',
-      'mapLayersSelection',
-      'incidentSettings'
-    ])
+    ...mapState('traffic', ['showPanel', 'weatherStations', 'mapRegionSelection', 'mapLayersSelection'])
   },
 
   watch: {
@@ -509,6 +509,31 @@ export default {
       }, 1);
     },
 
+    getNearbyCameras() {
+      let cameras = [];
+      switch (this.selectedIdx) {
+        case Constants.CARD_DATA_INCIDENTS_ID:
+          cameras = this.selectedTrafficIncident.info.cameras;
+          break;
+        case Constants.CARD_DATA_RESTRICTIONS_ID:
+          cameras = this.selectedRestriction.cameras;
+          break;
+        case Constants.CARD_DATA_SIGNAL_ISSUES_ID:
+          cameras = this.selectedSignalIssue.cameras;
+          break;
+        case Constants.CARD_DATA_DEDVICE_ANOMALIES_ID:
+          cameras = this.selectedAnomalyDevice.cameras;
+          break;
+        case Constants.CARD_DATA_CONGESTED_ROUTES_ID:
+          cameras = this.selectedCongestedSegment.cameras;
+          break;
+        case Constants.CARD_DATA_WAZE_ALERTS_ID:
+          cameras = this.selectedWazeAlert.cameras;
+          break;
+      }
+      return cameras ? cameras : [];
+    },
+
     addSelectedMarker() {
       switch (this.selectedIdx) {
         case Constants.CARD_DATA_INCIDENTS_ID:
@@ -535,7 +560,7 @@ export default {
             this.centerMap(
               this.map,
               this.signalIssues.filter(x => x.id == this.selectedMarkerId),
-              13
+              15
             );
           }, 1);
           break;
@@ -544,7 +569,7 @@ export default {
           setTimeout(() => {
             this.centerMap(
               this.map,
-              this.deviceMarkers.filter(x => x.id == this.selectedMarkerId),
+              this.deviceAnomalies.filter(x => x.id == this.selectedMarkerId),
               14
             );
           }, 1);
@@ -565,7 +590,7 @@ export default {
             this.centerMap(
               this.map,
               this.wazeAlerts.filter(x => x.id == this.selectedMarkerId),
-              12
+              15
             );
           }, 1);
           break;
@@ -622,6 +647,10 @@ export default {
       this.weatherMarkerPosition =
         type === TrafficConstants.LAYER_DEVICE_WEATHER && marker ? marker.position : { lat: 0, lng: 0 };
       this.$bus.$emit('DISPLAY_MARKER_DETAILS', { id, type });
+    },
+
+    handleCameraClick(id) {
+      this.$bus.$emit('PLAY_POPUP_VIDEO', id);
     },
 
     centerMap(map, markers, zoom = null) {

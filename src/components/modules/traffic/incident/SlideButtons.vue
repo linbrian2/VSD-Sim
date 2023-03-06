@@ -26,10 +26,14 @@
         </v-slide-group>
       </v-col>
       <v-col md="3">
-        <div class="d-flex justify-end mt-3 mr-2">
+        <div class="d-flex justify-end mr-1 mt-1">
           <slot></slot>
           <v-btn text color="primary" @click.stop="btnClicked" v-if="showEvidenceText">
-            <div class="font-weight-bold overline ml-3 mr-1">{{ title }}</div>
+            <div class="overline mx-1 mt-2">
+              <v-chip small color="teal">
+                {{ title }}
+              </v-chip>
+            </div>
           </v-btn>
 
           <div v-if="!$vuetify.breakpoint.mobile">

@@ -211,6 +211,14 @@ const protectedRoute = [
         },
         children: [
           {
+            path: RouterPaths.VISION_REID,
+            name: RouterNames.VISION_REID,
+            meta: {
+              title: RouterNames.VISION_REID,
+              icon: RouterIcons.VISION_REID
+            }
+          },
+          {
             path: RouterPaths.TRAFFIC_LCM,
             name: RouterNames.TRAFFIC_LCM,
             meta: {

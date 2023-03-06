@@ -71,4 +71,12 @@ export default {
 .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
   font-size: 14px !important;
 }
+
+tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, .05);
+}
+
+.v-data-table > .v-data-table__wrapper > table > tbody > tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
 </style>

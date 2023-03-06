@@ -69,6 +69,11 @@ export default {
     return AxiosClient.get('api/trafficDevice', { params: { id } });
   },
 
+  fetchNearbyCameras(locations) {
+    let params = { locations };
+    return AxiosClient.post('api/nearbyCameras', params);
+  },
+
   fetchSingleFlowData(id, direction, interval, startDate) {
     let params = { id, direction, interval, startDate };
     return AxiosClient.post('api/trafficFlow', params);

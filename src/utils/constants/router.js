@@ -59,7 +59,7 @@ export const RouterPaths = {
   TRAFFIC_PREDICT: '/flow/predict',
   TRAFFIC_ANOMALY: '/flow/anomaly',
   TRAFFIC_WEATHER: '/flow/weather',
-  TRAFFIC_MULTIGRAPH: '/flow/multi-graph',
+  TRAFFIC_MULTIGRAPH: '/flow/graph',
   TRAFFIC_FLOW_DATA: '/flow/traffic-flow/:id?',
   TRAVEL_TIME_DATA: '/flow/travel-time-data',
   TRAVEL_TIME_MAP: '/flow/travel-time-map',

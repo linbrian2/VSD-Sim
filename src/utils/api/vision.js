@@ -34,7 +34,8 @@ export default {
 
   /* Vehicle Re-ID */
   fetchSnippets() {
-    return AxiosClient.get('http://10.51.4.9:34557/getupdate').then(res => {
+    const url = `${process.env.VUE_APP_REID_API_URL}/getupdate`;
+    return AxiosClient.get(url).then(res => {
       return res.data;
     });
   }

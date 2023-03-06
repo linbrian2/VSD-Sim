@@ -34,31 +34,7 @@
               <v-icon>mdi-backspace</v-icon>
             </v-btn>
             <!-- Region selection menu -->
-            <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
-              <template v-slot:activator="{ on: menu, attrs }">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on: tooltip }">
-                    <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                      <v-icon dark>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Region Selection</span>
-                </v-tooltip>
-              </template>
-
-              <v-list>
-                <v-list-item
-                  v-for="item in region_menu_items"
-                  :key="item.value"
-                  @click="regionMenuItemClicked(item.value)"
-                >
-                  <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
-                    <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
-                    <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <DeviceSelectionMenu icon="mdi-dots-vertical" tooltip="Device Filter" v-model="deviceSelection" />
           </template>
         </v-combobox>
       </div>
@@ -192,31 +168,7 @@
             <v-icon>mdi-backspace</v-icon>
           </v-btn>
           <!-- Region selection menu -->
-          <v-menu bottom right offset-y min-width="250" :close-on-content-click="true">
-            <template v-slot:activator="{ on: menu, attrs }">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on: tooltip }">
-                  <v-btn icon class="mx-1" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                    <v-icon dark>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                </template>
-                <span>Region Selection</span>
-              </v-tooltip>
-            </template>
-
-            <v-list>
-              <v-list-item
-                v-for="item in region_menu_items"
-                :key="item.value"
-                @click="regionMenuItemClicked(item.value)"
-              >
-                <v-list-item-title :class="{ 'font-weight-bold': item.value === selectedRegionId }">
-                  <v-icon class="mr-1" v-if="item.value === selectedRegionId">mdi-check</v-icon>
-                  <span :class="{ 'ml-8': item.value !== selectedRegionId }"> {{ item.title }} </span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <DeviceSelectionMenu icon="mdi-dots-vertical" tooltip="Device Filter" v-model="deviceSelection" />
         </template>
       </v-combobox>
     </div>
@@ -305,12 +257,14 @@ import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';
 import TitleBar from '@/components/modules/traffic/multigraph/TitleBar';
 import MultigraphDataEntries from './MultigraphDataEntries.vue';
+import DeviceSelectionMenu from '@/components/modules/traffic/common/DeviceSelectionMenu';
 
 export default {
   components: {
     SelectionPanel,
     MapMultigraphSelect,
     TitleBar,
+    DeviceSelectionMenu,
     MultigraphDataEntries
   },
   data: () => ({
@@ -363,9 +317,10 @@ export default {
     ],
     direction: '',
 
-    region_menu_items: TrafficConstants.TRAFFIC_DEVICE_CATEGORIES,
-    selectedRegionId: -1,
-
+    deviceSelection: {
+      regionId: -1,
+      typeId: -1
+    },
     devices: []
   }),
 
@@ -380,10 +335,17 @@ export default {
 
     markers() {
       if (!this.startDelay) {
-        if (this.selectedRegionId < 0) {
-          return this.devices;
+        if (this.deviceSelection.regionId > 0 && this.deviceSelection.typeId < 0) {
+          return this.devices.filter(location => location.region === this.deviceSelection.regionId);
+        } else if (this.deviceSelection.regionId < 0 && this.deviceSelection.typeId > 0) {
+          return this.devices.filter(location => location.type === this.deviceSelection.typeId);
+        } else if (this.deviceSelection.regionId > 0 && this.deviceSelection.typeId > 0) {
+          return this.devices.filter(
+            location =>
+              location.region === this.deviceSelection.regionId && location.type === this.deviceSelection.typeId
+          );
         } else {
-          return this.devices.filter(location => location.flags === this.selectedRegionId);
+          return this.devices;
         }
       } else {
         return [];
@@ -456,13 +418,6 @@ export default {
         this.fetchTrafficFlowData(marker.id, marker.uid, this.interval, time);
         this.$bus.$emit('NAME_SELECTED', value);
       }
-    },
-
-    regionMenuItemClicked(value) {
-      setTimeout(() => {
-        this.selectedRegionId = value;
-        this.valuesSelected = [];
-      }, 100);
     },
 
     isTabVisible(name) {

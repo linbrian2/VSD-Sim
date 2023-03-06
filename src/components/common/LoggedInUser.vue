@@ -46,12 +46,18 @@
 
       <v-divider></v-divider>
 
-      <v-list>
+      <v-list dense nav>
         <v-list-item @click="changePassword">
           <v-list-item-icon>
             <v-icon>mdi-account-box</v-icon>
           </v-list-item-icon>
           <v-list-item-title>Change Password</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="showAdminTools" v-if="isAdminUser">
+          <v-list-item-icon>
+            <v-icon>mdi-shield-account-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Admin Tools</v-list-item-title>
         </v-list-item>
         <v-list-item @click="preferences">
           <v-list-item-icon>
@@ -59,6 +65,7 @@
           </v-list-item-icon>
           <v-list-item-title>Preferences</v-list-item-title>
         </v-list-item>
+        <v-divider></v-divider>
         <v-list-item @click="logout">
           <v-list-item-icon>
             <v-icon>mdi-login-variant</v-icon>
@@ -72,6 +79,8 @@
 
 <script>
 import { RouterPaths } from '@/utils/constants/router';
+import { mapGetters } from 'vuex';
+
 export default {
   props: {
     user: Object
@@ -109,7 +118,9 @@ export default {
       const s = this.firstLetter;
       const index = s ? (s.charCodeAt(0) - 65) % colors.length : 0;
       return colors[index];
-    }
+    },
+
+    ...mapGetters('auth', ['isAdminUser'])
   },
 
   methods: {
@@ -119,6 +130,11 @@ export default {
 
     preferences() {
       this.$bus.$emit('TOGGLE_SETTINGS_DIALOG', true);
+    },
+
+    showAdminTools() {
+      const url = process.env.VUE_APP_ADMIN_URL;
+      window.open(url, '_blank');
     },
 
     logout() {
