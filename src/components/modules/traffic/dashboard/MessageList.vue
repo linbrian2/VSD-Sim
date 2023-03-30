@@ -1,14 +1,14 @@
 <template>
-  <v-card tile class="notes" width="550">
-    <v-toolbar tile flat dense height="40" color="">
-      <v-subheader class="ml-n4">
+  <v-card tile class="notes" width="500">
+    <!-- <v-toolbar tile flat dense height="40" color="">
+      <v-subheader class="ml-n1">
         <v-icon small left color="white">mdi-message-text-outline</v-icon>
         <h3 class="overline">System Messages</h3>
       </v-subheader>
       <v-spacer />
       <v-btn icon small @click="handleClose"><v-icon>mdi-close</v-icon></v-btn>
     </v-toolbar>
-    <v-divider />
+    <v-divider /> -->
     <v-card-text class="pa-0">
       <v-list class="pa-0 notes_list">
         <v-list-item-group>
@@ -20,10 +20,8 @@
                 </v-avatar>
               </v-list-item-avatar>
               <v-list-item-content>
-                <v-list-item-title class="text-caption overline">{{ item.title }}</v-list-item-title>
-                <v-list-item-subtitle class="font-weight-light overline green--text">{{
-                  item.message
-                }}</v-list-item-subtitle>
+                <v-list-item-title class="text-caption">{{ item.title }}</v-list-item-title>
+                <v-list-item-subtitle class="font-weight-light green--text">{{ item.message }}</v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action class="caption">
                 <v-tooltip top>
@@ -39,30 +37,29 @@
         </v-list-item-group>
       </v-list>
       <v-divider></v-divider>
-      <div class="d-flex justify-space-between align-center ml-5 mr-5">
-        <div class="grey-text text-caption">Total {{ items.length }} messages</div>
-        <div>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn small icon v-on="on" @click.stop="handleClearAll">
-                <v-icon color="red lighten-3">mdi-notification-clear-all</v-icon>
-              </v-btn>
-            </template>
-            <span>Clear All</span>
-          </v-tooltip>
-
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn small icon v-on="on" @click.stop="handleShowAll" class="ml-3">
-                <v-icon color="grey">mdi-eye-arrow-right-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>View All</span>
-          </v-tooltip>
-        </div>
-      </div>
-      <v-divider></v-divider>
     </v-card-text>
+    <v-card-actions class="d-flex justify-space-between align-center mx-3">
+      <div class="grey-text text-caption">Total {{ items.length }} messages</div>
+      <div>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn small icon v-on="on" @click.stop="handleClearAll">
+              <v-icon color="red lighten-3">mdi-notification-clear-all</v-icon>
+            </v-btn>
+          </template>
+          <span>Clear All</span>
+        </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn small icon v-on="on" @click.stop="handleShowAll" class="ml-3">
+              <v-icon color="grey">mdi-eye-arrow-right-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>View All</span>
+        </v-tooltip>
+      </div>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -154,7 +151,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .notes_list {
-  max-height: 360px;
+  max-height: 380px;
   overflow-y: auto;
 }
 </style>

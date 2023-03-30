@@ -66,6 +66,7 @@
     <!-- Popup Dialogs -->
     <SelectionDialog v-model="showSelection" ref="selectionDialog" />
     <ChartDialog ref="chartDialog" v-model="showChartDialog" />
+    <VMSDisplayDialog ref="vmsDialog" v-model="showVMSDialog" />
     <VideoPlayerDialog ref="vpRef" videoType="application/x-mpegURL" v-model="showVideoPlayer" />
   </div>
 </template>
@@ -80,6 +81,7 @@ import DashboardConstants from '@/utils/constants/dashboard.js';
 import ChartDialog from '@/components/modules/traffic/common/ChartDialog';
 import RightPanel from '@/components/modules/traffic/common/RightPanel';
 import InfoWindow from '@/components/modules/traffic/dashboard/InfoWindow';
+import VMSDisplayDialog from '@/components/modules/traffic/common/VMSDisplayDialog';
 
 import Toolbar from '@/components/modules/traffic/dashboard/Toolbar';
 import SelectionDialog from '@/components/modules/traffic/dashboard/SelectionDialog';
@@ -110,6 +112,7 @@ export default {
     RightPanel,
     InfoWindow,
     ChartDialog,
+    VMSDisplayDialog,
     FlowDataInfo,
     BluetoothDataInfo,
     WeatherDataInfo,
@@ -132,6 +135,7 @@ export default {
     trafficInfoShow: false,
     showChartDialog: false,
     showVideoPlayer: false,
+    showVMSDialog: false,
     cardData: null,
     selectedIdx: -1,
     selectedSegmentId: '',
@@ -293,6 +297,10 @@ export default {
 
     this.$bus.$on('PLAY_POPUP_VIDEO', id => {
       this.playVideo(id);
+    });
+
+    this.$bus.$on('SHOW_POPUP_VMS', vms => {
+      this.showVMS(vms);
     });
 
     this.$bus.$on('UPDATE_DARK_MODE', darkMode => {
@@ -495,6 +503,13 @@ export default {
         }
         this.showVideoPlayer = true;
       }
+    },
+
+    showVMS(vms) {
+      if (this.$refs.vmsDialog) {
+        this.$refs.vmsDialog.init(vms);
+      }
+      this.showVMSDialog = true;
     },
 
     segmentOptions(segment) {

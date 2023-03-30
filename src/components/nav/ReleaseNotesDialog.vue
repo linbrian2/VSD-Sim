@@ -20,7 +20,7 @@
 
         <v-divider></v-divider>
 
-        <v-card-text style="height: 350px;">
+        <v-card-text style="height: 250px;">
           <div class="pre-formatted" v-html="text" />
         </v-card-text>
 
@@ -35,8 +35,8 @@
   </v-row>
 </template>
 <script>
-//import { mapState } from 'vuex';
 import Utils from '@/utils/Utils';
+import Api from '@/utils/api/traffic';
 export default {
   props: {
     value: Boolean
@@ -44,11 +44,7 @@ export default {
 
   data: () => ({
     title: `Version ${process.env.VUE_APP_VERSION}`,
-    text: `<br>* Dashboard UI improvements <br>
-* Added real-time message list to dashboard <br>
-* Fixed issuses on the detector quality map <br>
-* Improved Traffic Anomaly Map<br>
-* Improved NTCIP UI<br>`
+    text: ''
   }),
 
   computed: {
@@ -71,20 +67,23 @@ export default {
     }
   },
 
-  watch: {
-    incidentSettings() {
-      this.updateSettings();
-    }
-  },
-
-  mounted() {
-    this.updateSettings();
+  async mounted() {
+    await this.fetchReleaseNotes(this.version);
   },
 
   methods: {
-    updateSettings() {},
-
-    saveSettings() {}
+    async fetchReleaseNotes(version) {
+      try {
+        const response = await Api.fetchReleaseNotes(version);
+        if (response.data.status === 'OK') {
+          if (response.data.data !== undefined) {
+            this.text = response.data.data;
+          }
+        }
+      } catch (error) {
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+      }
+    }
   }
 };
 </script>

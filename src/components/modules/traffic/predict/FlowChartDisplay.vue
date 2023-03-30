@@ -7,10 +7,12 @@
 
     <v-container grid-list-sm class="mt-2 mb-n4" v-if="vosList.length">
       <v-row wrap no-gutters>
-        <v-col class="mr-3"><VosCard :vos="vosList[0]" color="red lighten-1"/></v-col>
-        <v-col class="mr-3"><VosCard :vos="vosList[1]" color="blue lighten-1"/></v-col>
-        <v-col class="mr-3"><VosCard :vos="vosList[2]" color="green"/></v-col>
-        <v-col><VosCard :vos="vosList[3]" color="orange"/></v-col>
+        <v-col class="mr-2"><VosCard :vos="vosList[0]" color="grey darken-1"/></v-col>
+        <v-col class="mr-2"><VosCard :vos="vosList[1]" color="blue"/></v-col>
+        <v-col class="mr-2"><VosCard :vos="vosList[2]" color="green"/></v-col>
+        <v-col class="mr-2"><VosCard :vos="vosList[3]" color="teal"/></v-col>
+        <v-col class="mr-2" v-if="vosList.length > 4"><VosCard :vos="vosList[4]" color="orange"/></v-col>
+        <v-col v-if="vosList.length > 5"><VosCard :vos="vosList[5]" color="red"/></v-col>
       </v-row>
     </v-container>
 

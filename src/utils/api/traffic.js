@@ -4,6 +4,10 @@ import client from '@/utils/AxiosClient';
 const AxiosClient = client(process.env.VUE_APP_TRAFFIC_API_URL);
 
 export default {
+  fetchReleaseNotes(version) {
+    return AxiosClient.get('api/releaseNotes', { params: { version } });
+  },
+
   // * Bluetooth
   fetchWazeFull(date) {
     let ts = date.getTime();

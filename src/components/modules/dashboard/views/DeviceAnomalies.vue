@@ -108,7 +108,6 @@ export default {
       this.headers = [
         { text: 'Sensor Id', value: 'id' },
         { text: 'Permit', value: 'uid' },
-        { text: 'Error Percentage', value: 'percent' },
         { text: 'Major Error', value: 'majorError' }
       ];
 

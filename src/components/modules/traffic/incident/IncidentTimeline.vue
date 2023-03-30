@@ -6,7 +6,7 @@
           <div class="overline ml-n4">{{ item.time }}</div>
         </v-col>
         <v-col>
-          <v-chip v-if="!isSimplified" outlined :color="item.color" class="font-weight-light">
+          <v-chip v-if="!isSimplified" :color="item.color" class="font-weight-light">
             {{ item.event }}
           </v-chip>
           <v-chip v-else :color="item.color" class="font-weight-light px-2 py-1 mr-3 my-n3">

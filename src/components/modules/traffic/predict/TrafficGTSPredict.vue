@@ -125,6 +125,10 @@ import VolumeCard from '@/components/modules/traffic/common/VolumeCard';
 import MenuSelector from '@/components/common/MenuSelector';
 
 export default {
+  props: {
+    baseURL: String
+  },
+
   components: {
     MapSelectionPanel,
     TitleBar,
@@ -135,7 +139,6 @@ export default {
 
   data: () => ({
     loading: false,
-    baseURL: process.env.VUE_APP_GTS_API_URL,
     height: 500,
     timeUsed: null,
     loss: 0,
@@ -222,7 +225,11 @@ export default {
     },
 
     gotoSection(target) {
-      this.$vuetify.goTo(target);
+      try {
+        this.$vuetify.goTo(target);
+      } catch (e) {
+        console.log(e);
+      }
     },
 
     getUniqueSensors() {
@@ -231,7 +238,7 @@ export default {
 
     async fetchPredictionLocations() {
       try {
-        const response = await Api.fetchPredictionSensors(process.env.VUE_APP_GTS_API_URL);
+        const response = await Api.fetchPredictionSensors(this.baseURL);
         this.locations = response.data.map(sensor => ({
           id: `${sensor.id}-${sensor.dir}`,
           sensorId: sensor.id,
@@ -271,6 +278,8 @@ export default {
 
         // Now we await for both results, whose async processes have already been started
         const [flow, timeList, predicts] = await Promise.all(requests);
+
+        console.log('precits',predicts);
 
         // Verify the flow data is avaialble
         let flowList = this.getResponseData(flow);
@@ -328,12 +337,17 @@ export default {
     formVolumeDataList(direction, predictList, flowLists, excludedLists) {
       const preds = Object.keys(predictList);
       const deviceIds = Object.keys(predictList[preds[0]]);
+      console.log("deviceIds=", deviceIds)
+
+      console.log(flowLists);
 
       const result = {};
       deviceIds.forEach(deviceId => {
         const device = `${deviceId}-${direction}`;
-        const actualVolume = this.removeZeroVolumes(flowLists[device].volume);
-        const baselineVolume = flowLists[device].baselineVolume;
+        const flowExists = device in flowLists;
+        console.log(device, flowExists, 'in  flowLists');
+        const actualVolume = flowExists ? this.removeZeroVolumes(flowLists[device].volume) : null;
+        const baselineVolume = flowExists ? flowLists[device].baselineVolume : null;
         const excludedList = deviceId in excludedLists ? excludedLists[deviceId] : new Set();
         const data = this.formVolumeData(deviceId, predictList, actualVolume, baselineVolume, excludedList);
         result[deviceId] = data;
@@ -396,11 +410,12 @@ export default {
     },
 
     formLastPredictions(deviceId, actualVolume, predictList) {
-      const t0 = actualVolume[actualVolume.length - 1][0];
-      const v0 = actualVolume[actualVolume.length - 1][1];
-
       const volumeList = [];
-      volumeList.push(this.composeVolumeItem('Actual', t0, v0, this.colors[0]));
+      if (actualVolume.length) {
+        const t0 = actualVolume[actualVolume.length - 1][0];
+        const v0 = actualVolume[actualVolume.length - 1][1];
+        volumeList.push(this.composeVolumeItem('Actual', t0, v0, this.colors[0]));
+      }
 
       // For each types of predictions
       Object.keys(predictList).forEach((pred, idx) => {

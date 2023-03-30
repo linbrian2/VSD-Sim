@@ -134,6 +134,8 @@
 
       <NearbyCameras :cameraIds="cameraIds" v-if="camerasAvaliable" />
 
+      <NearbyVMS :VMSs="VMSs" v-if="vmsAvaliable" />
+
       <v-row>
         <v-col cols="12">
           <v-subheader class="pl-0 mx-4 font-weight-bold text-overline blue--text"><h3>Miscellaneous</h3></v-subheader>
@@ -162,6 +164,7 @@ import IncidentTimeline from '@/components/modules/traffic/incident/IncidentTime
 import TrafficFlowData from '@/components/modules/traffic/incident/TrafficFlowData';
 import TravelTimeData from '@/components/modules/traffic/incident/TravelTimeData';
 import NearbyCameras from '@/components/modules/traffic/common/NearbyCameras';
+import NearbyVMS from '@/components/modules/traffic/common/NearbyVMS';
 
 export default {
   props: {
@@ -173,6 +176,7 @@ export default {
     IncidentInfo,
     WazeInfo,
     NearbyCameras,
+    NearbyVMS,
     TimingPlan,
     RestrictionInfo,
     TrafficFlowData,
@@ -188,6 +192,7 @@ export default {
     legendY: 5,
     marginLeft: 80,
     cameraIds: [],
+    VMSs: [],
     flowDevices: [],
     incidentTimelineSeries: [],
     travelTimeSegments: [],
@@ -212,6 +217,9 @@ export default {
   computed: {
     camerasAvaliable() {
       return this.cameraIds.length > 0;
+    },
+    vmsAvaliable() {
+      return this.VMSs.length > 0;
     },
     timingPlanChangeNeeded() {
       return this.segment.incidentState && this.segment.incidentState.timingPlan === 2;
@@ -301,9 +309,13 @@ export default {
 
       this.incidentTimelineSeries = incident.timeline;
 
-      // Setup traffic camera tab
+      // Setup traffic camera
       if (incident.info.cameras) {
         this.cameraIds = incident.info.cameras;
+      }
+
+      if (incident.vms) {
+        this.VMSs = incident.vms;
       }
 
       this.composeInfoCards(incident);

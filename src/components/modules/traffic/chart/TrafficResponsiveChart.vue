@@ -33,6 +33,7 @@ export default {
       reload: false,
       startTime: null,
       signalPatterns: [],
+      recommendedPatterns: [],
       bands: [],
       customObjects: []
     };
@@ -82,27 +83,11 @@ export default {
       }
 
       if (this.signalPatterns) {
-        const n = Math.floor(this.signalPatterns.length / 2);
-        for (let i = 0; i < n; i++) {
-          const p0 = this.signalPatterns[2 * i + 0];
-          const p1 = this.signalPatterns[2 * i + 1];
+        this.drawPatternText(chart, this.signalPatterns, '#aaa', 0);
+      }
 
-          const x0 = chart.xAxis[0].toPixels(p0[0]);
-          const x1 = chart.xAxis[0].toPixels(p1[0]);
-
-          if (Math.abs(x1 - x0) > 30) {
-            const x = Math.floor((x0 + x1) / 2) - 20;
-            const y = chart.yAxis[1].toPixels(p0[1]) - 5;
-            const text = `${p0[3]} - ${p0[1]} ${p0[2]}`;
-
-            const t = chart.renderer
-              .text(text, x, y)
-              .attr({ zIndex: 20 })
-              .css({ color: '#aaa', opacity: 1.0, fontSize: '13px', fontWeight: 'bold' })
-              .add();
-            this.customObjects.push(t);
-          }
-        }
+      if (this.recommendedPatterns) {
+        this.drawPatternText(chart, this.recommendedPatterns, '#6f6', 25);
       }
 
       if (this.bands) {
@@ -134,6 +119,30 @@ export default {
       }
     },
 
+    drawPatternText(chart, patterns, color, offsetY) {
+      const n = Math.floor(patterns.length / 2);
+      for (let i = 0; i < n; i++) {
+        const p0 = patterns[2 * i + 0];
+        const p1 = patterns[2 * i + 1];
+
+        const x0 = chart.xAxis[0].toPixels(p0[0]);
+        const x1 = chart.xAxis[0].toPixels(p1[0]);
+
+        if (Math.abs(x1 - x0) > 30) {
+          const x = Math.floor((x0 + x1) / 2) - 20;
+          const y = chart.yAxis[1].toPixels(p0[1]) - 5 + offsetY;
+          const text = `${p0[3]} - ${p0[1]} ${p0[2]}`;
+
+          const t = chart.renderer
+            .text(text, x, y)
+            .attr({ zIndex: 20 })
+            .css({ color, opacity: 1.0, fontSize: '13px', fontWeight: 'bold' })
+            .add();
+          this.customObjects.push(t);
+        }
+      }
+    },
+
     prepareSeries(data) {
       let series = [];
       if (data) {
@@ -144,8 +153,9 @@ export default {
               name: item.name,
               color: item.color,
               data: item.data,
-              lineWidth: 1.5,
-              enableMouseTracking: item.tracking
+              lineWidth: item.lineWidth ? item.lineWidth : 1.5,
+              enableMouseTracking: item.tracking,
+              showInLegend: item.showLegend === undefined || item.showLegend
             });
           }
         });
@@ -153,12 +163,17 @@ export default {
         if (this.signalPatterns) {
           series[2]['yAxis'] = 1;
         }
+
+        if (this.recommendedPatterns) {
+          series[3]['yAxis'] = 1;
+        }
       }
       return series;
     },
 
     makeChart(chartHeight, data, redrawFunc) {
       this.signalPatterns = data.patterns;
+      this.recommendedPatterns = data.recomms;
       this.bands = data.bands;
       this.startTime = data.startTime;
 
@@ -168,7 +183,7 @@ export default {
       let subtitle = data.subtitle || null;
       let xAxis = data.xAxis;
       // let yAxis = data.yAxis;
-      let ly = this.legendy || 50;
+      let ly = this.legendy || 45;
       let exporting = this.exporting === undefined ? false : this.exporting;
       let marginLeft = this.left;
 
@@ -247,8 +262,8 @@ export default {
               // y: 16,
               format: '{value:.,0f}'
             },
-            // min: 0,
-            // max: 80,
+            min: 0,
+            max: 100,
             maxPadding: 0.2,
             plotBands: plotBands,
             showFirstLabel: false,
@@ -285,7 +300,7 @@ export default {
           floating: true,
           verticalAlign: 'top',
           align: 'left',
-          x: 80,
+          x: 60,
           y: ly
         },
 

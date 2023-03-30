@@ -35,7 +35,7 @@ const state = {
   multigraphModes: ['Traffic Flow Data', 'Travel Time Data', 'Weather Data'],
   multigraphModeSelect: 'Traffic Flow Data',
   singleSelect: 'Single Select',
-  predictionModes: ['Freeway', 'Arterial'],
+  predictionModes: ['Freeway', 'Arterial', 'Beach'],
   predictionMode: 'Freeway',
   activeMultigraphMarkers: [],
   mitigation: null,
@@ -63,13 +63,13 @@ const mutations = {
   SOCKET_WEATHER(state, message) {
     state.currentWeather = message.data;
 
-    const type = Constants.DATA_WEATHER;
-    if (Message.isSameKind(state.messages, type)) {
-      const lastMessage = state.messages.pop();
-      state.messages.push(Message.compose(type, message.data, lastMessage));
-    } else {
-      state.messages.push(Message.compose(type, message.data));
-    }
+    // const type = Constants.DATA_WEATHER;
+    // if (Message.isSameKind(state.messages, type)) {
+    //   const lastMessage = state.messages.pop();
+    //   state.messages.push(Message.compose(type, message.data, lastMessage));
+    // } else {
+    //   state.messages.push(Message.compose(type, message.data));
+    // }
   },
   SOCKET_BLUETOOTH(state, message) {
     state.currentTravelTimeAnomaly = message.data;

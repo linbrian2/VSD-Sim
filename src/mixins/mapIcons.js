@@ -1,4 +1,6 @@
-/* global google */
+// Default marker icons can be found below:
+// https://stackoverflow.com/questions/8248077/google-maps-v3-standard-icon-shadow-names-equiv-of-g-default-icon-in-v2
+// https://maps.gstatic.com/intl/en_us/mapfiles/ms2/iconm.png
 export const mapIcons = {
   data() {
     return {
@@ -136,6 +138,18 @@ export const mapIcons = {
         anchor: { x: 24, y: 24 }
       },
 
+      alertInactiveIcon: {
+        url: require('@/assets/alert-inactive.png'),
+        size: { width: 48, height: 48, f: 'px', b: 'px' },
+        anchor: { x: 24, y: 24 }
+      },
+
+      alertInactiveSelectedIcon: {
+        url: require('@/assets/alert-inactive-select.png'),
+        size: { width: 48, height: 48, f: 'px', b: 'px' },
+        anchor: { x: 24, y: 24 }
+      },
+
       alertAnimatedIcon: {
         url: require('@/assets/alert-animated.gif'),
         size: { width: 64, height: 64, f: 'px', b: 'px' },
@@ -168,6 +182,18 @@ export const mapIcons = {
 
       cameraIconActive: {
         url: require('@/assets/icon49-select.png'),
+        size: { width: 36, height: 36, f: 'px', b: 'px' },
+        anchor: { x: 18, y: 18 }
+      },
+
+      vmsIcon: {
+        url: require('@/assets/message.png'),
+        size: { width: 32, height: 32, f: 'px', b: 'px' },
+        anchor: { x: 16, y: 16 }
+      },
+
+      vmsIconActive: {
+        url: require('@/assets/message.png'),
         size: { width: 36, height: 36, f: 'px', b: 'px' },
         anchor: { x: 18, y: 18 }
       },
@@ -243,9 +269,9 @@ export const mapIcons = {
         {
           path: 0,
           scale: 10.0,
-          fillColor: '#4E342E',
+          fillColor: '#BDBDBD',
           fillOpacity: 0.95,
-          strokeColor: '#666',
+          strokeColor: '#555',
           strokeWeight: 1.5
         }
       ],
@@ -442,6 +468,10 @@ export const mapIcons = {
 
     getCameraMarkerIcon(selected = false) {
       return selected ? this.cameraIconActive : this.cameraIcon;
+    },
+
+    getVMSMarkerIcon(selected = false) {
+      return selected ? this.vmsIconActive : this.vmsIcon;
     },
 
     getDotMarkerIcon(selected = false) {

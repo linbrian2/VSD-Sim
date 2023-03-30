@@ -95,7 +95,7 @@ export default {
     timeUsed1: 0,
     selectedSensor: '',
 
-    colors: ['#ED561B', '#058DC7', '#50B432', '#DD8800', '#BDBDBD'],
+    colors: ['#ED561B', '#058DC7', '#50B432', '#DD8800', '#BDBDBD', '#FFF263', '#6AF9C4', '#00FF00', '#FF9655'],
 
     currentDir: 'NB',
     dirItems: [
@@ -348,6 +348,22 @@ export default {
       vosList.push(this.composeVosItem('Pred-10', tsp2, spd2, vol2, occ2));
       vosList.push(this.composeVosItem('Pred-15', tsp3, spd3, vol3, occ3));
 
+      if (predictions.pred30) {
+        let tsp4 = Math.round(predictions.pred30.speed[predictions.pred30.speed.length - 1][0]);
+        let spd4 = Math.round(predictions.pred30.speed[predictions.pred30.speed.length - 1][1]);
+        let vol4 = Math.round(predictions.pred30.volume[predictions.pred30.volume.length - 1][1]);
+        let occ4 = Math.round(predictions.pred30.occupancy[predictions.pred30.occupancy.length - 1][1]);
+        vosList.push(this.composeVosItem('Pred-30', tsp4, spd4, vol4, occ4));
+      }
+
+      if (predictions.pred60) {
+        let tsp = Math.round(predictions.pred60.speed[predictions.pred60.speed.length - 1][0]);
+        let spd = Math.round(predictions.pred60.speed[predictions.pred60.speed.length - 1][1]);
+        let vol = Math.round(predictions.pred60.volume[predictions.pred60.volume.length - 1][1]);
+        let occ = Math.round(predictions.pred60.occupancy[predictions.pred60.occupancy.length - 1][1]);
+        vosList.push(this.composeVosItem('Pred-60', tsp, spd, vol, occ));
+      }
+
       return vosList;
     },
 
@@ -386,7 +402,7 @@ export default {
 
       if (flowList.baselineSpeed) {
         let error = this.calcMAPE(flowList.speed, flowList.baselineSpeed, excludedList);
-        data.push({ name: this.formatText('Baseline', error), color: this.colors[4], data: flowList.baselineSpeed });
+        data.push({ name: this.formatT('Baseline', error), color: this.colors[4], data: flowList.baselineSpeed });
       }
 
       if (predictList && flowList.speed) {
@@ -394,9 +410,19 @@ export default {
         let error10 = this.calcMAPE(flowList.speed, predictList.pred10.speed, excludedList);
         let error15 = this.calcMAPE(flowList.speed, predictList.pred15.speed, excludedList);
 
-        data.push({ name: this.formatText('Pred-5', error5), color: this.colors[1], data: predictList.pred5.speed });
-        data.push({ name: this.formatText('Pred-10', error10), color: this.colors[2], data: predictList.pred10.speed });
-        data.push({ name: this.formatText('Pred-15', error15), color: this.colors[3], data: predictList.pred15.speed });
+        data.push({ name: this.formatT('Pred-5', error5), color: this.colors[1], data: predictList.pred5.speed });
+        data.push({ name: this.formatT('Pred-10', error10), color: this.colors[2], data: predictList.pred10.speed });
+        data.push({ name: this.formatT('Pred-15', error15), color: this.colors[3], data: predictList.pred15.speed });
+
+        if (predictList.pred30) {
+          let error = this.calcMAPE(flowList.speed, predictList.pred30.speed, excludedList);
+          data.push({ name: this.formatT('Pred-30', error), color: this.colors[5], data: predictList.pred30.speed });
+        }
+
+        if (predictList.pred60) {
+          let error = this.calcMAPE(flowList.speed, predictList.pred60.speed, excludedList);
+          data.push({ name: this.formatT('Pred-60', error), color: this.colors[6], data: predictList.pred60.speed });
+        }
       }
 
       return { data, xAxis, yAxis, title, ymin: 0, ymax: 100 };
@@ -414,7 +440,7 @@ export default {
 
       if (flowList && flowList.baselineVolume) {
         let error = this.calcMAPE(flowList.volume, flowList.baselineVolume, excludedList);
-        data.push({ name: this.formatText('Baseline', error), color: this.colors[4], data: flowList.baselineVolume });
+        data.push({ name: this.formatT('Baseline', error), color: this.colors[4], data: flowList.baselineVolume });
       }
 
       if (predictList !== null) {
@@ -422,17 +448,19 @@ export default {
         let error10 = this.calcMAPE(flowList.volume, predictList.pred10.volume, excludedList);
         let error15 = this.calcMAPE(flowList.volume, predictList.pred15.volume, excludedList);
 
-        data.push({ name: this.formatText('Pred-5', error5), color: this.colors[1], data: predictList.pred5.volume });
-        data.push({
-          name: this.formatText('Pred-10', error10),
-          color: this.colors[2],
-          data: predictList.pred10.volume
-        });
-        data.push({
-          name: this.formatText('Pred-15', error15),
-          color: this.colors[3],
-          data: predictList.pred15.volume
-        });
+        data.push({ name: this.formatT('Pred-5', error5), color: this.colors[1], data: predictList.pred5.volume });
+        data.push({ name: this.formatT('Pred-10', error10), color: this.colors[2], data: predictList.pred10.volume });
+        data.push({ name: this.formatT('Pred-15', error15), color: this.colors[3], data: predictList.pred15.volume });
+
+        if (predictList.pred30) {
+          let error = this.calcMAPE(flowList.volume, predictList.pred30.volume, excludedList);
+          data.push({ name: this.formatT('Pred-30', error), color: this.colors[5], data: predictList.pred30.volume });
+        }
+
+        if (predictList.pred60) {
+          let error = this.calcMAPE(flowList.volume, predictList.pred60.volume, excludedList);
+          data.push({ name: this.formatT('Pred-60', error), color: this.colors[6], data: predictList.pred60.volume });
+        }
       }
 
       return { data, xAxis, yAxis, title };
@@ -451,7 +479,7 @@ export default {
       if (flowList && flowList.baselineOccupancy) {
         let error = this.calcMAPE(flowList.occupancy, flowList.baselineOccupancy, excludedList);
         data.push({
-          name: this.formatText('Baseline', error),
+          name: this.formatT('Baseline', error),
           color: this.colors[4],
           data: flowList.baselineOccupancy
         });
@@ -463,26 +491,44 @@ export default {
         let error15 = this.calcMAPE(flowList.occupancy, predictList.pred15.occupancy, excludedList);
 
         data.push({
-          name: this.formatText('Pred-5', error5),
+          name: this.formatT('Pred-5', error5),
           color: this.colors[1],
           data: predictList.pred5.occupancy
         });
         data.push({
-          name: this.formatText('Pred-10', error10),
+          name: this.formatT('Pred-10', error10),
           color: this.colors[2],
           data: predictList.pred10.occupancy
         });
         data.push({
-          name: this.formatText('Pred-15', error15),
+          name: this.formatT('Pred-15', error15),
           color: this.colors[3],
           data: predictList.pred15.occupancy
         });
+
+        if (predictList.pred30) {
+          let error = this.calcMAPE(flowList.occupancy, predictList.pred30.occupancy, excludedList);
+          data.push({
+            name: this.formatT('Pred-30', error),
+            color: this.colors[5],
+            data: predictList.pred30.occupancy
+          });
+        }
+
+        if (predictList.pred60) {
+          let error = this.calcMAPE(flowList.occupancy, predictList.pred60.occupancy, excludedList);
+          data.push({
+            name: this.formatT('Pred-60', error),
+            color: this.colors[6],
+            data: predictList.pred60.occupancy
+          });
+        }
       }
 
       return { data, xAxis, yAxis, title };
     },
 
-    formatText(title, percent) {
+    formatT(title, percent) {
       return `${title} (${percent.toFixed(2)}%)`;
     },
 

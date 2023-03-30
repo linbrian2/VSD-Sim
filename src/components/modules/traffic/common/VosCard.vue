@@ -1,11 +1,14 @@
 <template>
   <div>
     <v-card min-width="100%">
-      <v-card-title class="justify-center my-n2 pa-1 grey darken-3" :class="$vuetify.breakpoint.mobile ? 'pt-2' : ''">
-        <v-chip class="mt-n1 mr-5" :color="color" outlined small>
+      <v-card-title
+        class="justify-space-between my-n2 pa-1 grey darken-3"
+        :class="$vuetify.breakpoint.mobile ? 'pt-2' : ''"
+      >
+        <v-chip class="mt-n1 ml-2" :color="color" small>
           <span>{{ vos.type }}</span>
         </v-chip>
-        <h4>{{ vos.time }}</h4>
+        <h4 class="mr-2">{{ vos.time }}</h4>
       </v-card-title>
 
       <v-card-text class="mt-10">
@@ -23,7 +26,7 @@
               <h2 class="extra-bold text-success">
                 <strong>{{ vos.volume }}</strong>
               </h2>
-              <h5>Volume</h5>
+              <h5>Vol</h5>
             </div>
           </v-col>
           <v-col>
@@ -31,7 +34,7 @@
               <h2 class="extra-bold text-success">
                 <strong>{{ vos.occupancy }}</strong>
               </h2>
-              <h5>Occupancy</h5>
+              <h5>Occ</h5>
             </div>
           </v-col>
         </v-row>

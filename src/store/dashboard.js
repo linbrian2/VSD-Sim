@@ -123,16 +123,18 @@ const mutations = {
 
 const getters = {
   getNotification(state) {
-    return state.trafficIncidents.map(incident => ({
-      id: incident.id,
-      title: `<span ${incident.status === 0 ? 'style="color:green;"' : ''} >${incident.type} #${incident.id}</span>`,
-      status: incident.status,
-      icon: 'mdi-alert-octagon',
-      startTime: new Date(incident.startTime),
-      evidenceCounts: incident.evidenceCounts,
-      incidentScore: incident.severity,
-      severityColor: incident.severityColor
-    }));
+    return state.trafficIncidents
+      .filter(incident => incident.status === 0)
+      .map(incident => ({
+        id: incident.id,
+        title: `<span ${incident.status === 0 ? 'style="color:green;"' : ''} >${incident.type} #${incident.id}</span>`,
+        status: incident.status,
+        icon: 'mdi-alert-octagon',
+        startTime: new Date(incident.startTime),
+        evidenceCounts: incident.evidenceCounts,
+        incidentScore: incident.severity,
+        severityColor: incident.severityColor
+      }));
   }
 };
 
@@ -143,6 +145,7 @@ const actions = {
     const duration = 30;
 
     try {
+      // Get all incidents for today or date specified as input
       let start = date ? date.getTime() : new Date().getTime();
       const response = await TrafficApi.fetchIncidentData(start, 1, severity, duration);
       if (response.data && response.data.data) {
@@ -155,9 +158,10 @@ const actions = {
         if (date) {
           sortedData = newIncidentList;
         } else {
-          const duration = 2 * 60 * 60 * 1000;
+          // Only get the incidents whose endTime is within the last two hours
+          const durationInMs = 2 * 60 * 60 * 1000;
           const now = new Date().getTime();
-          sortedData = newIncidentList.filter(x => now - x.endTime < duration);
+          sortedData = newIncidentList.filter(x => now - x.endTime < durationInMs);
         }
 
         // Sort by severity
@@ -171,6 +175,7 @@ const actions = {
       dispatch('setSystemStatus', { text: error, color: 'error' }, { root: true });
     }
   },
+
   //! Traffic Flow Issues
   async fetchTrafficDevices({ commit, dispatch }) {
     try {

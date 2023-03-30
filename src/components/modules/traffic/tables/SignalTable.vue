@@ -8,7 +8,7 @@
     class="elevation-1"
   >
     <template v-slot:[`item.pattern`]="{ item }">
-      <v-icon color="red" v-if="controller">mdi-circle-small</v-icon>
+      <v-icon color="red" v-if="item.controller">mdi-circle-small</v-icon>
       <v-chip :color="patternColor(item)" label small>
         <span class="font-weight-bold white--text">{{ item.pattern }}</span>
       </v-chip>

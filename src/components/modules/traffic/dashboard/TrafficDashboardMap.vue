@@ -185,8 +185,8 @@
             />
           </div>
 
-          <!-- Selected cameras -->
           <div v-if="selectedIdx >= 0">
+            <!-- Selected cameras -->
             <GmapMarker
               v-for="m in selectedCameras"
               :key="m.id"
@@ -196,6 +196,18 @@
               :options="markerOptions(m.id)"
               :clickable="true"
               @click="handleCameraClick(m.id)"
+            />
+
+            <!-- selectedVMSs -->
+            <GmapMarker
+              v-for="m in selectedVMSs"
+              :key="m.id"
+              :position="m.position"
+              :title="m.name"
+              :icon="getVMSMarkerIcon(false)"
+              :options="markerOptions(m.id)"
+              :clickable="true"
+              @click="handleVMSClick(m)"
             />
           </div>
         </GmapMap>
@@ -284,6 +296,7 @@ export default {
         return this.deviceLocations.filter(location => location.region === this.mapRegionSelection);
       }
     },
+
     anomalyMarkers() {
       return this.deviceLocations.filter(d => d.status > 0);
     },
@@ -294,6 +307,10 @@ export default {
 
     selectedCameras() {
       return this.getNearbyCameras();
+    },
+
+    selectedVMSs() {
+      return this.getNearbyVMSs();
     },
 
     selectedMarkers() {
@@ -414,24 +431,13 @@ export default {
 
   methods: {
     getTrafficIncidentMarker(marker) {
-      if (marker.id == this.selectedMarkerId) {
-        if (this.trafficIncidents && this.trafficIncidents.length > 0 && this.startTime && this.endTime) {
-          if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
-            return this.alertAnimatedIconActive;
-          } else {
-            return this.alertIconActive;
-          }
-        } else {
-          return this.alertIconActive;
-        }
+      if (marker.id === this.selectedMarkerId) {
+        return marker.status === 1 ? this.alertInactiveSelectedIcon : this.alertIconActive;
       } else {
-        if (marker.startTime <= this.endTime && this.endTime <= marker.endTime) {
-          return this.alertAnimatedIcon;
-        } else {
-          return this.alertIcon;
-        }
+        return marker.status === 1 ? this.alertInactiveIcon : this.alertIcon;
       }
     },
+
     getSegmentOptions(segment) {
       const color = segment.status === 7 ? '#FA8072' : '#195f3d';
       return {
@@ -532,6 +538,16 @@ export default {
           break;
       }
       return cameras ? cameras : [];
+    },
+
+    getNearbyVMSs() {
+      let vms = null;
+      switch (this.selectedIdx) {
+        case Constants.CARD_DATA_INCIDENTS_ID:
+          vms = this.selectedTrafficIncident.vms;
+          break;
+      }
+      return vms ? vms : [];
     },
 
     addSelectedMarker() {
@@ -651,6 +667,10 @@ export default {
 
     handleCameraClick(id) {
       this.$bus.$emit('PLAY_POPUP_VIDEO', id);
+    },
+
+    handleVMSClick(vms) {
+      this.$bus.$emit('SHOW_POPUP_VMS', vms);
     },
 
     centerMap(map, markers, zoom = null) {

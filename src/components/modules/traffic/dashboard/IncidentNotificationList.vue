@@ -12,7 +12,7 @@
         <template v-for="(item, index) in items">
           <v-list-item :key="index" @click="handleClick(item)">
             <v-list-item-avatar size="40" color="black">
-              <v-progress-circular :size="38" :width="4" :value="100" :color="item.severityColor">
+              <v-progress-circular :size="38" :width="3" :value="100" :color="item.severityColor">
                 <span class="score-value"> {{ item.incidentScore }}</span>
               </v-progress-circular>
             </v-list-item-avatar>

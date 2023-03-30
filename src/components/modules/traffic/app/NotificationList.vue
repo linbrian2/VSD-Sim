@@ -10,7 +10,7 @@
       <v-list dense class="pa-0 notes_list">
         <template v-for="(item, index) in items">
           <v-list-item :key="index" @click="handleClick(item.id)">
-            <v-list-item-avatar size="30" :color="item.color">
+            <v-list-item-avatar size="25" :color="item.color">
               <v-icon dark>{{ item.icon }}</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>

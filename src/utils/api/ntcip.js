@@ -24,7 +24,12 @@ export default {
   },
 
   executePattern(ip, patternNumber) {
-    return AxiosClient.post('api/execute-pattern', { controllerIp: ip, patternNumber });
+    const param = { controllerIp: ip, patternNumber };
+    return AxiosClient.post('api/execute-patterns', { data: [param] });
+  },
+
+  executePatterns(data) {
+    return AxiosClient.post('api/execute-patterns', data);
   },
 
   deletePattern(ip, patternNumber) {

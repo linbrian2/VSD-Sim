@@ -97,12 +97,38 @@
             </v-col>
 
             <v-col cols="12">
-              <v-card tile elevation="12" v-if="responsiveDataAvailable">
-                <TrafficResponsiveChart :data="responsiveChartData" :height="responsiveChartHeight" />
-              </v-card>
+              <div v-if="responsiveDataAvailable">
+                <v-card tile elevation="12">
+                  <TrafficResponsiveChart :data="responsiveChartData" :height="responsiveChartHeight" />
+                </v-card>
+              </div>
             </v-col>
           </v-row>
         </div>
+
+        <v-row v-if="recommendedPatternsAvailable">
+          <v-col cols="12">
+            <div class="d-flex justify-space-between">
+              <v-subheader class="pl-0 text-overline blue--text">
+                <h3>Traffic Signal Recommendation</h3>
+              </v-subheader>
+
+              <v-btn small outlined v-on="on" @click.stop="applyRecommendedPattern" class="mt-2">
+                <v-icon left color="red darken-3">mdi-arrow-down-bold-circle-outline</v-icon> Apply Pattern
+              </v-btn>
+            </div>
+
+            <v-divider />
+          </v-col>
+
+          <v-col cols="12">
+            <div>
+              <v-card tile class="mt-n2" elevation="12">
+                <RecommendationTable :items="recommendedPatterns" />
+              </v-card>
+            </div>
+          </v-col>
+        </v-row>
 
         <div v-if="dailyPatternAvailable">
           <v-row>
@@ -132,21 +158,16 @@
               </v-subheader>
 
               <div v-show="currentPatternAvailable" class="mt-3">
-                <span class="overline">Current pattern started at {{ currentPatternTime }}</span>
-                <v-chip color="orange" small class="ml-3">
+                <span class="overline">Current pattern ({{ currentPatternTime }})</span>
+                <v-chip color="orange" small class="mx-3">
                   <span class="font-weight-bold black--text"> {{ currentPatternNumber }}</span>
                 </v-chip>
               </div>
 
-              <div v-if="currentSignal">
-                <v-tooltip left>
-                  <template v-slot:activator="{ on }">
-                    <v-btn icon v-on="on" @click.stop="showSync = !showSync" class="mt-2">
-                      <v-icon color="grey">mdi-progress-download</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Sync with controller</span>
-                </v-tooltip>
+              <div v-if="currentSignal && isSignalAllowed">
+                <v-btn small outlined v-on="on" @click.stop="showSync = !showSync" class="mt-2">
+                  <v-icon left color="green">mdi-progress-download</v-icon> Sync with controller
+                </v-btn>
               </div>
             </div>
 
@@ -155,8 +176,13 @@
 
           <v-col cols="12">
             <div v-if="currentSignal">
-              <SignalSyncUI class="mt-n3 mb-5" :controller="currentController" v-model="showSync" />
-              <v-card tile class="mt-n2" elevation="12">
+              <SignalSyncUI
+                class="mt-n3 mb-8"
+                :controller="currentController"
+                v-model="showSync"
+                v-if="isSignalAllowed"
+              />
+              <v-card tile class="mt-n5" elevation="12">
                 <SignalTable :items="currentSignal" :current="currentPatternNumber" />
               </v-card>
             </div>
@@ -268,6 +294,29 @@
           </v-row>
         </div>
 
+        <v-row v-if="recommendedPatternsAvailable">
+          <v-col cols="12">
+            <div class="d-flex justify-space-between">
+              <v-subheader class="pl-0 text-overline blue--text">
+                <h3>Traffic Signal Recommendation</h3>
+              </v-subheader>
+              <v-btn small outlined v-on="on" @click.stop="applyRecommendedPattern" class="mt-2">
+                <v-icon left color="red darken-3">mdi-arrow-down-bold-circle-outline</v-icon> Apply Pattern
+              </v-btn>
+            </div>
+
+            <v-divider />
+          </v-col>
+
+          <v-col cols="12">
+            <div>
+              <v-card tile class="mt-n2" elevation="12">
+                <RecommendationTable :items="recommendedPatterns" />
+              </v-card>
+            </div>
+          </v-col>
+        </v-row>
+
         <div v-if="dailyPatternAvailable">
           <v-row>
             <v-col cols="12">
@@ -301,21 +350,24 @@
                   <span class="font-weight-bold black--text"> {{ currentPatternNumber }}</span>
                 </v-chip>
               </div>
-              <v-tooltip left>
-                <template v-slot:activator="{ on }">
-                  <v-btn icon v-on="on" @click.stop="showSync = !showSync" class="mt-2">
-                    <v-icon color="grey">mdi-progress-download</v-icon>
-                  </v-btn>
-                </template>
-                <span>Sync with controller</span>
-              </v-tooltip>
+
+              <div v-if="isSignalAllowed">
+                <v-btn small outlined v-on="on" @click.stop="showSync = !showSync" class="mt-2">
+                  <v-icon left color="green">mdi-progress-download</v-icon> Sync with controller
+                </v-btn>
+              </div>
             </div>
 
             <v-divider />
           </v-col>
 
           <v-col cols="12">
-            <SignalSyncUI class="mt-n4 mb-4" :controller="currentController" v-model="showSync" />
+            <SignalSyncUI
+              class="mt-n4 mb-4"
+              :controller="currentController"
+              v-model="showSync"
+              v-if="isSignalAllowed"
+            />
             <v-card class="mt-n2" tile elevation="12" v-if="currentSignal">
               <SignalTable :items="currentSignal" :current="currentPatternNumber" />
             </v-card>
@@ -332,6 +384,7 @@ import { mapState } from 'vuex';
 import { TrafficLightIcons } from '@/mixins/TrafficLightIcons.js';
 import { RouterNames } from '@/utils/constants/router';
 import SignalTable from '@/components/modules/traffic/tables/SignalTable';
+import RecommendationTable from '@/components/modules/traffic/tables/RecommendationTable';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapSelect from '@/components/modules/traffic/map/MapSelect';
 import TitleBar from '@/components/modules/traffic/common/TitleBar';
@@ -351,6 +404,7 @@ export default {
     SignalTable,
     DataCard,
     SignalSyncUI,
+    RecommendationTable,
     SignalPatternChart,
     TrafficResponsiveChart
   },
@@ -365,8 +419,10 @@ export default {
     showInfo: true,
     showSync: false,
     showResponsivePlot: true,
+    recommendedPatterns: [],
     responsiveChartData: {},
     signalChartData: {},
+    currentEnabledNtcip: false,
     currentEnabledTr: false,
     currentPermit: null,
     currentGroupId: null,
@@ -418,6 +474,10 @@ export default {
       }
     },
 
+    isSignalAllowed() {
+      return this.currentEnabledNtcip;
+    },
+
     infoAvailable() {
       return !Utils.isEmpty(this.detectorInfo);
     },
@@ -434,8 +494,16 @@ export default {
       return !Utils.isEmpty(this.responsiveChartData);
     },
 
+    recommendationAvailable() {
+      return this.responsiveChartData.recomms;
+    },
+
+    recommendedPatternsAvailable() {
+      return this.recommendedPatterns && this.recommendedPatterns.length > 0;
+    },
+
     currentPatternTime() {
-      if (!this.currentPattern) {
+      if (!this.currentPattern || !this.currentPattern.timestamp) {
         return '';
       }
       const d = new Date(this.currentPattern.timestamp);
@@ -511,6 +579,10 @@ export default {
           this.currentSignal.splice(index, 1);
         }
       }
+    });
+
+    this.$bus.$on('UPDATE_CURRENT_PATTERN', pattern => {
+      this.currentPattern = pattern;
     });
   },
 
@@ -607,6 +679,15 @@ export default {
       }
     },
 
+    applyRecommendedPattern() {
+      const patterns = this.recommendedPatterns.map(pattern => {
+        const patternNumber = pattern.patternId;
+        const controllerIp = pattern.ip;
+        return { controllerIp, patternNumber };
+      });
+      this.$bus.$emit('APPLY_PATTERNS', patterns);
+    },
+
     async fetchTrafficSignalDeviceList() {
       try {
         const response = await Api.trafficSignalDevices();
@@ -623,8 +704,10 @@ export default {
         const response = await Api.getSignalCycleSplit(permit);
         const data = this.parseResponse(response, false);
         if (data != null) {
+          this.currentEnabledNtcip = data.device.enabledNtcip;
           this.currentEnabledTr = data.device.enabledTr;
           this.detectorInfo = this.composeDetectorInfo(data.device);
+          this.recommendedPatterns = data.recommended ? data.recommended : [];
 
           this.currentPattern = data.current;
           this.signalChartData = this.composeSignalData(data.pattern);
@@ -765,19 +848,12 @@ export default {
 
       if (resData.patterns) {
         const patterns = resData.patterns.map(item => [item[0], item[1]]);
-        data.push({ name: 'Cycle Length', color: '#fed976', data: patterns, tracking: false });
+        data.push({ name: 'Original Pattern', color: '#fed976', data: patterns, tracking: false });
+      }
 
-        // Compose a level to comdate the auto min-max scaling of highcharts
-        if (resData.levels && resData.levels.length > 0 && resData.patterns.length > 0) {
-          const t0 = resData.patterns[0][0];
-          const t1 = resData.patterns[resData.patterns.length - 1][0];
-          const ll = resData.levels[resData.levels.length - 1][1];
-          const levels = [
-            [t0, ll],
-            [t1, ll]
-          ];
-          data.push({ name: 'Max Level', color: '#DEDEDE', data: levels, tracking: false });
-        }
+      if (resData.recomms) {
+        const recomms = resData.recomms.map(item => [item[0], item[1]]);
+        data.push({ name: 'Recommended Pattern', color: '#00E676', lineWidth: 3.0, data: recomms, tracking: false });
       }
 
       const colors = ['#023858', '#045a8d', '#2b8cbe', '#74a9cf', '#a6bddb', '#d0d1e6', '#f1eef6'];
@@ -791,7 +867,18 @@ export default {
         }));
       }
 
-      return { data, xAxis, yAxis, title, startTime, ymin: 0, ymax: 100, bands: bands, patterns: resData.patterns };
+      return {
+        data,
+        xAxis,
+        yAxis,
+        title,
+        startTime,
+        ymin: 0,
+        ymax: 100,
+        bands: bands,
+        patterns: resData.patterns,
+        recomms: resData.recomms
+      };
     }
   }
 };
