@@ -1,7 +1,7 @@
 <template>
   <v-menu bottom right offset-y>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn small icon class="mr-1" v-bind="attrs" v-on="on">
+      <v-btn disabled small icon class="mr-1" v-bind="attrs" v-on="on">
         <v-icon color="blue">mdi-chevron-right </v-icon>
       </v-btn>
     </template>

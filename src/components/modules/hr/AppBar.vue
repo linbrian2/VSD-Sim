@@ -3,7 +3,7 @@
     <div v-show="$vuetify.breakpoint.mdAndUp">
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(0)" icon v-on="on" @click.stop="showDashboard()">
+          <v-btn disabled class="mx-1" fab :color="color(0)" icon v-on="on" @click.stop="showDashboard()">
             <v-icon>mdi-view-dashboard</v-icon>
           </v-btn>
         </template>
@@ -12,7 +12,7 @@
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(1)" icon v-on="on" @click.stop="showPCD()">
+          <v-btn disabled class="mx-1" fab :color="color(1)" icon v-on="on" @click.stop="showPCD()">
             <v-icon>mdi-chart-areaspline</v-icon></v-btn
           >
         </template>
@@ -30,7 +30,7 @@
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(3)" icon v-on="on" @click.stop="showSignal()">
+          <v-btn disabled class="mx-1" fab :color="color(3)" icon v-on="on" @click.stop="showSignal()">
             <v-icon>mdi-clock</v-icon>
           </v-btn>
         </template>
@@ -39,7 +39,7 @@
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn class="mx-1" fab :color="color(4)" icon v-on="on" @click.stop="showPerformanceMeasures()">
+          <v-btn disabled class="mx-1" fab :color="color(4)" icon v-on="on" @click.stop="showPerformanceMeasures()">
             <v-icon>mdi-chart-bar</v-icon>
           </v-btn>
         </template>
@@ -47,8 +47,8 @@
       </v-tooltip>
     </div>
     <!-- notification -->
-    <v-divider vertical class="ml-1 hidden-xs-only" />
-    <NotificationDropdown />
+    <!-- <v-divider vertical class="ml-1 hidden-xs-only" />
+    <NotificationDropdown /> -->
     <v-divider vertical class="ml-1 hidden-xs-only" />
   </Header>
 </template>
