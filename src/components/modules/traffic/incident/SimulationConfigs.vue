@@ -43,7 +43,7 @@
             <v-col cols="5">
               <v-row>
                 <v-col cols="12">
-                  <v-subheader class="pl-0 text-overline green--text"><h3>Incident Location</h3></v-subheader>
+                  <v-subheader class="pl-0 text-overline green--text"><h3>Location</h3></v-subheader>
                   <v-divider />
                 </v-col>
                 <v-col cols="12">
@@ -68,7 +68,7 @@
                         required
                       />
                     </v-col>
-                    <v-col cols="4">
+                    <!-- <v-col cols="4">
                       <v-select
                         v-model="incidentDirection"
                         :items="directionItems"
@@ -76,89 +76,177 @@
                         item-value="value"
                         label="Incident Direction"
                       ></v-select>
-                    </v-col>
+                    </v-col> -->
                   </v-row>
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="12">
-                  <v-subheader class="pl-0 text-overline green--text"><h3>Blockage Settings</h3></v-subheader>
+                  <v-subheader class="pl-0 text-overline green--text"><h3>Vehicles/Network Settings</h3></v-subheader>
                   <v-divider />
                 </v-col>
                 <v-col cols="12">
                   <v-row>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="blockedLanes"
-                        :items="blockedLaneItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Blocked lanes"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="blockageDelayTime"
-                        :items="delayTimeItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Delay Time"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="duration"
-                        :items="durationItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Duration"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col cols="12">
-                  <v-subheader class="pl-0 text-overline green--text"><h3>Detour Settings</h3></v-subheader>
-                  <v-divider />
-                </v-col>
-                <v-col cols="12">
-                  <v-row>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="detourFlag"
-                        :items="booleanItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Detour"
-                      ></v-select>
-                    </v-col>
                     <v-col cols="4">
                       <v-text-field
-                        v-model="detourRatio"
-                        name="detourRatio"
-                        label="Detour Ratio"
-                        placeholder="Detour Ratio"
-                        type="text"
+                        v-model="num_vehicles"
+                        name="num_vehicles"
+                        label="Number of Target Vehicles"
+                        type="number"
+                        min="1"
                         required
                       />
                     </v-col>
                     <v-col cols="4">
-                      <v-select
-                        v-model="detourDuration"
-                        :items="durationItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Duration"
-                      ></v-select>
+                      <v-text-field
+                        v-model="max_accel"
+                        name="max_accel "
+                        label="Maximum Acceleration"
+                        type="number"
+                        min="0"
+                        max="3"
+                        step="0.01"
+                        suffix="m/s^2"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="max_decel"
+                        name="max_decel"
+                        label="Maximum Deceleration"
+                        type="number"
+                        min="0"
+                        max="3"
+                        step="0.01"
+                        suffix="m/s^2"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="target_velocity"
+                        name="target_velocity"
+                        label="Desired Velocity"
+                        type="number"
+                        min="0"
+                        max="120"
+                        suffix="m/s"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="max_speed"
+                        name="max_speed"
+                        label="Max Allowed Velocity"
+                        type="number"
+                        min="0"
+                        max="120"
+                        suffix="m/s"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="max_distance"
+                        name="max_distance"
+                        label="Max Route Length"
+                        type="number"
+                        min="0"
+                        suffix="m"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="h_d"
+                        name="h_d"
+                        label="Desired Time Headway"
+                        type="number"
+                        min="1"
+                        max="2"
+                        suffix="s"
+                        required
+                      />
                     </v-col>
                   </v-row>
                 </v-col>
               </v-row>
 
               <v-row>
+                <v-col cols="12">
+                  <v-subheader class="pl-0 text-overline green--text"><h3>RL TRAINING SETTINGS</h3></v-subheader>
+                  <v-divider />
+                </v-col>
+                <v-col cols="12">
+                  <v-row>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="horizon"
+                        name="horizon"
+                        label="Number of Horizons"
+                        type="number"
+                        min="1"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="sim_step"
+                        name="sim_step"
+                        label="Simulation Step Size"
+                        type="number"
+                        min="0"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="n_rollouts"
+                        name="n_rollouts"
+                        label="Number of Rollouts"
+                        type="number"
+                        min="1"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="n_cpus"
+                        name="n_cpus"
+                        label="Number of CPUs"
+                        type="number"
+                        min="1"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="checkpoint_freq"
+                        name="checkpoint_freq"
+                        label="Checkpoint Frequency"
+                        type="number"
+                        min="1"
+                        required
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        v-model="training_iteration"
+                        name="training_iteration"
+                        label="Number of Iterations"
+                        type="number"
+                        min="1"
+                        required
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+
+              <!-- <v-row>
                 <v-col cols="12">
                   <v-subheader class="pl-0 text-overline green--text"><h3>Simulation Settings</h3></v-subheader>
                   <v-divider />
@@ -194,7 +282,7 @@
                     </v-col>
                   </v-row>
                 </v-col>
-              </v-row>
+              </v-row> -->
             </v-col>
           </v-row>
         </v-container>
@@ -215,6 +303,19 @@ export default {
 
   data() {
     return {
+      num_vehicles: 1,
+      max_accel: 3,
+      max_decel: 3,
+      target_velocity: 30,
+      max_speed: 50,
+      max_distance: 21679.33,
+      h_d: 1,
+      horizon: 1000,
+      sim_step: 1,
+      n_rollouts: 20,
+      n_cpus: 20,
+      checkpoint_freq: 20,
+      training_iteration: 200,
       starIcon: {
         url: require('@/assets/star.png'),
         size: { width: 40, height: 40, f: 'px', b: 'px' },

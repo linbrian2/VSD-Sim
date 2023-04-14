@@ -3,6 +3,7 @@
     <Header :title="title" :showDate="!isDashboard" :clipLeft="true" :clipRight="true" :actionItems="actionItems">
       <div class="hidden-md-and-down">
         <MenuButton
+          :disabled="true"
           :items="chart_menu_items"
           tooltip="Show Charts"
           icon="mdi-chart-line"
@@ -19,6 +20,7 @@
         />
 
         <MenuButton
+          :disabled="true"
           :items="prediction_menu_items"
           tooltip="Traffic Prediction"
           icon="mdi-waveform"
@@ -28,8 +30,8 @@
       </div>
 
       <!-- notification -->
-      <v-divider vertical class="ml-2 hidden-xs-only" />
-      <NotificationDropdown />
+      <!-- <v-divider vertical class="ml-2 hidden-xs-only" />
+      <NotificationDropdown /> -->
       <v-divider vertical class="ml-1 hidden-xs-only" />
     </Header>
     <FlowChartDialog v-model="showFlowChart" />

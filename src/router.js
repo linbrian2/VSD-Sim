@@ -56,13 +56,13 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      alias: RouterPaths.HR_TIME_SPACE_DIAGRAM,
-      component: HR,
+      alias: RouterPaths.TRAFFIC_INCIDENT_LIST,
+      component: Traffic,
       children: [
         {
           path: '',
-          name: RouterNames.HR_TIME_SPACE_DIAGRAM,
-          component: TimeSpaceDiagram
+          name: RouterNames.TRAFFIC_INCIDENT_LIST,
+          component: IncidentList
         }
       ]
     },

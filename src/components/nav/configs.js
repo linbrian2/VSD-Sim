@@ -9,12 +9,14 @@ const protectedRoute = [
     },
     children: [
       {
-        path: RouterPaths.HR_TIME_SPACE_DIAGRAM,
+        path: RouterPaths.TRAFFIC_INCIDENT_LIST,
+        name: RouterNames.TRAFFIC_INCIDENT_LIST,
         meta: {
-          title: RouterNames.HR_TIME_SPACE_DIAGRAM,
-          icon: RouterIcons.HR_TIME_SPACE_DIAGRAM
+          title: RouterNames.TRAFFIC_INCIDENT_LIST,
+          icon: RouterIcons.TRAFFIC_INCIDENT_LIST
         }
       }
+
     ]
   }
 ];
