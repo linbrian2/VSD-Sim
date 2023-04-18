@@ -96,6 +96,7 @@
                         type="number"
                         min="1"
                         required
+                        hint="At least 1"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -109,6 +110,7 @@
                         step="0.01"
                         suffix="m/s^2"
                         required
+                        hint="Between 0 and 3"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -122,6 +124,7 @@
                         step="0.01"
                         suffix="m/s^2"
                         required
+                        hint="Between 0 and 3"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -134,6 +137,7 @@
                         max="120"
                         suffix="m/s"
                         required
+                        hint="Between 0 and 120"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -146,6 +150,7 @@
                         max="120"
                         suffix="m/s"
                         required
+                        hint="Between 0 and 120"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -157,6 +162,7 @@
                         min="0"
                         suffix="m"
                         required
+                        hint="Greater than 0"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -169,6 +175,7 @@
                         max="2"
                         suffix="s"
                         required
+                        hint="Between 1 and 2"
                       />
                     </v-col>
                   </v-row>
@@ -190,6 +197,7 @@
                         type="number"
                         min="1"
                         required
+                        hint="At least 1"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -200,6 +208,7 @@
                         type="number"
                         min="0"
                         required
+                        hint="Greater than 0"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -210,6 +219,7 @@
                         type="number"
                         min="1"
                         required
+                        hint="At least 1"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -220,6 +230,7 @@
                         type="number"
                         min="1"
                         required
+                        hint="At least 1"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -230,6 +241,7 @@
                         type="number"
                         min="1"
                         required
+                        hint="At least 1"
                       />
                     </v-col>
                     <v-col cols="4">
@@ -240,49 +252,12 @@
                         type="number"
                         min="1"
                         required
+                        hint="At least 1"
                       />
                     </v-col>
                   </v-row>
                 </v-col>
               </v-row>
-
-              <!-- <v-row>
-                <v-col cols="12">
-                  <v-subheader class="pl-0 text-overline green--text"><h3>Simulation Settings</h3></v-subheader>
-                  <v-divider />
-                </v-col>
-                <v-col cols="12">
-                  <v-row>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="simuSpeed"
-                        :items="simuSpeedItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Simulation Speed"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="simuDuration"
-                        :items="simuDurationItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Simulation Duration"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="simuStartTime"
-                        :items="simuStartTimeItems"
-                        item-text="text"
-                        item-value="value"
-                        label="Start Time"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row> -->
             </v-col>
           </v-row>
         </v-container>
@@ -453,11 +428,46 @@ export default {
     },
 
     startSimulation() {
-      this.show = false;
+      // this.show = false;
       this.startSimulationTask();
     },
 
     async startSimulationTask() {
+      let startTime = new Date();
+      if (this.simuStartTime > 0) {
+        startTime = new Date(startTime.getTime() + this.simuStartTime * 1000);
+      }
+      const endTime = new Date(startTime.getTime() + this.simuDuration * 1000);
+
+      const payload = {
+        startTime: Utils.formatDateTime(startTime),
+        endTime: Utils.formatDateTime(endTime),
+        num_vehicles: this.num_vehicles,
+        max_accel: this.max_accel,
+        max_decel: this.max_decel,
+        target_velocity: this.target_velocity,
+        max_speed: this.max_speed,
+        max_distance: this.max_distance,
+        h_d: this.h_d,
+        horizon: this.horizon,
+        sim_step: this.sim_step,
+        n_rollouts: this.n_rollouts,
+        n_cpus: this.n_cpus,
+        checkpoint_freq: this.checkpoint_freq,
+        training_iteration: this.training_iteration
+      };
+      console.log('Payload: %o', payload);
+
+      try {
+        // const response = await Api.startSimulation(this.baseURL, params);
+        const response = 'Response';
+        console.log('Response: %o', response);
+      } catch (error) {
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+      }
+    },
+
+    async startSimulationTaskOld() {
       let startTime = new Date();
       if (this.simuStartTime > 0) {
         startTime = new Date(startTime.getTime() + this.simuStartTime * 1000);
