@@ -433,15 +433,15 @@ export default {
     },
 
     async startSimulationTask() {
-      let startTime = new Date();
-      if (this.simuStartTime > 0) {
-        startTime = new Date(startTime.getTime() + this.simuStartTime * 1000);
-      }
-      const endTime = new Date(startTime.getTime() + this.simuDuration * 1000);
+      // let startTime = new Date();
+      // if (this.simuStartTime > 0) {
+      //   startTime = new Date(startTime.getTime() + this.simuStartTime * 1000);
+      // }
+      // const endTime = new Date(startTime.getTime() + this.simuDuration * 1000);
 
       const payload = {
-        startTime: Utils.formatDateTime(startTime),
-        endTime: Utils.formatDateTime(endTime),
+        // startTime: Utils.formatDateTime(startTime),
+        // endTime: Utils.formatDateTime(endTime),
         num_vehicles: this.num_vehicles,
         max_accel: this.max_accel,
         max_decel: this.max_decel,
