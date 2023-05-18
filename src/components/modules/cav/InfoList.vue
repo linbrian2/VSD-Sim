@@ -73,7 +73,7 @@ export default {
 }
 
 tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, .05);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .v-data-table > .v-data-table__wrapper > table > tbody > tr:nth-of-type(odd) {

@@ -2,16 +2,17 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import { RouterNames, RouterPaths } from '@/utils/constants/router';
 
-import AuthToken from '@/auth/services/auth-token';
+// import AuthToken from '@/auth/services/auth-token';
 import LayoutAuth from '@/components/layouts/Auth';
 import Traffic from '@/components/layouts/Traffic.vue';
 import HR from '@/components/layouts/HR.vue';
 import Vision from '@/components/layouts/Vision.vue';
 import CAV from '@/components/layouts/CAV.vue';
-import Dashboard from '@/components/layouts/Dashboard.vue';
+// import Dashboard from '@/components/layouts/Dashboard.vue';
 import Fullscreen from '@/components/layouts/Fullscreen.vue';
 
-import TrafficDashboard from '@/views/traffic/Dashboard.vue';
+import SimulationConfigs from '@/components/modules/traffic/incident/SimulationConfigs.vue';
+// import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficDataPlayback from '@/views/traffic/TrafficDataPlayback.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
 import Multigraph from '@/views/traffic/Multigraph.vue';
@@ -56,13 +57,13 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      alias: RouterPaths.TRAFFIC_INCIDENT_LIST,
+      alias: 'Simulation',
       component: Traffic,
       children: [
         {
           path: '',
-          name: RouterNames.TRAFFIC_INCIDENT_LIST,
-          component: IncidentList
+          name: 'Simulation',
+          component: SimulationConfigs
         }
       ]
     },
@@ -260,17 +261,17 @@ const router = new Router({
 });
 
 // redirect to login page if not logged in and trying to access a restricted page
-router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/account/reset-password', '/forgot-password', '/images'];
-  const authRequired = !publicPages.includes(to.path);
-  const loggedIn = AuthToken.isLoggedIn();
+// router.beforeEach((to, from, next) => {
+//   const publicPages = ['/login', '/account/reset-password', '/forgot-password', '/images'];
+//   const authRequired = !publicPages.includes(to.path);
+//   const loggedIn = AuthToken.isLoggedIn();
 
-  if (authRequired && !loggedIn) {
-    sessionStorage.setItem('redirectPath', to.path);
-    return next('/login', () => {});
-  }
+//   if (authRequired && !loggedIn) {
+//     sessionStorage.setItem('redirectPath', to.path);
+//     return next('/login', () => {});
+//   }
 
-  next();
-});
+//   next();
+// });
 
 export default router;

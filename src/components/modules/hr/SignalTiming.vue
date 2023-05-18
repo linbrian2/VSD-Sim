@@ -89,21 +89,21 @@ export default {
 
   mounted() {
     // Setup map change event
-    let mapRef = this.$parent.map || this.$parent.$parent.getMap();
-    mapRef.$mapPromise.then(map => {
-      google.maps.event.addListener(map, 'zoom_changed', () => {
-        let zoom = map.getZoom();
-        this.show = zoom > 17 ? true : false;
+    // let mapRef = this.$parent.map || this.$parent.$parent.getMap();
+    // mapRef.$mapPromise.then(map => {
+    //   google.maps.event.addListener(map, 'zoom_changed', () => {
+    //     let zoom = map.getZoom();
+    //     this.show = zoom > 17 ? true : false;
 
-        let proj = map.getProjection();
-        this.$store.commit('hr/SET_MAP_PROJECTION', proj);
-      });
+    //     let proj = map.getProjection();
+    //     this.$store.commit('hr/SET_MAP_PROJECTION', proj);
+    //   });
 
-      google.maps.event.addListener(map, 'projection_changed', () => {
-        let proj = map.getProjection();
-        this.$store.commit('hr/SET_MAP_PROJECTION', proj);
-      });
-    });
+    //   google.maps.event.addListener(map, 'projection_changed', () => {
+    //     let proj = map.getProjection();
+    //     this.$store.commit('hr/SET_MAP_PROJECTION', proj);
+    //   });
+    // });
 
     setTimeout(() => {
       if (this.signals.length === 0) {

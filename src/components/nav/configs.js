@@ -16,7 +16,6 @@ const protectedRoute = [
           icon: RouterIcons.TRAFFIC_INCIDENT_LIST
         }
       }
-
     ]
   }
 ];

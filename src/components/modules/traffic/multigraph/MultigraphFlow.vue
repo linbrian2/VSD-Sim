@@ -251,7 +251,7 @@
 <script>
 import Api from '@/utils/api/traffic';
 import Utils from '@/utils/Utils';
-import TrafficConstants from '@/utils/constants/traffic';
+// import TrafficConstants from '@/utils/constants/traffic';
 import { mapState } from 'vuex';
 import SelectionPanel from '@/components/modules/traffic/common/SelectionPanel';
 import MapMultigraphSelect from '@/components/modules/traffic/map/MapMultigraphSelect';

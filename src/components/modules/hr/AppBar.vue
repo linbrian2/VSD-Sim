@@ -57,12 +57,12 @@
 import Header from '@/components/common/Header';
 import AppConstants from '@/utils/constants/app';
 import { RouterNames, RouterPaths } from '@/utils/constants/router';
-import NotificationDropdown from '@/components/common/NotificationDropdown';
+// import NotificationDropdown from '@/components/common/NotificationDropdown';
 
 export default {
   components: {
-    Header,
-    NotificationDropdown
+    Header
+    // NotificationDropdown
   },
 
   data: () => ({

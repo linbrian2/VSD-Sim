@@ -247,6 +247,7 @@ export default {
     }
 
     this.refreshData();
+    this.menuItemClicked(2);
   },
 
   watch: {

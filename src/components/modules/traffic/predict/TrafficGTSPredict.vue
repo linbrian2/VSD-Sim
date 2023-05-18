@@ -279,7 +279,7 @@ export default {
         // Now we await for both results, whose async processes have already been started
         const [flow, timeList, predicts] = await Promise.all(requests);
 
-        console.log('precits',predicts);
+        console.log('precits', predicts);
 
         // Verify the flow data is avaialble
         let flowList = this.getResponseData(flow);
@@ -337,7 +337,7 @@ export default {
     formVolumeDataList(direction, predictList, flowLists, excludedLists) {
       const preds = Object.keys(predictList);
       const deviceIds = Object.keys(predictList[preds[0]]);
-      console.log("deviceIds=", deviceIds)
+      console.log('deviceIds=', deviceIds);
 
       console.log(flowLists);
 

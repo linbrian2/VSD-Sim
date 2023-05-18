@@ -44,15 +44,15 @@ import AppConstants from '@/utils/constants/app';
 import Header from '@/components/common/Header';
 import MenuButton from '@/components/common/MenuButton';
 import FlowChartDialog from '@/components/modules/traffic/app/FlowChartDialog';
-import NotificationDropdown from '@/components/common/NotificationDropdown';
+// import NotificationDropdown from '@/components/common/NotificationDropdown';
 import { mapState, mapGetters } from 'vuex';
 
 export default {
   components: {
     Header,
     MenuButton,
-    FlowChartDialog,
-    NotificationDropdown
+    FlowChartDialog
+    // NotificationDropdown
   },
 
   data: () => ({

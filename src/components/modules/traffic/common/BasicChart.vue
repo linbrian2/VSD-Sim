@@ -18,7 +18,8 @@ export default {
     height: Number,
     left: { type: Number, default: 90 },
     legendy: Number,
-    exporting: Boolean
+    exporting: Boolean,
+    xType: String
   },
 
   data() {
@@ -138,7 +139,7 @@ export default {
           text: subtitle
         },
         xAxis: {
-          type: 'datetime',
+          type: this.xType ? this.xType : 'datetime',
           title: {
             style: {
               fontSize: 13,
