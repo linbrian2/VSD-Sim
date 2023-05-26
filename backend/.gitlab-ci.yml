@@ -1,0 +1,48 @@
+image: gradle:6.1
+variables:
+   DOCKER_REGISTRY_USER: "admin"
+   DOCKER_REGISTRY_PW: "iai@15400"
+   DOCKER_REGISTRY_URL: "10.49.0.104:8082"
+   DOCKER_TAG_PREFIX: "10.49.0.104:8082"
+stages:
+   - build
+   - push
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+#cache:
+#  paths:
+#    - web_gui/ant/node_modules/
+
+build_jar:
+  stage: build
+  before_script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PW $DOCKER_REGISTRY_URL
+  script:
+    - ls -al
+    - chmod +x ./gradlew
+    - ./gradlew assemble
+    - docker build -t ${DOCKER_TAG_PREFIX}/new-front-end:${CI_COMMIT_REF_NAME} .
+    - docker push ${DOCKER_TAG_PREFIX}/new-front-end:${CI_COMMIT_REF_NAME}
+  tags:
+    - build
+  artifacts:
+    name: "backendDatabase"
+    paths:
+      - build/libs/*.jar
+
+build_docker_image:
+  stage: push
+  before_script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PW $DOCKER_REGISTRY_URL
+  script:
+    - ls -al
+    - docker build -t ${DOCKER_TAG_PREFIX}/backend-database-service:${CI_COMMIT_REF_NAME} .
+    - docker push ${DOCKER_TAG_PREFIX}/backend-database-service:${CI_COMMIT_REF_NAME}
+    - ls ./ -al
+  tags:
+    - build
+  only:
+    - master
+
