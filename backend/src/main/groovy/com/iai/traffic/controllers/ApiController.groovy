@@ -492,9 +492,9 @@ class ApiController {
         }
     }
 
-    @Post("fetchData")
-    def fetchData(@Body def body) {
-        println "fetchData"
+    @Post("fetchVMSData")
+    def fetchVMSData(@Body def body) {
+        log.info("fetchVMSData")
         // Validate parameters
         if (body.path == null) {
             return [
@@ -506,7 +506,8 @@ class ApiController {
         // Query database
         try {
             String path = body.path != null ? body.path.textValue() : ''
-            def json = mSimulationService.getFileData(path)
+            Boolean useSampleData = body.useSampleData.booleanValue()
+            def json = mSimulationService.getFileData(path, useSampleData)
             if (json) {
                 return [ status: 'OK', data: json ]
             } else {
@@ -519,7 +520,7 @@ class ApiController {
 
     @Post("setSimulationData")
     def setSimulationData(@Body def body) {
-        println 'setSimulationData'
+        log.info('setSimulationData')
         // Validate parameters
         if (body.path == null) {
             return [
@@ -531,7 +532,6 @@ class ApiController {
         // Query database
         try {
             String path = body.path != null ? body.path.textValue() : ''
-            println path
             def json = mSimulationService.setSimulationData(path)
             if (json) {
                 return [ status: 'OK', data: json ]

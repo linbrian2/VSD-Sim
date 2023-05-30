@@ -68,7 +68,7 @@ export default {
   },
 
   async mounted() {
-    await this.fetchReleaseNotes(this.version);
+    // await this.fetchReleaseNotes(this.version);
   },
 
   methods: {

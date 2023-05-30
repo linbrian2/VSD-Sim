@@ -162,8 +162,8 @@ export default {
     return api.get(params);
   },
 
-  fetchData(params) {
-    return AxiosClient.post('api/fetchData', params);
+  fetchVMSData(params) {
+    return AxiosClient.post('api/fetchVMSData', params);
   },
 
   addPathToBackend(params) {

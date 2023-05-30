@@ -430,20 +430,16 @@ export default {
 
       try {
         /* No Simulation made */
-        this.pathData = {
-          path:
-            '/home/vms_public/ray_results/template_ZM/PPO_MultiAgentHighwayPOEnv-v0_cf44823a_2023-05-10_16-11-1268rq39i9'
-        };
-
-        /* Simulation made */
-        // const response = await Api.startSimulationNew(this.payload);
-        // this.pathData = response.data;
+        // this.pathData = {
+        //   path:
+        //     '/home/vms_public/ray_results/template_ZM/PPO_MultiAgentHighwayPOEnv-v0_cf44823a_2023-05-10_16-11-1268rq39i9'
+        // };
 
         /* New Fetch */
-        this.addPathToBackend(this.pathData);
+        // this.addPathToBackend(this.pathData);
 
         /* Old Fetch */
-        // this.fetchDataOld(this.pathData);
+        this.fetchVMSData(this.pathData, true);
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
@@ -464,10 +460,10 @@ export default {
       }
     },
 
-    async fetchDataOld(pathData) {
-      console.log('fetchDataOld: %o', pathData);
+    async fetchVMSData(pathData, useSampleData = false) {
+      console.log('fetchData: %o', { pathData, useSampleData });
       try {
-        const response = await Api.fetchData(pathData);
+        const response = await Api.fetchVMSData({ pathData, useSampleData });
         this.apiData = response.data.data;
         console.log('apiData: %o', this.apiData);
         this.loading = false;

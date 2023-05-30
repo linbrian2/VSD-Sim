@@ -4,7 +4,7 @@ micronaut:
     version: 1.0.0
     description: Process API requests from backend database
   server:
-    port: 4000
+    port: 4001
     cors:
       enabled: true
     idle-timeout: 10h
