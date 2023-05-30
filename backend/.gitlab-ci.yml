@@ -38,8 +38,8 @@ build_docker_image:
     - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PW $DOCKER_REGISTRY_URL
   script:
     - ls -al
-    - docker build -t ${DOCKER_TAG_PREFIX}/backend-database-service:${CI_COMMIT_REF_NAME} .
-    - docker push ${DOCKER_TAG_PREFIX}/backend-database-service:${CI_COMMIT_REF_NAME}
+    - docker build -t ${DOCKER_TAG_PREFIX}/vms-backend:${CI_COMMIT_REF_NAME} .
+    - docker push ${DOCKER_TAG_PREFIX}/vms-backend:${CI_COMMIT_REF_NAME}
     - ls ./ -al
   tags:
     - build
