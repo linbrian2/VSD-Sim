@@ -16,6 +16,7 @@ import javax.inject.Singleton
 class SimulationService {
 
     def simsToCheck = []
+    def checkpoint = 0
     def i = 1
 
     // https://docs.micronaut.io/latest/api/io/micronaut/scheduling/cron/CronExpression.html
@@ -44,45 +45,59 @@ class SimulationService {
         } else {
             log.info('Duplicate File not added: {}', path)
         }
+        checkpoint = 0
         return [
             progress: [0],
-            emission: [0]
+            emissions: [[0]],
+            checkpoint: checkpoint
         ]
     }
 
     def getFileData(path, useSampleData) {
         if (useSampleData) {
             println 'Using sample data'
-            // * 104 Linux Server
-            // String filePath = "/home/blin/new_progress/progress.csv"
-            // String path2 = '/home/blin/filtered_trips.csv'
+            checkpoint = 9 // 2nd to last checkpoint
 
+            // * 104 Linux Server
+            // path = "/home/blin/new_progress/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu"
             // * Local Windows
-            String filePath = "/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu/progress.csv"
-            String path2 = "/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu/checkpoint_200/filtered_trips.csv"
+            path = "../samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu"
 
             return [
-                progress: parseProgressFile(filePath),
-                emission: parseEmissionFile(path2)
+                progress: parseProgressFile(path),
+                emissions: parseEmissionFiles(path, 20),
+                checkpoint: checkpoint
             ]
         } else {
             println 'Using actual data'
-            path = "/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu"
-            def latestEmmisionFolder = getLatestEmmisionFolder(path)
-            String filePath = "${path}/progress.csv"
-            String path2 = "${path}/${latestEmmisionFolder}/filtered_trips.csv"
             return [
-                progress: parseProgressFile(filePath),
-                emission: parseEmissionFile(path2)
+                progress: parseProgressFile(path),
+                emissions: parseEmissionFiles(path, 20),
+                checkpoint: checkpoint
             ]
         }
     }
 
-    def getLatestEmmisionFolder(path) {
-        return 'checkpoint_200'
+    def parseEmissionFiles(path, itSize) {
+        def emissions = []
+        checkpoint++
+        if (checkpoint <= 10) {
+            for (int i = 1; i <= checkpoint; i++) {
+                def emissionFilePath = "${path}/checkpoint_${i * itSize}"
+                // if (i == 7) emissionFilePath = "${path}/checkpoint_999"
+                def result = parseEmissionFile(emissionFilePath)
+                emissions << result ? result : 0
+            }
+        }
+        if (emissions.size() > 0) {
+            return emissions
+        } else {
+            return [[0]]
+        }
     }
 
-    def parseProgressFile(file) {
+    def parseProgressFile(filePath) {
+        String file = "${filePath}/progress.csv"
         println "Reading progress file: $file"
         long startTime = System.currentTimeMillis()
         BufferedReader br = null
@@ -130,12 +145,17 @@ class SimulationService {
                 }
             }
         }
-        long estimatedTime = (System.currentTimeMillis() - startTime) / 1000
-        println "Time taken: $estimatedTime s"
-        return dataList
+        long estimatedTime = System.currentTimeMillis() - startTime
+        println "Time taken: $estimatedTime ms"
+        if (dataList.size() > 0) {
+            return dataList
+        } else {
+            return [0]
+        }
     }
 
-    def parseEmissionFile(file) {
+    def parseEmissionFile(filePath) {
+        String file = "${filePath}/filtered_trips.csv"
         println "Reading emissions file: $file"
         long startTime = System.currentTimeMillis()
         BufferedReader br = null
@@ -148,9 +168,6 @@ class SimulationService {
             br = new BufferedReader(new InputStreamReader(is))
             while ((line = br.readLine()) != null) {
                 if (i > 0) {
-                    if (i % 5000 == 0) {
-                        println i
-                    }
                     String[] info = line.split(',')
                     dataList.add([
                         time: Double.parseDouble(info[1]),
@@ -182,8 +199,8 @@ class SimulationService {
                 }
             }
         }
-        long estimatedTime = (System.currentTimeMillis() - startTime) / 1000
-        println "Time taken: $estimatedTime s"
+        long estimatedTime = System.currentTimeMillis() - startTime
+        println "Time taken: $estimatedTime ms"
         return dataList
     }
 

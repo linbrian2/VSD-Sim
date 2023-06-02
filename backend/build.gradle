@@ -29,8 +29,6 @@ dependencies {
     compile "io.micronaut:micronaut-security"
     implementation "io.micronaut:micronaut-security-jwt"
 
-    implementation("io.micronaut.configuration:micronaut-rabbitmq")
-
     //    implementation 'io.micronaut.configuration:micronaut-redis-lettuce'
     implementation 'io.lettuce:lettuce-core:6.2.0.RELEASE'
 

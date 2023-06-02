@@ -36,6 +36,7 @@ class ApiController {
     @Post("fetchVMSData")
     def fetchVMSData(@Body def body) {
         log.info("fetchVMSData")
+        println body
         // Validate parameters
         if (body.path == null) {
             return [

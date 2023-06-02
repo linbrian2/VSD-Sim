@@ -292,7 +292,7 @@ export default {
 
   data() {
     return {
-      timer: null,
+      fileTimer: null,
       serviceUp: true,
       payload: null,
       loading: false,
@@ -355,6 +355,14 @@ export default {
   },
 
   watch: {
+    apiData: {
+      deep: true,
+      handler: function() {
+        if (this.apiData.checkpoint >= 10) {
+          this.stopFileChecker();
+        }
+      }
+    },
     training_iteration(data) {
       switch (data) {
         case 10:
@@ -380,22 +388,13 @@ export default {
 
   mounted() {
     this.checkIfUp();
-    this.startTimer();
   },
 
   destroyed() {
-    this.stopTimer();
+    this.stopFileChecker;
   },
 
   methods: {
-    startTimer() {
-      this.timer = setInterval(() => {
-        this.checkIfUp();
-      }, 60 * 1000);
-    },
-    stopTimer() {
-      clearInterval(this.timer);
-    },
     mapClicked(event) {
       this.latitude = event.latLng.lat();
       this.longitude = event.latLng.lng();
@@ -429,17 +428,25 @@ export default {
       this.loading = true;
 
       try {
-        /* No Simulation made */
+        /* No Simulation, hard-coded path, Linux */
         // this.pathData = {
         //   path:
-        //     '/home/vms_public/ray_results/template_ZM/PPO_MultiAgentHighwayPOEnv-v0_cf44823a_2023-05-10_16-11-1268rq39i9'
+        //     '/home/blin/new_progress/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu'
         // };
+        /* No Simulation, hard-coded path, Windows */
+        this.pathData = {
+          path: '../samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu'
+        };
 
-        /* New Fetch */
-        // this.addPathToBackend(this.pathData);
+        /* Simulation, returned path */
+        // const response = await Api.startSimulationNew(this.payload);
+        // this.pathData = response.data;
 
-        /* Old Fetch */
-        this.fetchVMSData(this.pathData, true);
+        /* New Fetch, start file checker */
+        this.addPathToBackend(this.pathData, false);
+
+        /* Old Fetch, return end result */
+        // this.fetchVMSData(this.pathData, true);
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
@@ -454,6 +461,7 @@ export default {
         console.log('apiData: %o', this.apiData);
         this.loading = false;
         this.page = 2;
+        this.startFileChecker(pathData);
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
         this.loading = false;
@@ -461,9 +469,9 @@ export default {
     },
 
     async fetchVMSData(pathData, useSampleData = false) {
-      console.log('fetchData: %o', { pathData, useSampleData });
+      console.log('fetchVMSData: %o', { ...pathData, useSampleData });
       try {
-        const response = await Api.fetchVMSData({ pathData, useSampleData });
+        const response = await Api.fetchVMSData({ ...pathData, useSampleData });
         this.apiData = response.data.data;
         console.log('apiData: %o', this.apiData);
         this.loading = false;
@@ -474,7 +482,15 @@ export default {
       }
     },
 
-    saveData() {}
+    startFileChecker(pathData) {
+      this.fileTimer = setInterval(() => {
+        this.fetchVMSData(pathData, false);
+      }, 10000);
+    },
+
+    stopFileChecker() {
+      clearInterval(this.fileTimer);
+    }
   }
 };
 </script>
