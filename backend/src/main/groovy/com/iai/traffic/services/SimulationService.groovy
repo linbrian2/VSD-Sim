@@ -28,7 +28,7 @@ class SimulationService {
     //    |   |  |  |  |  |
 
     // Trigger the job every one minute at 5 seconds
-    @Scheduled(cron = '*/5 * * * * *')
+    @Scheduled(cron = '*/10 * * * * *')
     def checkSimulations() {
         addDummySim()
         // getErrorFile('/home/blin/Simulation App/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu')
@@ -101,16 +101,23 @@ class SimulationService {
                 errorGenerated: errorGenerated
             ]
         } else {
+            println 1
             def sim = simsToCheck.find { x -> x.name == path }
             if (sim) {
                 simsToCheck.remove(sim)
             }
+            println 2
             simsToCheck << [name: path, checkpoint: 10]
+            println 3
             def progressData = parseProgressFile(path, itSize, emulateSim)
             def emissionData = parseEmissionFiles(path, itSize, emulateSim)
+            println 4
             sim = simsToCheck.find { x -> x.name == path }
+            println 5
             def checkpoint = sim.checkpoint
+            println 6
             simsToCheck.remove(sim)
+            println 7
             return [
                 progress: progressData,
                 proProgress: progressData.size() / (itSize * 10),
@@ -143,6 +150,7 @@ class SimulationService {
         }
         def checkpoint = sim.checkpoint
         if (checkpoint <= 10) {
+            log.info("Reading $checkpoint emission files.")
             for (int i = 1; i <= checkpoint; i++) {
                 def emissionFilePath = "${path}/checkpoint_${i * itSize}"
                 def result = parseEmissionFile(emissionFilePath)
@@ -160,7 +168,8 @@ class SimulationService {
         def sim = simsToCheck.find { x -> x.name == filePath }
         def checkpoint = sim.checkpoint
         String file = "${filePath}/progress.csv"
-        println "Reading progress file: $file"
+        log.info("Reading progress file.")
+        // println "Reading progress file: $file"
         long startTime = System.currentTimeMillis()
         BufferedReader br = null
         String line = ''
@@ -211,7 +220,7 @@ class SimulationService {
             }
         }
         long estimatedTime = System.currentTimeMillis() - startTime
-        println "Time taken: $estimatedTime ms"
+        // println "Time taken: $estimatedTime ms"
         if (dataList.size() > 0) {
             return dataList
         } else {
@@ -221,7 +230,7 @@ class SimulationService {
 
     def parseEmissionFile(filePath) {
         String file = "${filePath}/filtered_trips.csv"
-        println "Reading emissions file: $file"
+        // println "Reading emissions file: $file"
         long startTime = System.currentTimeMillis()
         BufferedReader br = null
         String line = ''
@@ -265,7 +274,7 @@ class SimulationService {
             }
         }
         long estimatedTime = System.currentTimeMillis() - startTime
-        println "Time taken: $estimatedTime ms"
+        // println "Time taken: $estimatedTime ms"
         return dataList
     }
 

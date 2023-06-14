@@ -317,7 +317,7 @@ export default {
         { action: 2, title: 'Load Sample Simulation Results' }
       ],
       fileTimer: null,
-      serviceUp: true,
+      serviceUp: null,
       payload: null,
       loading: false,
       page: 1,
