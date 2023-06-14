@@ -156,10 +156,10 @@ export default {
     return api.post('run', params);
   },
 
-  checkIfUp(params) {
+  checkIfUp() {
     let baseURL = 'http://10.49.0.104:3001/';
     const api = axios.create({ baseURL });
-    return api.get(params);
+    return api.get();
   },
 
   fetchVMSData(params) {

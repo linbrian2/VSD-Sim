@@ -1,0 +1,25 @@
+Failure # 1 (occurred at 2023-06-14_11-45-36)
+Traceback (most recent call last):
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/tune/trial_runner.py", line 426, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/tune/ray_trial_executor.py", line 378, in fetch_result
+    result = ray.get(trial_future[0], DEFAULT_GET_TIMEOUT)
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/worker.py", line 1457, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(AssertionError): [36mray::PPO.train()[39m (pid=18378, ip=10.49.0.104)
+  File "python/ray/_raylet.pyx", line 636, in ray._raylet.execute_task
+  File "python/ray/_raylet.pyx", line 619, in ray._raylet.execute_task.function_executor
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 447, in train
+    raise e
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 433, in train
+    result = Trainable.train(self)
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/tune/trainable.py", line 176, in train
+    result = self._train()
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/rllib/agents/trainer_template.py", line 129, in _train
+    fetches = self.optimizer.step()
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/rllib/optimizers/multi_gpu_optimizer.py", line 140, in step
+    self.num_envs_per_worker, self.train_batch_size)
+  File "/home/vms_public/anaconda3/envs/flow/lib/python3.7/site-packages/ray/rllib/optimizers/rollout.py", line 30, in collect_samples
+    assert next_sample.count >= sample_batch_size * num_envs_per_worker
+AssertionError
+

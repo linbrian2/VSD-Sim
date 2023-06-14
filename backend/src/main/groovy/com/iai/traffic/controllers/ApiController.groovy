@@ -36,7 +36,6 @@ class ApiController {
     @Post("fetchVMSData")
     def fetchVMSData(@Body def body) {
         log.info("fetchVMSData")
-        println body
         // Validate parameters
         if (body.path == null) {
             return [
@@ -48,8 +47,10 @@ class ApiController {
         // Query database
         try {
             String path = body.path != null ? body.path.textValue() : ''
-            Boolean useSampleData = body.useSampleData.booleanValue()
-            def json = mSimulationService.getFileData(path, useSampleData)
+            String getFile = body.getFile != null ? body.getFile.textValue() : ''
+            Integer itSize = body.itSize != null ? body.itSize.intValue() : ''
+            Boolean emulateSim = body.emulateSim != null ? body.emulateSim.booleanValue() : ''
+            def json = mSimulationService.getFileData(path, getFile, itSize, emulateSim)
             if (json) {
                 return [ status: 'OK', data: json ]
             } else {

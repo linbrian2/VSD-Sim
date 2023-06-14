@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+    # Proxies requests to internal services
+    # nginx:
+        # image: nginx
+        # container_name: nginx
+        # build:
+            # context: ./nginx
+        # depends_on:
+        #    - deldot-traffic-show
+        #    - deldot-hr-show
+        #    - deldot-vision-show
+        #    - deldot-health
+        #    - deldot-bluetooth-show
+        #    - hr-processing-service
+        #    - backend-database-service
+        #    - collection-monitoring-service
+        #    - bluetooth-api-service
+        #    - traffic-predict-service
+        # volumes:
+            # - ./nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+            # - ./nginx/www:/www/data
+        # ports:
+            # - 80:80
+        # restart: always
+
+    # Vue frontend for VSD Simulation
+    frontend:
+        image: frontend
+        container_name: frontend
+        build:
+            context: ./frontend
+        depends_on:
+            - backend
+        ports:
+            - 8088:80
+        restart: always
+
+    # Backend data service
+    backend:
+        image: backend
+        container_name: backend
+        build:
+            context: ./backend
+        ports:
+            - 4001:4002
+        restart: always
+
+    # Backend data service
+    # backend-database-service:
+    #     image: backend-database-service
+    #     container_name: backend-database-service
+    #     build:
+    #         context: ./backend-database-service
+    #     environment:
+    #         - DATABASE_MYSQL_HOST=10.23.1.10
+    #         - DATABASE_MYSQL_PORT=3306
+    #         - DATABASE_MYSQL_USERNAME=minerva
+    #         - DATABASE_MYSQL_PASSWORD=#Minerva
+    #         - JWT_SIGNATURE_SECRET=NngmELXxwyGtdt00yp4Mvn7NM7hCLgpaBDN8MCxMdtic8L4lCgnwuDcYGPtY
+    #         - RABBITMQ_HOST=10.23.1.10
+    #         - RABBITMQ_PORT=5672
+    #         - RABBITMQ_USERNAME=iai
+    #         - RABBITMQ_PASSWORD=iaimq@15400
+    #         - MINIO_USERNAME=iai
+    #         - MINIO_PASSWORD=iaiminio@15400
+    #         - MINIO_URL=https://s3.aitoms.net
+    #         - REDIS_URL=redis://RMJqwaCHzfD256ypqluE@10.22.1.6:6379
+    #     ports:
+    #         - 4000
+    #     restart: always

@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-toolbar dark color="primary" dense flat fixed overflow extension-height="0">
+    <v-toolbar dark color="#3A3A5A" dense flat fixed overflow extension-height="0">
       <v-toolbar-title>
         <v-btn icon class="ml-n2">
           <v-icon dark>mdi-cog-outline</v-icon>
@@ -26,9 +26,9 @@
       <div v-if="serviceUp">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon v-on="on" color="#006600">mdi-check-network-outline</v-icon>
+            <v-icon v-on="on" color="green">mdi-check-network-outline</v-icon>
           </template>
-          <span>Service is available</span>
+          <span>Simulation initialization service is available as of {{ formatDate(serviceUp.date) }}</span>
         </v-tooltip>
       </div>
       <div v-else>
@@ -36,9 +36,25 @@
           <template v-slot:activator="{ on }">
             <v-icon v-on="on" color="red">mdi-close-network-outline</v-icon>
           </template>
-          <span>Service is unavailable</span>
+          <span>Simulation initialization service is unavailable</span>
         </v-tooltip>
       </div>
+      <v-menu bottom right offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn class="ml-1" :disabled="page != 1" icon v-bind="attrs" v-on="on">
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <template v-for="(item, index) in items">
+            <v-divider v-if="item.divider" :key="index"></v-divider>
+            <v-list-item v-else :key="`e-${index}`" @click="menuItemClicked(item.action)">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-list>
+      </v-menu>
     </v-toolbar>
 
     <v-row>
@@ -278,6 +294,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import Utils from '@/utils/Utils';
 import Api from '@/utils/api/traffic';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import EmissionAndProgressData from '@/components/modules/traffic/incident/EmissionAndProgressData.vue';
@@ -292,6 +309,13 @@ export default {
 
   data() {
     return {
+      samplePath:
+        '/home/blin/Simulation App/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu', // Linux
+      // samplePath: '../samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu', // Windows
+      items: [
+        { action: 1, title: 'Start Sample Simulation' },
+        { action: 2, title: 'Load Sample Simulation Results' }
+      ],
       fileTimer: null,
       serviceUp: true,
       payload: null,
@@ -308,8 +332,8 @@ export default {
       horizon: 1000,
       sim_step: 1,
       n_cpus: 20,
-      checkpoint_freq: 20,
-      training_iteration: 200,
+      checkpoint_freq: 20, // Default is 20
+      training_iteration: 200, // Default is 200
       starIcon: {
         url: require('@/assets/star.png'),
         size: { width: 40, height: 40, f: 'px', b: 'px' },
@@ -358,7 +382,9 @@ export default {
     apiData: {
       deep: true,
       handler: function() {
-        if (this.apiData.checkpoint >= 10) {
+        if (!this.apiData
+            || (this.apiData.checkpoint && this.apiData.checkpoint >= 10)
+            || this.apiData.errorGenerated) {
           this.stopFileChecker();
         }
       }
@@ -388,6 +414,9 @@ export default {
 
   mounted() {
     this.checkIfUp();
+    setInterval(() => {
+      this.checkIfUp();
+    }, 60000);
   },
 
   destroyed() {
@@ -395,6 +424,19 @@ export default {
   },
 
   methods: {
+    menuItemClicked(action) {
+      switch (action) {
+        case 1:
+          this.useSampleData(1);
+          break;
+        case 2:
+          this.useSampleData(2);
+          break;
+      }
+    },
+    formatDate(date) {
+      return Utils.formatAMPMTime(date);
+    },
     mapClicked(event) {
       this.latitude = event.latLng.lat();
       this.longitude = event.latLng.lng();
@@ -402,11 +444,49 @@ export default {
     },
 
     async checkIfUp() {
-      // try {
-      //   this.serviceUp = await Api.checkIfUp(this.payload);
-      // } catch (error) {
-      //   this.serviceUp = !error.message.includes('Network Error');
-      // }
+      try {
+        let resp = await Api.checkIfUp();
+        this.serviceUp = { ...resp.data, date: new Date() };
+      } catch (error) {
+        this.serviceUp = null;
+      }
+    },
+
+    async useSampleData(mode) {
+      this.payload = {
+        num_vehicles: 1,
+        max_accel: 3,
+        max_decel: 3,
+        target_velocity: 30,
+        max_speed: 50,
+        max_distance: 21679.33,
+        h_d: 1,
+        horizon: 1000,
+        sim_step: 1,
+        n_cpus: 20,
+        checkpoint_freq: 20,
+        training_iteration: 200
+      };
+
+      this.loading = true;
+
+      try {
+        this.apiData = null;
+        this.pathData = {
+          path: this.samplePath
+        };
+        if (mode == 1) {
+          // Incrementing Data
+          this.addPathToBackend(this.pathData);
+        } else {
+          // Instant Data
+          const instantData = true;
+          const emulateSim = false;
+          this.fetchVMSData(this.pathData, instantData, emulateSim);
+        }
+      } catch (error) {
+        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+      }
     },
 
     async startSimulationTask() {
@@ -428,37 +508,24 @@ export default {
       this.loading = true;
 
       try {
-        /* No Simulation, hard-coded path, Linux */
-        // this.pathData = {
-        //   path:
-        //     '/home/blin/new_progress/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu'
-        // };
-        /* No Simulation, hard-coded path, Windows */
-        this.pathData = {
-          path: '../samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu'
-        };
-
-        /* Simulation, returned path */
-        // const response = await Api.startSimulationNew(this.payload);
-        // this.pathData = response.data;
+        /* Run Simulation, return files path */
+        const response = await Api.startSimulationNew(this.payload);
+        this.pathData = response.data;
 
         /* New Fetch, start file checker */
-        this.addPathToBackend(this.pathData, false);
-
-        /* Old Fetch, return end result */
-        // this.fetchVMSData(this.pathData, true);
+        this.addPathToBackend(this.pathData);
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
       }
     },
 
     async addPathToBackend(pathData) {
-      console.log('addPathToBackend: %o', pathData);
+      // console.log('addPathToBackend: %o', pathData);
       try {
         const response = await Api.addPathToBackend(pathData);
-        console.log(response);
+        // console.log(response);
         this.apiData = response.data.data;
-        console.log('apiData: %o', this.apiData);
+        // console.log('apiData: %o', this.apiData);
         this.loading = false;
         this.page = 2;
         this.startFileChecker(pathData);
@@ -468,24 +535,75 @@ export default {
       }
     },
 
-    async fetchVMSData(pathData, useSampleData = false) {
-      console.log('fetchVMSData: %o', { ...pathData, useSampleData });
-      try {
-        const response = await Api.fetchVMSData({ ...pathData, useSampleData });
-        this.apiData = response.data.data;
-        console.log('apiData: %o', this.apiData);
-        this.loading = false;
-        this.page = 2;
-      } catch (error) {
-        this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
-        this.loading = false;
+    async fetchVMSData(pathData, instantData, emulateSim) {
+      // console.log({ pathData, instantData, emulateSim });
+      if (!instantData) {
+        try {
+          const response = await Api.fetchVMSData({
+            ...pathData,
+            getFile: 'progress',
+            itSize: this.checkpoint_freq,
+            emulateSim
+          });
+          this.apiData = { ...this.apiData, ...response.data.data, proUpdatedTime: new Date() };
+          // console.log(response.data.data);
+          console.log('apiDataP: %o', this.apiData);
+          this.loading = false;
+          this.page = 2;
+        } catch (error) {
+          this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+          this.loading = false;
+        }
+        try {
+          const response = await Api.fetchVMSData({
+            ...pathData,
+            getFile: 'emission',
+            itSize: this.checkpoint_freq,
+            emulateSim
+          });
+          // console.log(response.data.data);
+          this.apiData = { ...this.apiData, ...response.data.data, emmUpdatedTime: new Date() };
+          console.log('apiDataE: %o', this.apiData);
+          this.loading = false;
+          this.page = 2;
+        } catch (error) {
+          this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+          this.loading = false;
+        }
+      } else {
+        try {
+          const response = await Api.fetchVMSData({
+            ...pathData,
+            getFile: 'both',
+            itSize: this.checkpoint_freq,
+            emulateSim
+          });
+          this.apiData = response.data.data;
+          this.apiData = { ...this.apiData, proUpdatedTime: new Date(), emmUpdatedTime: new Date() };
+          console.log('apiData: %o', this.apiData);
+          this.loading = false;
+          this.page = 2;
+        } catch (error) {
+          this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
+          this.loading = false;
+        }
       }
     },
 
     startFileChecker(pathData) {
+      this.fetchVMSDataInit()
       this.fileTimer = setInterval(() => {
-        this.fetchVMSData(pathData, false);
-      }, 10000);
+        this.fetchVMSDataInit(pathData);
+      }, 15000);
+    },
+
+    fetchVMSDataInit(pathData) {
+      let instantData = false;
+      let emulateSim = false;
+      if (this.pathData.path == this.samplePath) {
+        emulateSim = true;
+      }
+      this.fetchVMSData(pathData, instantData, emulateSim);
     },
 
     stopFileChecker() {

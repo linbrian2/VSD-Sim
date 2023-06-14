@@ -16,7 +16,6 @@ import javax.inject.Singleton
 class SimulationService {
 
     def simsToCheck = []
-    def checkpoint = 0
     def i = 1
 
     // https://docs.micronaut.io/latest/api/io/micronaut/scheduling/cron/CronExpression.html
@@ -27,64 +26,125 @@ class SimulationService {
     //    |   |  |  |  +------- month (1 - 12)
     //    |   |  |  |  |  +---- day of week (1 - 7) (MON-SUN)
     //    |   |  |  |  |  |
-    
+
     // Trigger the job every one minute at 5 seconds
-    @Scheduled(cron = '5 */1 * * * *')
+    @Scheduled(cron = '*/5 * * * * *')
     def checkSimulations() {
+        addDummySim()
+        // getErrorFile('/home/blin/Simulation App/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu')
         log.info('Checking Simulations for new Files: Iteration {}', i)
         for (sim in simsToCheck) {
             println sim
+            if (sim.checkpoint == 10) {
+                simsToCheck -= sim
+            }
         }
         i++
     }
 
-    def setSimulationData(path) {
-        if (!(path in simsToCheck)) {
-            simsToCheck << path
+    def addDummySim() {
+        // Add Sim if not added
+        def path = 'Dummy Simulation 1'
+        if (!simsToCheck.find { x -> x.name == path }) {
+            simsToCheck << [name: path, checkpoint: 0]
+        }
+        // Find sim and increase checkpoint
+        def sim = simsToCheck.find { x -> x.name == path }
+        sim.checkpoint++
+    }
+
+    def setSimulationData(path, checkpoint = 0) {
+        if (!(simsToCheck.find { x -> x.name == path })) {
+            simsToCheck << [name: path, checkpoint: checkpoint]
             log.info('Added new path: {}', path)
         } else {
             log.info('Duplicate File not added: {}', path)
         }
-        checkpoint = 0
+        def errorGenerated = getErrorFile(path)
+        if (errorGenerated) {
+            def sim = simsToCheck.find { x -> x.name == path }
+            simsToCheck.remove(sim)
+        }
         return [
             progress: [0],
             emissions: [[0]],
-            checkpoint: checkpoint
+            checkpoint: checkpoint,
+            errorGenerated: errorGenerated
         ]
     }
 
-    def getFileData(path, useSampleData) {
-        if (useSampleData) {
-            println 'Using sample data'
-            checkpoint = 9 // 2nd to last checkpoint
-
-            // * 104 Linux Server
-            // path = "/home/blin/new_progress/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu"
-            // * Local Windows
-            path = "../samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu"
-
+    def getFileData(path, getFile, itSize, emulateSim) {
+        if (getFile == 'progress') {
+            def progressData = parseProgressFile(path, itSize, emulateSim)
+            def errorGenerated = getErrorFile(path)
+            if (errorGenerated) {
+                def sim = simsToCheck.find { x -> x.name == path }
+                simsToCheck.remove(sim)
+            }
             return [
-                progress: parseProgressFile(path),
-                emissions: parseEmissionFiles(path, 20),
-                checkpoint: checkpoint
+                progress: progressData,
+                proProgress: progressData.size() / (itSize * 10),
+                errorGenerated: errorGenerated
+            ]
+        } else if (getFile == 'emission') {
+            def emissionData = parseEmissionFiles(path, itSize, emulateSim)
+            def sim = simsToCheck.find { x -> x.name == path }
+            def checkpoint = sim.checkpoint
+            def errorGenerated = getErrorFile(path)
+            if (errorGenerated) {
+                simsToCheck.remove(sim)
+            }
+            return [
+                emissions: emissionData,
+                checkpoint: checkpoint,
+                emmProgress: checkpoint / 10,
+                errorGenerated: errorGenerated
             ]
         } else {
-            println 'Using actual data'
+            def sim = simsToCheck.find { x -> x.name == path }
+            if (sim) {
+                simsToCheck.remove(sim)
+            }
+            simsToCheck << [name: path, checkpoint: 10]
+            def progressData = parseProgressFile(path, itSize, emulateSim)
+            def emissionData = parseEmissionFiles(path, itSize, emulateSim)
+            sim = simsToCheck.find { x -> x.name == path }
+            def checkpoint = sim.checkpoint
+            simsToCheck.remove(sim)
             return [
-                progress: parseProgressFile(path),
-                emissions: parseEmissionFiles(path, 20),
-                checkpoint: checkpoint
+                progress: progressData,
+                proProgress: progressData.size() / (itSize * 10),
+                emissions: emissionData,
+                checkpoint: checkpoint,
+                emmProgress: checkpoint / 10
             ]
         }
     }
 
-    def parseEmissionFiles(path, itSize) {
+    def getErrorFile(path) {
+        String errPath = "${path}/error.txt"
+        def file = new File(errPath)
+        if (file.exists()) {
+            def list = file.collect { it }
+            simsToCheck -= path
+            return list
+        } else {
+            return null
+        }
+    }
+
+    def parseEmissionFiles(path, itSize, emulateSim) {
+        def sim = simsToCheck.find { x -> x.name == path }
         def emissions = []
-        checkpoint++
+        if (!emulateSim) {
+            println 'Implement checkpoint checker'
+        } else {
+            sim.checkpoint++
+        }
+        def checkpoint = sim.checkpoint
         if (checkpoint <= 10) {
             for (int i = 1; i <= checkpoint; i++) {
                 def emissionFilePath = "${path}/checkpoint_${i * itSize}"
-                // if (i == 7) emissionFilePath = "${path}/checkpoint_999"
                 def result = parseEmissionFile(emissionFilePath)
                 emissions << result ? result : 0
             }
@@ -96,7 +156,9 @@ class SimulationService {
         }
     }
 
-    def parseProgressFile(filePath) {
+    def parseProgressFile(filePath, itSize, emulateSim) {
+        def sim = simsToCheck.find { x -> x.name == filePath }
+        def checkpoint = sim.checkpoint
         String file = "${filePath}/progress.csv"
         println "Reading progress file: $file"
         long startTime = System.currentTimeMillis()
@@ -109,6 +171,9 @@ class SimulationService {
             if (!is) return
             br = new BufferedReader(new InputStreamReader(is))
             while ((line = br.readLine()) != null) {
+                if (emulateSim && i >= itSize * (checkpoint + 1) + 1) {
+                    break
+                }
                 if (i > 0) {
                     String[] info = line.split(',')
                     dataList.add([
