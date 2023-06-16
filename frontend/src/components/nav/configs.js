@@ -9,10 +9,10 @@ const protectedRoute = [
     },
     children: [
       {
-        path: RouterPaths.TRAFFIC_INCIDENT_LIST,
-        name: RouterNames.TRAFFIC_INCIDENT_LIST,
+        path: '/',
+        name: 'VMS Simulation',
         meta: {
-          title: RouterNames.TRAFFIC_INCIDENT_LIST,
+          title: 'VMS Simulation',
           icon: RouterIcons.TRAFFIC_INCIDENT_LIST
         }
       }

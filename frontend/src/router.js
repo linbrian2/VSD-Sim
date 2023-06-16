@@ -11,7 +11,7 @@ import CAV from '@/components/layouts/CAV.vue';
 // import Dashboard from '@/components/layouts/Dashboard.vue';
 import Fullscreen from '@/components/layouts/Fullscreen.vue';
 
-import SimulationConfigs from '@/components/modules/traffic/incident/SimulationConfigs.vue';
+import VMSSimulation from '@/components/modules/traffic/incident/VMSSimulation.vue';
 // import TrafficDashboard from '@/views/traffic/Dashboard.vue';
 import TrafficDataPlayback from '@/views/traffic/TrafficDataPlayback.vue';
 import TrafficLCM from '@/views/traffic/TrafficLCM.vue';
@@ -57,13 +57,13 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      alias: 'Simulation',
+      alias: 'VMS Simulation',
       component: Traffic,
       children: [
         {
           path: '',
-          name: 'Simulation',
-          component: SimulationConfigs
+          name: 'VMS Simulation',
+          component: VMSSimulation
         }
       ]
     },

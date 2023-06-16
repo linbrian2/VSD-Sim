@@ -32,7 +32,7 @@
 
       <v-spacer></v-spacer>
       <div v-if="showDate">
-        <MenuDatePicker :date="currentDate" />
+        <MenuDatePicker :date="currentDate" :disable="true" />
       </div>
       <div v-if="showWeatherInfo" class="hidden-sm-and-down">
         <WeatherOverlay :center="mapCenter" :showCurrentTime="showCurrentTime" />
