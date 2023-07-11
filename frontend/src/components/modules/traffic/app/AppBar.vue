@@ -12,6 +12,7 @@
         />
 
         <MenuButton
+          :disabled="true"
           :items="anomaly_menu_items"
           tooltip="Anomaly Map"
           icon="mdi-view-comfy"

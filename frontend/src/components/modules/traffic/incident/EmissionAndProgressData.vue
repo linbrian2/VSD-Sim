@@ -346,9 +346,8 @@ export default {
     },
     path() {
       if (this.pathData) {
-        let splits = this.pathData.path.split('_');
-        let len = splits.length;
-        return `${splits[len - 2]}_${splits[len - 1]}`;
+        let idx = this.pathData.path.indexOf('_20');
+        return this.pathData.path.slice(idx + 1);
       } else {
         return '-';
       }
@@ -386,7 +385,7 @@ export default {
 
   methods: {
     updateStatus() {
-      console.log('Progress', this.simProgress);
+      // console.log('Progress', this.simProgress);
       if (this.apiData.errorGenerated) {
         this.status = 'ERROR';
       } else if (this.simProgress == 0) {
@@ -436,9 +435,8 @@ export default {
       data.push({
         name: 'Total Simulation Time',
         color: 'rgb(170, 136, 184)',
-        data: this.apiData.progress
-          .map(x => [x.trainingIteration, Math.round((x.timeTotalS / 60) * 100) / 100])
-          // .slice(0, cutOffIdx)
+        data: this.apiData.progress.map(x => [x.trainingIteration, Math.round((x.timeTotalS / 60) * 100) / 100])
+        // .slice(0, cutOffIdx)
       });
       return { data, xAxis, yAxis, title };
     },

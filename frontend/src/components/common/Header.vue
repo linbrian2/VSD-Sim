@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar app dark flat dense :clipped-left="clipLeft" :clipped-right="clipRight" color="black">
-      <v-btn icon @click.stop="showDrawer">
+      <v-btn icon @click.stop="showDrawer" disabled>
         <v-icon>mdi-view-grid-outline</v-icon>
       </v-btn>
 

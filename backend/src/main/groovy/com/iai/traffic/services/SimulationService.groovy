@@ -6,6 +6,7 @@ import io.micronaut.scheduling.annotation.Async
 import io.micronaut.discovery.event.ServiceStartedEvent
 
 import com.iai.traffic.utils.AppUtils
+import groovy.io.FileType
 import groovy.util.logging.Slf4j
 
 import javax.inject.Inject
@@ -30,6 +31,7 @@ class SimulationService {
     // Trigger the job every one minute at 5 seconds
     @Scheduled(cron = '*/10 * * * * *')
     def checkSimulations() {
+        // getListOfFiles()
         addDummySim()
         // getErrorFile('/home/blin/Simulation App/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu')
         log.info('Checking Simulations for new Files: Iteration {}', i)
@@ -51,6 +53,19 @@ class SimulationService {
         // Find sim and increase checkpoint
         def sim = simsToCheck.find { x -> x.name == path }
         sim.checkpoint++
+    }
+
+    def getListOfFiles() {
+        def list = []
+
+        def dir = new File("/home/vms_public/ray_results/template_ZM")
+        dir.eachFileRecurse (FileType.FILES) { file ->
+            list << file
+        }
+        list.each {
+            println it.path
+        }
+        return list
     }
 
     def setSimulationData(path, checkpoint = 0) {
@@ -145,13 +160,21 @@ class SimulationService {
         def emissions = []
         if (!emulateSim) {
             println 'Implement checkpoint checker'
+            while (sim.checkpoint < 10) {
+                File f = new File("$path/checkpoint_${sim.checkpoint + 1}/filtered_trips.csv");
+                if (f.exists()) {
+                    sim.checkpoint++
+                } else {
+                    break
+                }
+            }
+
         } else {
             sim.checkpoint++
         }
-        def checkpoint = sim.checkpoint
-        if (checkpoint <= 10) {
-            log.info("Reading $checkpoint emission files.")
-            for (int i = 1; i <= checkpoint; i++) {
+        if (sim.checkpoint <= 10) {
+            log.info("Reading ${sim.checkpoint} emission files.")
+            for (int i = 1; i <= sim.checkpoint; i++) {
                 def emissionFilePath = "${path}/checkpoint_${i * itSize}"
                 def result = parseEmissionFile(emissionFilePath)
                 emissions << result ? result : 0

@@ -150,16 +150,14 @@ export default {
     return api.post('api/predict', { deviceId, deviceDir, startTime, endTime, interval });
   },
 
-  startSimulationNew(params) {
-    let baseURL = 'http://10.49.0.104:3001/';
+  startSimulationNew(params, baseURL) {
     const api = axios.create({ baseURL });
     return api.post('run', params);
   },
 
-  checkIfUp() {
-    let baseURL = 'http://10.49.0.104:3001/';
+  checkIfUp(baseURL) {
     const api = axios.create({ baseURL });
-    return api.get();
+    return api.get('ping');
   },
 
   fetchVMSData(params) {

@@ -4,7 +4,7 @@ micronaut:
     version: 1.0.0
     description: Process API requests from VMS database
   server:
-    port: 4001
+    port: 4003
     cors:
       enabled: true
     idle-timeout: 10h

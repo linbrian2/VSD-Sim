@@ -316,6 +316,7 @@ export default {
         { action: 1, title: 'Start Sample Simulation' },
         { action: 2, title: 'Load Sample Simulation Results' }
       ],
+      simInitURL: process.env.VUE_APP_SIM_INIT_URL,
       fileTimer: null,
       serviceUp: null,
       payload: null,
@@ -382,9 +383,11 @@ export default {
     apiData: {
       deep: true,
       handler: function() {
-        if (!this.apiData
-            || (this.apiData.checkpoint && this.apiData.checkpoint >= 10)
-            || this.apiData.errorGenerated) {
+        if (
+          !this.apiData ||
+          (this.apiData.checkpoint && this.apiData.checkpoint >= 10) ||
+          this.apiData.errorGenerated
+        ) {
           this.stopFileChecker();
         }
       }
@@ -445,7 +448,7 @@ export default {
 
     async checkIfUp() {
       try {
-        let resp = await Api.checkIfUp();
+        let resp = await Api.checkIfUp(this.simInitURL);
         this.serviceUp = { ...resp.data, date: new Date() };
       } catch (error) {
         this.serviceUp = null;
@@ -491,25 +494,25 @@ export default {
 
     async startSimulationTask() {
       this.payload = {
-        num_vehicles: this.num_vehicles,
-        max_accel: this.max_accel,
-        max_decel: this.max_decel,
-        target_velocity: this.target_velocity,
-        max_speed: this.max_speed,
-        max_distance: this.max_distance,
-        h_d: this.h_d,
-        horizon: this.horizon,
-        sim_step: this.sim_step,
-        n_cpus: this.n_cpus,
-        checkpoint_freq: this.checkpoint_freq,
-        training_iteration: this.training_iteration
+        num_vehicles: parseFloat(this.num_vehicles),
+        max_accel: parseFloat(this.max_accel),
+        max_decel: parseFloat(this.max_decel),
+        target_velocity: parseFloat(this.target_velocity),
+        max_speed: parseFloat(this.max_speed),
+        max_distance: parseFloat(this.max_distance),
+        h_d: parseFloat(this.h_d),
+        horizon: parseFloat(this.horizon),
+        sim_step: parseFloat(this.sim_step),
+        n_cpus: parseFloat(this.n_cpus),
+        checkpoint_freq: parseFloat(this.checkpoint_freq),
+        training_iteration: parseFloat(this.training_iteration)
       };
 
       this.loading = true;
 
       try {
         /* Run Simulation, return files path */
-        const response = await Api.startSimulationNew(this.payload);
+        const response = await Api.startSimulationNew(this.payload, this.simInitURL);
         this.pathData = response.data;
 
         /* New Fetch, start file checker */
@@ -520,12 +523,11 @@ export default {
     },
 
     async addPathToBackend(pathData) {
-      // console.log('addPathToBackend: %o', pathData);
+      console.log('addPathToBackend: %o', pathData);
       try {
         const response = await Api.addPathToBackend(pathData);
-        // console.log(response);
         this.apiData = response.data.data;
-        // console.log('apiData: %o', this.apiData);
+        console.log('apiData: %o', this.apiData);
         this.loading = false;
         this.page = 2;
         this.startFileChecker(pathData);
@@ -536,7 +538,6 @@ export default {
     },
 
     async fetchVMSData(pathData, instantData, emulateSim) {
-      // console.log({ pathData, instantData, emulateSim });
       if (!instantData) {
         try {
           const response = await Api.fetchVMSData({
@@ -546,8 +547,8 @@ export default {
             emulateSim
           });
           this.apiData = { ...this.apiData, ...response.data.data, proUpdatedTime: new Date() };
-          // console.log(response.data.data);
-          console.log('apiDataP: %o', this.apiData);
+          console.log('progressData:', response.data.data);
+          // console.log('apiDataP: %o', this.apiData);
           this.loading = false;
           this.page = 2;
         } catch (error) {
@@ -561,9 +562,9 @@ export default {
             itSize: this.checkpoint_freq,
             emulateSim
           });
-          // console.log(response.data.data);
+          console.log('emissionData:', response.data.data);
           this.apiData = { ...this.apiData, ...response.data.data, emmUpdatedTime: new Date() };
-          console.log('apiDataE: %o', this.apiData);
+          // console.log('apiDataE: %o', this.apiData);
           this.loading = false;
           this.page = 2;
         } catch (error) {
@@ -580,7 +581,7 @@ export default {
           });
           this.apiData = response.data.data;
           this.apiData = { ...this.apiData, proUpdatedTime: new Date(), emmUpdatedTime: new Date() };
-          console.log('apiData: %o', this.apiData);
+          // console.log('apiData: %o', this.apiData);
           this.loading = false;
           this.page = 2;
         } catch (error) {
@@ -591,7 +592,7 @@ export default {
     },
 
     startFileChecker(pathData) {
-      this.fetchVMSDataInit()
+      this.fetchVMSDataInit();
       this.fileTimer = setInterval(() => {
         this.fetchVMSDataInit(pathData);
       }, 15000);
