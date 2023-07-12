@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" hide-overlay max-width="1200px" scrollable persistent transition="scale-transition">
     <v-card color="gray">
       <v-card-title>
-        Simulation List
+        Simulations List
         <v-spacer />
         <v-text-field
           v-model="search"
@@ -31,6 +31,33 @@
           multi-sort
           class="elevation-1"
         >
+          <template v-slot:[`item.emissionFileCount`]="{ item }">
+            <v-chip
+              small
+              :color="getColor(item.checkpointCount ? item.emissionFileCount / item.checkpointCount : 0, 0)"
+            >
+              <h4
+                :style="
+                  `color: ${
+                    (item.checkpointCount ? item.emissionFileCount / item.checkpointCount : 0) > 0.3 ? 'black' : 'white'
+                  }`
+                "
+              >
+                {{ item.emissionFileCount }}
+              </h4>
+            </v-chip>
+          </template>
+          <template v-slot:[`item.checkpointCount`]="{ item }">
+            <v-chip small :color="getColor(item.checkpointCount > 10 ? 1 : item.checkpointCount / 10, 0)">
+              <h4
+                :style="
+                  `color: ${(item.checkpointCount > 10 ? 1 : item.checkpointCount / 10) > 0.3 ? 'black' : 'white'}`
+                "
+              >
+                {{ item.checkpointCount }}
+              </h4>
+            </v-chip>
+          </template>
           <template v-slot:[`item.date`]="{ item }">
             {{ getDate(item.date) }}
           </template>
@@ -61,12 +88,14 @@
 </template>
 
 <script>
+import Colors from '@/utils/Colors.js';
 import Utils from '@/utils/Utils';
 import Api from '@/utils/api/traffic';
 
 export default {
   data() {
     return {
+      updateTime: null,
       loading: false,
       simulationList: [],
       dialog: false,
@@ -83,6 +112,13 @@ export default {
     };
   },
   methods: {
+    getColor(percent, mode) {
+      if (mode == 0) {
+        return Colors.getRedGreenColor(percent);
+      } else {
+        return Colors.getRedBlueColor(percent);
+      }
+    },
     async getSimulations() {
       this.loading = true;
       try {
@@ -97,6 +133,7 @@ export default {
         console.log(data);
         this.simulationList = data;
         this.loading = false;
+        this.updateTime = new Date();
         // console.log('this.simulationList', this.simulationList);
       } catch (error) {
         this.loading = false;
@@ -108,7 +145,9 @@ export default {
     },
     init() {
       this.dialog = true;
-      this.getSimulations();
+      if (!this.updateTime || (new Date().getTime() - this.updateTime.getTime()) / 1000 > 30) {
+        this.getSimulations();
+      }
     },
     closeDialog() {
       this.dialog = false;

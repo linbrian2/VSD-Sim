@@ -110,10 +110,10 @@
           </v-col>
           <v-col cols="4" class="py-0">
             Iteration Count:
-            <b style="color: rgb(61, 201, 40)"> {{ iterationsCount }} /{{ payload.training_iteration }} </b>
+            <b style="color: rgb(61, 201, 40)"> {{ iterationsCount }} / {{ payload.training_iteration }} </b>
           </v-col>
           <v-col cols="4" class="py-0">
-            Checkpoint: <b style="color: rgb(61, 201, 40)">{{ apiData.checkpoint }}</b>
+            Checkpoint: <b style="color: rgb(61, 201, 40)">{{ apiData.checkpoint ? apiData.checkpoint : '-' }}</b>
           </v-col>
           <v-col cols="4" class="py-0">
             Status: <b :style="`color: ${status == 'ERROR' ? 'rgb(255, 88, 88)' : 'rgb(61, 201, 40)'}`">{{ status }}</b>
@@ -122,7 +122,8 @@
             <v-expansion-panels v-model="panel" multiple>
               <v-expansion-panel>
                 <v-expansion-panel-header>
-                  Error Log
+                  <h3>Error Log</h3>
+                  {{ apiData.errorGenerated.length }} lines
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <h4 style="color:rgb(255, 88, 88)" v-for="i in apiData.errorGenerated" :key="i.id">{{ i }}</h4>
@@ -352,7 +353,6 @@ export default {
       }
     },
     emissionsLength() {
-      console.log(this.apiData.emissions.filter(x => x != null).length);
       if (this.apiData.emissions) {
         return this.apiData.emissions.filter(x => x != null).length;
       } else {
@@ -395,13 +395,17 @@ export default {
       // console.log('Progress', this.simProgress);
       if (this.apiData.errorGenerated) {
         this.status = 'ERROR';
+      } else if (this.simProgress >= 100 || this.payload.params) {
+        if (!this.payload.params) {
+          this.endTime = new Date();
+        }
+        this.status = 'COMPLETE';
       } else if (this.simProgress == 0) {
         this.status = 'INITIALIZING';
       } else if (this.simProgress < 100) {
         this.status = 'ONGOING';
       } else {
-        this.endTime = new Date();
-        this.status = 'COMPLETE';
+        this.status = 'PENDING';
       }
     },
     formatDate(date) {
@@ -567,7 +571,11 @@ export default {
     initEmissionParams() {
       if (this.apiData && this.idList) {
         if (!this.startTime) {
-          this.startTime = new Date();
+          if (this.payload.item) {
+            this.startTime = new Date(this.payload.item.date);
+          } else {
+            this.startTime = new Date();
+          }
         }
         this.selectedId = this.idList.length > 0 ? this.idList[0] : null;
       }

@@ -2,8 +2,8 @@
   <v-card>
     <v-toolbar dark color="#3A3A5A" dense flat fixed overflow extension-height="0">
       <v-toolbar-title>
-        <v-btn icon class="ml-n2">
-          <v-icon dark>mdi-cog-outline</v-icon>
+        <v-btn icon>
+          <v-icon>mdi-cog-outline</v-icon>
         </v-btn>
         Simulation Settings
       </v-toolbar-title>
@@ -46,7 +46,7 @@
               <v-icon color="blue">mdi-format-list-bulleted</v-icon>
             </v-btn>
           </template>
-          <span>View a simulation from server</span>
+          <span>Simulations List</span>
         </v-tooltip>
       </div>
       <v-menu bottom right offset-y>
@@ -525,7 +525,7 @@ export default {
           // Instant Data
           const instantData = true;
           const emulateSim = false;
-          const checkpoint = this.payload.item ? this.payload.item.checkpointCount : null;
+          const checkpoint = this.payload.item ? this.payload.item.checkpointCount : 10;
           this.fetchVMSData(this.pathData, instantData, emulateSim, checkpoint);
         }
       } catch (error) {
@@ -578,7 +578,7 @@ export default {
       }
     },
 
-    async fetchVMSData(pathData, instantData, emulateSim, checkpoint = null) {
+    async fetchVMSData(pathData, instantData, emulateSim, checkpoint = 0) {
       if (!instantData) {
         try {
           const response = await Api.fetchVMSData({
