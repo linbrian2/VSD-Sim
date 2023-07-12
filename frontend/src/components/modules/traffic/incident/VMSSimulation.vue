@@ -39,6 +39,16 @@
           <span>Simulation initialization service is unavailable</span>
         </v-tooltip>
       </div>
+      <div>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn icon @click="openSimDialog" class="ml-4" v-on="on">
+              <v-icon color="blue">mdi-format-list-bulleted</v-icon>
+            </v-btn>
+          </template>
+          <span>View a simulation from server</span>
+        </v-tooltip>
+      </div>
       <v-menu bottom right offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn class="ml-1" :disabled="page != 1" icon v-bind="attrs" v-on="on">
@@ -289,6 +299,7 @@
         <EmissionAndProgressData :apiData="apiData" :payload="payload" :pathData="pathData" />
       </v-col>
     </v-row>
+    <SimulationsDialog ref="simsDialog" @openSimulation="openSimulation" />
   </v-card>
 </template>
 
@@ -298,10 +309,12 @@ import Utils from '@/utils/Utils';
 import Api from '@/utils/api/traffic';
 import DarkMapStyle from '@/utils/DarkMapStyle.js';
 import EmissionAndProgressData from '@/components/modules/traffic/incident/EmissionAndProgressData.vue';
+import SimulationsDialog from '@/components/modules/traffic/incident/SimulationsDialog.vue';
 
 export default {
   components: {
-    EmissionAndProgressData
+    EmissionAndProgressData,
+    SimulationsDialog
   },
   props: {
     value: Boolean
@@ -427,6 +440,9 @@ export default {
   },
 
   methods: {
+    openSimDialog() {
+      this.$refs.simsDialog.init();
+    },
     menuItemClicked(action) {
       switch (action) {
         case 1:
@@ -455,28 +471,52 @@ export default {
       }
     },
 
-    async useSampleData(mode) {
-      this.payload = {
-        num_vehicles: 1,
-        max_accel: 3,
-        max_decel: 3,
-        target_velocity: 30,
-        max_speed: 50,
+    openSimulation(item) {
+      let p = item.params.env_config.flow_params;
+      let path = `/home/vms_public/ray_results/template_ZM/${item.name}`;
+      let payload = {
+        num_vehicles: p.veh[0].num_vehicles,
+        max_accel: p.env.additional_params.max_accel,
+        max_decel: p.env.additional_params.max_decel,
+        target_velocity: p.env.additional_params.target_velocity,
+        max_speed: p.veh[0].car_following_params.controller_params.maxSpeed,
         max_distance: 21679.33,
         h_d: 1,
-        horizon: 1000,
-        sim_step: 1,
+        horizon: p.env.horizon,
+        sim_step: p.env.sims_per_step,
         n_cpus: 20,
-        checkpoint_freq: 20,
-        training_iteration: 200
+        checkpoint_freq: item.itSize ? item.itSize : 20,
+        training_iteration: item.itSize ? item.itSize * 10 : 200,
+        item: item
       };
+      console.log(JSON.stringify(payload, null, 2));
+      this.useSampleData(2, path, payload);
+    },
+
+    async useSampleData(mode, path = null, payload = null) {
+      this.payload = payload
+        ? payload
+        : {
+            num_vehicles: 1,
+            max_accel: 3,
+            max_decel: 3,
+            target_velocity: 30,
+            max_speed: 50,
+            max_distance: 21679.33,
+            h_d: 1,
+            horizon: 1000,
+            sim_step: 1,
+            n_cpus: 20,
+            checkpoint_freq: 20,
+            training_iteration: 200
+          };
 
       this.loading = true;
 
       try {
         this.apiData = null;
         this.pathData = {
-          path: this.samplePath
+          path: path ? path : this.samplePath
         };
         if (mode == 1) {
           // Incrementing Data
@@ -485,7 +525,8 @@ export default {
           // Instant Data
           const instantData = true;
           const emulateSim = false;
-          this.fetchVMSData(this.pathData, instantData, emulateSim);
+          const checkpoint = this.payload.item ? this.payload.item.checkpointCount : null;
+          this.fetchVMSData(this.pathData, instantData, emulateSim, checkpoint);
         }
       } catch (error) {
         this.$store.dispatch('setSystemStatus', { text: error, color: 'error' });
@@ -537,14 +578,15 @@ export default {
       }
     },
 
-    async fetchVMSData(pathData, instantData, emulateSim) {
+    async fetchVMSData(pathData, instantData, emulateSim, checkpoint = null) {
       if (!instantData) {
         try {
           const response = await Api.fetchVMSData({
             ...pathData,
             getFile: 'progress',
-            itSize: this.checkpoint_freq,
-            emulateSim
+            itSize: this.payload && this.payload.checkpoint_freq ? this.payload.checkpoint_freq : this.checkpoint_freq,
+            emulateSim,
+            checkpoint
           });
           this.apiData = { ...this.apiData, ...response.data.data, proUpdatedTime: new Date() };
           console.log('progressData:', response.data.data);
@@ -559,8 +601,9 @@ export default {
           const response = await Api.fetchVMSData({
             ...pathData,
             getFile: 'emission',
-            itSize: this.checkpoint_freq,
-            emulateSim
+            itSize: this.payload && this.payload.checkpoint_freq ? this.payload.checkpoint_freq : this.checkpoint_freq,
+            emulateSim,
+            checkpoint
           });
           console.log('emissionData:', response.data.data);
           this.apiData = { ...this.apiData, ...response.data.data, emmUpdatedTime: new Date() };
@@ -576,8 +619,9 @@ export default {
           const response = await Api.fetchVMSData({
             ...pathData,
             getFile: 'both',
-            itSize: this.checkpoint_freq,
-            emulateSim
+            itSize: this.payload && this.payload.checkpoint_freq ? this.payload.checkpoint_freq : this.checkpoint_freq,
+            emulateSim,
+            checkpoint
           });
           this.apiData = response.data.data;
           this.apiData = { ...this.apiData, proUpdatedTime: new Date(), emmUpdatedTime: new Date() };

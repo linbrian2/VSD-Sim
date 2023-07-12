@@ -8,6 +8,7 @@ import io.micronaut.discovery.event.ServiceStartedEvent
 import com.iai.traffic.utils.AppUtils
 import groovy.io.FileType
 import groovy.util.logging.Slf4j
+import groovy.json.JsonSlurper
 
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,7 +32,6 @@ class SimulationService {
     // Trigger the job every one minute at 5 seconds
     @Scheduled(cron = '*/10 * * * * *')
     def checkSimulations() {
-        // getListOfFiles()
         addDummySim()
         // getErrorFile('/home/blin/Simulation App/samples/PPO_MultiAgentHighwayPOEnv-v0_b815bb28_2023-05-19_16-14-11meehmeiu')
         log.info('Checking Simulations for new Files: Iteration {}', i)
@@ -60,10 +60,65 @@ class SimulationService {
 
         def dir = new File("/home/vms_public/ray_results/template_ZM")
         dir.eachFileRecurse (FileType.FILES) { file ->
-            list << file
+            if (file.path.contains('PPO')) {
+                def folderName = file.path.split('/')[5]
+                if (!list.find { x -> x.name == folderName }) {
+                    def type = file.path.contains('WaveAttenuation') ? 'Wave Attenuation' : 'Multi Agent Highway'
+                    def dateStr = type.contains('W') ? folderName.substring(37, 56) : folderName.substring(39, 58)
+                    def dateSplit = dateStr.split("-|_")
+                    def date = new Date(dateSplit[0].toInteger() - 1900, dateSplit[1].toInteger() - 1, dateSplit[2].toInteger(), dateSplit[3].toInteger(), dateSplit[4].toInteger(), dateSplit[5].toInteger())
+                    def dateStr2 = dateStr.substring(0, 10) + ' ' + dateStr.substring(11, 13) + ':' + dateStr.substring(14, 16) + ':' + dateStr.substring(17);
+                    list << [name: folderName, files: [], checkpoints: [], checkpointIntervals: [], type: type, date: date, dateStr: dateStr2]
+                }
+                def sim = list.find { x -> x.name == folderName }
+                def fileName = file.path.split('/').size() == 8 ? 
+                    file.path.split('/')[6] +  "/${file.path.split('/')[7]}" : file.path.split('/')[6]
+                if (fileName.contains('checkpoint_')) {
+                    def num = Integer.parseInt(fileName.split('_')[1].split('/')[0])
+                    if (!sim.checkpointIntervals.contains(num)) {
+                        sim.checkpointIntervals << num
+                    }
+                    sim.checkpoints << fileName
+                } else {
+                    sim.files << fileName
+                }
+                if (file.path.contains('params.json')) {
+                    def jsonSlurper = new JsonSlurper()
+                    def params = jsonSlurper.parse(new File(file.path))
+                    sim.params = params
+                }
+            }
         }
+        list = list.sort { -it.date.getTime() }
         list.each {
-            println it.path
+            it.files.sort()
+            it.checkpoints.sort()
+            it.checkpointIntervals.sort()
+            if (it.checkpointIntervals.size() > 0) {
+                it.itSize = it.checkpointIntervals[0]
+            }
+            def uniqueCheckpoints = []
+            def emissionFiles = []
+            it.checkpoints.each {
+                if (!uniqueCheckpoints.contains(it.split('/')[0])) {
+                    uniqueCheckpoints << it.split('/')[0]
+                }
+                if (it.contains('filtered_trips.csv') && !emissionFiles.contains(it)) {
+                    emissionFiles << it
+                }
+            }
+            it.checkpointCount = uniqueCheckpoints.size()
+            it.emissionFileCount = emissionFiles.size()
+
+            def errorGenerated = false
+            def name = it.name
+            it.files.each {
+                if (it == 'error.txt') {
+                    errorGenerated = getErrorFile("/home/vms_public/ray_results/template_ZM/${name}")
+                }
+            }
+            it.errorGenerated = errorGenerated
+
         }
         return list
     }
@@ -88,7 +143,7 @@ class SimulationService {
         ]
     }
 
-    def getFileData(path, getFile, itSize, emulateSim) {
+    def getFileData(path, getFile, itSize, emulateSim, checkpoint = 10) {
         if (getFile == 'progress') {
             def progressData = parseProgressFile(path, itSize, emulateSim)
             def errorGenerated = getErrorFile(path)
@@ -104,7 +159,7 @@ class SimulationService {
         } else if (getFile == 'emission') {
             def emissionData = parseEmissionFiles(path, itSize, emulateSim)
             def sim = simsToCheck.find { x -> x.name == path }
-            def checkpoint = sim.checkpoint
+            checkpoint = sim.checkpoint
             def errorGenerated = getErrorFile(path)
             if (errorGenerated) {
                 simsToCheck.remove(sim)
@@ -116,29 +171,24 @@ class SimulationService {
                 errorGenerated: errorGenerated
             ]
         } else {
-            println 1
             def sim = simsToCheck.find { x -> x.name == path }
             if (sim) {
                 simsToCheck.remove(sim)
             }
-            println 2
-            simsToCheck << [name: path, checkpoint: 10]
-            println 3
+            simsToCheck << [name: path, checkpoint: checkpoint]
             def progressData = parseProgressFile(path, itSize, emulateSim)
             def emissionData = parseEmissionFiles(path, itSize, emulateSim)
-            println 4
             sim = simsToCheck.find { x -> x.name == path }
-            println 5
-            def checkpoint = sim.checkpoint
-            println 6
+            checkpoint = sim.checkpoint
             simsToCheck.remove(sim)
-            println 7
+            def errorGenerated = getErrorFile(path)
             return [
                 progress: progressData,
                 proProgress: progressData.size() / (itSize * 10),
                 emissions: emissionData,
                 checkpoint: checkpoint,
-                emmProgress: checkpoint / 10
+                emmProgress: checkpoint / 10,
+                errorGenerated: errorGenerated
             ]
         }
     }
@@ -156,10 +206,11 @@ class SimulationService {
     }
 
     def parseEmissionFiles(path, itSize, emulateSim) {
+        println "P: $path, I: $itSize, E: $emulateSim"
         def sim = simsToCheck.find { x -> x.name == path }
         def emissions = []
         if (!emulateSim) {
-            println 'Implement checkpoint checker'
+            println 'Checkpoint checker'
             while (sim.checkpoint < 10) {
                 File f = new File("$path/checkpoint_${sim.checkpoint + 1}/filtered_trips.csv");
                 if (f.exists()) {
@@ -191,8 +242,8 @@ class SimulationService {
         def sim = simsToCheck.find { x -> x.name == filePath }
         def checkpoint = sim.checkpoint
         String file = "${filePath}/progress.csv"
-        log.info("Reading progress file.")
-        // println "Reading progress file: $file"
+        // log.info("Reading progress file.")
+        println "Reading progress file: $file"
         long startTime = System.currentTimeMillis()
         BufferedReader br = null
         String line = ''
@@ -243,7 +294,7 @@ class SimulationService {
             }
         }
         long estimatedTime = System.currentTimeMillis() - startTime
-        // println "Time taken: $estimatedTime ms"
+        println "Time taken: $estimatedTime ms"
         if (dataList.size() > 0) {
             return dataList
         } else {
@@ -253,7 +304,7 @@ class SimulationService {
 
     def parseEmissionFile(filePath) {
         String file = "${filePath}/filtered_trips.csv"
-        // println "Reading emissions file: $file"
+        println "Reading emissions file: $file"
         long startTime = System.currentTimeMillis()
         BufferedReader br = null
         String line = ''

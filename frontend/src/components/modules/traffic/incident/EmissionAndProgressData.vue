@@ -76,7 +76,13 @@
                       <v-col cols="4" class="pa-0">
                         Emission Entries Count:
                         <b style="color: rgb(61, 201, 40)">
-                          {{ simProgress == 0 ? 0 : apiData.emissions[emissionsLength - 1].length }}
+                          {{
+                            simProgress == 0
+                              ? 0
+                              : apiData.emissions[emissionsLength - 1]
+                              ? apiData.emissions[emissionsLength - 1].length
+                              : 0
+                          }}
                         </b>
                       </v-col>
                       <v-col cols="4" class="pa-0">
@@ -104,9 +110,7 @@
           </v-col>
           <v-col cols="4" class="py-0">
             Iteration Count:
-            <b style="color: rgb(61, 201, 40)">
-              {{ simProgress == 0 ? 0 : apiData.progress.length }} /{{ payload.training_iteration }}
-            </b>
+            <b style="color: rgb(61, 201, 40)"> {{ iterationsCount }} /{{ payload.training_iteration }} </b>
           </v-col>
           <v-col cols="4" class="py-0">
             Checkpoint: <b style="color: rgb(61, 201, 40)">{{ apiData.checkpoint }}</b>
@@ -115,8 +119,16 @@
             Status: <b :style="`color: ${status == 'ERROR' ? 'rgb(255, 88, 88)' : 'rgb(61, 201, 40)'}`">{{ status }}</b>
           </v-col>
           <v-col cols="12" v-if="apiData.errorGenerated">
-            Error Log:
-            <h4 style="color:rgb(255, 88, 88)" v-for="i in apiData.errorGenerated" :key="i.id">{{ i }}</h4>
+            <v-expansion-panels v-model="panel" multiple>
+              <v-expansion-panel>
+                <v-expansion-panel-header>
+                  Error Log
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <h4 style="color:rgb(255, 88, 88)" v-for="i in apiData.errorGenerated" :key="i.id">{{ i }}</h4>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
           </v-col>
         </v-row>
       </div>
@@ -143,7 +155,7 @@
               <v-icon>mdi-refresh</v-icon>
             </v-btn>
           </template>
-          <span>Fetch emission data</span>
+          <span>Fetch progress data</span>
         </v-tooltip>
       </v-card-title>
       <v-row>
@@ -223,7 +235,7 @@
       </v-row>
     </v-card>
 
-    <v-card class="speed-evo mt-6" v-if="apiData.emissions" color="rgb(37, 37, 37)">
+    <v-card class="accel-evo mt-6" v-if="apiData.emissions" color="rgb(37, 37, 37)">
       <v-card-title :class="panelStyle">
         <v-icon class="mr-2">mdi-information-outline</v-icon>
         <span class="title font-weight-light">
@@ -239,7 +251,7 @@
       </v-row>
     </v-card>
 
-    <v-card class="emissions mt-6" v-if="apiData.emissions" color="rgb(37, 37, 37)">
+    <v-card v-if="apiData.emissions && emissionsLength >= 10" class="emissions mt-6" color="rgb(37, 37, 37)">
       <v-card-title :class="panelStyle">
         <v-icon class="mr-2">mdi-information-outline</v-icon>
         <span class="title font-weight-light">
@@ -281,21 +293,18 @@ export default {
   },
   data() {
     return {
+      panel: [0],
       status: 'PENDING',
       progressLoading: false,
       emissionLoading: false,
       startTime: null,
       endTime: null,
       loading: false,
-      estimatedTime: '40:00',
-      iterationCount: 128,
       checkpoint: '6 (120)',
       leader: true,
       follower: false,
       height: 400,
       selectedId: null,
-      selectedLeader: null,
-      selectedFollower: null,
       value: false,
       emissionMode: 0,
       selectedProgressVar: null,
@@ -303,6 +312,21 @@ export default {
     };
   },
   computed: {
+    iterationsCount() {
+      if (this.simProgress == 0 || (this.apiData.progress.length == 1 && this.apiData.progress[0] == 0)) {
+        return 0;
+      } else {
+        return this.apiData.progress.length;
+      }
+    },
+    estimatedTime() {
+      if (this.payload.params) {
+        return '-';
+      } else {
+        let seconds = this.payload.training_iteration * 40;
+        return new Date(seconds * 1000).toISOString().slice(11, 19);
+      }
+    },
     simProgress() {
       let sum = 0;
       if (this.apiData.proProgress) {
@@ -328,8 +352,9 @@ export default {
       }
     },
     emissionsLength() {
+      console.log(this.apiData.emissions.filter(x => x != null).length);
       if (this.apiData.emissions) {
-        return this.apiData.emissions.length;
+        return this.apiData.emissions.filter(x => x != null).length;
       } else {
         return 0;
       }
@@ -353,26 +378,8 @@ export default {
       }
     },
     idList() {
-      if (this.apiData && this.emissionsLength > 0) {
-        return this.apiData.emissions[this.emissionsLength - 1].filter(x => x.id).map(x => x.id);
-      } else {
-        return [];
-      }
-    },
-    leaderList() {
-      if (this.apiData && this.selectedId && this.emissionsLength > 0) {
-        return this.apiData.emissions[this.emissionsLength - 1]
-          .filter(x => x.id && x.leaderId && x.id == this.selectedId)
-          .map(x => x.leaderId);
-      } else {
-        return [];
-      }
-    },
-    followerList() {
-      if (this.apiData && this.selectedId && this.emissionsLength > 0) {
-        return this.apiData.emissions[this.emissionsLength - 1]
-          .filter(x => x.id && x.followerId && x.id == this.selectedId)
-          .map(x => x.followerId);
+      if (this.apiData && this.emissionsLength > 0 && this.apiData.emissions[this.emissionsLength - 1]) {
+        return this.apiData.emissions[this.emissionsLength - 1].filter(x => x != null && x.id).map(x => x.id);
       } else {
         return [];
       }
@@ -448,7 +455,7 @@ export default {
       if (this.selectedId) {
         graphData = graphData.filter(x => x.id == this.selectedId);
       }
-      graphData = graphData.map(x => [Math.round(x.x * 100) / 100, Math.round(x.y * 100) / 100]);
+      graphData = graphData ? graphData.map(x => [Math.round(x.x * 100) / 100, Math.round(x.y * 100) / 100]) : [];
       data.push({
         name: `Trajectory`,
         color: 'red',
@@ -468,14 +475,18 @@ export default {
       if (this.selectedId) {
         graphData = graphData.filter(x => x.id == this.selectedId);
       }
-      let speedData = graphData.map(x => [x.time, Math.round(x.speed * 100) / 100]);
+      let speedData = graphData ? graphData.map(x => [x.time, Math.round(x.speed * 100) / 100]) : [];
 
       data.push({ name: `Speed`, color: 'lightgreen', data: speedData });
       if (largeChart) {
-        let relSpeedData = graphData
-          .filter(x => x.leaderRelSpeed > -1000)
-          .map(x => [x.time, Math.round(x.leaderRelSpeed * 100) / 100]);
-        data.push({ name: `Relative Leader Speed`, color: 'lightblue', data: relSpeedData });
+        if (!graphData) {
+          data.push({ name: `Relative Leader Speed`, color: 'lightblue', data: [] });
+        } else {
+          let relSpeedData = graphData
+            .filter(x => x.leaderRelSpeed > -1000)
+            .map(x => [x.time, Math.round(x.leaderRelSpeed * 100) / 100]);
+          data.push({ name: `Relative Leader Speed`, color: 'lightblue', data: relSpeedData });
+        }
       }
       let title = !largeChart ? `${(i + 1) * this.payload.checkpoint_freq}` : `Speed`;
       let ymin = largeChart ? null : 0;
@@ -491,7 +502,7 @@ export default {
       if (this.selectedId) {
         graphData = graphData.filter(x => x.id == this.selectedId);
       }
-      let accel = graphData.map(x => [x.time, Math.round(x.accel * 100) / 100]);
+      let accel = graphData ? graphData.map(x => [x.time, Math.round(x.accel * 100) / 100]) : [];
       data.push({ name: `Acceleration`, color: 'orange', data: accel });
       let title = !largeChart ? `${(i + 1) * this.payload.checkpoint_freq}` : `Acceleration`;
       let ymin = largeChart ? null : -this.payload.max_decel;
@@ -513,13 +524,15 @@ export default {
         graphData = graphData.filter(x => x.id == this.selectedId);
       }
       if (param == 'headway') {
-        graphData = graphData.filter(x => x.headway < 1000).map(x => [x.time, Math.round(x.headway * 100) / 100]);
+        graphData = graphData
+          ? graphData.filter(x => x.headway < 1000).map(x => [x.time, Math.round(x.headway * 100) / 100])
+          : [];
       } else if (param == 'leaderRelSpeed') {
         graphData = graphData
-          .filter(x => x.leaderRelSpeed > -1000)
-          .map(x => [x.time, Math.round(x.leaderRelSpeed * 100) / 100]);
+          ? graphData.filter(x => x.leaderRelSpeed > -1000).map(x => [x.time, Math.round(x.leaderRelSpeed * 100) / 100])
+          : [];
       } else {
-        graphData = graphData.map(x => [x.time, Math.round(x[param] * 100) / 100]);
+        graphData = graphData ? graphData.map(x => [x.time, Math.round(x[param] * 100) / 100]) : [];
       }
 
       data.push({
@@ -550,17 +563,13 @@ export default {
     },
     resetAll() {
       this.selectedId = null;
-      this.selectedLeader = null;
-      this.selectedFollower = null;
     },
     initEmissionParams() {
-      if (this.apiData && this.idList && this.leaderList && this.followerList) {
+      if (this.apiData && this.idList) {
         if (!this.startTime) {
           this.startTime = new Date();
         }
         this.selectedId = this.idList.length > 0 ? this.idList[0] : null;
-        this.selectedLeader = this.leaderList.length > 0 ? this.leaderList[0] : null;
-        this.selectedFollower = this.followerList.length > 0 ? this.followerList[0] : null;
       }
     }
   },

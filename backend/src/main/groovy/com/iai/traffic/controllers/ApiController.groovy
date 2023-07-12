@@ -33,6 +33,12 @@ class ApiController {
         return message
     }
 
+    @Get("/simulations")
+    def simulations() {
+        def json = mSimulationService.getListOfFiles()
+        return json
+    }
+
     @Post("fetchVMSData")
     def fetchVMSData(@Body def body) {
         log.info("fetchVMSData")
@@ -50,7 +56,8 @@ class ApiController {
             String getFile = body.getFile != null ? body.getFile.textValue() : ''
             Integer itSize = body.itSize != null ? body.itSize.intValue() : ''
             Boolean emulateSim = body.emulateSim != null ? body.emulateSim.booleanValue() : ''
-            def json = mSimulationService.getFileData(path, getFile, itSize, emulateSim)
+            Integer checkpoint = body.checkpoint != null ? body.checkpoint.intValue() : ''
+            def json = mSimulationService.getFileData(path, getFile, itSize, emulateSim, checkpoint)
             if (json) {
                 return [ status: 'OK', data: json ]
             } else {

@@ -160,6 +160,10 @@ export default {
     return api.get('ping');
   },
 
+  fetchSimulations() {
+    return AxiosClient.get('api/simulations');
+  },
+
   fetchVMSData(params) {
     return AxiosClient.post('api/fetchVMSData', params);
   },

@@ -19,6 +19,9 @@ configurations {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-json
+    implementation 'org.codehaus.groovy:groovy-json:2.0.1'
+
     compile 'io.micronaut.data:micronaut-data-hibernate-jpa:1.0.0'
     runtime 'io.micronaut.configuration:micronaut-jdbc-tomcat'
     runtime 'mysql:mysql-connector-java:5.1.38'
